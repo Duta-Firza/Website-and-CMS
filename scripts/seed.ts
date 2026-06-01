@@ -12,11 +12,17 @@
  *   SEED_ADMIN_EMAIL
  *   SEED_ADMIN_PASSWORD
  */
-import "dotenv/config";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import bcrypt from "bcryptjs";
+import { config as loadEnv } from "dotenv";
 import mongoose from "mongoose";
+
+// Next.js convention: .env.local takes precedence over .env. The standalone
+// seed script doesn't run through Next.js, so load these files explicitly.
+loadEnv({ path: ".env.local", override: true });
+loadEnv({ path: ".env" });
+
 import {
   Customer,
   HOME_HERO_ID,

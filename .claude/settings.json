@@ -22,7 +22,8 @@
       "Bash(rmdir \"src/app/[locale]/\\(admin\\)/admin/login\")",
       "Bash(mkdir -p \"src/app/[locale]/\\(admin\\)/admin/settings\" \"src/app/[locale]/\\(admin\\)/admin/landing\" \"src/app/[locale]/\\(admin\\)/admin/partners\" \"src/app/[locale]/\\(admin\\)/admin/projects\" \"src/app/[locale]/\\(admin\\)/admin/customers\" \"src/app/[locale]/\\(admin\\)/admin/solutions\" && echo ok)",
       "Bash(python3)",
-      "Bash(pnpm test *)"
+      "Bash(pnpm test *)",
+      "Bash(pnpm run *)"
     ],
     "additionalDirectories": [
       "/Users/zulkifli/Documents/project/duta-firza/duta-firza-web-and-cms/src/app/[locale]/(admin)/admin"
