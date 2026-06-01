@@ -1,0 +1,42 @@
+{
+  "Common": {
+    "companyName": "PT Duta Firza",
+    "tagline": "Decades of Trust, Defined by Performance",
+    "language": "Language",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "comingSoon": "Coming soon",
+    "readMore": "Read more",
+    "seeMore": "See more",
+    "contactUs": "Contact Us"
+  },
+  "Nav": {
+    "home": "Home",
+    "about": "About Us",
+    "leadership": "Leadership",
+    "history": "History",
+    "business": "Our Business",
+    "credentials": "Credentials",
+    "solutions": "Solutions",
+    "trading": "Trading",
+    "manufacturing": "Manufacturing",
+    "epc": "EPC & Projects",
+    "partners": "Partners",
+    "newsroom": "Newsroom",
+    "contact": "Contact",
+    "careers": "Careers",
+    "companyProfile": "Company Profile"
+  },
+  "Home": {
+    "heroTitle": "Decades of Trust, Defined by Performance.",
+    "heroSubtitle": "Bridging decades of industrial expertise with the digital future, we deliver integrated EPC solutions and world-class instrumentation to power Indonesia's evolving energy landscape."
+  },
+  "Admin": {
+    "dashboard": "Admin Dashboard",
+    "login": "Sign In",
+    "email": "Email",
+    "password": "Password"
+  }
+}

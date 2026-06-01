@@ -5,7 +5,15 @@
       "WebSearch",
       "Bash(git -C /Users/zulkifli/Documents/project/duta-firza/duta-firza-web-and-cms branch --show-current)",
       "Bash(pnpm --version)",
-      "Bash(pnpm create *)"
+      "Bash(pnpm create *)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm dlx *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm lint *)",
+      "Bash(pnpm lint:fix)",
+      "Bash(pnpm build *)",
+      "Bash(git mv *)",
+      "Bash(git add *)"
     ]
   }
 }
