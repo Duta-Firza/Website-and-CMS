@@ -23,7 +23,8 @@
       "Bash(mkdir -p \"src/app/[locale]/\\(admin\\)/admin/settings\" \"src/app/[locale]/\\(admin\\)/admin/landing\" \"src/app/[locale]/\\(admin\\)/admin/partners\" \"src/app/[locale]/\\(admin\\)/admin/projects\" \"src/app/[locale]/\\(admin\\)/admin/customers\" \"src/app/[locale]/\\(admin\\)/admin/solutions\" && echo ok)",
       "Bash(python3)",
       "Bash(pnpm test *)",
-      "Bash(pnpm run *)"
+      "Bash(pnpm run *)",
+      "Bash(identify -format \"%w x %h\" public/images/logos/df-logo.png)"
     ],
     "additionalDirectories": [
       "/Users/zulkifli/Documents/project/duta-firza/duta-firza-web-and-cms/src/app/[locale]/(admin)/admin"

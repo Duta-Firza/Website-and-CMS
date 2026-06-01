@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { Locale } from "@/lib/cms/localize";
 import { getSiteSettings } from "@/lib/cms/site-settings";
+import { Logo } from "./logo";
 import { buildNav } from "./main-nav";
 
 export async function Footer() {
@@ -21,8 +22,12 @@ export async function Footer() {
       <div className="container mx-auto grid grid-cols-1 gap-10 px-4 py-14 md:grid-cols-2 lg:grid-cols-4">
         {/* Brand */}
         <div className="space-y-3">
-          <Link href={`/${locale}`} className="text-lg font-semibold tracking-tight">
-            {tCommon("companyName")}
+          <Link
+            href={`/${locale}`}
+            aria-label={tCommon("companyName")}
+            className="inline-flex items-center"
+          >
+            <Logo variant="on-dark" className="h-10" />
           </Link>
           <p className="text-sm leading-relaxed text-white/70">{tCommon("tagline")}</p>
           {(settings.social.linkedin || settings.social.youtube || settings.social.instagram) && (

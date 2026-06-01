@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { Logo } from "@/components/layout/logo";
 import { cn } from "@/lib/utils";
 import { buildAdminNav } from "./admin-nav-data";
 
@@ -16,8 +17,12 @@ export function AdminSidebar() {
   return (
     <aside className="hidden w-60 shrink-0 border-r bg-card md:flex md:flex-col">
       <div className="flex h-14 items-center border-b px-4">
-        <Link href={`/${locale}/admin`} className="text-sm font-semibold tracking-tight">
-          {tCommon("companyName")}
+        <Link
+          href={`/${locale}/admin`}
+          aria-label={tCommon("companyName")}
+          className="inline-flex items-center"
+        >
+          <Logo className="h-7 dark:brightness-0 dark:invert" />
         </Link>
       </div>
       <nav className="flex-1 overflow-y-auto px-3 py-4">

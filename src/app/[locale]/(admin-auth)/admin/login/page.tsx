@@ -9,6 +9,7 @@ import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Logo } from "@/components/layout/logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,7 +32,6 @@ export default function AdminLoginPage() {
 
 function LoginCard() {
   const t = useTranslations("Admin");
-  const tCompany = useTranslations("Common");
   const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -64,10 +64,10 @@ function LoginCard() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">
       <Card className="w-full max-w-sm">
-        <CardHeader className="space-y-2 text-center">
-          <p className="text-xs font-medium uppercase tracking-wider text-brand-accent">
-            {tCompany("companyName")}
-          </p>
+        <CardHeader className="space-y-3 text-center">
+          <div className="flex justify-center">
+            <Logo className="h-10 dark:brightness-0 dark:invert" />
+          </div>
           <CardTitle className="text-2xl">{t("signInTitle")}</CardTitle>
           <p className="text-sm text-muted-foreground">{t("signInSubtitle")}</p>
         </CardHeader>
