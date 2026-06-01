@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:dutafirza.com)",
+      "WebSearch",
+      "Bash(git -C /Users/zulkifli/Documents/project/duta-firza/duta-firza-web-and-cms branch --show-current)",
+      "Bash(pnpm --version)",
+      "Bash(pnpm create *)"
+    ]
+  }
+}
