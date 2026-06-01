@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 64">
+  <rect width="160" height="64" rx="6" fill="#3c526d" fill-opacity="0.1"/>
+  <text x="80" y="40" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="middle" fill="#3c526d">LOGO</text>
+</svg>

@@ -1,0 +1,35 @@
+[
+  {
+    "key": "trading",
+    "title": { "id": "Trading", "en": "Trading" },
+    "description": {
+      "id": "Menyuplai solusi pengukuran dan kontrol berkualitas tinggi dari produsen global terpercaya.",
+      "en": "Supplying high-quality measurement and control solutions from trusted global manufacturers."
+    },
+    "iconName": "Handshake",
+    "href": "/solutions/trading",
+    "order": 0
+  },
+  {
+    "key": "manufacturing",
+    "title": { "id": "Manufaktur", "en": "Manufacturing" },
+    "description": {
+      "id": "Desain, integrasi sistem, dan dukungan teknis untuk fasilitas migas, energi, dan ICT.",
+      "en": "Design, system integration, and technical support for oil & gas, energy, and ICT facilities."
+    },
+    "iconName": "Factory",
+    "href": "/solutions/manufacturing",
+    "order": 1
+  },
+  {
+    "key": "epc",
+    "title": { "id": "EPC & Proyek", "en": "EPC & Projects" },
+    "description": {
+      "id": "Engineering, procurement, dan construction untuk proyek infrastruktur energi.",
+      "en": "Engineering, procurement, and construction for energy infrastructure projects."
+    },
+    "iconName": "HardHat",
+    "href": "/solutions/epc",
+    "order": 2
+  }
+]

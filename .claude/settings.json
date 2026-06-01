@@ -13,7 +13,19 @@
       "Bash(pnpm lint:fix)",
       "Bash(pnpm build *)",
       "Bash(git mv *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(xargs basename -a)",
+      "Bash(pnpm remove *)",
+      "Bash(mkdir -p \"src/app/[locale]/\\(admin-auth\\)/admin/login\")",
+      "Bash(mv \"src/app/[locale]/\\(admin\\)/admin/login/page.tsx\" \"src/app/[locale]/\\(admin-auth\\)/admin/login/page.tsx\")",
+      "Bash(rmdir \"src/app/[locale]/\\(admin\\)/admin/login\")",
+      "Bash(mkdir -p \"src/app/[locale]/\\(admin\\)/admin/settings\" \"src/app/[locale]/\\(admin\\)/admin/landing\" \"src/app/[locale]/\\(admin\\)/admin/partners\" \"src/app/[locale]/\\(admin\\)/admin/projects\" \"src/app/[locale]/\\(admin\\)/admin/customers\" \"src/app/[locale]/\\(admin\\)/admin/solutions\" && echo ok)",
+      "Bash(python3)",
+      "Bash(pnpm test *)"
+    ],
+    "additionalDirectories": [
+      "/Users/zulkifli/Documents/project/duta-firza/duta-firza-web-and-cms/src/app/[locale]/(admin)/admin"
     ]
   }
 }

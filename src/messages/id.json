@@ -10,11 +10,14 @@
     "comingSoon": "Segera hadir",
     "readMore": "Baca selengkapnya",
     "seeMore": "Lihat semua",
-    "contactUs": "Hubungi Kami"
+    "contactUs": "Hubungi Kami",
+    "openMenu": "Buka menu",
+    "closeMenu": "Tutup menu"
   },
   "Nav": {
     "home": "Beranda",
     "about": "Tentang Kami",
+    "aboutWhoWeAre": "Tentang Kami",
     "leadership": "Kepemimpinan",
     "history": "Sejarah",
     "business": "Bisnis Kami",
@@ -29,14 +32,70 @@
     "careers": "Karier",
     "companyProfile": "Profil Perusahaan"
   },
+  "Landing": {
+    "ourPartners": "Mitra Kami",
+    "ourPartnersSubtitle": "Bermitra dengan produsen instrumentasi terkemuka dunia",
+    "ourSolutions": "Solusi Kami",
+    "ourSolutionsSubtitle": "Tiga lini bisnis terintegrasi untuk industri energi Indonesia",
+    "projectHighlights": "Proyek Unggulan",
+    "projectHighlightsSubtitle": "Beberapa pekerjaan EPC yang sudah kami selesaikan",
+    "ourReach": "Jangkauan Kami",
+    "ourReachSubtitle": "Melayani proyek di seluruh Indonesia",
+    "trustedAcross": "Dipercaya Lintas Industri",
+    "caseStudy": "Studi Kasus",
+    "learnMore": "Pelajari lebih lanjut"
+  },
+  "Footer": {
+    "solutionsTitle": "Solusi",
+    "companyTitle": "Perusahaan",
+    "contactTitle": "Kontak",
+    "headOffice": "Kantor Pusat",
+    "factory": "Pabrik",
+    "officeHours": "Jam Operasional",
+    "phone": "Telepon",
+    "email": "Email",
+    "follow": "Ikuti Kami",
+    "rights": "Hak cipta dilindungi.",
+    "privacy": "Kebijakan Privasi",
+    "terms": "Syarat & Ketentuan"
+  },
   "Home": {
     "heroTitle": "Decades of Trust, Defined by Performance.",
     "heroSubtitle": "Menjembatani puluhan tahun keahlian industri dengan masa depan digital, kami menghadirkan solusi EPC terintegrasi dan instrumentasi berkelas dunia untuk menggerakkan lanskap energi Indonesia."
   },
   "Admin": {
-    "dashboard": "Dasbor Admin",
+    "dashboard": "Dasbor",
     "login": "Masuk",
+    "logout": "Keluar",
     "email": "Email",
-    "password": "Kata Sandi"
+    "password": "Kata Sandi",
+    "signInTitle": "Masuk ke CMS",
+    "signInSubtitle": "Akses panel admin PT Duta Firza",
+    "loginError": "Email atau kata sandi salah",
+    "save": "Simpan",
+    "saving": "Menyimpan...",
+    "saved": "Tersimpan",
+    "cancel": "Batal",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "add": "Tambah",
+    "confirmDelete": "Yakin ingin menghapus?"
+  },
+  "AdminNav": {
+    "overview": "Ringkasan",
+    "dashboard": "Dasbor",
+    "landingPage": "Halaman Landing",
+    "landing": "Edit Landing",
+    "content": "Konten",
+    "partners": "Mitra",
+    "projects": "Proyek",
+    "customers": "Pelanggan",
+    "solutions": "Solusi",
+    "newsroom": "Newsroom",
+    "leadership": "Kepemimpinan",
+    "credentials": "Kredensial",
+    "system": "Sistem",
+    "settings": "Pengaturan",
+    "users": "Pengguna"
   }
 }

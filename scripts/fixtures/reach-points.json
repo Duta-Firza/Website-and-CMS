@@ -1,0 +1,87 @@
+[
+  {
+    "city": "Tuban",
+    "province": "Jawa Timur",
+    "latitude": -6.8978,
+    "longitude": 112.0509,
+    "order": 0
+  },
+  {
+    "city": "Tanjung Batu",
+    "province": "Kepulauan Riau",
+    "latitude": 0.865,
+    "longitude": 103.5083,
+    "order": 1
+  },
+  {
+    "city": "Salatiga",
+    "province": "Jawa Tengah",
+    "latitude": -7.3326,
+    "longitude": 110.5083,
+    "order": 2
+  },
+  { "city": "Rokan", "province": "Riau", "latitude": 1.45, "longitude": 100.9333, "order": 3 },
+  {
+    "city": "Karang Baru",
+    "province": "Aceh",
+    "latitude": 4.4667,
+    "longitude": 97.9167,
+    "order": 4
+  },
+  {
+    "city": "Tarakan",
+    "province": "Kalimantan Utara",
+    "latitude": 3.3274,
+    "longitude": 117.5662,
+    "order": 5
+  },
+  {
+    "city": "Offshore Laut Jawa",
+    "province": "Laut Jawa",
+    "latitude": -5.5,
+    "longitude": 108.0,
+    "order": 6
+  },
+  {
+    "city": "Palembang",
+    "province": "Sumatera Selatan",
+    "latitude": -2.9909,
+    "longitude": 104.7565,
+    "order": 7
+  },
+  {
+    "city": "Cilacap",
+    "province": "Jawa Tengah",
+    "latitude": -7.7282,
+    "longitude": 109.0136,
+    "order": 8
+  },
+  {
+    "city": "Balikpapan",
+    "province": "Kalimantan Timur",
+    "latitude": -1.2379,
+    "longitude": 116.8529,
+    "order": 9
+  },
+  {
+    "city": "Surabaya",
+    "province": "Jawa Timur",
+    "latitude": -7.2575,
+    "longitude": 112.7521,
+    "order": 10
+  },
+  {
+    "city": "Serang",
+    "province": "Banten",
+    "latitude": -6.1101,
+    "longitude": 106.164,
+    "order": 11
+  },
+  {
+    "city": "Jabodetabek",
+    "province": "DKI Jakarta",
+    "latitude": -6.2088,
+    "longitude": 106.8456,
+    "order": 12
+  }
+]

@@ -10,11 +10,14 @@
     "comingSoon": "Coming soon",
     "readMore": "Read more",
     "seeMore": "See more",
-    "contactUs": "Contact Us"
+    "contactUs": "Contact Us",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "Nav": {
     "home": "Home",
     "about": "About Us",
+    "aboutWhoWeAre": "Who We Are",
     "leadership": "Leadership",
     "history": "History",
     "business": "Our Business",
@@ -29,14 +32,70 @@
     "careers": "Careers",
     "companyProfile": "Company Profile"
   },
+  "Landing": {
+    "ourPartners": "Our Partners",
+    "ourPartnersSubtitle": "Partnering with the world's leading instrumentation manufacturers",
+    "ourSolutions": "Our Solutions",
+    "ourSolutionsSubtitle": "Three integrated business lines for Indonesia's energy industry",
+    "projectHighlights": "Project Highlights",
+    "projectHighlightsSubtitle": "Selected EPC projects we have delivered",
+    "ourReach": "Our Reach",
+    "ourReachSubtitle": "Serving projects across Indonesia",
+    "trustedAcross": "Trusted Across the Industry",
+    "caseStudy": "Case Study",
+    "learnMore": "Learn more"
+  },
+  "Footer": {
+    "solutionsTitle": "Solutions",
+    "companyTitle": "Company",
+    "contactTitle": "Contact",
+    "headOffice": "Head Office",
+    "factory": "Factory",
+    "officeHours": "Office Hours",
+    "phone": "Phone",
+    "email": "Email",
+    "follow": "Follow Us",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions"
+  },
   "Home": {
     "heroTitle": "Decades of Trust, Defined by Performance.",
     "heroSubtitle": "Bridging decades of industrial expertise with the digital future, we deliver integrated EPC solutions and world-class instrumentation to power Indonesia's evolving energy landscape."
   },
   "Admin": {
-    "dashboard": "Admin Dashboard",
+    "dashboard": "Dashboard",
     "login": "Sign In",
+    "logout": "Sign Out",
     "email": "Email",
-    "password": "Password"
+    "password": "Password",
+    "signInTitle": "Sign in to the CMS",
+    "signInSubtitle": "Access the PT Duta Firza admin panel",
+    "loginError": "Invalid email or password",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "confirmDelete": "Are you sure you want to delete?"
+  },
+  "AdminNav": {
+    "overview": "Overview",
+    "dashboard": "Dashboard",
+    "landingPage": "Landing Page",
+    "landing": "Edit Landing",
+    "content": "Content",
+    "partners": "Partners",
+    "projects": "Projects",
+    "customers": "Customers",
+    "solutions": "Solutions",
+    "newsroom": "Newsroom",
+    "leadership": "Leadership",
+    "credentials": "Credentials",
+    "system": "System",
+    "settings": "Settings",
+    "users": "Users"
   }
 }

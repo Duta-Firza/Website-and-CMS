@@ -1,0 +1,22 @@
+{
+  "contactEmail": "info@dutafirza.com",
+  "salesEmail": "sales@dutafirza.com",
+  "phoneNumber": "+62 21 3973 1545",
+  "addressHO": {
+    "id": "Bakrie Tower, 18th Floor, Jl. Epicentrum Utama Raya No.2, RT.2/RW.5, Karet Kuningan, Setiabudi, Jakarta Selatan 12940",
+    "en": "Bakrie Tower, 18th Floor, Jl. Epicentrum Utama Raya No.2, RT.2/RW.5, Karet Kuningan, Setiabudi, South Jakarta 12940"
+  },
+  "addressFactory": {
+    "id": "Kawasan Industri Sentul (Olympic), Jl. Cahaya Raya Kav. H9/15, Sentul, Bogor 16810",
+    "en": "Sentul Industrial Estate (Olympic), Jl. Cahaya Raya Kav. H9/15, Sentul, Bogor 16810"
+  },
+  "officeHours": {
+    "id": "Senin – Jumat, 08:00 – 17:00 WIB",
+    "en": "Monday – Friday, 08:00 – 17:00 WIB"
+  },
+  "social": {
+    "linkedin": "",
+    "instagram": "",
+    "youtube": ""
+  }
+}

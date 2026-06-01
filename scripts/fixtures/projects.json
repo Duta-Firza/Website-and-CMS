@@ -1,0 +1,59 @@
+[
+  {
+    "slug": "rdmp-balikpapan",
+    "title": {
+      "id": "RDMP RU-V Balikpapan \u2013 Pertamina",
+      "en": "RDMP RU-V Balikpapan Project \u2013 Pertamina"
+    },
+    "summary": {
+      "id": "Penyediaan instalasi dan fabrikasi pipa di Piping Work Shop untuk proyek RDMP Balikpapan JO (HEC).",
+      "en": "Providing pipe installation and fabrication in the Piping Work Shop for the RDMP Balikpapan JO (HEC) project."
+    },
+    "image": "/images/project-placeholder.svg",
+    "client": "PT Pertamina",
+    "year": 2023,
+    "category": "epc",
+    "isHighlighted": true,
+    "highlightOrder": 0,
+    "order": 0,
+    "isPublished": true
+  },
+  {
+    "slug": "berthing-pulau-laut",
+    "title": {
+      "id": "Construction of Berthing Facility and Jetty Piping, Pulau Laut",
+      "en": "Construction of Berthing Facility and Jetty Piping, Pulau Laut"
+    },
+    "summary": {
+      "id": "Engineering, procurement, dan construction untuk fasilitas berthing dan jetty piping di Indonesia Bulk Terminal.",
+      "en": "Engineering, procurement, and construction for berthing and jetty piping at Indonesia Bulk Terminal."
+    },
+    "image": "/images/project-placeholder.svg",
+    "client": "PT Indonesia Bulk Terminal",
+    "year": 2022,
+    "category": "epc",
+    "isHighlighted": true,
+    "highlightOrder": 1,
+    "order": 1,
+    "isPublished": true
+  },
+  {
+    "slug": "tank-foundation-gresik",
+    "title": {
+      "id": "Tank Foundation and Construction, Gresik Terminal",
+      "en": "Tank Foundation and Construction, Gresik Terminal"
+    },
+    "summary": {
+      "id": "Tambahan scope pekerjaan untuk kontrak pembangunan tank farm di Gresik Terminal, Surabaya.",
+      "en": "Additional scope of work for the tank farm construction contract at Gresik Terminal, Surabaya."
+    },
+    "image": "/images/project-placeholder.svg",
+    "client": "Shell Gresik Terminal",
+    "year": 2021,
+    "category": "epc",
+    "isHighlighted": true,
+    "highlightOrder": 2,
+    "order": 2,
+    "isPublished": true
+  }
+]

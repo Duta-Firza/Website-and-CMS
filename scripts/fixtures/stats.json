@@ -1,0 +1,23 @@
+[
+  {
+    "label": { "id": "Tahun Pengalaman Industri", "en": "Years of Industry Experience" },
+    "prefix": "",
+    "value": 45,
+    "suffix": "+",
+    "order": 0
+  },
+  {
+    "label": { "id": "Pelanggan Aktif", "en": "Active Customers" },
+    "prefix": "",
+    "value": 500,
+    "suffix": "+",
+    "order": 1
+  },
+  {
+    "label": { "id": "Proyek Diselesaikan", "en": "Projects Completed Nationwide" },
+    "prefix": "",
+    "value": 150,
+    "suffix": "+",
+    "order": 2
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Ashcroft",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "summary": {
+      "id": "Produsen instrumen pengukur tekanan, suhu, dan instrumentasi industri kelas dunia.",
+      "en": "World-class manufacturer of pressure gauges, temperature, and industrial instrumentation."
+    },
+    "websiteUrl": "https://ashcroft.com",
+    "order": 0,
+    "isActive": true,
+    "invertOnDark": false
+  },
+  {
+    "name": "Yamari",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "summary": {
+      "id": "Spesialis instrumen suhu industri dari Jepang.",
+      "en": "Japanese specialist in industrial temperature instruments."
+    },
+    "websiteUrl": "https://yamari.co.jp",
+    "order": 1,
+    "isActive": true,
+    "invertOnDark": false
+  },
+  {
+    "name": "Autrol",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "summary": {
+      "id": "Smart transmitter dan instrumentasi proses presisi tinggi.",
+      "en": "Smart transmitters and high-precision process instrumentation."
+    },
+    "websiteUrl": "",
+    "order": 2,
+    "isActive": true,
+    "invertOnDark": false
+  },
+  {
+    "name": "Samil",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "summary": {
+      "id": "Elemen pengukur level dan aliran fluida industri.",
+      "en": "Industrial fluid level and flow measurement elements."
+    },
+    "websiteUrl": "",
+    "order": 3,
+    "isActive": true,
+    "invertOnDark": false
+  },
+  {
+    "name": "Hitrol",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "summary": {
+      "id": "Orifice plate dan instrumentasi differential pressure.",
+      "en": "Orifice plates and differential-pressure instrumentation."
+    },
+    "websiteUrl": "",
+    "order": 4,
+    "isActive": true,
+    "invertOnDark": false
+  },
+  {
+    "name": "Sterling Sensors",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "summary": {
+      "id": "Thermocouple, RTD, dan sensor industri berkualitas tinggi.",
+      "en": "High-quality thermocouples, RTDs, and industrial sensors."
+    },
+    "websiteUrl": "",
+    "order": 5,
+    "isActive": true,
+    "invertOnDark": false
+  }
+]

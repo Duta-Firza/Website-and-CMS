@@ -1,14 +1,44 @@
-import { useTranslations } from "next-intl";
+import { CustomersCarousel } from "@/components/public/landing/customers-carousel";
+import { HeroSection } from "@/components/public/landing/hero-section";
+import { PartnersCarousel } from "@/components/public/landing/partners-carousel";
+import { ProjectHighlights } from "@/components/public/landing/project-highlights";
+import { QuickStats } from "@/components/public/landing/quick-stats";
+import { ReachMap } from "@/components/public/landing/reach-map";
+import { SolutionsSpotlight } from "@/components/public/landing/solutions-spotlight";
+import {
+  getActivePartners,
+  getCustomers,
+  getHighlightedProjects,
+  getHomeHero,
+  getReachPoints,
+  getSolutions,
+  getStats,
+} from "@/lib/cms/home";
+import type { Locale } from "@/lib/cms/localize";
 
-export default function HomePage() {
-  const t = useTranslations("Home");
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const safeLocale = (locale === "en" ? "en" : "id") as Locale;
+
+  const [hero, stats, partners, solutions, projects, reachPoints, customers] = await Promise.all([
+    getHomeHero(safeLocale),
+    getStats(safeLocale),
+    getActivePartners(safeLocale),
+    getSolutions(safeLocale),
+    getHighlightedProjects(safeLocale),
+    getReachPoints(),
+    getCustomers(),
+  ]);
 
   return (
-    <section className="container mx-auto px-4 py-24">
-      <div className="mx-auto max-w-3xl space-y-6 text-center">
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">{t("heroTitle")}</h1>
-        <p className="text-lg text-muted-foreground">{t("heroSubtitle")}</p>
-      </div>
-    </section>
+    <>
+      <HeroSection hero={hero} />
+      <QuickStats stats={stats} />
+      <PartnersCarousel partners={partners} />
+      <SolutionsSpotlight solutions={solutions} />
+      <ProjectHighlights projects={projects} />
+      <ReachMap reachPoints={reachPoints} />
+      <CustomersCarousel customers={customers} />
+    </>
   );
 }

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000">
+  <defs>
+    <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3c526d"/>
+      <stop offset="100%" stop-color="#1d1a57"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#pg)"/>
+  <text x="800" y="510" font-family="system-ui, sans-serif" font-size="48" font-weight="600" text-anchor="middle" fill="#ffffff" fill-opacity="0.6">PROJECT IMAGE</text>
+</svg>

@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Pertamina",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "order": 0,
+    "invertOnDark": false
+  },
+  {
+    "name": "Medco Energi",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "order": 1,
+    "invertOnDark": false
+  },
+  {
+    "name": "Freeport Indonesia",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "order": 2,
+    "invertOnDark": false
+  },
+  {
+    "name": "Chevron",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "order": 3,
+    "invertOnDark": false
+  },
+  {
+    "name": "ConocoPhillips",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "order": 4,
+    "invertOnDark": false
+  },
+  {
+    "name": "Star Energy",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "order": 5,
+    "invertOnDark": false
+  },
+  {
+    "name": "WIKA",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "order": 6,
+    "invertOnDark": false
+  },
+  {
+    "name": "Unilever",
+    "logoUrl": "/images/logo-placeholder.svg",
+    "order": 7,
+    "invertOnDark": false
+  }
+]
