@@ -18,6 +18,7 @@ import {
   Solution,
   Stat,
 } from "@/models";
+import { STAT_ICONS } from "@/models/constants";
 
 // ─── Shared ──────────────────────────────────────────────────────────────────
 const localizedSchema = z.object({
@@ -41,10 +42,13 @@ export type ActionResult<T = unknown> = { ok: true; data?: T } | { ok: false; er
 
 // ─── Hero ────────────────────────────────────────────────────────────────────
 const heroSchema = z.object({
+  eyebrow: localizedSchema,
   title: localizedSchema,
   subtitle: localizedSchema,
   ctaLabel: localizedSchema,
   ctaHref: z.string().min(1),
+  secondaryCtaLabel: localizedSchema,
+  secondaryCtaHref: z.string().default(""),
   backgroundImage: z.string().min(1),
 });
 
@@ -69,6 +73,7 @@ const statSchema = z.object({
   value: z.number(),
   suffix: z.string().default(""),
   order: z.number().int().default(0),
+  iconName: z.enum(STAT_ICONS).default("ChartBar"),
 });
 
 export async function upsertStat(input: z.infer<typeof statSchema>): Promise<ActionResult> {

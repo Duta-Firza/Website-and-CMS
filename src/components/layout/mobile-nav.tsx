@@ -14,6 +14,7 @@ import {
 import { buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { useHeaderOverlay } from "./header-context";
 import { buildNav, type NavSub, type NavTop } from "./main-nav";
 import { findActiveHref, isExactActive, isTopActive } from "./nav-active";
 
@@ -26,11 +27,16 @@ export function MobileNav() {
   const items = buildNav(locale);
   const close = () => setOpen(false);
   const activeHref = findActiveHref(items, pathname);
+  const overlay = useHeaderOverlay();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
-        className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "md:hidden")}
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "icon" }),
+          "md:hidden",
+          overlay && "text-white hover:bg-white/10 hover:text-white",
+        )}
         aria-label={tc("openMenu")}
       >
         <Menu className="h-5 w-5" />

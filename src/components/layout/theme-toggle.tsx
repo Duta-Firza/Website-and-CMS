@@ -11,10 +11,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useHeaderOverlay } from "./header-context";
 
 export function ThemeToggle() {
   const { setTheme } = useTheme();
   const t = useTranslations("Common");
+  const overlay = useHeaderOverlay();
 
   return (
     <DropdownMenu modal={false}>
@@ -22,7 +24,11 @@ export function ThemeToggle() {
         aria-label={t("theme")}
         openOnHover
         delay={100}
-        className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "relative")}
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "icon" }),
+          "relative",
+          overlay && "text-white hover:bg-white/10 hover:text-white",
+        )}
       >
         <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
         <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />

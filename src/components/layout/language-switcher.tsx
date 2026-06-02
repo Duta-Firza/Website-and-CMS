@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { type Locale, routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
+import { useHeaderOverlay } from "./header-context";
 
 const LOCALES: Record<Locale, { name: string; flag: string }> = {
   id: { name: "Indonesia", flag: "🇮🇩" },
@@ -25,6 +26,7 @@ export function LanguageSwitcher() {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const overlay = useHeaderOverlay();
 
   const switchTo = (next: Locale) => {
     if (next === locale) return;
@@ -48,6 +50,7 @@ export function LanguageSwitcher() {
         className={cn(
           buttonVariants({ variant: "ghost", size: "sm" }),
           "h-8 gap-1.5 px-2 text-xs font-semibold uppercase tracking-wider",
+          overlay && "text-white hover:bg-white/10 hover:text-white",
         )}
       >
         <Globe className="h-4 w-4" />

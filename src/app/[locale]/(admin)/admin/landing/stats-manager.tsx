@@ -29,7 +29,15 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { deleteStat, upsertStat } from "@/lib/cms/actions";
+import { STAT_ICONS, type StatIcon } from "@/models/constants";
 
 interface StatRow {
   id: string;
@@ -38,6 +46,7 @@ interface StatRow {
   value: number;
   suffix: string;
   order: number;
+  iconName: StatIcon;
 }
 
 const schema = z.object({
@@ -47,6 +56,7 @@ const schema = z.object({
   value: z.number(),
   suffix: z.string(),
   order: z.number().int(),
+  iconName: z.enum(STAT_ICONS),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -56,6 +66,7 @@ const empty: FormValues = {
   value: 0,
   suffix: "",
   order: 0,
+  iconName: "ChartBar",
 };
 
 export function StatsManager({ initial }: { initial: StatRow[] }) {
@@ -156,6 +167,8 @@ function StatDialog({
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { isSubmitting },
   } = form;
 
@@ -189,9 +202,29 @@ function StatDialog({
               <Input id="s-suffix" {...register("suffix")} placeholder="+" />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="s-order">Order</Label>
-            <Input id="s-order" type="number" {...register("order", { valueAsNumber: true })} />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="s-order">Order</Label>
+              <Input id="s-order" type="number" {...register("order", { valueAsNumber: true })} />
+            </div>
+            <div className="space-y-2">
+              <Label>Icon</Label>
+              <Select
+                value={watch("iconName")}
+                onValueChange={(v) => setValue("iconName", v as StatIcon, { shouldDirty: true })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {STAT_ICONS.map((icon) => (
+                    <SelectItem key={icon} value={icon}>
+                      {icon}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>

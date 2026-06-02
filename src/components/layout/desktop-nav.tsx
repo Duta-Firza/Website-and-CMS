@@ -14,15 +14,27 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
+import { useHeaderOverlay } from "./header-context";
 import { buildNav, type NavTop } from "./main-nav";
 import { findActiveHref, isExactActive, isTopActive } from "./nav-active";
 
 const triggerBase =
-  "inline-flex h-9 items-center justify-center rounded-md px-3 text-sm transition-colors hover:bg-muted hover:text-foreground";
-const triggerInactive = "font-medium text-foreground/85";
+  "inline-flex h-9 items-center justify-center rounded-md px-3 text-sm transition-colors";
+const triggerInactiveDefault =
+  "font-medium text-foreground/85 hover:bg-muted hover:text-foreground";
+// Overlay variants must force-override the base-ui Trigger's baked-in
+// `hover:bg-muted` and `data-popup-open:bg-muted/50` (from
+// `navigationMenuTriggerStyle` in ui/navigation-menu.tsx). Without the `!`
+// important suffix, those near-white tints win on a transparent navbar and
+// make the white label hard to read.
+const triggerInactiveOverlay =
+  "font-medium text-white/85 hover:bg-white/15! hover:text-white! data-popup-open:bg-white/15! data-popup-open:text-white! data-open:bg-white/15! data-open:text-white!";
 // `[&_svg]:stroke-[2.5]` thickens the ChevronDown caret inside the trigger so
 // the icon reads as "active" alongside the label.
-const triggerActive = "font-semibold text-brand-deep dark:text-foreground [&_svg]:stroke-[2.5]";
+const triggerActiveDefault =
+  "font-semibold text-brand-deep dark:text-foreground hover:bg-muted [&_svg]:stroke-[2.5]";
+const triggerActiveOverlay =
+  "font-semibold text-white hover:bg-white/15! hover:text-white! data-popup-open:bg-white/15! data-popup-open:text-white! data-open:bg-white/15! data-open:text-white! [&_svg]:stroke-[2.5]";
 
 const subItemBase =
   "flex w-full items-center justify-between rounded-md px-3 py-2 text-sm leading-snug transition-colors hover:bg-muted";
@@ -34,6 +46,7 @@ export function DesktopNav() {
   const t = useTranslations("Nav");
   const locale = useLocale();
   const pathname = usePathname() ?? "";
+  const overlay = useHeaderOverlay();
   const items = buildNav(locale);
   const activeHref = findActiveHref(items, pathname);
 
@@ -52,6 +65,8 @@ export function DesktopNav() {
       <NavigationMenuList className="gap-0.5">
         {items.map((item) => {
           const active = isTopActive(activeHref, item.href);
+          const triggerActive = overlay ? triggerActiveOverlay : triggerActiveDefault;
+          const triggerInactive = overlay ? triggerInactiveOverlay : triggerInactiveDefault;
           const className = cn(triggerBase, active ? triggerActive : triggerInactive);
           if (!item.children || item.children.length === 0) {
             return (

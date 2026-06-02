@@ -13,11 +13,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateHomeHero } from "@/lib/cms/actions";
 
+const localizedOptional = z.object({ id: z.string(), en: z.string() });
+const localizedRequired = z.object({ id: z.string().min(1), en: z.string().min(1) });
+
 const schema = z.object({
-  title: z.object({ id: z.string().min(1), en: z.string().min(1) }),
-  subtitle: z.object({ id: z.string().min(1), en: z.string().min(1) }),
-  ctaLabel: z.object({ id: z.string().min(1), en: z.string().min(1) }),
+  eyebrow: localizedOptional,
+  title: localizedRequired,
+  subtitle: localizedRequired,
+  ctaLabel: localizedRequired,
   ctaHref: z.string().min(1),
+  secondaryCtaLabel: localizedOptional,
+  secondaryCtaHref: z.string(),
   backgroundImage: z.string().min(1),
 });
 
@@ -45,18 +51,34 @@ export function HeroForm({ initial }: { initial: FormValues }) {
     <Card>
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <LocalizedField
+            label="Eyebrow (optional)"
+            name="eyebrow"
+            form={form}
+            placeholder={{ id: "Energi & EPC Indonesia", en: "Indonesia Energy & EPC" }}
+          />
           <LocalizedField label="Title" name="title" form={form} multiline />
           <LocalizedField label="Subtitle" name="subtitle" form={form} multiline />
-          <LocalizedField label="CTA label" name="ctaLabel" form={form} />
+          <LocalizedField label="Primary CTA label" name="ctaLabel" form={form} />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="h-href">CTA link</Label>
+              <Label htmlFor="h-href">Primary CTA link</Label>
               <Input id="h-href" {...register("ctaHref")} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="h-bg">Background image URL</Label>
               <Input id="h-bg" {...register("backgroundImage")} />
             </div>
+          </div>
+          <LocalizedField
+            label="Secondary CTA label (optional)"
+            name="secondaryCtaLabel"
+            form={form}
+            placeholder={{ id: "Layanan Kami", en: "Our Services" }}
+          />
+          <div className="space-y-2">
+            <Label htmlFor="h-href2">Secondary CTA link (optional)</Label>
+            <Input id="h-href2" {...register("secondaryCtaHref")} placeholder="/solutions" />
           </div>
           <div className="flex justify-end">
             <Button type="submit" disabled={isSubmitting} size="lg">

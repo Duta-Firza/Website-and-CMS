@@ -12,3 +12,24 @@ export type SolutionKey = (typeof SOLUTION_KEYS)[number];
 
 export const USER_ROLES = ["super-admin", "editor", "viewer"] as const;
 export type UserRole = (typeof USER_ROLES)[number];
+
+/**
+ * Whitelist of lucide-react icon names that the Quick Stats card can render.
+ * Both the admin Select dropdown and the public component pick from this list,
+ * so adding a new icon means: install/verify it exists in our pinned
+ * lucide-react bundle, push it here, and update the ICON_MAP in
+ * quick-stats.tsx.
+ */
+export const STAT_ICONS = [
+  "ChartBar",
+  "CalendarClock",
+  "Users",
+  "Briefcase",
+  "Award",
+  "Building2",
+  "Factory",
+  "Wrench",
+  "Globe",
+  "TrendingUp",
+] as const;
+export type StatIcon = (typeof STAT_ICONS)[number];

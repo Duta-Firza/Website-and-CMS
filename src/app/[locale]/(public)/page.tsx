@@ -32,7 +32,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <>
-      <HeroSection hero={hero} />
+      {/* Pulls the hero up under the transparent navbar reserved by the public layout */}
+      <div className="-mt-16">
+        <HeroSection hero={hero} />
+      </div>
       <QuickStats stats={stats} />
       <PartnersCarousel partners={partners} />
       <SolutionsSpotlight solutions={solutions} />

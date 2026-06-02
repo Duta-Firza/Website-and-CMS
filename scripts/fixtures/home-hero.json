@@ -1,4 +1,8 @@
 {
+  "eyebrow": {
+    "id": "Energi & EPC Indonesia",
+    "en": "Indonesia Energy & EPC"
+  },
   "title": {
     "id": "Decades of Trust, Defined by Performance.",
     "en": "Decades of Trust, Defined by Performance."
@@ -12,5 +16,10 @@
     "en": "Contact Us"
   },
   "ctaHref": "/contact",
+  "secondaryCtaLabel": {
+    "id": "Layanan Kami",
+    "en": "Our Services"
+  },
+  "secondaryCtaHref": "/solutions",
   "backgroundImage": "/images/landing/hero-placeholder.svg"
 }

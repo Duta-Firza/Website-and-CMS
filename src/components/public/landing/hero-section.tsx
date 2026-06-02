@@ -3,32 +3,66 @@ import Image from "next/image";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import type { HeroData } from "@/lib/cms/home";
+import { cn } from "@/lib/utils";
+import { HeroPattern } from "./hero-pattern";
 
 export function HeroSection({ hero }: { hero: HeroData }) {
+  const hasEyebrow = hero.eyebrow.trim().length > 0;
+  const hasSecondary =
+    hero.secondaryCtaLabel.trim().length > 0 && hero.secondaryCtaHref.trim().length > 0;
+
   return (
-    <section className="relative isolate flex min-h-[78vh] items-center overflow-hidden">
+    <section
+      className={cn(
+        "relative isolate flex min-h-[85vh] items-center overflow-hidden",
+        // Fallback gradient so the hero still has identity even with no/plain image.
+        "bg-[linear-gradient(135deg,#1d1a57_0%,#0e0a2f_55%,#3c526d_100%)]",
+      )}
+    >
       <Image
         src={hero.backgroundImage}
         alt=""
         fill
         priority
         sizes="100vw"
-        className="-z-10 object-cover"
+        className="-z-20 object-cover"
       />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-brand-deep/85 via-brand-deep/65 to-brand-deep/35" />
-      <div className="container mx-auto px-4 py-24">
-        <div className="max-w-3xl space-y-6 text-white">
+      {/* Dark gradient overlay for text legibility */}
+      <div className="absolute inset-0 -z-10 bg-linear-to-r from-brand-deep/90 via-brand-deep/70 to-brand-deep/30" />
+      <HeroPattern />
+
+      <div className="container mx-auto px-4 pt-32 pb-32 md:pt-40 md:pb-40">
+        <div className="max-w-3xl space-y-7 text-white">
+          {hasEyebrow && (
+            <div className="flex items-center gap-3">
+              <span className="h-px w-10 bg-brand-accent" />
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/90">
+                {hero.eyebrow}
+              </span>
+            </div>
+          )}
           <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl md:text-6xl">
             {hero.title}
           </h1>
           <p className="max-w-2xl text-base leading-relaxed text-white/85 md:text-lg">
             {hero.subtitle}
           </p>
-          <div className="pt-2">
-            <Link href={hero.ctaHref} className={buttonVariants({ variant: "brand", size: "xl" })}>
+          <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+            <Link
+              href={hero.ctaHref}
+              className={buttonVariants({ variant: "brand", size: "xl" })}
+            >
               {hero.ctaLabel}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
+            {hasSecondary && (
+              <Link
+                href={hero.secondaryCtaHref}
+                className={buttonVariants({ variant: "brand-outline", size: "xl" })}
+              >
+                {hero.secondaryCtaLabel}
+              </Link>
+            )}
           </div>
         </div>
       </div>

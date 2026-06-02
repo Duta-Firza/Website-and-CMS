@@ -2,6 +2,7 @@ import { AdminPageHeader } from "@/components/admin/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { connectDB } from "@/lib/db";
 import { HOME_HERO_ID, HomeHero, ReachPoint, Stat } from "@/models";
+import { STAT_ICONS, type StatIcon } from "@/models/constants";
 import { HeroForm } from "./hero-form";
 import { ReachManager } from "./reach-manager";
 import { StatsManager } from "./stats-manager";
@@ -15,19 +16,31 @@ async function loadAll() {
   ]);
 
   const hero = heroDoc ?? {
+    eyebrow: { id: "", en: "" },
     title: { id: "", en: "" },
     subtitle: { id: "", en: "" },
     ctaLabel: { id: "Hubungi Kami", en: "Contact Us" },
     ctaHref: "/contact",
+    secondaryCtaLabel: { id: "", en: "" },
+    secondaryCtaHref: "",
     backgroundImage: "/images/landing/hero-placeholder.jpg",
   };
 
   return {
     hero: {
+      eyebrow: {
+        id: hero.eyebrow?.id ?? "",
+        en: hero.eyebrow?.en ?? "",
+      },
       title: { id: hero.title.id, en: hero.title.en },
       subtitle: { id: hero.subtitle.id, en: hero.subtitle.en },
       ctaLabel: { id: hero.ctaLabel.id, en: hero.ctaLabel.en },
       ctaHref: hero.ctaHref,
+      secondaryCtaLabel: {
+        id: hero.secondaryCtaLabel?.id ?? "",
+        en: hero.secondaryCtaLabel?.en ?? "",
+      },
+      secondaryCtaHref: hero.secondaryCtaHref ?? "",
       backgroundImage: hero.backgroundImage,
     },
     stats: stats.map((s) => ({
@@ -37,6 +50,9 @@ async function loadAll() {
       value: s.value,
       suffix: s.suffix ?? "",
       order: s.order ?? 0,
+      iconName: ((STAT_ICONS as readonly string[]).includes(s.iconName)
+        ? s.iconName
+        : "ChartBar") as StatIcon,
     })),
     reach: reach.map((r) => ({
       id: String(r._id),

@@ -12,10 +12,13 @@ import {
 import { type Locale, localize } from "./localize";
 
 export interface HeroData {
+  eyebrow: string;
   title: string;
   subtitle: string;
   ctaLabel: string;
   ctaHref: string;
+  secondaryCtaLabel: string;
+  secondaryCtaHref: string;
   backgroundImage: string;
 }
 
@@ -24,19 +27,25 @@ export async function getHomeHero(locale: Locale): Promise<HeroData> {
   const doc = await HomeHero.findById(HOME_HERO_ID).lean();
   if (!doc) {
     return {
+      eyebrow: "",
       title: "",
       subtitle: "",
       ctaLabel: "",
       ctaHref: "/contact",
+      secondaryCtaLabel: "",
+      secondaryCtaHref: "",
       backgroundImage: "/images/landing/hero-placeholder.jpg",
     };
   }
   return localize(
     {
+      eyebrow: doc.eyebrow ?? { id: "", en: "" },
       title: doc.title,
       subtitle: doc.subtitle,
       ctaLabel: doc.ctaLabel,
       ctaHref: doc.ctaHref,
+      secondaryCtaLabel: doc.secondaryCtaLabel ?? { id: "", en: "" },
+      secondaryCtaHref: doc.secondaryCtaHref ?? "",
       backgroundImage: doc.backgroundImage,
     },
     locale,
@@ -50,6 +59,7 @@ export interface StatData {
   value: number;
   suffix: string;
   order: number;
+  iconName: string;
 }
 
 export async function getStats(locale: Locale): Promise<StatData[]> {
@@ -64,6 +74,7 @@ export async function getStats(locale: Locale): Promise<StatData[]> {
         value: d.value,
         suffix: d.suffix ?? "",
         order: d.order,
+        iconName: d.iconName ?? "ChartBar",
       },
       locale,
     ),
