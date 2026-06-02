@@ -69,17 +69,5 @@ export function PageTabs({ tabs, defaultKey }: Props) {
   );
 }
 
-/**
- * Server-safe helper to resolve the active tab key from a `searchParams` prop.
- * Use this in Server Components to render the right tab content.
- */
-export function resolveActiveTab<T extends string>(
-  tabs: readonly { key: T }[],
-  searchParam: string | string[] | undefined,
-  defaultKey?: T,
-): T {
-  const raw = Array.isArray(searchParam) ? searchParam[0] : searchParam;
-  const match = tabs.find((t) => t.key === raw);
-  if (match) return match.key;
-  return defaultKey ?? tabs[0].key;
-}
+// Server-safe `resolveActiveTab` lives in ./resolve-active-tab so Server
+// Components can use it without crossing the client boundary.

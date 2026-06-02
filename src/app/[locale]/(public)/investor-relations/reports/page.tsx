@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/public/section/page-header";
-import { PageTabs, resolveActiveTab } from "@/components/public/section/page-tabs";
+import { PageTabs } from "@/components/public/section/page-tabs";
+import { resolveActiveTab } from "@/components/public/section/resolve-active-tab";
 
 const TABS = [{ key: "annual" }, { key: "financial" }] as const;
 

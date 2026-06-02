@@ -58,7 +58,10 @@ function TopWithMenu({ item, t }: { item: NavTop; t: ReturnType<typeof useTransl
 
   return (
     <NavigationMenuItem>
-      <NavigationMenuTrigger render={<Link href={item.href} className={triggerLinkClass} />}>
+      <NavigationMenuTrigger
+        nativeButton={false}
+        render={<Link href={item.href} className={triggerLinkClass} />}
+      >
         {t(item.labelKey)}
       </NavigationMenuTrigger>
       <NavigationMenuContent>
