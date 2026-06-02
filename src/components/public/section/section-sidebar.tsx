@@ -40,7 +40,7 @@ export function SectionSidebar({ section }: Props) {
                 <Link
                   href={sub.href}
                   className={cn(
-                    "block -ml-px border-l-2 px-4 py-2 text-sm transition-colors",
+                    "block -ml-px border-l-2 px-3 py-1.5 text-sm transition-colors",
                     subActive
                       ? "border-brand-deep font-semibold text-brand-deep dark:border-foreground dark:text-foreground"
                       : "border-transparent text-muted-foreground hover:border-foreground/30 hover:text-foreground",
@@ -49,7 +49,7 @@ export function SectionSidebar({ section }: Props) {
                   {t(sub.labelKey)}
                 </Link>
                 {hasChildren && subActive && (
-                  <ul className="ml-4 space-y-0.5 border-l">
+                  <ul className="ml-3 space-y-0.5 border-l">
                     {sub.children?.map((subSub) => {
                       const subSubActive = isActiveHref(current, subSub.href);
                       return (
@@ -57,7 +57,7 @@ export function SectionSidebar({ section }: Props) {
                           <Link
                             href={subSub.href}
                             className={cn(
-                              "block -ml-px border-l-2 px-4 py-1.5 text-sm transition-colors",
+                              "block -ml-px border-l-2 px-3 py-1 text-[13px] transition-colors",
                               subSubActive
                                 ? "border-brand-deep font-medium text-brand-deep dark:border-foreground dark:text-foreground"
                                 : "border-transparent text-muted-foreground hover:border-foreground/30 hover:text-foreground",

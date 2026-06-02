@@ -14,7 +14,7 @@ interface Props {
 export function SectionLayout({ section, children }: Props) {
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
-      <div className="md:grid md:grid-cols-[220px_1fr] md:gap-12 lg:grid-cols-[260px_1fr] lg:gap-16">
+      <div className="md:grid md:grid-cols-[180px_1fr] md:gap-8 lg:grid-cols-[200px_1fr] lg:gap-12">
         <SectionSidebar section={section} />
         <main className="min-w-0">{children}</main>
       </div>
