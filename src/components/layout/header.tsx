@@ -20,8 +20,8 @@ export function Header() {
         <DesktopNav />
 
         <div className="flex items-center gap-1">
-          <LanguageSwitcher />
           <ThemeToggle />
+          <LanguageSwitcher />
           <MobileNav />
         </div>
       </div>

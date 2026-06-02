@@ -14,9 +14,9 @@ import {
 import { type Locale, routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
-const LOCALE_LABELS: Record<Locale, string> = {
-  id: "Bahasa Indonesia",
-  en: "English",
+const LOCALES: Record<Locale, { name: string; flag: string }> = {
+  id: { name: "Indonesia", flag: "🇮🇩" },
+  en: { name: "English", flag: "🇬🇧" },
 };
 
 export function LanguageSwitcher() {
@@ -39,14 +39,19 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger
         aria-label={t("language")}
         disabled={isPending}
-        className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+        openOnHover
+        delay={100}
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "sm" }),
+          "h-8 gap-1.5 px-2 text-xs font-semibold uppercase tracking-wider",
+        )}
       >
-        <Globe className="h-5 w-5" />
-        <span className="sr-only">{t("language")}</span>
+        <Globe className="h-4 w-4" />
+        {locale}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {routing.locales.map((loc) => (
@@ -54,9 +59,12 @@ export function LanguageSwitcher() {
             key={loc}
             onClick={() => switchTo(loc)}
             data-active={loc === locale}
-            className="data-[active=true]:font-semibold"
+            className="gap-2 data-[active=true]:font-semibold"
           >
-            {LOCALE_LABELS[loc]}
+            <span className="text-base leading-none" aria-hidden>
+              {LOCALES[loc].flag}
+            </span>
+            {LOCALES[loc].name}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

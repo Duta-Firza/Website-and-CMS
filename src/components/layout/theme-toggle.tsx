@@ -17,9 +17,11 @@ export function ThemeToggle() {
   const t = useTranslations("Common");
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger
         aria-label={t("theme")}
+        openOnHover
+        delay={100}
         className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "relative")}
       >
         <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

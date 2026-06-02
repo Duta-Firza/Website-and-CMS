@@ -1,5 +1,19 @@
 import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/layout/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
+import { routing } from "@/i18n/routing";
 import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -43,8 +57,29 @@ export const viewport: Viewport = {
   ],
 };
 
-// Root layout is a pass-through. The HTML shell with <html>/<body> lives in
-// src/app/[locale]/layout.tsx so the `lang` attribute reflects the active locale.
+/**
+ * Root layout owns <html>, <body>, fonts, and ThemeProvider — none of these
+ * should remount on locale switch. The [locale] subtree only swaps content
+ * + i18n messages and uses `<LangSync>` to patch `<html lang>` on the client.
+ */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <html
+      lang={routing.defaultLocale}
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster richColors closeButton position="top-right" />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
 }

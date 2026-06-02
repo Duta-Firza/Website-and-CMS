@@ -132,9 +132,11 @@
 
   /* Brand colors (dark) — slightly lifted for contrast on dark surfaces */
   --brand-primary: #6b88aa;
-  --brand-deep: #4a45a8;
+  /* --brand-deep: #4a45a8; */
+  --brand-deep: #1d1a57;
   --brand-graphite: #b8b8b8;
-  --brand-accent: #d63a39;
+  /* --brand-accent: #d63a39; */
+  --brand-accent: #9f1211;
   --brand-canvas: #1a1a1a;
 }
 
