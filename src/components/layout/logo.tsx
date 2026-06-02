@@ -20,7 +20,7 @@ export function Logo({ className, variant = "default" }: Props) {
       priority
       sizes="(max-width: 768px) 120px, 160px"
       className={cn(
-        "h-8 w-auto select-none",
+        "h-10 w-auto select-none",
         variant === "on-dark" && "brightness-0 invert",
         className,
       )}

@@ -1,13 +1,13 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { PageHeader } from "@/components/public/section/page-header";
 
-export default function Page() {
-  const nav = useTranslations("Nav");
-  const common = useTranslations("Common");
-
+export default async function Page() {
+  const t = await getTranslations("SectionTitles");
+  const c = await getTranslations("Common");
   return (
-    <section className="container mx-auto px-4 py-24">
-      <h1 className="text-4xl font-semibold tracking-tight">{nav("manufacturing")}</h1>
-      <p className="mt-3 text-muted-foreground">{common("comingSoon")}</p>
-    </section>
+    <>
+      <PageHeader eyebrow={t("solutionsEyebrow")} title={t("manufacturingTitle")} />
+      <p className="text-muted-foreground">{c("comingSoon")}</p>
+    </>
   );
 }

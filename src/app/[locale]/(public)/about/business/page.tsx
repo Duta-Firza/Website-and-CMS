@@ -6,7 +6,7 @@ export default async function Page() {
   const c = await getTranslations("Common");
   return (
     <>
-      <PageHeader eyebrow={t("solutionsEyebrow")} title={t("epcTitle")} />
+      <PageHeader eyebrow={t("aboutEyebrow")} title={t("businessTitle")} />
       <p className="text-muted-foreground">{c("comingSoon")}</p>
     </>
   );
