@@ -12,6 +12,8 @@ export interface ProjectRow {
   client: string;
   year: number | undefined;
   category: ProjectCategory;
+  about: { id: string; en: string };
+  scopeOfWork: { id: string; en: string };
   isHighlighted: boolean;
   highlightOrder: number;
   order: number;
@@ -30,6 +32,8 @@ async function loadProjects(): Promise<ProjectRow[]> {
     client: d.client ?? "",
     year: d.year,
     category: d.category as ProjectCategory,
+    about: { id: d.about?.id ?? "", en: d.about?.en ?? "" },
+    scopeOfWork: { id: d.scopeOfWork?.id ?? "", en: d.scopeOfWork?.en ?? "" },
     isHighlighted: d.isHighlighted ?? false,
     highlightOrder: d.highlightOrder ?? 0,
     order: d.order ?? 0,

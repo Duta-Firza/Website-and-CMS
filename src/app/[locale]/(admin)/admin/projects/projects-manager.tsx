@@ -61,6 +61,8 @@ const schema = z.object({
   client: z.string(),
   year: z.number().int().optional(),
   category: z.enum(PROJECT_CATEGORIES),
+  about: z.object({ id: z.string(), en: z.string() }),
+  scopeOfWork: z.object({ id: z.string(), en: z.string() }),
   isHighlighted: z.boolean(),
   highlightOrder: z.number().int(),
   order: z.number().int(),
@@ -77,6 +79,8 @@ const empty: FormValues = {
   client: "",
   year: undefined,
   category: "epc",
+  about: { id: "", en: "" },
+  scopeOfWork: { id: "", en: "" },
   isHighlighted: false,
   highlightOrder: 0,
   order: 0,
@@ -248,6 +252,14 @@ function ProjectDialog({
           </div>
           <LocalizedField label="Title" name="title" form={form} />
           <LocalizedField label="Summary" name="summary" form={form} multiline />
+          <LocalizedField label="About the project" name="about" form={form} multiline />
+          <LocalizedField
+            label="Scope of work"
+            name="scopeOfWork"
+            form={form}
+            multiline
+            placeholder={{ id: "Satu item per baris", en: "One item per line" }}
+          />
           <div className="space-y-2">
             <Label htmlFor="pr-image">Image URL</Label>
             <Input id="pr-image" {...register("image")} placeholder="https://..." />

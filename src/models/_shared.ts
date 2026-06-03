@@ -18,6 +18,11 @@ export const localizedStringRequired = {
   required: true,
 };
 
+export const localizedStringOptional = {
+  type: localizedStringSchema,
+  default: () => ({ id: "", en: "" }),
+};
+
 export const stripVersion = {
   toJSON: {
     virtuals: true,

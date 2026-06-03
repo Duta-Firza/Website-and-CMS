@@ -1,5 +1,5 @@
 import { type InferSchemaType, model, models, Schema } from "mongoose";
-import { localizedStringRequired, stripVersion } from "./_shared";
+import { localizedStringOptional, localizedStringRequired, stripVersion } from "./_shared";
 import { PROJECT_CATEGORIES, type ProjectCategory } from "./constants";
 
 export { PROJECT_CATEGORIES, type ProjectCategory };
@@ -13,6 +13,8 @@ const projectSchema = new Schema(
     client: { type: String, default: "" },
     year: { type: Number },
     category: { type: String, enum: PROJECT_CATEGORIES, required: true, index: true },
+    about: localizedStringOptional,
+    scopeOfWork: localizedStringOptional,
     isHighlighted: { type: Boolean, default: false, index: true },
     highlightOrder: { type: Number, default: 0 },
     order: { type: Number, default: 0, index: true },

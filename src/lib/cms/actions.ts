@@ -175,6 +175,8 @@ const projectSchema = z.object({
   client: z.string().default(""),
   year: z.number().int().optional(),
   category: z.enum(PROJECT_CATEGORIES),
+  about: localizedSchema,
+  scopeOfWork: localizedSchema,
   isHighlighted: z.boolean().default(false),
   highlightOrder: z.number().int().default(0),
   order: z.number().int().default(0),

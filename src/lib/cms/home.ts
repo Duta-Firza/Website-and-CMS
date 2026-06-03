@@ -174,6 +174,62 @@ export async function getHighlightedProjects(
   );
 }
 
+export interface ProjectDetailData extends ProjectHighlightData {
+  about: string;
+  scopeOfWork: string;
+}
+
+export async function getProjectBySlug(
+  locale: Locale,
+  slug: string,
+): Promise<ProjectDetailData | null> {
+  await connectDB();
+  const doc = await Project.findOne({ slug, isPublished: true }).lean();
+  if (!doc) return null;
+  return localize(
+    {
+      id: String(doc._id),
+      slug: doc.slug,
+      title: doc.title,
+      summary: doc.summary,
+      image: doc.image,
+      client: doc.client ?? "",
+      year: doc.year,
+      category: doc.category,
+      about: doc.about ?? { id: "", en: "" },
+      scopeOfWork: doc.scopeOfWork ?? { id: "", en: "" },
+    },
+    locale,
+  );
+}
+
+export async function getOtherProjects(
+  locale: Locale,
+  excludeSlug: string,
+  limit = 3,
+): Promise<ProjectHighlightData[]> {
+  await connectDB();
+  const docs = await Project.find({ isPublished: true, slug: { $ne: excludeSlug } })
+    .sort({ highlightOrder: 1, order: 1 })
+    .limit(limit)
+    .lean();
+  return docs.map((d) =>
+    localize(
+      {
+        id: String(d._id),
+        slug: d.slug,
+        title: d.title,
+        summary: d.summary,
+        image: d.image,
+        client: d.client ?? "",
+        year: d.year,
+        category: d.category,
+      },
+      locale,
+    ),
+  );
+}
+
 export interface CustomerData {
   id: string;
   name: string;

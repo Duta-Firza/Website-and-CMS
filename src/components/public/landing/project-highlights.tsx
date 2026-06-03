@@ -1,8 +1,7 @@
 import { ArrowRight } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Badge } from "@/components/ui/badge";
+import { ProjectCard } from "@/components/public/projects/project-card";
 import { buttonVariants } from "@/components/ui/button";
 import type { ProjectHighlightData } from "@/lib/cms/home";
 
@@ -13,6 +12,7 @@ interface Props {
 export async function ProjectHighlights({ projects }: Props) {
   const t = await getTranslations("Landing");
   const tCommon = await getTranslations("Common");
+  const tProjects = await getTranslations("Projects");
   const locale = await getLocale();
   if (projects.length === 0) return null;
 
@@ -27,34 +27,13 @@ export async function ProjectHighlights({ projects }: Props) {
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
-            <article
+            <ProjectCard
               key={project.id}
-              className="group/proj flex h-full flex-col overflow-hidden rounded-xl border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-            >
-              <div className="relative aspect-16/10 overflow-hidden">
-                <Image
-                  src={project.image}
-                  alt={project.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover transition-transform duration-500 group-hover/proj:scale-105"
-                />
-              </div>
-              <div className="flex flex-1 flex-col gap-3 p-5">
-                <Badge
-                  variant="outline"
-                  className="self-start text-[10px] uppercase tracking-wider"
-                >
-                  {project.client || t("caseStudy")}
-                </Badge>
-                <h3 className="text-lg font-semibold leading-snug text-brand-deep dark:text-foreground">
-                  {project.title}
-                </h3>
-                <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-                  {project.summary}
-                </p>
-              </div>
-            </article>
+              project={project}
+              locale={locale}
+              fallbackBadge={t("caseStudy")}
+              viewProjectLabel={tProjects("viewProject")}
+            />
           ))}
         </div>
         <div className="mt-10 flex justify-center">

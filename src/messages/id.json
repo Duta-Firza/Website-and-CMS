@@ -104,6 +104,14 @@
     "heroTitle": "Decades of Trust, Defined by Performance.",
     "heroSubtitle": "Menjembatani puluhan tahun keahlian industri dengan masa depan digital, kami menghadirkan solusi EPC terintegrasi dan instrumentasi berkelas dunia untuk menggerakkan lanskap energi Indonesia."
   },
+  "Projects": {
+    "viewProject": "Lihat proyek",
+    "aboutTheProject": "Tentang Proyek",
+    "scopeOfWork": "Lingkup Pekerjaan",
+    "seeMoreProjects": "Proyek Lainnya",
+    "client": "Klien",
+    "year": "Tahun"
+  },
   "Admin": {
     "dashboard": "Dasbor",
     "login": "Masuk",
