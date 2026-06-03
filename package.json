@@ -27,6 +27,7 @@
     "embla-carousel-auto-scroll": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "leaflet": "^1.9.4",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^1.17.0",
     "mongodb": "^6.21.0",
     "mongoose": "^9.6.3",

@@ -151,3 +151,45 @@
     @apply font-sans;
   }
 }
+
+/* Staggered pop-in for filled SVG groups in solution-illustration.tsx.
+   `.is-playing` is toggled by the parent card when it scrolls into view and
+   is reset on hover (via a key bump) so the animation replays. */
+@keyframes solution-pop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.anim-pop {
+  opacity: 0;
+  transform-origin: center;
+  transform-box: fill-box;
+  transform: translateY(10px) scale(0.92);
+}
+
+.is-playing .anim-pop {
+  animation: solution-pop-in 0.65s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+/* Cascade the start time so the parts of each illustration enter in sequence. */
+.is-playing .anim-pop:nth-of-type(1) {
+  animation-delay: 0s;
+}
+.is-playing .anim-pop:nth-of-type(2) {
+  animation-delay: 0.12s;
+}
+.is-playing .anim-pop:nth-of-type(3) {
+  animation-delay: 0.22s;
+}
+.is-playing .anim-pop:nth-of-type(4) {
+  animation-delay: 0.32s;
+}
