@@ -46,9 +46,9 @@ export function SolutionCard({ solution, learnMoreLabel, index }: Props) {
       <span className="pointer-events-none absolute inset-x-0 top-0 h-0.75 origin-left scale-x-0 bg-brand-accent transition-transform duration-500 group-hover/card:scale-x-100" />
 
       {/* Numbered counter — corner index in a muted monospace tone */}
-      <span className="pointer-events-none absolute right-5 top-4 font-mono text-[11px] font-semibold tracking-wider text-brand-deep/30 transition-colors duration-300 group-hover/card:text-brand-accent dark:text-foreground/30">
+      {/* <span className="pointer-events-none absolute right-5 top-4 font-mono text-[11px] font-semibold tracking-wider text-brand-deep/30 transition-colors duration-300 group-hover/card:text-brand-accent dark:text-foreground/30">
         {numberLabel}
-      </span>
+      </span> */}
 
       {/* Diagonal corner cut — soft brand-accent triangle in bottom-right */}
       <span
