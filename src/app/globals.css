@@ -193,3 +193,61 @@
 .is-playing .anim-pop:nth-of-type(4) {
   animation-delay: 0.32s;
 }
+
+/* Reach map marker — solid brand-accent dot wrapped by two expanding ripple
+   rings that stagger 1s apart for a continuous, well-visible pulse against
+   the light Positron tile. Composed as a Leaflet divIcon in
+   reach-map-leaflet.tsx; classes are referenced from raw HTML strings, so
+   they live here at the global layer. */
+@keyframes duta-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.duta-pin-wrap {
+  position: relative;
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+.duta-pin-dot {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+.duta-pin-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--brand-accent);
+  animation: duta-pulse 2s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  transform-origin: center;
+}
+
+.duta-pin-pulse-b {
+  animation-delay: 1s;
+}
+
+/* Tweak Leaflet's default tooltip to match brand styling. */
+.duta-tooltip.leaflet-tooltip {
+  background: var(--brand-deep);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.duta-tooltip.leaflet-tooltip-top::before {
+  border-top-color: var(--brand-deep);
+}
