@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(git commit -m ' *)",
-      "Bash(grep -E \"@name \\(BarChart3|Wrench|Users\\)$\" node_modules/lucide-react/dist/lucide-react.d.ts)",
-      "Bash(pnpm seed *)"
-    ]
-  }
-}
