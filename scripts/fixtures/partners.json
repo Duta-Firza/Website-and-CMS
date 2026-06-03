@@ -1,9 +1,9 @@
 [
   {
     "name": "Ashcroft",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "logoUrl": "/images/partners/Ashcroft.png",
     "summary": {
-      "id": "Produsen instrumen pengukur tekanan, suhu, dan instrumentasi industri kelas dunia.",
+      "id": "Produsen pengukur tekanan, suhu, dan instrumentasi industri kelas dunia.",
       "en": "World-class manufacturer of pressure gauges, temperature, and industrial instrumentation."
     },
     "websiteUrl": "https://ashcroft.com",
@@ -13,7 +13,7 @@
   },
   {
     "name": "Yamari",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "logoUrl": "/images/partners/Yamari.jpeg",
     "summary": {
       "id": "Spesialis instrumen suhu industri dari Jepang.",
       "en": "Japanese specialist in industrial temperature instruments."
@@ -25,7 +25,7 @@
   },
   {
     "name": "Autrol",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "logoUrl": "/images/partners/Autrol.png",
     "summary": {
       "id": "Smart transmitter dan instrumentasi proses presisi tinggi.",
       "en": "Smart transmitters and high-precision process instrumentation."
@@ -36,8 +36,8 @@
     "invertOnDark": false
   },
   {
-    "name": "Samil",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "name": "Samil Industry",
+    "logoUrl": "/images/partners/Samil-Industry.png",
     "summary": {
       "id": "Elemen pengukur level dan aliran fluida industri.",
       "en": "Industrial fluid level and flow measurement elements."
@@ -48,11 +48,11 @@
     "invertOnDark": false
   },
   {
-    "name": "Hitrol",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "name": "Weksler",
+    "logoUrl": "/images/partners/Weksler.png",
     "summary": {
-      "id": "Orifice plate dan instrumentasi differential pressure.",
-      "en": "Orifice plates and differential-pressure instrumentation."
+      "id": "Pengukur tekanan dan suhu industri untuk aplikasi proses.",
+      "en": "Industrial pressure and temperature gauges for process applications."
     },
     "websiteUrl": "",
     "order": 4,
@@ -60,14 +60,86 @@
     "invertOnDark": false
   },
   {
-    "name": "Sterling Sensors",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "name": "Labkotec",
+    "logoUrl": "/images/partners/Labkotec.png",
     "summary": {
-      "id": "Thermocouple, RTD, dan sensor industri berkualitas tinggi.",
-      "en": "High-quality thermocouples, RTDs, and industrial sensors."
+      "id": "Sistem deteksi kebocoran dan antarmuka minyak/air untuk industri energi.",
+      "en": "Leak detection and oil-water interface systems for the energy industry."
+    },
+    "websiteUrl": "https://www.labkotec.com",
+    "order": 5,
+    "isActive": true,
+    "invertOnDark": false
+  },
+  {
+    "name": "Evoqua",
+    "logoUrl": "/images/partners/Evoqua.png",
+    "summary": {
+      "id": "Solusi pengolahan air untuk fasilitas industri dan energi.",
+      "en": "Water treatment solutions for industrial and energy facilities."
+    },
+    "websiteUrl": "https://www.evoqua.com",
+    "order": 6,
+    "isActive": true,
+    "invertOnDark": false
+  },
+  {
+    "name": "Senseca",
+    "logoUrl": "/images/partners/Senseca.png",
+    "summary": {
+      "id": "Sensor suhu dan instrumentasi proses untuk aplikasi industri.",
+      "en": "Temperature sensors and process instrumentation for industrial applications."
     },
     "websiteUrl": "",
-    "order": 5,
+    "order": 7,
+    "isActive": true,
+    "invertOnDark": false
+  },
+  {
+    "name": "Woosung Flowtec",
+    "logoUrl": "/images/partners/Woosung-Flowtec.jpg",
+    "summary": {
+      "id": "Solusi pengukuran aliran untuk proses industri.",
+      "en": "Flow measurement solutions for industrial processes."
+    },
+    "websiteUrl": "",
+    "order": 8,
+    "isActive": true,
+    "invertOnDark": false
+  },
+  {
+    "name": "World Bridge",
+    "logoUrl": "/images/partners/World-Bridge.png",
+    "summary": {
+      "id": "Mitra pemasok komponen dan instrumentasi industri.",
+      "en": "Industrial component and instrumentation supply partner."
+    },
+    "websiteUrl": "",
+    "order": 9,
+    "isActive": true,
+    "invertOnDark": false
+  },
+  {
+    "name": "Key-Sung",
+    "logoUrl": "/images/partners/Key-Sung.jpeg",
+    "summary": {
+      "id": "Instrumentasi industri untuk sektor energi dan manufaktur.",
+      "en": "Industrial instrumentation for the energy and manufacturing sectors."
+    },
+    "websiteUrl": "",
+    "order": 10,
+    "isActive": true,
+    "invertOnDark": false
+  },
+  {
+    "name": "Heise",
+    "logoUrl": "/images/partners/Heise.png",
+    "summary": {
+      "id": "Pengukur tekanan presisi untuk kalibrasi dan referensi.",
+      "en": "Precision pressure gauges for calibration and reference standards."
+    },
+    "websiteUrl": "https://www.heise-gauges.com",
+    "order": 11,
     "isActive": true,
     "invertOnDark": false
   }
