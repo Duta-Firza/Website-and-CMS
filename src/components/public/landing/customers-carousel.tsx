@@ -81,65 +81,67 @@ export function CustomersCarousel({ customers }: Props) {
   if (customers.length === 0) return null;
 
   return (
-    <section className="bg-muted/40">
-      <div className="container mx-auto px-4 py-16 md:py-20">
-        <div className="mx-auto mb-10 max-w-2xl text-center">
+    <section className="group/strip bg-muted/40 py-16 md:py-20">
+      <div className="container mx-auto mb-10 px-4">
+        <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-4xl">
             {t("trustedAcross")}
           </h2>
         </div>
+      </div>
 
-        <div className="relative">
-          <button
-            type="button"
-            onClick={scrollPrev}
-            disabled={!canScrollPrev}
-            aria-label={t("prev")}
-            className="absolute left-0 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border bg-background/90 text-brand-deep shadow-sm backdrop-blur transition hover:bg-background hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 md:flex dark:text-foreground"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={scrollNext}
-            disabled={!canScrollNext}
-            aria-label={t("next")}
-            className="absolute right-0 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border bg-background/90 text-brand-deep shadow-sm backdrop-blur transition hover:bg-background hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 md:flex dark:text-foreground"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
+      {/* Edge-to-edge strip — breaks out of the centered container so the
+          marquee runs the full viewport width. */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={scrollPrev}
+          disabled={!canScrollPrev}
+          aria-label={t("prev")}
+          className="pointer-events-none absolute left-4 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border bg-background/60 text-brand-deep opacity-0 shadow-sm backdrop-blur transition-opacity duration-200 hover:bg-background/80 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 group-hover/strip:pointer-events-auto group-hover/strip:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100 md:left-6 md:flex dark:text-foreground"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={scrollNext}
+          disabled={!canScrollNext}
+          aria-label={t("next")}
+          className="pointer-events-none absolute right-4 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border bg-background/60 text-brand-deep opacity-0 shadow-sm backdrop-blur transition-opacity duration-200 hover:bg-background/80 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 group-hover/strip:pointer-events-auto group-hover/strip:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100 md:right-6 md:flex dark:text-foreground"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
 
-          <div className="overflow-hidden md:mx-12" ref={emblaRef}>
-            {/* Tighter gap + shorter cells than the Partners strip — these are
-                customer marks, intentionally more humble in scale than the
-                Partners section above. `py-*` reserves vertical breathing
-                room for the hover shadow so it doesn't get clipped by the
-                Embla overflow. */}
-            <div className="flex items-center gap-2 py-2 md:gap-3 md:py-3">
-              {/* Render the customer list twice so Embla's loop has enough
-                  content to wrap cleanly. With variable-width cells + a tight
-                  gap + backward auto-scroll, the loop boundary calculation
-                  was producing visible overlap. Doubling the list gives the
-                  engine a stable runway. */}
-              {[...customers, ...customers].map((c, i) => (
-                <div
-                  key={`${c.id}-${i}`}
-                  className="group/logo flex h-14 shrink-0 items-center justify-center rounded-md px-2 transition-all duration-300 hover:shadow-sm md:h-16 md:px-3"
-                  title={c.name}
-                >
-                  <Image
-                    src={c.logoUrl}
-                    alt={c.name}
-                    width={112}
-                    height={40}
-                    className={cn(
-                      "max-h-8 w-auto object-contain transition-transform duration-300 group-hover/logo:scale-105 md:max-h-10",
-                      c.invertOnDark && "dark:invert",
-                    )}
-                  />
-                </div>
-              ))}
-            </div>
+        <div className="overflow-hidden" ref={emblaRef}>
+          {/* Tighter gap + shorter cells than the Partners strip — these are
+              customer marks, intentionally more humble in scale than the
+              Partners section above. `py-*` reserves vertical breathing
+              room for the hover shadow so it doesn't get clipped by the
+              Embla overflow. */}
+          <div className="flex items-center gap-2 py-2 md:gap-3 md:py-3">
+            {/* Render the customer list twice so Embla's loop has enough
+                content to wrap cleanly. With variable-width cells + a tight
+                gap + backward auto-scroll, the loop boundary calculation
+                was producing visible overlap. Doubling the list gives the
+                engine a stable runway. */}
+            {[...customers, ...customers].map((c, i) => (
+              <div
+                key={`${c.id}-${i}`}
+                className="group/logo flex h-14 shrink-0 items-center justify-center rounded-md px-2 transition-all duration-300 hover:shadow-sm md:h-16 md:px-3"
+                title={c.name}
+              >
+                <Image
+                  src={c.logoUrl}
+                  alt={c.name}
+                  width={112}
+                  height={40}
+                  className={cn(
+                    "max-h-8 w-auto object-contain transition-transform duration-300 group-hover/logo:scale-105 md:max-h-10",
+                    c.invertOnDark && "dark:invert",
+                  )}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </div>

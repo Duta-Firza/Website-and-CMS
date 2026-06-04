@@ -77,63 +77,67 @@ export function PartnersCarousel({ partners }: Props) {
   if (partners.length === 0) return null;
 
   return (
-    <section className="bg-muted/40">
-      <div className="container mx-auto px-4 py-16 md:py-20">
-        <div className="mx-auto mb-10 max-w-2xl text-center">
+    <section className="group/strip bg-muted/40 py-16 md:py-20">
+      <div className="container mx-auto mb-10 px-4">
+        <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-4xl">
             {t("ourPartners")}
           </h2>
           <p className="mt-3 text-base text-muted-foreground">{t("ourPartnersSubtitle")}</p>
         </div>
+      </div>
 
-        <div className="relative">
-          {/* Manual nav — floating overlays. Hidden on mobile where dragging covers it. */}
-          <button
-            type="button"
-            onClick={scrollPrev}
-            disabled={!canScrollPrev}
-            aria-label={t("prev")}
-            className="absolute left-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-background/90 text-brand-deep shadow-sm backdrop-blur transition hover:bg-background hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 md:flex dark:text-foreground"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            onClick={scrollNext}
-            disabled={!canScrollNext}
-            aria-label={t("next")}
-            className="absolute right-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-background/90 text-brand-deep shadow-sm backdrop-blur transition hover:bg-background hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 md:flex dark:text-foreground"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
+      {/* Edge-to-edge strip — breaks out of the centered container so the
+          marquee runs the full viewport width. */}
+      <div className="relative">
+        {/* Manual nav — hidden until the section is hovered (or a button
+            receives keyboard focus). Semi-transparent so the logos behind
+            stay readable. */}
+        <button
+          type="button"
+          onClick={scrollPrev}
+          disabled={!canScrollPrev}
+          aria-label={t("prev")}
+          className="pointer-events-none absolute left-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-background/60 text-brand-deep opacity-0 shadow-sm backdrop-blur transition-opacity duration-200 hover:bg-background/80 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 group-hover/strip:pointer-events-auto group-hover/strip:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100 md:left-6 md:flex dark:text-foreground"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <button
+          type="button"
+          onClick={scrollNext}
+          disabled={!canScrollNext}
+          aria-label={t("next")}
+          className="pointer-events-none absolute right-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-background/60 text-brand-deep opacity-0 shadow-sm backdrop-blur transition-opacity duration-200 hover:bg-background/80 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 group-hover/strip:pointer-events-auto group-hover/strip:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100 md:right-6 md:flex dark:text-foreground"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </button>
 
-          <div className="overflow-hidden md:mx-12" ref={emblaRef}>
-            {/* `py-*` reserves vertical breathing room so the hover shadow on
-                each logo cell doesn't get sliced off by the Embla overflow. */}
-            <div className="flex items-center gap-3 py-3 md:gap-4 md:py-5">
-              {/* Render the partner list twice so Embla's loop has enough
-                  content to wrap cleanly. With tight gaps + a moderate slide
-                  count the raw content can fall just under the 2× viewport
-                  threshold the loop needs, which causes an empty band at the
-                  wrap boundary. Doubling the list closes that gap; users see
-                  the same set come around again, which is what a seamless
-                  marquee implies anyway. */}
-              {[...partners, ...partners].map((p, i) => (
-                <PartnerLogo key={`${p.id}-${i}`} partner={p} />
-              ))}
-            </div>
+        <div className="overflow-hidden" ref={emblaRef}>
+          {/* `py-*` reserves vertical breathing room so the hover shadow on
+              each logo cell doesn't get sliced off by the Embla overflow. */}
+          <div className="flex items-center gap-3 py-3 md:gap-4 md:py-5">
+            {/* Render the partner list twice so Embla's loop has enough
+                content to wrap cleanly. With tight gaps + a moderate slide
+                count the raw content can fall just under the 2× viewport
+                threshold the loop needs, which causes an empty band at the
+                wrap boundary. Doubling the list closes that gap; users see
+                the same set come around again, which is what a seamless
+                marquee implies anyway. */}
+            {[...partners, ...partners].map((p, i) => (
+              <PartnerLogo key={`${p.id}-${i}`} partner={p} />
+            ))}
           </div>
         </div>
+      </div>
 
-        <div className="mt-10 flex justify-center">
-          <Link
-            href={`/${locale}/solutions/trading/partners`}
-            className={buttonVariants({ variant: "outline", size: "lg" })}
-          >
-            {t("seeAllPartners")}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </div>
+      <div className="container mx-auto mt-10 flex justify-center px-4">
+        <Link
+          href={`/${locale}/solutions/trading/partners`}
+          className={buttonVariants({ variant: "outline", size: "lg" })}
+        >
+          {t("seeAllPartners")}
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Link>
       </div>
     </section>
   );
@@ -145,14 +149,14 @@ function PartnerLogo({ partner }: { partner: PartnerData }) {
   // narrow logos no longer sit inside a sea of whitespace. Internal `px-*`
   // keeps the focus ring / shadow from kissing the logo edges.
   const inner = (
-    <div className="group/logo flex h-20 shrink-0 items-center justify-center rounded-md px-4 transition-all duration-300 hover:shadow-md md:h-24 md:px-5">
+    <div className="group/logo flex h-16 shrink-0 items-center justify-center rounded-md px-3 transition-all duration-300 hover:shadow-md md:h-20 md:px-4">
       <Image
         src={partner.logoUrl}
         alt={partner.name}
         width={400}
         height={120}
         className={cn(
-          "h-12 w-auto max-w-none object-contain transition-transform duration-300 group-hover/logo:scale-105 md:h-14",
+          "h-10 w-auto max-w-none object-contain transition-transform duration-300 group-hover/logo:scale-105 md:h-12",
           partner.invertOnDark && "dark:invert",
         )}
       />
