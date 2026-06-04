@@ -1,50 +1,224 @@
 [
   {
-    "name": "Pertamina",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "name": "Abbott",
+    "logoUrl": "/images/customer/Abbott.png",
     "order": 0,
     "invertOnDark": false
   },
   {
-    "name": "Medco Energi",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "name": "Adaro",
+    "logoUrl": "/images/customer/Adaro.png",
     "order": 1,
     "invertOnDark": false
   },
   {
-    "name": "Freeport Indonesia",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "name": "Adhi Karya",
+    "logoUrl": "/images/customer/adhi.png",
     "order": 2,
     "invertOnDark": false
   },
   {
-    "name": "Chevron",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "name": "Amman Mineral",
+    "logoUrl": "/images/customer/Amman.jpeg",
     "order": 3,
     "invertOnDark": false
   },
   {
-    "name": "ConocoPhillips",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "name": "BP",
+    "logoUrl": "/images/customer/BP.png",
     "order": 4,
     "invertOnDark": false
   },
   {
-    "name": "Star Energy",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "name": "Chandra Asri",
+    "logoUrl": "/images/customer/Chandra-Asri.png",
     "order": 5,
     "invertOnDark": false
   },
   {
-    "name": "WIKA",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "name": "Control Systems",
+    "logoUrl": "/images/customer/Control-Systems.png",
     "order": 6,
     "invertOnDark": false
   },
   {
-    "name": "Unilever",
-    "logoUrl": "/images/logo-placeholder.svg",
+    "name": "Elnusa",
+    "logoUrl": "/images/customer/Elnusa.png",
     "order": 7,
+    "invertOnDark": false
+  },
+  {
+    "name": "EMP",
+    "logoUrl": "/images/customer/Emp.png",
+    "order": 8,
+    "invertOnDark": false
+  },
+  {
+    "name": "Energy Equity",
+    "logoUrl": "/images/customer/Energy-Equity.jpeg",
+    "order": 9,
+    "invertOnDark": false
+  },
+  {
+    "name": "Eni",
+    "logoUrl": "/images/customer/Eni.png",
+    "order": 10,
+    "invertOnDark": false
+  },
+  {
+    "name": "Freeport Indonesia",
+    "logoUrl": "/images/customer/Freeport-Indonesia.jpg",
+    "order": 11,
+    "invertOnDark": false
+  },
+  {
+    "name": "JGC",
+    "logoUrl": "/images/customer/JGC.jpeg",
+    "order": 12,
+    "invertOnDark": false
+  },
+  {
+    "name": "Kilang Pertamina Internasional",
+    "logoUrl": "/images/customer/Pertamina-Kilang-Pertamina-Internasional.png",
+    "order": 13,
+    "invertOnDark": false
+  },
+  {
+    "name": "Lotte Chemical",
+    "logoUrl": "/images/customer/Lotte-Chemical.jpeg",
+    "order": 14,
+    "invertOnDark": false
+  },
+  {
+    "name": "Medco Energi",
+    "logoUrl": "/images/customer/MedoEnergi.png",
+    "order": 15,
+    "invertOnDark": false
+  },
+  {
+    "name": "Mubadala Petroleum",
+    "logoUrl": "/images/customer/Mubadala-Petroleum.jpeg",
+    "order": 16,
+    "invertOnDark": false
+  },
+  {
+    "name": "Paiton Energy",
+    "logoUrl": "/images/customer/Paiton-Energy.png",
+    "order": 17,
+    "invertOnDark": false
+  },
+  {
+    "name": "Palyja",
+    "logoUrl": "/images/customer/Palyja.png",
+    "order": 18,
+    "invertOnDark": false
+  },
+  {
+    "name": "Pertamina",
+    "logoUrl": "/images/customer/Pertamina.png",
+    "order": 19,
+    "invertOnDark": false
+  },
+  {
+    "name": "Pertamina Hulu Energi",
+    "logoUrl": "/images/customer/Pertamina-Hulu-Energi.png",
+    "order": 20,
+    "invertOnDark": false
+  },
+  {
+    "name": "Pertamina Hulu Indonesia",
+    "logoUrl": "/images/customer/Pertamina-Hulu-Indonesia.png",
+    "order": 21,
+    "invertOnDark": false
+  },
+  {
+    "name": "Pertamina Hulu Rokan",
+    "logoUrl": "/images/customer/Pertamina-Hulu-Rokan.png",
+    "order": 22,
+    "invertOnDark": false
+  },
+  {
+    "name": "Pertamina Maintenance & Construction",
+    "logoUrl": "/images/customer/Pertamina-Maintenance-and-Construction.png",
+    "order": 23,
+    "invertOnDark": false
+  },
+  {
+    "name": "Pertamina PHE WMO",
+    "logoUrl": "/images/customer/Pertamina-PHE-WMO.jpeg",
+    "order": 24,
+    "invertOnDark": false
+  },
+  {
+    "name": "PGN",
+    "logoUrl": "/images/customer/PGN.png",
+    "order": 25,
+    "invertOnDark": false
+  },
+  {
+    "name": "PLN Nusantara Power",
+    "logoUrl": "/images/customer/PLN-Nusantara-Power.png",
+    "order": 26,
+    "invertOnDark": false
+  },
+  {
+    "name": "PLN Power Indonesia",
+    "logoUrl": "/images/customer/PLN-Power-Indonesia.png",
+    "order": 27,
+    "invertOnDark": false
+  },
+  {
+    "name": "Pupuk Indonesia",
+    "logoUrl": "/images/customer/Pupuk-Indonesia.jpeg",
+    "order": 28,
+    "invertOnDark": false
+  },
+  {
+    "name": "Rekind",
+    "logoUrl": "/images/customer/Rekind.png",
+    "order": 29,
+    "invertOnDark": false
+  },
+  {
+    "name": "Sinarmas",
+    "logoUrl": "/images/customer/Sinarmas.png",
+    "order": 30,
+    "invertOnDark": false
+  },
+  {
+    "name": "Star Energy",
+    "logoUrl": "/images/customer/Star-Energy.jpg",
+    "order": 31,
+    "invertOnDark": false
+  },
+  {
+    "name": "Timas Suplindo",
+    "logoUrl": "/images/customer/Timas-Suplindo.webp",
+    "order": 32,
+    "invertOnDark": false
+  },
+  {
+    "name": "Tripatra",
+    "logoUrl": "/images/customer/Tripatra.png",
+    "order": 33,
+    "invertOnDark": false
+  },
+  {
+    "name": "Unioleo",
+    "logoUrl": "/images/customer/Unioleo.png",
+    "order": 34,
+    "invertOnDark": false
+  },
+  {
+    "name": "Vale",
+    "logoUrl": "/images/customer/Vale.png",
+    "order": 35,
+    "invertOnDark": false
+  },
+  {
+    "name": "WIKA",
+    "logoUrl": "/images/customer/WIKA.png",
+    "order": 36,
     "invertOnDark": false
   }
 ]

@@ -1,5 +1,12 @@
 /**
- * Idempotent seeder. Run with `pnpm seed`.
+ * Idempotent seeder.
+ *
+ * `pnpm seed`                       → seed everything (default).
+ * `pnpm seed customers`             → seed only the named target.
+ * `pnpm seed customers partners`    → seed multiple targets, in the given order.
+ *
+ * Available targets: user, siteSettings, homeHero, stats, solutions,
+ *                    partners, customers, projects, reachPoints.
  *
  * - Upserts singleton documents (SiteSettings, HomeHero) by their fixed _id.
  * - For collections without a natural unique field, clears and re-inserts.
@@ -123,6 +130,20 @@ async function seedReachPoints() {
   return items.length;
 }
 
+const SEEDERS = {
+  user: seedUser,
+  siteSettings: seedSiteSettings,
+  homeHero: seedHomeHero,
+  stats: seedStats,
+  solutions: seedSolutions,
+  partners: seedPartners,
+  customers: seedCustomers,
+  projects: seedProjects,
+  reachPoints: seedReachPoints,
+} as const;
+
+type SeederName = keyof typeof SEEDERS;
+
 async function main() {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
@@ -130,22 +151,32 @@ async function main() {
     process.exit(1);
   }
 
+  // Resolve which seeders to run BEFORE connecting — a bad CLI arg should
+  // fail fast without touching MongoDB.
+  const args = process.argv.slice(2);
+  const allNames = Object.keys(SEEDERS) as SeederName[];
+  let targets: SeederName[];
+  if (args.length === 0) {
+    targets = allNames;
+  } else {
+    const invalid = args.filter((a) => !(allNames as readonly string[]).includes(a));
+    if (invalid.length > 0) {
+      console.error(`✗ Unknown seeder(s): ${invalid.join(", ")}`);
+      console.error(`  Available: ${allNames.join(", ")}`);
+      process.exit(1);
+    }
+    targets = args as SeederName[];
+  }
+
   console.log("→ Connecting to MongoDB…");
   await mongoose.connect(uri, { serverSelectionTimeoutMS: 10_000 });
   console.log("✓ Connected");
 
   try {
-    const counts = {
-      user: await seedUser(),
-      siteSettings: await seedSiteSettings(),
-      homeHero: await seedHomeHero(),
-      stats: await seedStats(),
-      solutions: await seedSolutions(),
-      partners: await seedPartners(),
-      customers: await seedCustomers(),
-      projects: await seedProjects(),
-      reachPoints: await seedReachPoints(),
-    };
+    const counts: Record<string, number> = {};
+    for (const name of targets) {
+      counts[name] = await SEEDERS[name]();
+    }
 
     console.log("\n📦 Seed summary:");
     for (const [k, v] of Object.entries(counts)) {
