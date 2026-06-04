@@ -110,9 +110,16 @@ export function PartnersCarousel({ partners }: Props) {
           <div className="overflow-hidden md:mx-12" ref={emblaRef}>
             {/* `py-*` reserves vertical breathing room so the hover shadow on
                 each logo cell doesn't get sliced off by the Embla overflow. */}
-            <div className="flex items-center gap-10 py-3 md:gap-14 md:py-5">
-              {partners.map((p) => (
-                <PartnerLogo key={p.id} partner={p} />
+            <div className="flex items-center gap-3 py-3 md:gap-4 md:py-5">
+              {/* Render the partner list twice so Embla's loop has enough
+                  content to wrap cleanly. With tight gaps + a moderate slide
+                  count the raw content can fall just under the 2× viewport
+                  threshold the loop needs, which causes an empty band at the
+                  wrap boundary. Doubling the list closes that gap; users see
+                  the same set come around again, which is what a seamless
+                  marquee implies anyway. */}
+              {[...partners, ...partners].map((p, i) => (
+                <PartnerLogo key={`${p.id}-${i}`} partner={p} />
               ))}
             </div>
           </div>

@@ -2,10 +2,12 @@
 
 import AutoScroll from "embla-carousel-auto-scroll";
 import useEmblaCarousel from "embla-carousel-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { cn } from "@/lib/utils";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { CustomerData } from "@/lib/cms/home";
+import { cn } from "@/lib/utils";
 
 interface Props {
   customers: CustomerData[];
@@ -13,10 +15,68 @@ interface Props {
 
 export function CustomersCarousel({ customers }: Props) {
   const t = useTranslations("Landing");
-  const [emblaRef] = useEmblaCarousel(
-    { loop: true, dragFree: true, align: "start", direction: "rtl" },
-    [AutoScroll({ playOnInit: true, speed: 0.5, stopOnInteraction: false, stopOnMouseEnter: true })],
+  // `direction: "rtl"` on the carousel root broke AutoScroll's loop in v8.6
+  // (only the first slide rendered before scrolling off-screen with nothing
+  // following). To get the reverse-direction effect (Customers scrolls
+  // opposite of Partners), use the AutoScroll plugin's own `direction:
+  // "backward"` option instead — that keeps a standard LTR layout but flips
+  // the ambient motion. Manual arrow buttons keep their natural semantics
+  // (left=prev, right=next).
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true, dragFree: true, align: "start" },
+    [
+      AutoScroll({
+        playOnInit: true,
+        speed: 0.5,
+        direction: "backward",
+        stopOnInteraction: false,
+        stopOnMouseEnter: true,
+      }),
+    ],
   );
+
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const update = () => {
+      setCanScrollPrev(emblaApi.canScrollPrev());
+      setCanScrollNext(emblaApi.canScrollNext());
+    };
+    update();
+    emblaApi.on("select", update);
+    emblaApi.on("reInit", update);
+    return () => {
+      emblaApi.off("select", update);
+      emblaApi.off("reInit", update);
+    };
+  }, [emblaApi]);
+
+  // Tapping an arrow must pause auto-scroll first; otherwise the continuous
+  // motion overrides the manual jump and the click looks like a no-op.
+  // 2s after the last nudge we resume — debounced across rapid clicks.
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const nudge = useCallback(
+    (direction: "prev" | "next") => {
+      if (!emblaApi) return;
+      const auto = emblaApi.plugins().autoScroll;
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+      auto?.stop();
+      if (direction === "prev") emblaApi.scrollPrev();
+      else emblaApi.scrollNext();
+      resumeTimerRef.current = setTimeout(() => auto?.play(), 2000);
+    },
+    [emblaApi],
+  );
+  const scrollPrev = useCallback(() => nudge("prev"), [nudge]);
+  const scrollNext = useCallback(() => nudge("next"), [nudge]);
+
+  useEffect(() => {
+    return () => {
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
+  }, []);
 
   if (customers.length === 0) return null;
 
@@ -28,26 +88,58 @@ export function CustomersCarousel({ customers }: Props) {
             {t("trustedAcross")}
           </h2>
         </div>
-        <div className="overflow-hidden" ref={emblaRef}>
-          <div className="flex items-center gap-10 md:gap-14">
-            {customers.map((c) => (
-              <div
-                key={c.id}
-                className="flex h-16 w-32 shrink-0 items-center justify-center md:h-20 md:w-40"
-                title={c.name}
-              >
-                <Image
-                  src={c.logoUrl}
-                  alt={c.name}
-                  width={128}
-                  height={56}
-                  className={cn(
-                    "max-h-12 w-auto object-contain opacity-70 grayscale transition hover:opacity-100 hover:grayscale-0",
-                    c.invertOnDark && "dark:invert",
-                  )}
-                />
-              </div>
-            ))}
+
+        <div className="relative">
+          <button
+            type="button"
+            onClick={scrollPrev}
+            disabled={!canScrollPrev}
+            aria-label={t("prev")}
+            className="absolute left-0 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border bg-background/90 text-brand-deep shadow-sm backdrop-blur transition hover:bg-background hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 md:flex dark:text-foreground"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={scrollNext}
+            disabled={!canScrollNext}
+            aria-label={t("next")}
+            className="absolute right-0 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border bg-background/90 text-brand-deep shadow-sm backdrop-blur transition hover:bg-background hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 md:flex dark:text-foreground"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+
+          <div className="overflow-hidden md:mx-12" ref={emblaRef}>
+            {/* Tighter gap + shorter cells than the Partners strip — these are
+                customer marks, intentionally more humble in scale than the
+                Partners section above. `py-*` reserves vertical breathing
+                room for the hover shadow so it doesn't get clipped by the
+                Embla overflow. */}
+            <div className="flex items-center gap-2 py-2 md:gap-3 md:py-3">
+              {/* Render the customer list twice so Embla's loop has enough
+                  content to wrap cleanly. With variable-width cells + a tight
+                  gap + backward auto-scroll, the loop boundary calculation
+                  was producing visible overlap. Doubling the list gives the
+                  engine a stable runway. */}
+              {[...customers, ...customers].map((c, i) => (
+                <div
+                  key={`${c.id}-${i}`}
+                  className="group/logo flex h-14 shrink-0 items-center justify-center rounded-md px-2 transition-all duration-300 hover:shadow-sm md:h-16 md:px-3"
+                  title={c.name}
+                >
+                  <Image
+                    src={c.logoUrl}
+                    alt={c.name}
+                    width={112}
+                    height={40}
+                    className={cn(
+                      "max-h-8 w-auto object-contain transition-transform duration-300 group-hover/logo:scale-105 md:max-h-10",
+                      c.invertOnDark && "dark:invert",
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
