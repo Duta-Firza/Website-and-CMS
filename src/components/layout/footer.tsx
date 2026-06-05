@@ -1,6 +1,7 @@
 import { ExternalLink, Mail, MapPin, Phone, Play } from "lucide-react";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
+import { ScrollReveal } from "@/components/public/scroll-reveal";
 import type { Locale } from "@/lib/cms/localize";
 import { getSiteSettings } from "@/lib/cms/site-settings";
 import { Logo } from "./logo";
@@ -21,7 +22,7 @@ export async function Footer() {
     <footer className="border-t bg-brand-deep text-white">
       <div className="container mx-auto grid grid-cols-1 gap-10 px-4 py-14 md:grid-cols-2 lg:grid-cols-4">
         {/* Brand */}
-        <div className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <Link
             href={`/${locale}`}
             aria-label={tCommon("companyName")}
@@ -56,10 +57,10 @@ export async function Footer() {
               )}
             </div>
           )}
-        </div>
+        </ScrollReveal>
 
         {/* Solutions column */}
-        <div className="space-y-3">
+        <ScrollReveal delay={80} className="space-y-3">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
             {t("solutionsTitle")}
           </h3>
@@ -72,10 +73,10 @@ export async function Footer() {
               </li>
             ))}
           </ul>
-        </div>
+        </ScrollReveal>
 
         {/* Company column */}
-        <div className="space-y-3">
+        <ScrollReveal delay={160} className="space-y-3">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
             {t("companyTitle")}
           </h3>
@@ -98,10 +99,10 @@ export async function Footer() {
               </Link>
             </li>
           </ul>
-        </div>
+        </ScrollReveal>
 
         {/* Contact column */}
-        <div className="space-y-3">
+        <ScrollReveal delay={240} className="space-y-3">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
             {t("contactTitle")}
           </h3>
@@ -132,7 +133,7 @@ export async function Footer() {
               </li>
             )}
           </ul>
-        </div>
+        </ScrollReveal>
       </div>
 
       <div className="border-t border-white/10">

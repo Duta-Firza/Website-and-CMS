@@ -14,6 +14,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { ScrollReveal } from "@/components/public/scroll-reveal";
 import type { StatData } from "@/lib/cms/home";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -42,7 +43,7 @@ function pickIcon(name: string): LucideIcon {
  */
 export function QuickStats({ stats }: { stats: StatData[] }) {
   return (
-    <div className="container relative z-10 mx-auto -mt-20 mb-16 px-4 md:-mt-28 md:mb-20">
+    <ScrollReveal className="container relative z-10 mx-auto -mt-20 mb-16 px-4 md:-mt-28 md:mb-20">
       <div className="relative overflow-hidden rounded-2xl border bg-card shadow-2xl">
         {/* Brand-accent strip across the top of the card */}
         <span className="absolute inset-x-0 top-0 h-1 bg-brand-accent" />
@@ -52,7 +53,7 @@ export function QuickStats({ stats }: { stats: StatData[] }) {
           ))}
         </div>
       </div>
-    </div>
+    </ScrollReveal>
   );
 }
 

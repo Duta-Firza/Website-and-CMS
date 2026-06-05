@@ -7,9 +7,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { buttonVariants } from "@/components/ui/button";
 import type { PartnerData } from "@/lib/cms/home";
 import { cn } from "@/lib/utils";
+import { SectionIndex } from "./section-index";
+import { SectionPattern } from "./section-pattern";
 
 interface Props {
   partners: PartnerData[];
@@ -77,19 +80,22 @@ export function PartnersCarousel({ partners }: Props) {
   if (partners.length === 0) return null;
 
   return (
-    <section className="group/strip bg-muted/40 py-16 md:py-20">
-      <div className="container mx-auto mb-10 px-4">
-        <div className="mx-auto max-w-2xl text-center">
+    <section className="group/strip relative py-16 md:py-20">
+      <SectionPattern />
+      {/* <SectionIndex value="01" /> */}
+      <ScrollReveal className="container relative mx-auto mb-10 px-4">
+        <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
+          <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />
           <h2 className="text-3xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-4xl">
             {t("ourPartners")}
           </h2>
-          <p className="mt-3 text-base text-muted-foreground">{t("ourPartnersSubtitle")}</p>
+          <p className="text-base text-muted-foreground">{t("ourPartnersSubtitle")}</p>
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* Edge-to-edge strip — breaks out of the centered container so the
           marquee runs the full viewport width. */}
-      <div className="relative">
+      <ScrollReveal as="div" delay={120} className="relative">
         {/* Manual nav — hidden until the section is hovered (or a button
             receives keyboard focus). Semi-transparent so the logos behind
             stay readable. */}
@@ -128,9 +134,9 @@ export function PartnersCarousel({ partners }: Props) {
             ))}
           </div>
         </div>
-      </div>
+      </ScrollReveal>
 
-      <div className="container mx-auto mt-10 flex justify-center px-4">
+      <ScrollReveal delay={200} className="container relative mx-auto mt-10 flex justify-center px-4">
         <Link
           href={`/${locale}/solutions/trading/partners`}
           className={buttonVariants({ variant: "outline", size: "lg" })}
@@ -138,7 +144,7 @@ export function PartnersCarousel({ partners }: Props) {
           {t("seeAllPartners")}
           <ArrowRight className="ml-2 h-4 w-4" />
         </Link>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

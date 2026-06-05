@@ -6,8 +6,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ScrollReveal } from "@/components/public/scroll-reveal";
 import type { CustomerData } from "@/lib/cms/home";
 import { cn } from "@/lib/utils";
+import { SectionIndex } from "./section-index";
+import { SectionPattern } from "./section-pattern";
 
 interface Props {
   customers: CustomerData[];
@@ -81,18 +84,21 @@ export function CustomersCarousel({ customers }: Props) {
   if (customers.length === 0) return null;
 
   return (
-    <section className="group/strip bg-muted/40 py-16 md:py-20">
-      <div className="container mx-auto mb-10 px-4">
-        <div className="mx-auto max-w-2xl text-center">
+    <section className="group/strip relative py-16 md:py-20">
+      <SectionPattern />
+      {/* <SectionIndex value="05" /> */}
+      <ScrollReveal className="container relative mx-auto mb-10 px-4">
+        <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
+          <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />
           <h2 className="text-3xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-4xl">
             {t("trustedAcross")}
           </h2>
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* Edge-to-edge strip — breaks out of the centered container so the
           marquee runs the full viewport width. */}
-      <div className="relative">
+      <ScrollReveal delay={120} className="relative">
         <button
           type="button"
           onClick={scrollPrev}
@@ -144,7 +150,7 @@ export function CustomersCarousel({ customers }: Props) {
             ))}
           </div>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

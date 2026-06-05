@@ -4,6 +4,7 @@ import { PartnersCarousel } from "@/components/public/landing/partners-carousel"
 import { ProjectHighlights } from "@/components/public/landing/project-highlights";
 import { QuickStats } from "@/components/public/landing/quick-stats";
 import { ReachMap } from "@/components/public/landing/reach-map";
+import { ScrollToTop } from "@/components/public/landing/scroll-to-top";
 import { SolutionsSpotlight } from "@/components/public/landing/solutions-spotlight";
 import {
   getActivePartners,
@@ -42,6 +43,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <ProjectHighlights projects={projects} />
       <ReachMap reachPoints={reachPoints} />
       <CustomersCarousel customers={customers} />
+      <ScrollToTop />
     </>
   );
 }

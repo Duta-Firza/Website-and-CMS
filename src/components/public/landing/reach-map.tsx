@@ -3,8 +3,10 @@
 import { Globe, MapPin } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
+import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import type { ReachPointData } from "@/lib/cms/home";
+import { SectionIndex } from "./section-index";
 
 // Leaflet touches `window` at module evaluation; lazy-load with SSR off.
 const LeafletMap = dynamic(() => import("./reach-map-leaflet").then((m) => m.LeafletMap), {
@@ -26,30 +28,35 @@ export function ReachMap({ reachPoints }: Props) {
   const totalProvinces = new Set(reachPoints.map((p) => p.province)).size;
 
   return (
-    <section className="bg-background">
+    <section className="relative bg-background">
+      {/* <SectionIndex value="04" /> */}
       <div className="container mx-auto px-4 py-20 md:py-24">
-        <div className="mx-auto mb-12 max-w-2xl text-center">
+        <ScrollReveal className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-3 text-center">
+          <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />
           <h2 className="text-3xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-4xl">
             {t("ourReach")}
           </h2>
-          <p className="mt-3 text-base text-muted-foreground">{t("ourReachSubtitle")}</p>
-        </div>
+          <p className="text-base text-muted-foreground">{t("ourReachSubtitle")}</p>
+        </ScrollReveal>
 
-        <div className="mb-10 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <ScrollReveal delay={100} className="mb-10 grid grid-cols-1 gap-4 md:grid-cols-3">
           <ReachStat value={totalCities} label={t("reachCities")} icon="pin" />
           <ReachStat value={totalProvinces} label={t("reachProvinces")} icon="pin" />
           <ReachStat label={t("reachNational")} icon="globe" />
-        </div>
+        </ScrollReveal>
 
         {/* `relative z-0` creates a new stacking context that caps Leaflet's
             internal z-indexes (which go up to 1000 for controls/tooltips) so
             the fixed navbar (z-50) remains on top when the user scrolls. */}
-        <div className="relative z-0 overflow-hidden rounded-2xl border bg-card shadow-sm">
+        <ScrollReveal
+          delay={200}
+          className="relative z-0 overflow-hidden rounded-2xl border bg-card shadow-sm"
+        >
           <LeafletMap reachPoints={reachPoints} />
-        </div>
+        </ScrollReveal>
 
         {reachPoints.length > 0 && (
-          <div className="mt-10">
+          <ScrollReveal delay={300} className="mt-10">
             <p className="mb-4 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
               {t("whereWeOperate")}
             </p>
@@ -64,7 +71,7 @@ export function ReachMap({ reachPoints }: Props) {
                 </Badge>
               ))}
             </div>
-          </div>
+          </ScrollReveal>
         )}
       </div>
     </section>

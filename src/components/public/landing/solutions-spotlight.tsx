@@ -1,5 +1,7 @@
 import { getTranslations } from "next-intl/server";
+import { ScrollReveal } from "@/components/public/scroll-reveal";
 import type { SolutionData } from "@/lib/cms/home";
+import { SectionIndex } from "./section-index";
 import { SolutionCard } from "./solution-card";
 
 /**
@@ -11,22 +13,21 @@ export async function SolutionsSpotlight({ solutions }: { solutions: SolutionDat
   if (solutions.length === 0) return null;
 
   return (
-    <section className="bg-background">
+    <section className="relative bg-background">
+      {/* <SectionIndex value="02" /> */}
       <div className="container mx-auto px-4 py-20 md:py-24">
-        <div className="mx-auto mb-12 max-w-2xl text-center">
+        <ScrollReveal className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-3 text-center">
+          <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />
           <h2 className="text-3xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-4xl">
             {t("ourSolutions")}
           </h2>
-          <p className="mt-3 text-base text-muted-foreground">{t("ourSolutionsSubtitle")}</p>
-        </div>
+          <p className="text-base text-muted-foreground">{t("ourSolutionsSubtitle")}</p>
+        </ScrollReveal>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {solutions.map((s, idx) => (
-            <SolutionCard
-              key={s.id}
-              solution={s}
-              learnMoreLabel={t("learnMore")}
-              index={idx}
-            />
+            <ScrollReveal key={s.id} delay={idx * 100}>
+              <SolutionCard solution={s} learnMoreLabel={t("learnMore")} index={idx} />
+            </ScrollReveal>
           ))}
         </div>
       </div>
