@@ -47,7 +47,18 @@ export default async function Page({ params }: { params: Promise<PageParams> }) 
       {(about.vision || about.mission) && (
         <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2">
           {about.vision && (
-            <ScrollReveal className="rounded-xl border bg-card p-6 md:p-8">
+            <ScrollReveal className="group/vm relative overflow-hidden rounded-xl border bg-card p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent/30 hover:shadow-md md:p-8">
+              {/* Top accent stripe — slides in on hover */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-0.75 origin-left scale-x-0 bg-brand-accent transition-transform duration-500 group-hover/vm:scale-x-100"
+              />
+              {/* Diagonal corner cut — soft brand-accent triangle in bottom-right */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute bottom-0 right-0 h-14 w-14 bg-brand-accent/6 transition-all duration-300 group-hover/vm:bg-brand-accent/10"
+                style={{ clipPath: "polygon(100% 0, 100% 100%, 0 100%)" }}
+              />
               <span className="mb-4 block h-0.75 w-10 bg-brand-accent" aria-hidden />
               <h2 className="mb-3 text-xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-2xl">
                 {tAbout("vision")}
@@ -58,7 +69,19 @@ export default async function Page({ params }: { params: Promise<PageParams> }) 
             </ScrollReveal>
           )}
           {about.mission && (
-            <ScrollReveal delay={120} className="rounded-xl border bg-card p-6 md:p-8">
+            <ScrollReveal
+              delay={120}
+              className="group/vm relative overflow-hidden rounded-xl border bg-card p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent/30 hover:shadow-md md:p-8"
+            >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-0.75 origin-left scale-x-0 bg-brand-accent transition-transform duration-500 group-hover/vm:scale-x-100"
+              />
+              <span
+                aria-hidden
+                className="pointer-events-none absolute bottom-0 right-0 h-14 w-14 bg-brand-accent/6 transition-all duration-300 group-hover/vm:bg-brand-accent/10"
+                style={{ clipPath: "polygon(100% 0, 100% 100%, 0 100%)" }}
+              />
               <span className="mb-4 block h-0.75 w-10 bg-brand-accent" aria-hidden />
               <h2 className="mb-3 text-xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-2xl">
                 {tAbout("mission")}
@@ -85,12 +108,24 @@ export default async function Page({ params }: { params: Promise<PageParams> }) 
                 // biome-ignore lint/suspicious/noArrayIndexKey: values is an ordered editor list
                 key={idx}
                 delay={idx * 80}
-                className="relative rounded-xl border bg-card p-5"
+                className="group/val relative overflow-hidden rounded-xl border bg-card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent/30 hover:shadow-md"
               >
-                <span className="block font-mono text-[11px] font-semibold tracking-wider text-brand-accent">
+                {/* Top accent stripe */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 top-0 h-0.75 origin-left scale-x-0 bg-brand-accent transition-transform duration-500 group-hover/val:scale-x-100"
+                />
+                {/* Corner triangle */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute bottom-0 right-0 h-10 w-10 bg-brand-accent/6 transition-all duration-300 group-hover/val:bg-brand-accent/10"
+                  style={{ clipPath: "polygon(100% 0, 100% 100%, 0 100%)" }}
+                />
+                {/* Mono index — larger, brand-accent focal point */}
+                <span className="block font-mono text-2xl font-bold tracking-tight text-brand-accent">
                   {String(idx + 1).padStart(2, "0")}
                 </span>
-                <h3 className="mt-2 text-base font-semibold text-brand-deep dark:text-foreground">
+                <h3 className="mt-2 text-base font-semibold text-brand-deep transition-colors group-hover/val:text-brand-accent dark:text-foreground">
                   {value.title}
                 </h3>
                 {value.description && (

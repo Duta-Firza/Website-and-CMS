@@ -35,7 +35,7 @@ export function SectionSidebar({ section }: Props) {
     .sort((a, b) => normalize(b).length - normalize(a).length)[0];
 
   return (
-    <aside className="hidden shrink-0 md:block">
+    <aside className="hidden shrink-0 md:sticky md:top-20 md:block md:max-h-[calc(100vh-6rem)] md:self-start md:overflow-y-auto md:border-r md:border-border/60 md:pr-6 lg:pr-8">
       <nav aria-label={t(section.labelKey)}>
         <Link
           href={section.href}
@@ -53,7 +53,7 @@ export function SectionSidebar({ section }: Props) {
                 <Link
                   href={sub.href}
                   className={cn(
-                    "block -ml-px border-l-2 px-3 py-1.5 text-sm transition-colors",
+                    "block -ml-px whitespace-normal border-l-2 px-3 py-1.5 text-sm leading-tight transition-colors",
                     subActive
                       ? "border-brand-deep font-semibold text-brand-deep dark:border-foreground dark:text-foreground"
                       : "border-transparent text-muted-foreground hover:border-foreground/30 hover:text-foreground",
@@ -70,7 +70,7 @@ export function SectionSidebar({ section }: Props) {
                           <Link
                             href={subSub.href}
                             className={cn(
-                              "block -ml-px border-l-2 px-3 py-1 text-[13px] transition-colors",
+                              "block -ml-px whitespace-normal border-l-2 px-3 py-1 text-[13px] leading-tight transition-colors",
                               isActive
                                 ? "border-brand-deep font-medium text-brand-deep dark:border-foreground dark:text-foreground"
                                 : "border-transparent text-muted-foreground hover:border-foreground/30 hover:text-foreground",

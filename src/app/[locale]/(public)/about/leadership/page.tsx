@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { LeadershipSection } from "@/components/public/about/leadership-section";
 import { SectionIndex } from "@/components/public/landing/section-index";
-import { SectionPattern } from "@/components/public/landing/section-pattern";
 import { PageHeader } from "@/components/public/section/page-header";
 import { getLeadership } from "@/lib/cms/about";
 import type { Locale } from "@/lib/cms/localize";
@@ -26,26 +25,23 @@ export default async function LeadershipPage({ params }: Props) {
 
   return (
     <div className="relative">
-      <SectionPattern />
       <SectionIndex value="02" />
-      <div className="relative">
-        <PageHeader eyebrow={titles("aboutEyebrow")} title={titles("leadershipTitle")} />
+      <PageHeader eyebrow={titles("aboutEyebrow")} title={titles("leadershipTitle")} />
 
-        <LeadershipSection
-          groups={[
-            {
-              label: tAbout("boardOfDirectors"),
-              members: directors,
-              emptyMessage: tAbout("leadershipEmpty"),
-            },
-            {
-              label: tAbout("boardOfCommissioners"),
-              members: commissioners,
-              emptyMessage: tAbout("leadershipEmpty"),
-            },
-          ]}
-        />
-      </div>
+      <LeadershipSection
+        groups={[
+          {
+            label: tAbout("boardOfDirectors"),
+            members: directors,
+            emptyMessage: tAbout("leadershipEmpty"),
+          },
+          {
+            label: tAbout("boardOfCommissioners"),
+            members: commissioners,
+            emptyMessage: tAbout("leadershipEmpty"),
+          },
+        ]}
+      />
     </div>
   );
 }

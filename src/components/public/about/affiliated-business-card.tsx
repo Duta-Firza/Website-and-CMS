@@ -10,7 +10,19 @@ interface Props {
 
 export function AffiliatedBusinessCard({ business, visitLabel }: Props) {
   return (
-    <div className="flex h-full flex-col rounded-xl border bg-card p-6 shadow-sm">
+    <div className="group/ab relative flex h-full flex-col overflow-hidden rounded-xl border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent/30 hover:shadow-md">
+      {/* Top accent stripe — slides in on hover */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-0.75 origin-left scale-x-0 bg-brand-accent transition-transform duration-500 group-hover/ab:scale-x-100"
+      />
+      {/* Diagonal corner cut — soft brand-accent triangle in bottom-right */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 right-0 h-14 w-14 bg-brand-accent/6 transition-all duration-300 group-hover/ab:bg-brand-accent/10"
+        style={{ clipPath: "polygon(100% 0, 100% 100%, 0 100%)" }}
+      />
+
       <div className="relative h-16 w-full">
         {business.logoUrl ? (
           <Image
@@ -26,7 +38,7 @@ export function AffiliatedBusinessCard({ business, visitLabel }: Props) {
           </div>
         )}
       </div>
-      <h3 className="mt-4 text-base font-semibold text-brand-deep dark:text-foreground">
+      <h3 className="mt-4 text-base font-semibold text-brand-deep transition-colors group-hover/ab:text-brand-accent dark:text-foreground">
         {business.name}
       </h3>
       {business.description && (
@@ -35,7 +47,7 @@ export function AffiliatedBusinessCard({ business, visitLabel }: Props) {
         </p>
       )}
       {business.websiteUrl && (
-        <div className="mt-5">
+        <div className="relative mt-5">
           <a
             href={business.websiteUrl}
             target="_blank"
