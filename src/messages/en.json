@@ -116,6 +116,20 @@
     "client": "Client",
     "year": "Year"
   },
+  "UnderConstruction": {
+    "eyebrow": "Under construction",
+    "title": "We're crafting this page",
+    "description": "Our team is putting together the details. Please check back soon, or reach out if you need information right away.",
+    "contactCta": "Get in touch",
+    "homeCta": "Back to home"
+  },
+  "NotFound": {
+    "eyebrow": "Error 404",
+    "title": "Page not found",
+    "description": "The path you followed isn't on our map. It may have been moved, or perhaps it never existed.",
+    "contactCta": "Contact us",
+    "homeCta": "Back to home"
+  },
   "Admin": {
     "dashboard": "Dashboard",
     "login": "Sign In",

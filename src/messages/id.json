@@ -116,6 +116,20 @@
     "client": "Klien",
     "year": "Tahun"
   },
+  "UnderConstruction": {
+    "eyebrow": "Sedang dibangun",
+    "title": "Kami sedang menyiapkan halaman ini",
+    "description": "Tim kami sedang merampungkan detailnya. Kunjungi lagi sebentar, atau hubungi kami jika Anda perlu informasi segera.",
+    "contactCta": "Hubungi Kami",
+    "homeCta": "Kembali ke Beranda"
+  },
+  "NotFound": {
+    "eyebrow": "Error 404",
+    "title": "Halaman tidak ditemukan",
+    "description": "Jalur yang Anda ikuti tidak ada di peta kami. Mungkin sudah dipindahkan, atau memang belum pernah ada.",
+    "contactCta": "Hubungi Kami",
+    "homeCta": "Kembali ke Beranda"
+  },
   "Admin": {
     "dashboard": "Dasbor",
     "login": "Masuk",

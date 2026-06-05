@@ -1,16 +1,18 @@
-import Link from "next/link";
-import { useLocale } from "next-intl";
-import { buttonVariants } from "@/components/ui/button";
+import { getLocale, getTranslations } from "next-intl/server";
+import { NotFoundContent } from "@/components/public/not-found-content";
 
-export default function NotFound() {
-  const locale = useLocale();
+export default async function NotFound() {
+  const t = await getTranslations("NotFound");
+  const locale = await getLocale();
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4 text-center">
-      <h1 className="text-6xl font-semibold tracking-tight">404</h1>
-      <p className="text-muted-foreground">Page not found.</p>
-      <Link href={`/${locale}`} className={buttonVariants()}>
-        Back to home
-      </Link>
-    </div>
+    <NotFoundContent
+      eyebrow={t("eyebrow")}
+      title={t("title")}
+      description={t("description")}
+      homeCta={t("homeCta")}
+      contactCta={t("contactCta")}
+      locale={locale}
+    />
   );
 }
