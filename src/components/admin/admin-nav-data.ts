@@ -3,9 +3,12 @@ import {
   Award,
   Briefcase,
   Building2,
+  Clock,
   FileText,
   Handshake,
+  Info,
   LayoutDashboard,
+  Network,
   Newspaper,
   Settings,
   Sparkles,
@@ -36,6 +39,16 @@ export function buildAdminNav(locale: string): AdminNavSection[] {
       items: [{ labelKey: "landing", href: `${base}/landing`, icon: Sparkles }],
     },
     {
+      titleKey: "aboutPage",
+      items: [
+        { labelKey: "about", href: `${base}/about`, icon: Info },
+        { labelKey: "leadership", href: `${base}/leadership`, icon: Users },
+        { labelKey: "history", href: `${base}/history`, icon: Clock },
+        { labelKey: "business", href: `${base}/business`, icon: Network },
+        { labelKey: "credentials", href: `${base}/credentials`, icon: Award },
+      ],
+    },
+    {
       titleKey: "content",
       items: [
         { labelKey: "partners", href: `${base}/partners`, icon: Handshake },
@@ -43,8 +56,6 @@ export function buildAdminNav(locale: string): AdminNavSection[] {
         { labelKey: "customers", href: `${base}/customers`, icon: Building2 },
         { labelKey: "solutions", href: `${base}/solutions`, icon: FileText },
         { labelKey: "newsroom", href: `${base}/newsroom`, icon: Newspaper },
-        { labelKey: "leadership", href: `${base}/leadership`, icon: Users },
-        { labelKey: "credentials", href: `${base}/credentials`, icon: Award },
       ],
     },
     {

@@ -1,0 +1,62 @@
+[
+  {
+    "name": "TBA",
+    "title": { "id": "Presiden Direktur", "en": "President Director" },
+    "bio": {
+      "id": "Profil singkat akan diperbarui melalui CMS admin.",
+      "en": "Short profile to be updated via the admin CMS."
+    },
+    "photoUrl": "",
+    "type": "director",
+    "order": 0,
+    "isActive": true
+  },
+  {
+    "name": "TBA",
+    "title": { "id": "Direktur Operasi", "en": "Director of Operations" },
+    "bio": {
+      "id": "Profil singkat akan diperbarui melalui CMS admin.",
+      "en": "Short profile to be updated via the admin CMS."
+    },
+    "photoUrl": "",
+    "type": "director",
+    "order": 1,
+    "isActive": true
+  },
+  {
+    "name": "TBA",
+    "title": { "id": "Direktur Keuangan", "en": "Director of Finance" },
+    "bio": {
+      "id": "Profil singkat akan diperbarui melalui CMS admin.",
+      "en": "Short profile to be updated via the admin CMS."
+    },
+    "photoUrl": "",
+    "type": "director",
+    "order": 2,
+    "isActive": true
+  },
+  {
+    "name": "TBA",
+    "title": { "id": "Presiden Komisaris", "en": "President Commissioner" },
+    "bio": {
+      "id": "Profil singkat akan diperbarui melalui CMS admin.",
+      "en": "Short profile to be updated via the admin CMS."
+    },
+    "photoUrl": "",
+    "type": "commissioner",
+    "order": 0,
+    "isActive": true
+  },
+  {
+    "name": "TBA",
+    "title": { "id": "Komisaris Independen", "en": "Independent Commissioner" },
+    "bio": {
+      "id": "Profil singkat akan diperbarui melalui CMS admin.",
+      "en": "Short profile to be updated via the admin CMS."
+    },
+    "photoUrl": "",
+    "type": "commissioner",
+    "order": 1,
+    "isActive": true
+  }
+]

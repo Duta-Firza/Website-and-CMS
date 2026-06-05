@@ -31,9 +31,15 @@ loadEnv({ path: ".env.local", override: true });
 loadEnv({ path: ".env" });
 
 import {
+  ABOUT_PAGE_ID,
+  AboutPage,
+  AffiliatedBusiness,
+  Credential,
   Customer,
+  HistoryEntry,
   HOME_HERO_ID,
   HomeHero,
+  LeadershipMember,
   Partner,
   Project,
   ReachPoint,
@@ -130,6 +136,40 @@ async function seedReachPoints() {
   return items.length;
 }
 
+async function seedAboutPage() {
+  const data = readJson<Record<string, unknown>>("about-page.json");
+  await AboutPage.findByIdAndUpdate(ABOUT_PAGE_ID, data, { upsert: true, new: true });
+  return 1;
+}
+
+async function seedLeadership() {
+  const items = readJson<Record<string, unknown>[]>("leadership.json");
+  await LeadershipMember.deleteMany({});
+  await LeadershipMember.insertMany(items);
+  return items.length;
+}
+
+async function seedHistory() {
+  const items = readJson<Record<string, unknown>[]>("history.json");
+  await HistoryEntry.deleteMany({});
+  await HistoryEntry.insertMany(items);
+  return items.length;
+}
+
+async function seedAffiliatedBusinesses() {
+  const items = readJson<Record<string, unknown>[]>("affiliated-businesses.json");
+  await AffiliatedBusiness.deleteMany({});
+  await AffiliatedBusiness.insertMany(items);
+  return items.length;
+}
+
+async function seedCredentials() {
+  const items = readJson<Record<string, unknown>[]>("credentials.json");
+  await Credential.deleteMany({});
+  await Credential.insertMany(items);
+  return items.length;
+}
+
 const SEEDERS = {
   user: seedUser,
   siteSettings: seedSiteSettings,
@@ -140,6 +180,11 @@ const SEEDERS = {
   customers: seedCustomers,
   projects: seedProjects,
   reachPoints: seedReachPoints,
+  aboutPage: seedAboutPage,
+  leadership: seedLeadership,
+  history: seedHistory,
+  affiliatedBusinesses: seedAffiliatedBusinesses,
+  credentials: seedCredentials,
 } as const;
 
 type SeederName = keyof typeof SEEDERS;

@@ -1,0 +1,22 @@
+[
+  {
+    "name": "PT Duta Firza Technologies",
+    "logoUrl": "",
+    "description": {
+      "id": "Entitas teknologi grup Duta Firza yang fokus pada perakitan lokal dan solusi instrumentasi industri di Sentul, Jawa Barat.",
+      "en": "Group technology arm focusing on local assembly and industrial instrumentation solutions, based in Sentul, West Java."
+    },
+    "websiteUrl": "",
+    "order": 0
+  },
+  {
+    "name": "PT Duta Firza Mulia",
+    "logoUrl": "",
+    "description": {
+      "id": "Entitas afiliasi yang memperluas jangkauan layanan dan portofolio teknologi Duta Firza Holding Group.",
+      "en": "Affiliated entity extending the Duta Firza Holding Group's service reach and technology portfolio."
+    },
+    "websiteUrl": "",
+    "order": 1
+  }
+]

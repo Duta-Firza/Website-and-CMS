@@ -1,13 +1,108 @@
 import { getTranslations } from "next-intl/server";
+import { VideoPlayer } from "@/components/public/about/video-player";
+import { SectionIndex } from "@/components/public/landing/section-index";
+import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
-import { UnderConstruction } from "@/components/public/under-construction";
+import { getAboutPage } from "@/lib/cms/about";
+import type { Locale } from "@/lib/cms/localize";
 
-export default async function Page() {
+interface PageParams {
+  locale: string;
+}
+
+function toLocale(locale: string): Locale {
+  return locale === "en" ? "en" : "id";
+}
+
+export default async function Page({ params }: { params: Promise<PageParams> }) {
+  const { locale } = await params;
   const t = await getTranslations("SectionTitles");
+  const tAbout = await getTranslations("About");
+  const about = await getAboutPage(toLocale(locale));
+
+  const hasValues = about.values.some((v) => v.title.trim() || v.description.trim());
+
   return (
-    <>
+    <div className="relative">
+      <SectionIndex value="01" />
       <PageHeader eyebrow={t("aboutEyebrow")} title={t("whoWeAreTitle")} />
-      <UnderConstruction />
-    </>
+
+      {about.intro && (
+        <ScrollReveal className="mx-auto mb-12 max-w-3xl text-center">
+          <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground md:text-lg">
+            {about.intro}
+          </p>
+        </ScrollReveal>
+      )}
+
+      {about.videoUrl && (
+        <ScrollReveal className="mx-auto mb-12 max-w-4xl">
+          <p className="mb-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            {tAbout("videoProfile")}
+          </p>
+          <VideoPlayer src={about.videoUrl} />
+        </ScrollReveal>
+      )}
+
+      {(about.vision || about.mission) && (
+        <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+          {about.vision && (
+            <ScrollReveal className="rounded-xl border bg-card p-6 md:p-8">
+              <span className="mb-4 block h-0.75 w-10 bg-brand-accent" aria-hidden />
+              <h2 className="mb-3 text-xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-2xl">
+                {tAbout("vision")}
+              </h2>
+              <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground md:text-base">
+                {about.vision}
+              </p>
+            </ScrollReveal>
+          )}
+          {about.mission && (
+            <ScrollReveal delay={120} className="rounded-xl border bg-card p-6 md:p-8">
+              <span className="mb-4 block h-0.75 w-10 bg-brand-accent" aria-hidden />
+              <h2 className="mb-3 text-xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-2xl">
+                {tAbout("mission")}
+              </h2>
+              <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground md:text-base">
+                {about.mission}
+              </p>
+            </ScrollReveal>
+          )}
+        </div>
+      )}
+
+      {hasValues && (
+        <section className="mb-12">
+          <ScrollReveal className="mx-auto mb-8 flex max-w-2xl flex-col items-center gap-3 text-center">
+            <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />
+            <h2 className="text-xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-2xl">
+              {tAbout("values")}
+            </h2>
+          </ScrollReveal>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {about.values.map((value, idx) => (
+              <ScrollReveal
+                // biome-ignore lint/suspicious/noArrayIndexKey: values is an ordered editor list
+                key={idx}
+                delay={idx * 80}
+                className="relative rounded-xl border bg-card p-5"
+              >
+                <span className="block font-mono text-[11px] font-semibold tracking-wider text-brand-accent">
+                  {String(idx + 1).padStart(2, "0")}
+                </span>
+                <h3 className="mt-2 text-base font-semibold text-brand-deep dark:text-foreground">
+                  {value.title}
+                </h3>
+                {value.description && (
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {value.description}
+                  </p>
+                )}
+              </ScrollReveal>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
   );
 }

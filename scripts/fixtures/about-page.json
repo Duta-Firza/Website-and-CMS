@@ -1,0 +1,73 @@
+{
+  "intro": {
+    "id": "Berdiri sejak 1979 sebagai mitra dagang spesialis sektor minyak dan gas Indonesia, PT Duta Firza telah berkembang lebih dari empat dekade menjadi penyedia layanan energi multi-disiplin. Tonggak penting tercapai pada 1990 ketika kami sukses menjalankan kontrak EPC downstream pertama, mengukuhkan reputasi kami untuk keunggulan teknis di seluruh value chain.",
+    "en": "Established in 1979 as a specialized trading partner for the Indonesian oil and gas sector, we have spent over four decades evolving into a multi-disciplinary energy services provider. Our journey reached a pivotal milestone in 1990 with the successful execution of our first downstream EPC contract — a move that solidified our reputation for technical excellence across the entire value chain."
+  },
+  "videoUrl": "",
+  "vision": {
+    "id": "Menjadi penyedia solusi energi terintegrasi terdepan di Indonesia, menjembatani keahlian industri klasik dengan masa depan digital untuk mendukung lanskap energi yang terus berkembang.",
+    "en": "To be Indonesia's leading integrated energy solutions provider, bridging classic industrial expertise with the digital future to power an evolving energy landscape."
+  },
+  "mission": {
+    "id": "Menghadirkan solusi end-to-end untuk operasi hulu dan hilir — dari instrumentasi presisi hingga EPC skala penuh — sambil membangun kemitraan industri yang langgeng dan mendorong pertumbuhan berkelanjutan.",
+    "en": "Deliver end-to-end solutions for upstream and downstream operations — from precision instrumentation to full-scale EPC — while building enduring industrial partnerships and driving sustainable growth."
+  },
+  "values": [
+    {
+      "title": {
+        "id": "Keunggulan Teknis",
+        "en": "Technical Excellence"
+      },
+      "description": {
+        "id": "Memenuhi kebutuhan mission-critical industri energi Indonesia dengan presisi dan keandalan di seluruh value chain.",
+        "en": "Meeting the mission-critical needs of Indonesia's energy industry with precision and reliability across the full value chain."
+      }
+    },
+    {
+      "title": {
+        "id": "Kemitraan Jangka Panjang",
+        "en": "Lasting Partnerships"
+      },
+      "description": {
+        "id": "Kami tidak hanya menyediakan layanan; kami membangun kemitraan industri yang langgeng dengan klien dan principal global.",
+        "en": "We don't just provide services; we build enduring industrial partnerships with clients and global principals alike."
+      }
+    },
+    {
+      "title": {
+        "id": "Inovasi Berkelanjutan",
+        "en": "Forward Innovation"
+      },
+      "description": {
+        "id": "Memperluas portofolio ke ICT, energi digital, dan teknologi air untuk melayani kebutuhan industrial dan digital masa depan.",
+        "en": "Expanding into ICT, digital power, and water technology to serve the industrial and digital needs of the future."
+      }
+    },
+    {
+      "title": {
+        "id": "Komitmen Lokal",
+        "en": "Local Commitment"
+      },
+      "description": {
+        "id": "Mendukung pertumbuhan industri domestik Indonesia melalui assembly facility lokal dan kepatuhan penuh pada regulasi nasional.",
+        "en": "Supporting Indonesia's domestic industrial growth through local assembly and full national regulatory compliance."
+      }
+    }
+  ],
+  "coreBusinessTitle": {
+    "id": "Bisnis Inti",
+    "en": "Core Business"
+  },
+  "coreBusinessDescription": {
+    "id": "Duta Firza Holding Group menaungi tiga divisi yang saling melengkapi: EPC untuk proyek infrastruktur energi, Trading untuk produk instrumentasi internasional, dan Manufacturing untuk perakitan lokal di Sentul, Jawa Barat. Kombinasi ketiganya memungkinkan kami melayani kebutuhan upstream dan downstream secara end-to-end.",
+    "en": "Duta Firza Holding Group oversees three complementary divisions: EPC for energy infrastructure projects, Trading for international instrumentation products, and Manufacturing for local assembly in Sentul, West Java. Together they let us serve upstream and downstream needs end-to-end."
+  },
+  "affiliatedBusinessTitle": {
+    "id": "Bisnis Afiliasi",
+    "en": "Affiliated Business"
+  },
+  "affiliatedBusinessDescription": {
+    "id": "Selain bisnis inti, PT Duta Firza memiliki entitas afiliasi yang memperluas jangkauan layanan dan portofolio teknologi kami.",
+    "en": "Beyond our core business, PT Duta Firza is supported by affiliated entities that extend our service reach and technology portfolio."
+  }
+}

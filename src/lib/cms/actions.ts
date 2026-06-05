@@ -5,9 +5,17 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import {
+  ABOUT_PAGE_ID,
+  AboutPage,
+  AffiliatedBusiness,
+  CREDENTIAL_TYPES,
+  Credential,
   Customer,
+  HistoryEntry,
   HOME_HERO_ID,
   HomeHero,
+  LEADERSHIP_TYPES,
+  LeadershipMember,
   Partner,
   PROJECT_CATEGORIES,
   Project,
@@ -305,6 +313,194 @@ export async function updateSiteSettings(
     const parsed = siteSettingsSchema.parse(input);
     await connectDB();
     await SiteSettings.findByIdAndUpdate(SITE_SETTINGS_ID, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── About Page (singleton) ──────────────────────────────────────────────────
+const aboutValueItemSchema = z.object({
+  title: localizedSchema,
+  description: localizedSchema,
+});
+
+const aboutPageSchema = z.object({
+  intro: localizedSchema,
+  videoUrl: z.string().default(""),
+  vision: localizedSchema,
+  mission: localizedSchema,
+  values: z.array(aboutValueItemSchema).default([]),
+  coreBusinessTitle: localizedSchema,
+  coreBusinessDescription: localizedSchema,
+  affiliatedBusinessTitle: localizedSchema,
+  affiliatedBusinessDescription: localizedSchema,
+});
+
+export async function updateAboutPage(
+  input: z.infer<typeof aboutPageSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = aboutPageSchema.parse(input);
+    await connectDB();
+    await AboutPage.findByIdAndUpdate(ABOUT_PAGE_ID, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Leadership ──────────────────────────────────────────────────────────────
+const leadershipSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1),
+  title: z.object({ id: z.string().min(1), en: z.string().min(1) }),
+  bio: localizedSchema,
+  photoUrl: z.string().default(""),
+  type: z.enum(LEADERSHIP_TYPES),
+  order: z.number().int().default(0),
+  isActive: z.boolean().default(true),
+});
+
+export async function upsertLeadershipMember(
+  input: z.infer<typeof leadershipSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { id, ...data } = leadershipSchema.parse(input);
+    await connectDB();
+    if (id) await LeadershipMember.findByIdAndUpdate(id, data);
+    else await LeadershipMember.create(data);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteLeadershipMember(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await LeadershipMember.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── History ─────────────────────────────────────────────────────────────────
+const historyEntrySchema = z.object({
+  id: z.string().optional(),
+  year: z.string().min(1),
+  title: z.object({ id: z.string().min(1), en: z.string().min(1) }),
+  description: localizedSchema,
+  order: z.number().int().default(0),
+});
+
+export async function upsertHistoryEntry(
+  input: z.infer<typeof historyEntrySchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { id, ...data } = historyEntrySchema.parse(input);
+    await connectDB();
+    if (id) await HistoryEntry.findByIdAndUpdate(id, data);
+    else await HistoryEntry.create(data);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteHistoryEntry(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await HistoryEntry.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Affiliated Business ─────────────────────────────────────────────────────
+const affiliatedBusinessSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1),
+  logoUrl: z.string().default(""),
+  description: localizedSchema,
+  websiteUrl: z.string().default(""),
+  order: z.number().int().default(0),
+});
+
+export async function upsertAffiliatedBusiness(
+  input: z.infer<typeof affiliatedBusinessSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { id, ...data } = affiliatedBusinessSchema.parse(input);
+    await connectDB();
+    if (id) await AffiliatedBusiness.findByIdAndUpdate(id, data);
+    else await AffiliatedBusiness.create(data);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteAffiliatedBusiness(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await AffiliatedBusiness.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Credentials ─────────────────────────────────────────────────────────────
+const credentialSchema = z.object({
+  id: z.string().optional(),
+  title: z.object({ id: z.string().min(1), en: z.string().min(1) }),
+  description: localizedSchema,
+  imageUrl: z.string().default(""),
+  type: z.enum(CREDENTIAL_TYPES),
+  issuer: z.string().default(""),
+  year: z.number().int().optional(),
+  order: z.number().int().default(0),
+});
+
+export async function upsertCredential(
+  input: z.infer<typeof credentialSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { id, ...data } = credentialSchema.parse(input);
+    await connectDB();
+    if (id) await Credential.findByIdAndUpdate(id, data);
+    else await Credential.create(data);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteCredential(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Credential.findByIdAndDelete(id);
     bust();
     return { ok: true };
   } catch (e) {
