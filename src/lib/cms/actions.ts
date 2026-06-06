@@ -353,6 +353,25 @@ export async function updateAboutPage(
   }
 }
 
+export async function updateAboutValues(
+  values: z.infer<typeof aboutValueItemSchema>[],
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = z.array(aboutValueItemSchema).parse(values);
+    await connectDB();
+    await AboutPage.findByIdAndUpdate(
+      ABOUT_PAGE_ID,
+      { values: parsed },
+      { upsert: true, new: true },
+    );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
 // ─── Leadership ──────────────────────────────────────────────────────────────
 const leadershipSchema = z.object({
   id: z.string().optional(),
@@ -501,6 +520,181 @@ export async function deleteCredential(id: string): Promise<ActionResult> {
     await requireAdmin();
     await connectDB();
     await Credential.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Reorder actions ─────────────────────────────────────────────────────────
+const reorderSchema = z.array(z.string().min(1)).min(1);
+
+async function reorderDocs<TDoc>(
+  model: { findByIdAndUpdate: (id: string, update: Record<string, number>) => Promise<TDoc> },
+  ids: string[],
+  field: string = "order",
+): Promise<void> {
+  await connectDB();
+  await Promise.all(ids.map((id, i) => model.findByIdAndUpdate(id, { [field]: i + 1 })));
+}
+
+export async function reorderStats(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await reorderDocs(Stat, reorderSchema.parse(ids));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderReachPoints(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await reorderDocs(ReachPoint, reorderSchema.parse(ids));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderPartners(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await reorderDocs(Partner, reorderSchema.parse(ids));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderCustomers(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await reorderDocs(Customer, reorderSchema.parse(ids));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderProjects(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = reorderSchema.parse(ids);
+    await connectDB();
+    const docs = await Project.find({ _id: { $in: parsed } })
+      .select("_id category")
+      .lean<{ _id: unknown; category: string }[]>();
+    const catById = new Map(docs.map((d) => [String(d._id), d.category]));
+    const counters: Record<string, number> = {};
+    await Promise.all(
+      parsed.map((id) => {
+        const cat = catById.get(id);
+        if (!cat) return Promise.resolve();
+        counters[cat] = (counters[cat] ?? 0) + 1;
+        return Project.findByIdAndUpdate(id, { order: counters[cat] });
+      }),
+    );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderProjectHighlights(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await reorderDocs(Project, reorderSchema.parse(ids), "highlightOrder");
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderSolutions(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await reorderDocs(Solution, reorderSchema.parse(ids));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderLeadership(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = reorderSchema.parse(ids);
+    await connectDB();
+    const docs = await LeadershipMember.find({ _id: { $in: parsed } })
+      .select("_id type")
+      .lean<{ _id: unknown; type: string }[]>();
+    const typeById = new Map(docs.map((d) => [String(d._id), d.type]));
+    const counters: Record<string, number> = {};
+    await Promise.all(
+      parsed.map((id) => {
+        const type = typeById.get(id);
+        if (!type) return Promise.resolve();
+        counters[type] = (counters[type] ?? 0) + 1;
+        return LeadershipMember.findByIdAndUpdate(id, { order: counters[type] });
+      }),
+    );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderHistory(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await reorderDocs(HistoryEntry, reorderSchema.parse(ids));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderAffiliatedBusinesses(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await reorderDocs(AffiliatedBusiness, reorderSchema.parse(ids));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderCredentials(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = reorderSchema.parse(ids);
+    await connectDB();
+    const docs = await Credential.find({ _id: { $in: parsed } })
+      .select("_id type")
+      .lean<{ _id: unknown; type: string }[]>();
+    const typeById = new Map(docs.map((d) => [String(d._id), d.type]));
+    const counters: Record<string, number> = {};
+    await Promise.all(
+      parsed.map((id) => {
+        const type = typeById.get(id);
+        if (!type) return Promise.resolve();
+        counters[type] = (counters[type] ?? 0) + 1;
+        return Credential.findByIdAndUpdate(id, { order: counters[type] });
+      }),
+    );
     bust();
     return { ok: true };
   } catch (e) {

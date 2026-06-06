@@ -4,11 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,7 +45,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { deleteCredential, upsertCredential } from "@/lib/cms/actions";
+import { deleteCredential, reorderCredentials, upsertCredential } from "@/lib/cms/actions";
 import { CREDENTIAL_TYPES, type CredentialType } from "@/models/constants";
 import type { CredentialRow } from "./page";
 
@@ -77,11 +78,28 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
   const [activeType, setActiveType] = useState<CredentialType>("certification");
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [items, setItems] = useState(initial);
 
-  const filtered = useMemo(
-    () => initial.filter((c) => c.type === activeType),
-    [initial, activeType],
-  );
+  useEffect(() => {
+    setItems(initial);
+  }, [initial]);
+
+  const filtered = useMemo(() => items.filter((c) => c.type === activeType), [items, activeType]);
+
+  const handleReorder = async (newIds: string[]) => {
+    const others = items.filter((c) => c.type !== activeType);
+    const newOrder = newIds
+      .map((id) => items.find((c) => c.id === id))
+      .filter((c): c is CredentialRow => !!c);
+    setItems([...others, ...newOrder]);
+    const result = await reorderCredentials(newIds);
+    if (!result.ok) {
+      toast.error(result.error);
+      setItems(initial);
+    } else {
+      router.refresh();
+    }
+  };
 
   return (
     <>
@@ -92,7 +110,7 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
             <TabsTrigger value="acknowledgement">Acknowledgements</TabsTrigger>
           </TabsList>
         </Tabs>
-        <Button onClick={() => setEditing(empty(activeType))}>
+        <Button onClick={() => setEditing({ ...empty(activeType), order: filtered.length + 1 })}>
           <Plus className="mr-2 h-4 w-4" />
           {t("add")}
         </Button>
@@ -102,42 +120,54 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-10" />
               <TableHead>Title</TableHead>
               <TableHead className="hidden md:table-cell">Issuer</TableHead>
               <TableHead className="hidden w-20 md:table-cell">Year</TableHead>
-              <TableHead className="w-16">Order</TableHead>
               <TableHead className="w-24 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {filtered.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
-                  No {activeType === "certification" ? "certifications" : "acknowledgements"} yet.
-                </TableCell>
-              </TableRow>
-            )}
-            {filtered.map((c) => (
-              <TableRow key={c.id}>
-                <TableCell className="font-medium">{c.title.id}</TableCell>
-                <TableCell className="hidden text-xs text-muted-foreground md:table-cell">
-                  {c.issuer || "—"}
-                </TableCell>
-                <TableCell className="hidden md:table-cell">{c.year ?? "—"}</TableCell>
-                <TableCell>{c.order}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="icon-sm" onClick={() => setEditing({ ...c })}>
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="icon-sm" onClick={() => setDeleteId(c.id)}>
-                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+          <SortableContainer items={filtered.map((c) => c.id)} onReorder={handleReorder}>
+            <TableBody>
+              {filtered.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
+                    No {activeType === "certification" ? "certifications" : "acknowledgements"} yet.
+                  </TableCell>
+                </TableRow>
+              )}
+              {filtered.map((c) => (
+                <SortableItem key={c.id} id={c.id}>
+                  {({ ref, style, handleProps }) => (
+                    <TableRow ref={ref} style={style}>
+                      <TableCell>
+                        <DragHandle handleProps={handleProps} size="sm" />
+                      </TableCell>
+                      <TableCell className="font-medium">{c.title.id}</TableCell>
+                      <TableCell className="hidden text-xs text-muted-foreground md:table-cell">
+                        {c.issuer || "—"}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">{c.year ?? "—"}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={() => setEditing({ ...c })}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button variant="ghost" size="icon-sm" onClick={() => setDeleteId(c.id)}>
+                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </SortableItem>
+              ))}
+            </TableBody>
+          </SortableContainer>
         </Table>
       </div>
 
@@ -253,10 +283,6 @@ function CredentialDialog({
             <div className="space-y-2">
               <Label htmlFor="cr-year">Year</Label>
               <Input id="cr-year" type="number" {...register("year", { valueAsNumber: true })} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="cr-order">Order</Label>
-              <Input id="cr-order" type="number" {...register("order", { valueAsNumber: true })} />
             </div>
           </div>
           <DialogFooter>

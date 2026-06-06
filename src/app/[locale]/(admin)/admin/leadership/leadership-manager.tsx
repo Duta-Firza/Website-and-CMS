@@ -4,11 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,7 +45,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteLeadershipMember, upsertLeadershipMember } from "@/lib/cms/actions";
+import {
+  deleteLeadershipMember,
+  reorderLeadership,
+  upsertLeadershipMember,
+} from "@/lib/cms/actions";
 import { cn } from "@/lib/utils";
 import { LEADERSHIP_TYPES, type LeadershipType } from "@/models/constants";
 import type { LeadershipRow } from "./page";
@@ -77,11 +82,33 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
   const t = useTranslations("Admin");
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [items, setItems] = useState(initial);
+
+  useEffect(() => {
+    setItems(initial);
+  }, [initial]);
+
+  const handleReorder = async (newIds: string[]) => {
+    const next = newIds
+      .map((id) => items.find((m) => m.id === id))
+      .filter((m): m is LeadershipRow => !!m);
+    setItems(next);
+    const result = await reorderLeadership(newIds);
+    if (!result.ok) {
+      toast.error(result.error);
+      setItems(initial);
+    } else {
+      router.refresh();
+    }
+  };
 
   return (
     <>
-      <div className="flex justify-end">
-        <Button onClick={() => setEditing(empty)}>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">
+          Drag and drop reorders within each type (directors / commissioners).
+        </p>
+        <Button onClick={() => setEditing({ ...empty, order: items.length + 1 })}>
           <Plus className="mr-2 h-4 w-4" />
           {t("add")}
         </Button>
@@ -91,53 +118,65 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-10" />
               <TableHead>Name</TableHead>
               <TableHead className="hidden md:table-cell">Title</TableHead>
               <TableHead className="hidden md:table-cell">Type</TableHead>
-              <TableHead className="w-16">Order</TableHead>
               <TableHead className="w-16">Active</TableHead>
               <TableHead className="w-24 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {initial.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">
-                  No leadership members yet.
-                </TableCell>
-              </TableRow>
-            )}
-            {initial.map((m) => (
-              <TableRow key={m.id}>
-                <TableCell className="font-medium">{m.name}</TableCell>
-                <TableCell className="hidden md:table-cell">{m.title.id}</TableCell>
-                <TableCell className="hidden capitalize md:table-cell">{m.type}</TableCell>
-                <TableCell>{m.order}</TableCell>
-                <TableCell>
-                  <span
-                    className={cn(
-                      "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider",
-                      m.isActive
-                        ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                        : "bg-muted text-muted-foreground",
-                    )}
-                  >
-                    {m.isActive ? "Yes" : "No"}
-                  </span>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="icon-sm" onClick={() => setEditing({ ...m })}>
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="icon-sm" onClick={() => setDeleteId(m.id)}>
-                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+          <SortableContainer items={items.map((m) => m.id)} onReorder={handleReorder}>
+            <TableBody>
+              {items.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">
+                    No leadership members yet.
+                  </TableCell>
+                </TableRow>
+              )}
+              {items.map((m) => (
+                <SortableItem key={m.id} id={m.id}>
+                  {({ ref, style, handleProps }) => (
+                    <TableRow ref={ref} style={style}>
+                      <TableCell>
+                        <DragHandle handleProps={handleProps} size="sm" />
+                      </TableCell>
+                      <TableCell className="font-medium">{m.name}</TableCell>
+                      <TableCell className="hidden md:table-cell">{m.title.id}</TableCell>
+                      <TableCell className="hidden capitalize md:table-cell">{m.type}</TableCell>
+                      <TableCell>
+                        <span
+                          className={cn(
+                            "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider",
+                            m.isActive
+                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                              : "bg-muted text-muted-foreground",
+                          )}
+                        >
+                          {m.isActive ? "Yes" : "No"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={() => setEditing({ ...m })}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button variant="ghost" size="icon-sm" onClick={() => setDeleteId(m.id)}>
+                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </SortableItem>
+              ))}
+            </TableBody>
+          </SortableContainer>
         </Table>
       </div>
 
@@ -228,7 +267,7 @@ function LeadershipDialog({
             <Label htmlFor="lm-photo">Photo URL</Label>
             <Input id="lm-photo" {...register("photoUrl")} placeholder="https://… /photo.jpg" />
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label>Type</Label>
               <Select
@@ -246,10 +285,6 @@ function LeadershipDialog({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lm-order">Order</Label>
-              <Input id="lm-order" type="number" {...register("order", { valueAsNumber: true })} />
             </div>
             <div className="flex items-center gap-2 pt-7">
               <Switch

@@ -4,11 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Plus, Star, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,7 +45,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteProject, upsertProject } from "@/lib/cms/actions";
+import { deleteProject, reorderProjects, upsertProject } from "@/lib/cms/actions";
 import { cn } from "@/lib/utils";
 import { PROJECT_CATEGORIES, type ProjectCategory } from "@/models/constants";
 import type { ProjectRow } from "./page";
@@ -92,11 +93,33 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
   const t = useTranslations("Admin");
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [items, setItems] = useState(initial);
+
+  useEffect(() => {
+    setItems(initial);
+  }, [initial]);
+
+  const handleReorder = async (newIds: string[]) => {
+    const next = newIds
+      .map((id) => items.find((p) => p.id === id))
+      .filter((p): p is ProjectRow => !!p);
+    setItems(next);
+    const result = await reorderProjects(newIds);
+    if (!result.ok) {
+      toast.error(result.error);
+      setItems(initial);
+    } else {
+      router.refresh();
+    }
+  };
 
   return (
     <>
-      <div className="flex justify-end">
-        <Button onClick={() => setEditing(empty)}>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">
+          Drag and drop reorders projects within their category.
+        </p>
+        <Button onClick={() => setEditing({ ...empty, order: items.length + 1 })}>
           <Plus className="mr-2 h-4 w-4" />
           {t("add")}
         </Button>
@@ -106,6 +129,7 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-10" />
               <TableHead>Title</TableHead>
               <TableHead className="hidden md:table-cell">Client</TableHead>
               <TableHead className="hidden md:table-cell">Year</TableHead>
@@ -115,51 +139,66 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
               <TableHead className="w-24 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {initial.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center text-sm text-muted-foreground">
-                  No projects yet.
-                </TableCell>
-              </TableRow>
-            )}
-            {initial.map((p) => (
-              <TableRow key={p.id}>
-                <TableCell className="max-w-xs">
-                  <p className="font-medium">{p.title.id}</p>
-                  <p className="text-xs text-muted-foreground">/{p.slug}</p>
-                </TableCell>
-                <TableCell className="hidden md:table-cell">{p.client}</TableCell>
-                <TableCell className="hidden md:table-cell">{p.year ?? "—"}</TableCell>
-                <TableCell className="hidden capitalize md:table-cell">{p.category}</TableCell>
-                <TableCell>
-                  {p.isHighlighted && <Star className="h-4 w-4 text-brand-accent" />}
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={cn(
-                      "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider",
-                      p.isPublished
-                        ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                        : "bg-muted text-muted-foreground",
-                    )}
-                  >
-                    {p.isPublished ? "Yes" : "No"}
-                  </span>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="icon-sm" onClick={() => setEditing({ ...p })}>
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="icon-sm" onClick={() => setDeleteId(p.id)}>
-                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+          <SortableContainer items={items.map((p) => p.id)} onReorder={handleReorder}>
+            <TableBody>
+              {items.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
+                    No projects yet.
+                  </TableCell>
+                </TableRow>
+              )}
+              {items.map((p) => (
+                <SortableItem key={p.id} id={p.id}>
+                  {({ ref, style, handleProps }) => (
+                    <TableRow ref={ref} style={style}>
+                      <TableCell>
+                        <DragHandle handleProps={handleProps} size="sm" />
+                      </TableCell>
+                      <TableCell className="max-w-xs">
+                        <p className="font-medium">{p.title.id}</p>
+                        <p className="text-xs text-muted-foreground">/{p.slug}</p>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">{p.client}</TableCell>
+                      <TableCell className="hidden md:table-cell">{p.year ?? "—"}</TableCell>
+                      <TableCell className="hidden capitalize md:table-cell">
+                        {p.category}
+                      </TableCell>
+                      <TableCell>
+                        {p.isHighlighted && <Star className="h-4 w-4 text-brand-accent" />}
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className={cn(
+                            "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider",
+                            p.isPublished
+                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                              : "bg-muted text-muted-foreground",
+                          )}
+                        >
+                          {p.isPublished ? "Yes" : "No"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={() => setEditing({ ...p })}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button variant="ghost" size="icon-sm" onClick={() => setDeleteId(p.id)}>
+                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </SortableItem>
+              ))}
+            </TableBody>
+          </SortableContainer>
         </Table>
       </div>
 
@@ -264,7 +303,7 @@ function ProjectDialog({
             <Label htmlFor="pr-image">Image URL</Label>
             <Input id="pr-image" {...register("image")} placeholder="https://..." />
           </div>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="pr-year">Year</Label>
               <Input id="pr-year" type="number" {...register("year", { valueAsNumber: true })} />
@@ -288,10 +327,6 @@ function ProjectDialog({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="pr-order">Order</Label>
-              <Input id="pr-order" type="number" {...register("order", { valueAsNumber: true })} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="pr-horder">Featured order</Label>
