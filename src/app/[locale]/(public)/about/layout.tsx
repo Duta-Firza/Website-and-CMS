@@ -4,8 +4,8 @@ import { buildNav } from "@/components/layout/main-nav";
 import { SectionPattern } from "@/components/public/landing/section-pattern";
 // Alternative pattern variants — swap the import below to try a different
 // backdrop style across all About sub-pages:
-  // import { SectionPatternGrid as SectionPattern } from "@/components/public/landing/section-pattern-grid";
-  // import { SectionPatternDiagonal as SectionPattern } from "@/components/public/landing/section-pattern-diagonal";
+// import { SectionPatternGrid as SectionPattern } from "@/components/public/landing/section-pattern-grid";
+// import { SectionPatternDiagonal as SectionPattern } from "@/components/public/landing/section-pattern-diagonal";
 import { SectionLayout } from "@/components/public/section/section-layout";
 
 /**

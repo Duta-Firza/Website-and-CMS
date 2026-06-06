@@ -1,17 +1,31 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  ArrowRightLeft,
   Award,
+  BarChart3,
   Briefcase,
   Building2,
   Clock,
+  Factory,
+  FileBarChart,
   FileText,
+  FolderOpen,
   Handshake,
+  HardHat,
+  Home,
   Info,
+  Layers,
   LayoutDashboard,
+  LineChart,
+  Mail,
+  MapPin,
+  Megaphone,
   Network,
   Newspaper,
+  Package,
   Settings,
   Sparkles,
+  TrendingUp,
   UserCog,
   Users,
 } from "lucide-react";
@@ -20,50 +34,156 @@ export interface AdminNavItem {
   labelKey: string;
   href: string;
   icon: LucideIcon;
+  comingSoon?: boolean;
 }
 
-export interface AdminNavSection {
+export interface AdminNavGroup {
+  key: string;
   titleKey: string;
+  icon: LucideIcon;
   items: AdminNavItem[];
 }
 
-export function buildAdminNav(locale: string): AdminNavSection[] {
+export interface AdminNavData {
+  /** Top-level (no group) entry: Dashboard */
+  top: AdminNavItem;
+  groups: AdminNavGroup[];
+}
+
+export function buildAdminNav(locale: string): AdminNavData {
   const base = `/${locale}/admin`;
-  return [
-    {
-      titleKey: "overview",
-      items: [{ labelKey: "dashboard", href: base, icon: LayoutDashboard }],
-    },
-    {
-      titleKey: "landingPage",
-      items: [{ labelKey: "landing", href: `${base}/landing`, icon: Sparkles }],
-    },
-    {
-      titleKey: "aboutPage",
-      items: [
-        { labelKey: "about", href: `${base}/about`, icon: Info },
-        { labelKey: "leadership", href: `${base}/leadership`, icon: Users },
-        { labelKey: "history", href: `${base}/history`, icon: Clock },
-        { labelKey: "business", href: `${base}/business`, icon: Network },
-        { labelKey: "credentials", href: `${base}/credentials`, icon: Award },
-      ],
-    },
-    {
-      titleKey: "content",
-      items: [
-        { labelKey: "partners", href: `${base}/partners`, icon: Handshake },
-        { labelKey: "projects", href: `${base}/projects`, icon: Briefcase },
-        { labelKey: "customers", href: `${base}/customers`, icon: Building2 },
-        { labelKey: "solutions", href: `${base}/solutions`, icon: FileText },
-        { labelKey: "newsroom", href: `${base}/newsroom`, icon: Newspaper },
-      ],
-    },
-    {
-      titleKey: "system",
-      items: [
-        { labelKey: "settings", href: `${base}/settings`, icon: Settings },
-        { labelKey: "users", href: `${base}/users`, icon: UserCog },
-      ],
-    },
-  ];
+  return {
+    top: { labelKey: "dashboard", href: base, icon: LayoutDashboard },
+    groups: [
+      {
+        key: "home",
+        titleKey: "groupHome",
+        icon: Home,
+        items: [
+          { labelKey: "hero", href: `${base}/landing?section=hero`, icon: Sparkles },
+          { labelKey: "stats", href: `${base}/landing?section=stats`, icon: BarChart3 },
+          { labelKey: "reach", href: `${base}/landing?section=reach`, icon: MapPin },
+        ],
+      },
+      {
+        key: "about",
+        titleKey: "groupAbout",
+        icon: Info,
+        items: [
+          { labelKey: "about", href: `${base}/about`, icon: FileText },
+          { labelKey: "leadership", href: `${base}/leadership`, icon: Users },
+          { labelKey: "history", href: `${base}/history`, icon: Clock },
+          { labelKey: "business", href: `${base}/business`, icon: Network },
+          { labelKey: "credentials", href: `${base}/credentials`, icon: Award },
+        ],
+      },
+      {
+        key: "solutions",
+        titleKey: "groupSolutions",
+        icon: Layers,
+        items: [
+          {
+            labelKey: "trading",
+            href: `${base}/solutions/trading`,
+            icon: ArrowRightLeft,
+            comingSoon: true,
+          },
+          {
+            labelKey: "tradingPartners",
+            href: `${base}/solutions/trading/partners`,
+            icon: Handshake,
+            comingSoon: true,
+          },
+          {
+            labelKey: "tradingProducts",
+            href: `${base}/solutions/trading/products`,
+            icon: Package,
+            comingSoon: true,
+          },
+          {
+            labelKey: "manufacturing",
+            href: `${base}/solutions/manufacturing`,
+            icon: Factory,
+            comingSoon: true,
+          },
+          {
+            labelKey: "epc",
+            href: `${base}/solutions/epc`,
+            icon: HardHat,
+            comingSoon: true,
+          },
+        ],
+      },
+      {
+        key: "investorRelations",
+        titleKey: "groupInvestorRelations",
+        icon: LineChart,
+        items: [
+          {
+            labelKey: "stocks",
+            href: `${base}/investor-relations/stocks`,
+            icon: TrendingUp,
+            comingSoon: true,
+          },
+          {
+            labelKey: "reports",
+            href: `${base}/investor-relations/reports`,
+            icon: FileBarChart,
+            comingSoon: true,
+          },
+          {
+            labelKey: "pressRelease",
+            href: `${base}/investor-relations/press-release`,
+            icon: Megaphone,
+            comingSoon: true,
+          },
+          {
+            labelKey: "newsroom",
+            href: `${base}/investor-relations/newsroom`,
+            icon: Newspaper,
+            comingSoon: true,
+          },
+          {
+            labelKey: "companyProfile",
+            href: `${base}/investor-relations/company-profile`,
+            icon: Building2,
+            comingSoon: true,
+          },
+        ],
+      },
+      {
+        key: "contact",
+        titleKey: "groupContact",
+        icon: Mail,
+        items: [
+          { labelKey: "contactInfo", href: `${base}/contact`, icon: Mail, comingSoon: true },
+          {
+            labelKey: "careers",
+            href: `${base}/contact/careers`,
+            icon: Briefcase,
+            comingSoon: true,
+          },
+        ],
+      },
+      {
+        key: "content",
+        titleKey: "groupContent",
+        icon: FolderOpen,
+        items: [
+          { labelKey: "partners", href: `${base}/partners`, icon: Handshake },
+          { labelKey: "projects", href: `${base}/projects`, icon: Briefcase },
+          { labelKey: "customers", href: `${base}/customers`, icon: Building2 },
+        ],
+      },
+      {
+        key: "system",
+        titleKey: "groupSystem",
+        icon: Settings,
+        items: [
+          { labelKey: "settings", href: `${base}/settings`, icon: Settings },
+          { labelKey: "users", href: `${base}/users`, icon: UserCog, comingSoon: true },
+        ],
+      },
+    ],
+  };
 }
