@@ -1,13 +1,9 @@
 import { type InferSchemaType, model, models, Schema } from "mongoose";
 import { stripVersion } from "./_shared";
+import { INQUIRY_SOURCES, INQUIRY_STATUSES } from "./constants";
 
-export const INQUIRY_SOURCES = ["trading", "manufacturing", "epc", "contact"] as const;
-
-export type InquirySource = (typeof INQUIRY_SOURCES)[number];
-
-export const INQUIRY_STATUSES = ["new", "read", "archived"] as const;
-
-export type InquiryStatus = (typeof INQUIRY_STATUSES)[number];
+export { INQUIRY_SOURCES, INQUIRY_STATUSES };
+export type { InquirySource, InquiryStatus } from "./constants";
 
 const inquirySchema = new Schema(
   {

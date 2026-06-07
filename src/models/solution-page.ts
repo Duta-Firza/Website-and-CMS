@@ -1,20 +1,9 @@
 import { type InferSchemaType, model, models, Schema } from "mongoose";
 import { localizedStringOptional, stripVersion } from "./_shared";
+import { SOLUTION_PAGE_SLUGS, SOLUTION_PAGE_STATUSES } from "./constants";
 
-export const SOLUTION_PAGE_SLUGS = [
-  "solutions",
-  "trading",
-  "trading-partners",
-  "trading-products",
-  "manufacturing",
-  "epc",
-] as const;
-
-export type SolutionPageSlug = (typeof SOLUTION_PAGE_SLUGS)[number];
-
-export const SOLUTION_PAGE_STATUSES = ["published", "comingSoon", "hidden"] as const;
-
-export type SolutionPageStatus = (typeof SOLUTION_PAGE_STATUSES)[number];
+export { SOLUTION_PAGE_SLUGS, SOLUTION_PAGE_STATUSES };
+export type { SolutionPageSlug, SolutionPageStatus } from "./constants";
 
 const heroSchema = new Schema(
   {

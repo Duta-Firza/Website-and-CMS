@@ -1,48 +1,16 @@
+import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
-import { connectDB } from "@/lib/db";
-import { SOLUTION_KEYS, Solution, type SolutionKey } from "@/models";
-import { SolutionForm } from "./solution-form";
+import { SOLUTION_PAGE_SLUGS } from "@/models";
+import { loadSolutionPagesForOverview } from "./_components/load-solution-page";
+import { SolutionsOverviewTable } from "./_components/solutions-overview-table";
 
-async function loadSolutions() {
-  await connectDB();
-  const docs = await Solution.find().sort({ order: 1 }).lean();
-  const byKey = new Map<SolutionKey, (typeof docs)[number]>();
-  for (const d of docs) byKey.set(d.key as SolutionKey, d);
-
-  // Ensure all 3 known keys exist with defaults so admin can edit before seed
-  return SOLUTION_KEYS.map((key, idx) => {
-    const doc = byKey.get(key);
-    return {
-      id: doc ? String(doc._id) : undefined,
-      key,
-      title: doc?.title ?? { id: "", en: "" },
-      description: doc?.description ?? { id: "", en: "" },
-      iconName: doc?.iconName ?? defaultIcon(key),
-      href: doc?.href ?? `/${"id"}/solutions/${key}`,
-      order: doc?.order ?? idx,
-    };
-  });
-}
-
-function defaultIcon(key: SolutionKey): string {
-  if (key === "trading") return "Handshake";
-  if (key === "manufacturing") return "Factory";
-  return "HardHat";
-}
-
-export default async function SolutionsAdminPage() {
-  const solutions = await loadSolutions();
+export default async function SolutionsOverviewPage() {
+  const rows = await loadSolutionPagesForOverview(SOLUTION_PAGE_SLUGS);
+  const t = await getTranslations("Admin.pages.solutionsOverview");
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        title="Solutions"
-        description="The three solution cards displayed on the homepage. Click Save on each card to persist changes."
-      />
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {solutions.map((s) => (
-          <SolutionForm key={s.key} initial={s} />
-        ))}
-      </div>
+      <AdminPageHeader title={t("title")} description={t("description")} />
+      <SolutionsOverviewTable initial={rows} />
     </div>
   );
 }
