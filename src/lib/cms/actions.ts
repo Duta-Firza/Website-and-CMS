@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
+import { sendInquiryEmail } from "@/lib/email";
 import {
   ABOUT_PAGE_ID,
   AboutPage,
@@ -14,16 +15,23 @@ import {
   HistoryEntry,
   HOME_HERO_ID,
   HomeHero,
+  INQUIRY_SOURCES,
+  INQUIRY_STATUSES,
+  Inquiry,
   LEADERSHIP_TYPES,
   LeadershipMember,
   Partner,
   PROJECT_CATEGORIES,
+  Product,
   Project,
   ReachPoint,
   SITE_SETTINGS_ID,
   SiteSettings,
   SOLUTION_KEYS,
+  SOLUTION_PAGE_SLUGS,
+  SOLUTION_PAGE_STATUSES,
   Solution,
+  SolutionPage,
   Stat,
 } from "@/models";
 import { STAT_ICONS } from "@/models/constants";
@@ -774,6 +782,205 @@ export async function toggleProjectHighlighted(id: string, value: boolean): Prom
     const parsed = toggleSchema.parse({ id, value });
     await connectDB();
     await Project.findByIdAndUpdate(parsed.id, { isHighlighted: parsed.value });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Solution Pages ─────────────────────────────────────────────────────────
+const solutionPageContentSchema = z.object({
+  hero: z.object({
+    eyebrow: localizedSchema,
+    title: localizedSchema,
+    subtitle: localizedSchema,
+    backgroundImage: z.string().default(""),
+  }),
+  body: z.object({
+    heading: localizedSchema,
+    content: localizedSchema,
+  }),
+  inquiryFormEnabled: z.boolean().default(true),
+  comingSoonMessage: localizedSchema,
+  status: z.enum(SOLUTION_PAGE_STATUSES),
+});
+
+export async function updateSolutionPage(
+  slug: string,
+  input: z.infer<typeof solutionPageContentSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsedSlug = z.enum(SOLUTION_PAGE_SLUGS).parse(slug);
+    const parsed = solutionPageContentSchema.parse(input);
+    await connectDB();
+    await SolutionPage.findByIdAndUpdate(parsedSlug, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function setSolutionPageStatus(slug: string, status: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsedSlug = z.enum(SOLUTION_PAGE_SLUGS).parse(slug);
+    const parsedStatus = z.enum(SOLUTION_PAGE_STATUSES).parse(status);
+    await connectDB();
+    await SolutionPage.findByIdAndUpdate(
+      parsedSlug,
+      { status: parsedStatus },
+      { upsert: true, new: true },
+    );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Products ────────────────────────────────────────────────────────────────
+const productSchema = z.object({
+  id: z.string().optional(),
+  partnerId: z.string().nullable().default(null),
+  principleOverride: z.object({
+    name: z.string().default(""),
+    logoUrl: z.string().default(""),
+    origin: z.string().default(""),
+  }),
+  productType: localizedSchema,
+  skuCount: z.number().int().nonnegative().default(0),
+  partnershipStart: z.number().int().nullable().default(null),
+  photos: z.array(z.string()).default([]),
+  order: z.number().int().default(0),
+  isActive: z.boolean().default(true),
+});
+
+export async function upsertProduct(input: z.infer<typeof productSchema>): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { id, ...data } = productSchema.parse(input);
+    await connectDB();
+    if (id) await Product.findByIdAndUpdate(id, data);
+    else await Product.create(data);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteProduct(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Product.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderProducts(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await reorderDocs(Product, reorderSchema.parse(ids));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function toggleProductActive(id: string, value: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = toggleSchema.parse({ id, value });
+    await connectDB();
+    await Product.findByIdAndUpdate(parsed.id, { isActive: parsed.value });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Inquiry ─────────────────────────────────────────────────────────────────
+const inquiryPayloadSchema = z.object({
+  source: z.enum(INQUIRY_SOURCES),
+  firstName: z.string().min(1).max(80),
+  lastName: z.string().max(80).default(""),
+  email: z.string().email().max(160),
+  company: z.string().min(1).max(160),
+  phone: z.string().max(40).default(""),
+  websiteUrl: z.string().max(200).default(""),
+  country: z.string().max(80).default(""),
+  message: z.string().min(1).max(4000),
+});
+
+/**
+ * Public-facing — no requireAdmin. Persists the inquiry first; email send
+ * runs after but failure is not fatal (DB is the source of truth).
+ */
+export async function submitInquiry(
+  input: z.infer<typeof inquiryPayloadSchema>,
+): Promise<ActionResult> {
+  try {
+    const parsed = inquiryPayloadSchema.parse(input);
+    await connectDB();
+    await Inquiry.create(parsed);
+    try {
+      const fullName = [parsed.firstName, parsed.lastName].filter(Boolean).join(" ");
+      await sendInquiryEmail({
+        name: fullName,
+        company: parsed.company,
+        email: parsed.email,
+        phone: parsed.phone || undefined,
+        message: parsed.message,
+        source: parsed.source,
+      });
+    } catch (emailErr) {
+      console.error("[inquiry] email send failed", emailErr);
+    }
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function updateInquiryStatus(
+  id: string,
+  status: string,
+  notes?: string,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = z
+      .object({
+        id: z.string().min(1),
+        status: z.enum(INQUIRY_STATUSES),
+        notes: z.string().max(2000).optional(),
+      })
+      .parse({ id, status, notes });
+    await connectDB();
+    const update: Record<string, unknown> = { status: parsed.status };
+    if (parsed.notes !== undefined) update.notes = parsed.notes;
+    await Inquiry.findByIdAndUpdate(parsed.id, update);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteInquiry(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Inquiry.findByIdAndDelete(id);
     bust();
     return { ok: true };
   } catch (e) {

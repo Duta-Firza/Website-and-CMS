@@ -149,6 +149,79 @@
     "certificationsEmpty": "Certifications will appear here once added.",
     "acknowledgementsEmpty": "Acknowledgements will appear here once added."
   },
+  "Solutions": {
+    "landing": {
+      "eyebrow": "Solutions",
+      "title": "Integrated solutions across the energy value chain",
+      "subtitle": "Three business lines that together cover trading, manufacturing, and full EPC delivery for Indonesia's energy sector.",
+      "tradingCardTitle": "Trading",
+      "tradingCardDescription": "High-quality measurement and control solutions from trusted global manufacturers.",
+      "manufacturingCardTitle": "Manufacturing",
+      "manufacturingCardDescription": "Design, system integration, and technical support for oil & gas, energy, and ICT facilities.",
+      "epcCardTitle": "EPC & Projects",
+      "epcCardDescription": "Engineering, procurement, and construction for energy infrastructure projects.",
+      "exploreCta": "Explore"
+    },
+    "trading": {
+      "inquiryTitle": "Submit an Inquiry",
+      "inquirySubtitle": "Tell us what you need. Our trading team will respond shortly.",
+      "sidePanelTitle": "More from Trading",
+      "viewPartners": "Browse Partners",
+      "viewProducts": "Browse Products"
+    },
+    "partners": {
+      "eyebrow": "Trading",
+      "defaultTitle": "Our Partners",
+      "defaultSubtitle": "World-class manufacturers we represent across Indonesia.",
+      "hoverHint": "Hover for details",
+      "empty": "Partner profiles are being prepared."
+    },
+    "products": {
+      "eyebrow": "Trading",
+      "defaultTitle": "Our Products",
+      "defaultSubtitle": "Selected instrumentation and control products we supply.",
+      "skuLabel": "{count} SKU",
+      "originLabel": "Origin",
+      "partnershipLabel": "Partnership since {year}",
+      "empty": "Product catalogue is being prepared."
+    },
+    "manufacturing": {
+      "quoteTitle": "Request a Quote",
+      "quoteSubtitle": "Share the requirement and we'll get back with pricing and lead time."
+    },
+    "epc": {
+      "eyebrow": "Solutions",
+      "defaultTitle": "EPC & Projects",
+      "defaultSubtitle": "Selected projects across the oil, gas, and energy sectors.",
+      "tabsAria": "Project tabs",
+      "viewDetail": "View detail",
+      "empty": "Project case studies are being prepared."
+    },
+    "comingSoon": {
+      "title": "Coming soon",
+      "subtitle": "This page is being prepared. Please check back shortly.",
+      "homeCta": "Back to home",
+      "contactCta": "Contact us"
+    }
+  },
+  "InquiryForm": {
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "company": "Company name",
+    "phone": "Phone number",
+    "websiteUrl": "Website URL",
+    "country": "Country",
+    "message": "Message",
+    "messagePlaceholder": "Tell us more about your project or requirement…",
+    "required": "Required",
+    "submitTrading": "Submit Inquiry",
+    "submitManufacturing": "Request Quote",
+    "submitContact": "Send Message",
+    "submitting": "Sending…",
+    "successToast": "Thanks — we've received your message.",
+    "errorToast": "Something went wrong. Please try again."
+  },
   "Admin": {
     "dashboard": "Dashboard",
     "login": "Sign In",
@@ -233,6 +306,38 @@
       "settings": {
         "title": "Settings",
         "description": "Contact, addresses, and social media links."
+      },
+      "solutionsOverview": {
+        "title": "Solutions",
+        "description": "Manage status and content for every page under Solutions."
+      },
+      "solutionsLanding": {
+        "title": "Solutions landing",
+        "description": "Hero and intro for /solutions."
+      },
+      "trading": {
+        "title": "Trading page",
+        "description": "Content for /solutions/trading plus the inquiry form."
+      },
+      "tradingPartners": {
+        "title": "Trading · Partners page",
+        "description": "Hero and intro for /solutions/trading/partners. Logo items are managed in Master · Partners."
+      },
+      "tradingProducts": {
+        "title": "Trading · Products page",
+        "description": "Hero and intro plus the product catalogue."
+      },
+      "manufacturing": {
+        "title": "Manufacturing page",
+        "description": "Content for /solutions/manufacturing plus the quote form."
+      },
+      "epc": {
+        "title": "EPC page",
+        "description": "Hero and intro for /solutions/epc. Project items are managed in Master · Projects."
+      },
+      "inquiries": {
+        "title": "Inquiry Inbox",
+        "description": "Submissions from the Trading, Manufacturing, EPC, and Contact forms."
       }
     },
     "tabs": {
@@ -244,7 +349,11 @@
       "business": "Business",
       "overrides": "Overrides",
       "certifications": "Certifications",
-      "acknowledgements": "Acknowledgements"
+      "acknowledgements": "Acknowledgements",
+      "inquiriesAll": "All",
+      "inquiriesNew": "New",
+      "inquiriesRead": "Read",
+      "inquiriesArchived": "Archived"
     },
     "nouns": {
       "stat": "Stat",
@@ -260,7 +369,9 @@
       "business": "Business",
       "value": "Value",
       "division": "Division",
-      "leadershipMember": "Leadership Member"
+      "leadershipMember": "Leadership Member",
+      "product": "Product",
+      "inquiry": "Inquiry"
     },
     "empty": {
       "stats": "No stats yet.",
@@ -275,7 +386,9 @@
       "acknowledgements": "No acknowledgements yet.",
       "businesses": "No affiliated businesses yet.",
       "values": "No values yet. Add one to display on the Who We Are page.",
-      "divisions": "No custom divisions. Defaults to EPC, Trading, Manufacturing."
+      "divisions": "No custom divisions. Defaults to EPC, Trading, Manufacturing.",
+      "products": "No products yet.",
+      "inquiries": "No inquiries yet."
     },
     "buttons": {
       "addValue": "Add value",
@@ -286,7 +399,16 @@
       "uploading": "Uploading…",
       "applyCrop": "Apply crop",
       "uploadOriginal": "Upload original",
-      "resetAuto": "Reset auto"
+      "resetAuto": "Reset auto",
+      "editContent": "Edit content",
+      "viewPublic": "View public page",
+      "manageInPartners": "Manage in Partners",
+      "manageInProjects": "Manage in Projects",
+      "markRead": "Mark read",
+      "markNew": "Mark new",
+      "archive": "Archive",
+      "viewDetail": "View detail",
+      "replyEmail": "Reply by email"
     },
     "helpers": {
       "reorderValues": "Drag and drop reorders values immediately. Edits to title or description still require Save.",
@@ -300,7 +422,12 @@
       "businessIntroNote": "Intro text for the /about/business page. The affiliated company list is managed separately under Master Content.",
       "holdingDivisionsHint": "Boxes under the parent group on the diagram. Defaults to public nav labels when this list is empty.",
       "overrideTitlesIntro": "Page title overrides. Leave empty to use the default i18n.",
-      "overrideLabelsIntro": "Section label overrides."
+      "overrideLabelsIntro": "Section label overrides.",
+      "solutionsOverviewIntro": "Set each Solutions page to published, coming-soon, or hidden. Status changes apply immediately.",
+      "solutionsPageStatusHint": "Choose how this page behaves on the public site. Hidden pages also drop from the navigation.",
+      "solutionsPartnersDelegated": "Logo items rendered on this page come from Master · Partners. Edit hero and intro here.",
+      "solutionsEpcDelegated": "Project tabs rendered on this page come from Master · Projects (category EPC). Edit hero and intro here.",
+      "inquiryFormReplyHint": "Reply directly via email — clicking opens your mail client with the inquiry email pre-filled."
     },
     "mediaUpload": {
       "dropHint": "Drag & drop or click Upload. Accepted: {types}.",
@@ -332,7 +459,15 @@
     },
     "status": {
       "toggleSaved": "Status updated",
-      "toggleFailed": "Status update failed"
+      "toggleFailed": "Status update failed",
+      "published": "Published",
+      "comingSoon": "Coming soon",
+      "hidden": "Hidden",
+      "publishedDesc": "Page is publicly accessible.",
+      "comingSoonDesc": "Page renders as a coming-soon notice.",
+      "hiddenDesc": "Page returns 404 and is removed from navigation.",
+      "lastUpdated": "Updated",
+      "neverUpdated": "Not yet edited"
     },
     "altImage": {
       "noImage": "No image",
@@ -405,7 +540,33 @@
       "officeHours": "Office hours",
       "linkedin": "LinkedIn",
       "instagram": "Instagram",
-      "youtube": "YouTube"
+      "youtube": "YouTube",
+      "bodyHeading": "Body heading",
+      "bodyContent": "Body content",
+      "comingSoonMessage": "Coming-soon message (optional)",
+      "inquiryFormEnabled": "Show inquiry form",
+      "linkToPartner": "Link to Partner",
+      "principleName": "Principle name",
+      "principleLogo": "Principle logo",
+      "principleOrigin": "Origin",
+      "productType": "Product type",
+      "skuCount": "SKU count",
+      "partnershipStart": "Partnership start year",
+      "productPhotos": "Product photos",
+      "addPhoto": "Add photo",
+      "removePhoto": "Remove photo",
+      "noteFromUser": "User note",
+      "adminNotes": "Internal notes",
+      "inquiryFirstName": "First name",
+      "inquiryLastName": "Last name",
+      "inquiryEmail": "Email",
+      "inquiryCompany": "Company",
+      "inquiryPhone": "Phone",
+      "inquiryCountry": "Country",
+      "inquiryMessage": "Message",
+      "inquiryWebsiteUrl": "Website",
+      "inquirySource": "Source",
+      "inquiryReceivedAt": "Received"
     },
     "groups": {
       "contact": "Contact",
@@ -416,7 +577,16 @@
       "holdingDivisions": "Holding divisions",
       "whoWeAre": "Who We Are",
       "companyValues": "Company Values",
-      "ourBusinessIntro": "Our Business (intro for /about/business)"
+      "ourBusinessIntro": "Our Business (intro for /about/business)",
+      "pageVisibility": "Page visibility",
+      "pageHero": "Page hero",
+      "pageBody": "Page body",
+      "comingSoonContent": "Coming-soon content",
+      "formSettings": "Form settings",
+      "principleSource": "Principle source",
+      "productDetails": "Product details",
+      "inquiryDetails": "Inquiry details",
+      "inquiryMeta": "Submission info"
     },
     "credentials": {
       "valueIndex": "Value #{index}",
@@ -433,6 +603,7 @@
     "groupContact": "Contact",
     "groupContent": "Master Content",
     "groupSystem": "System",
+    "groupInbox": "Inbox",
     "hero": "Hero",
     "stats": "Stats",
     "reach": "Reach",
@@ -441,6 +612,8 @@
     "history": "History",
     "business": "Affiliated Business",
     "credentials": "Credentials",
+    "solutionsOverview": "Overview",
+    "solutionsLanding": "Landing",
     "trading": "Trading",
     "tradingPartners": "Trading · Partners",
     "tradingProducts": "Trading · Products",
@@ -459,6 +632,7 @@
     "solutions": "Solutions",
     "settings": "Settings",
     "users": "Users",
+    "inquiries": "Inquiries",
     "comingSoon": "Soon",
     "expand": "Expand sidebar",
     "collapse": "Collapse sidebar"
