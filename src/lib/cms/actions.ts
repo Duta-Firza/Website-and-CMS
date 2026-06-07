@@ -58,6 +58,15 @@ const heroSchema = z.object({
   secondaryCtaLabel: localizedSchema,
   secondaryCtaHref: z.string().default(""),
   backgroundImage: z.string().min(1),
+  partnersTitle: localizedSchema.default({ id: "", en: "" }),
+  partnersSubtitle: localizedSchema.default({ id: "", en: "" }),
+  solutionsTitle: localizedSchema.default({ id: "", en: "" }),
+  solutionsSubtitle: localizedSchema.default({ id: "", en: "" }),
+  projectsTitle: localizedSchema.default({ id: "", en: "" }),
+  projectsSubtitle: localizedSchema.default({ id: "", en: "" }),
+  reachTitle: localizedSchema.default({ id: "", en: "" }),
+  reachSubtitle: localizedSchema.default({ id: "", en: "" }),
+  customersTitle: localizedSchema.default({ id: "", en: "" }),
 });
 
 export async function updateHomeHero(input: z.infer<typeof heroSchema>): Promise<ActionResult> {
@@ -326,6 +335,11 @@ const aboutValueItemSchema = z.object({
   description: localizedSchema,
 });
 
+const holdingDivisionSchema = z.object({
+  key: z.string().min(1),
+  label: localizedSchema.default({ id: "", en: "" }),
+});
+
 const aboutPageSchema = z.object({
   intro: localizedSchema,
   videoUrl: z.string().default(""),
@@ -336,6 +350,16 @@ const aboutPageSchema = z.object({
   coreBusinessDescription: localizedSchema,
   affiliatedBusinessTitle: localizedSchema,
   affiliatedBusinessDescription: localizedSchema,
+  whoWeAreTitle: localizedSchema.default({ id: "", en: "" }),
+  leadershipTitle: localizedSchema.default({ id: "", en: "" }),
+  historyTitle: localizedSchema.default({ id: "", en: "" }),
+  businessTitle: localizedSchema.default({ id: "", en: "" }),
+  credentialsTitle: localizedSchema.default({ id: "", en: "" }),
+  holdingStructureLabel: localizedSchema.default({ id: "", en: "" }),
+  holdingGroupLabel: localizedSchema.default({ id: "", en: "" }),
+  boardOfDirectorsLabel: localizedSchema.default({ id: "", en: "" }),
+  boardOfCommissionersLabel: localizedSchema.default({ id: "", en: "" }),
+  holdingDivisions: z.array(holdingDivisionSchema).default([]),
 });
 
 export async function updateAboutPage(

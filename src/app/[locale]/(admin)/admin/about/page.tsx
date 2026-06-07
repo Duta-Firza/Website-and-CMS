@@ -16,6 +16,16 @@ export interface AboutFormValues {
   coreBusinessDescription: { id: string; en: string };
   affiliatedBusinessTitle: { id: string; en: string };
   affiliatedBusinessDescription: { id: string; en: string };
+  whoWeAreTitle: { id: string; en: string };
+  leadershipTitle: { id: string; en: string };
+  historyTitle: { id: string; en: string };
+  businessTitle: { id: string; en: string };
+  credentialsTitle: { id: string; en: string };
+  holdingStructureLabel: { id: string; en: string };
+  holdingGroupLabel: { id: string; en: string };
+  boardOfDirectorsLabel: { id: string; en: string };
+  boardOfCommissionersLabel: { id: string; en: string };
+  holdingDivisions: { key: string; label: { id: string; en: string } }[];
 }
 
 const empty = (): AboutFormValues => ({
@@ -28,6 +38,16 @@ const empty = (): AboutFormValues => ({
   coreBusinessDescription: { id: "", en: "" },
   affiliatedBusinessTitle: { id: "", en: "" },
   affiliatedBusinessDescription: { id: "", en: "" },
+  whoWeAreTitle: { id: "", en: "" },
+  leadershipTitle: { id: "", en: "" },
+  historyTitle: { id: "", en: "" },
+  businessTitle: { id: "", en: "" },
+  credentialsTitle: { id: "", en: "" },
+  holdingStructureLabel: { id: "", en: "" },
+  holdingGroupLabel: { id: "", en: "" },
+  boardOfDirectorsLabel: { id: "", en: "" },
+  boardOfCommissionersLabel: { id: "", en: "" },
+  holdingDivisions: [],
 });
 
 function pickLocalized(field: unknown): { id: string; en: string } {
@@ -61,6 +81,21 @@ async function loadAbout(): Promise<AboutFormValues> {
     coreBusinessDescription: pickLocalized(doc.coreBusinessDescription),
     affiliatedBusinessTitle: pickLocalized(doc.affiliatedBusinessTitle),
     affiliatedBusinessDescription: pickLocalized(doc.affiliatedBusinessDescription),
+    whoWeAreTitle: pickLocalized(doc.whoWeAreTitle),
+    leadershipTitle: pickLocalized(doc.leadershipTitle),
+    historyTitle: pickLocalized(doc.historyTitle),
+    businessTitle: pickLocalized(doc.businessTitle),
+    credentialsTitle: pickLocalized(doc.credentialsTitle),
+    holdingStructureLabel: pickLocalized(doc.holdingStructureLabel),
+    holdingGroupLabel: pickLocalized(doc.holdingGroupLabel),
+    boardOfDirectorsLabel: pickLocalized(doc.boardOfDirectorsLabel),
+    boardOfCommissionersLabel: pickLocalized(doc.boardOfCommissionersLabel),
+    holdingDivisions: Array.isArray(doc.holdingDivisions)
+      ? doc.holdingDivisions.map((d: { key?: unknown; label?: unknown }) => ({
+          key: typeof d.key === "string" ? d.key : "",
+          label: pickLocalized(d.label),
+        }))
+      : base.holdingDivisions,
   };
 }
 

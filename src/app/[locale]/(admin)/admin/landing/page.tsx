@@ -15,15 +15,26 @@ async function loadAll() {
     ReachPoint.find().sort({ order: 1 }).lean(),
   ]);
 
+  const empty = { id: "", en: "" };
   const hero = heroDoc ?? {
-    eyebrow: { id: "", en: "" },
-    title: { id: "", en: "" },
-    subtitle: { id: "", en: "" },
+    eyebrow: empty,
+    title: empty,
+    subtitle: empty,
     ctaLabel: { id: "Hubungi Kami", en: "Contact Us" },
     ctaHref: "/contact",
-    secondaryCtaLabel: { id: "", en: "" },
+    secondaryCtaLabel: empty,
     secondaryCtaHref: "",
     backgroundImage: "/images/landing/hero-placeholder.jpg",
+  };
+  const pickLocalized = (field: unknown): { id: string; en: string } => {
+    if (field && typeof field === "object") {
+      const f = field as { id?: unknown; en?: unknown };
+      return {
+        id: typeof f.id === "string" ? f.id : "",
+        en: typeof f.en === "string" ? f.en : "",
+      };
+    }
+    return empty;
   };
 
   return {
@@ -42,6 +53,15 @@ async function loadAll() {
       },
       secondaryCtaHref: hero.secondaryCtaHref ?? "",
       backgroundImage: hero.backgroundImage,
+      partnersTitle: pickLocalized(heroDoc?.partnersTitle),
+      partnersSubtitle: pickLocalized(heroDoc?.partnersSubtitle),
+      solutionsTitle: pickLocalized(heroDoc?.solutionsTitle),
+      solutionsSubtitle: pickLocalized(heroDoc?.solutionsSubtitle),
+      projectsTitle: pickLocalized(heroDoc?.projectsTitle),
+      projectsSubtitle: pickLocalized(heroDoc?.projectsSubtitle),
+      reachTitle: pickLocalized(heroDoc?.reachTitle),
+      reachSubtitle: pickLocalized(heroDoc?.reachSubtitle),
+      customersTitle: pickLocalized(heroDoc?.customersTitle),
     },
     stats: stats.map((s) => ({
       id: String(s._id),

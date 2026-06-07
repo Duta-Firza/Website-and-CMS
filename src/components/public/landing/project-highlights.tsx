@@ -10,14 +10,18 @@ import { SectionPattern } from "./section-pattern";
 
 interface Props {
   projects: ProjectHighlightData[];
+  titleOverride?: string;
+  subtitleOverride?: string;
 }
 
-export async function ProjectHighlights({ projects }: Props) {
+export async function ProjectHighlights({ projects, titleOverride, subtitleOverride }: Props) {
   const t = await getTranslations("Landing");
   const tCommon = await getTranslations("Common");
   const tProjects = await getTranslations("Projects");
   const locale = await getLocale();
   if (projects.length === 0) return null;
+  const title = titleOverride?.trim() || t("projectHighlights");
+  const subtitle = subtitleOverride?.trim() || t("projectHighlightsSubtitle");
 
   return (
     <section className="relative">
@@ -27,9 +31,9 @@ export async function ProjectHighlights({ projects }: Props) {
         <ScrollReveal className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-3 text-center">
           <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />
           <h2 className="text-3xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-4xl">
-            {t("projectHighlights")}
+            {title}
           </h2>
-          <p className="text-base text-muted-foreground">{t("projectHighlightsSubtitle")}</p>
+          <p className="text-base text-muted-foreground">{subtitle}</p>
         </ScrollReveal>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project, idx) => (

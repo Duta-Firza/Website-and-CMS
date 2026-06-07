@@ -97,7 +97,7 @@ export function ReachManager({ initial }: { initial: ReachRow[] }) {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-card">
+      <div className="overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>

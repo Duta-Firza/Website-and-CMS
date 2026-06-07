@@ -25,6 +25,15 @@ const schema = z.object({
   secondaryCtaLabel: localizedOptional,
   secondaryCtaHref: z.string(),
   backgroundImage: z.string().min(1),
+  partnersTitle: localizedOptional,
+  partnersSubtitle: localizedOptional,
+  solutionsTitle: localizedOptional,
+  solutionsSubtitle: localizedOptional,
+  projectsTitle: localizedOptional,
+  projectsSubtitle: localizedOptional,
+  reachTitle: localizedOptional,
+  reachSubtitle: localizedOptional,
+  customersTitle: localizedOptional,
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -48,9 +57,15 @@ export function HeroForm({ initial }: { initial: FormValues }) {
   };
 
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <div className="flex justify-end">
+        <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {t("save")}
+        </Button>
+      </div>
+      <Card>
+        <CardContent className="space-y-5 pt-6">
           <LocalizedField
             label="Eyebrow (optional)"
             name="eyebrow"
@@ -80,14 +95,74 @@ export function HeroForm({ initial }: { initial: FormValues }) {
             <Label htmlFor="h-href2">Secondary CTA link (optional)</Label>
             <Input id="h-href2" {...register("secondaryCtaHref")} placeholder="/solutions" />
           </div>
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isSubmitting} size="lg">
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t("save")}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+
+          <details className="rounded-lg border bg-muted/30 p-4">
+            <summary className="cursor-pointer text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              Section label overrides (optional)
+            </summary>
+            <div className="mt-4 space-y-5">
+              <p className="text-xs text-muted-foreground">
+                Leave empty to use the default i18n labels. Filled values override the heading shown
+                above each home section.
+              </p>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <LocalizedField
+                  label="Partners title"
+                  name="partnersTitle"
+                  form={form}
+                  placeholder={{ id: "Mitra Kami", en: "Our Partners" }}
+                />
+                <LocalizedField
+                  label="Partners subtitle"
+                  name="partnersSubtitle"
+                  form={form}
+                  multiline
+                />
+                <LocalizedField
+                  label="Solutions title"
+                  name="solutionsTitle"
+                  form={form}
+                  placeholder={{ id: "Solusi Kami", en: "Our Solutions" }}
+                />
+                <LocalizedField
+                  label="Solutions subtitle"
+                  name="solutionsSubtitle"
+                  form={form}
+                  multiline
+                />
+                <LocalizedField
+                  label="Projects title"
+                  name="projectsTitle"
+                  form={form}
+                  placeholder={{ id: "Proyek Unggulan", en: "Project Highlights" }}
+                />
+                <LocalizedField
+                  label="Projects subtitle"
+                  name="projectsSubtitle"
+                  form={form}
+                  multiline
+                />
+                <LocalizedField
+                  label="Reach title"
+                  name="reachTitle"
+                  form={form}
+                  placeholder={{ id: "Jangkauan Kami", en: "Our Reach" }}
+                />
+                <LocalizedField label="Reach subtitle" name="reachSubtitle" form={form} multiline />
+                <LocalizedField
+                  label="Customers title"
+                  name="customersTitle"
+                  form={form}
+                  placeholder={{
+                    id: "Dipercaya Lintas Industri",
+                    en: "Trusted Across the Industry",
+                  }}
+                />
+              </div>
+            </div>
+          </details>
+        </CardContent>
+      </Card>
+    </form>
   );
 }

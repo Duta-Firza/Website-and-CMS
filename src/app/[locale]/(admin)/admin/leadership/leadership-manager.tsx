@@ -3,12 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { pickLocalized } from "@/components/admin/localized-text";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -80,6 +82,7 @@ const empty: FormValues = {
 export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
   const router = useRouter();
   const t = useTranslations("Admin");
+  const locale = useLocale();
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [items, setItems] = useState(initial);
@@ -88,11 +91,15 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
     setItems(initial);
   }, [initial]);
 
-  const handleReorder = async (newIds: string[]) => {
-    const next = newIds
+  const directors = useMemo(() => items.filter((m) => m.type === "director"), [items]);
+  const commissioners = useMemo(() => items.filter((m) => m.type === "commissioner"), [items]);
+
+  const handleReorder = (group: LeadershipType) => async (newIds: string[]) => {
+    const others = items.filter((m) => m.type !== group);
+    const reordered = newIds
       .map((id) => items.find((m) => m.id === id))
       .filter((m): m is LeadershipRow => !!m);
-    setItems(next);
+    setItems([...others, ...reordered]);
     const result = await reorderLeadership(newIds);
     if (!result.ok) {
       toast.error(result.error);
@@ -104,80 +111,32 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <p className="text-xs text-muted-foreground">
-          Drag and drop reorders within each type (directors / commissioners).
-        </p>
-        <Button onClick={() => setEditing({ ...empty, order: items.length + 1 })}>
-          <Plus className="mr-2 h-4 w-4" />
-          {t("add")}
-        </Button>
-      </div>
+      <MemberTable
+        title="Board of Directors"
+        emptyMessage="No directors yet."
+        members={directors}
+        onAdd={() => setEditing({ ...empty, type: "director", order: directors.length + 1 })}
+        onEdit={(m) => setEditing({ ...m })}
+        onDelete={(id) => setDeleteId(id)}
+        onReorder={handleReorder("director")}
+        addLabel={t("add")}
+        locale={locale}
+      />
 
-      <div className="rounded-lg border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-10" />
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden md:table-cell">Title</TableHead>
-              <TableHead className="hidden md:table-cell">Type</TableHead>
-              <TableHead className="w-16">Active</TableHead>
-              <TableHead className="w-24 text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <SortableContainer items={items.map((m) => m.id)} onReorder={handleReorder}>
-            <TableBody>
-              {items.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">
-                    No leadership members yet.
-                  </TableCell>
-                </TableRow>
-              )}
-              {items.map((m) => (
-                <SortableItem key={m.id} id={m.id}>
-                  {({ ref, style, handleProps }) => (
-                    <TableRow ref={ref} style={style}>
-                      <TableCell>
-                        <DragHandle handleProps={handleProps} size="sm" />
-                      </TableCell>
-                      <TableCell className="font-medium">{m.name}</TableCell>
-                      <TableCell className="hidden md:table-cell">{m.title.id}</TableCell>
-                      <TableCell className="hidden capitalize md:table-cell">{m.type}</TableCell>
-                      <TableCell>
-                        <span
-                          className={cn(
-                            "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider",
-                            m.isActive
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          {m.isActive ? "Yes" : "No"}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={() => setEditing({ ...m })}
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button variant="ghost" size="icon-sm" onClick={() => setDeleteId(m.id)}>
-                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </SortableItem>
-              ))}
-            </TableBody>
-          </SortableContainer>
-        </Table>
+      <div className="mt-8">
+        <MemberTable
+          title="Board of Commissioners"
+          emptyMessage="No commissioners yet."
+          members={commissioners}
+          onAdd={() =>
+            setEditing({ ...empty, type: "commissioner", order: commissioners.length + 1 })
+          }
+          onEdit={(m) => setEditing({ ...m })}
+          onDelete={(id) => setDeleteId(id)}
+          onReorder={handleReorder("commissioner")}
+          addLabel={t("add")}
+          locale={locale}
+        />
       </div>
 
       {editing && (
@@ -216,6 +175,113 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
         </AlertDialogContent>
       </AlertDialog>
     </>
+  );
+}
+
+function MemberTable({
+  title,
+  emptyMessage,
+  members,
+  onAdd,
+  onEdit,
+  onDelete,
+  onReorder,
+  addLabel,
+  locale,
+}: {
+  title: string;
+  emptyMessage: string;
+  members: LeadershipRow[];
+  onAdd: () => void;
+  onEdit: (m: LeadershipRow) => void;
+  onDelete: (id: string) => void;
+  onReorder: (ids: string[]) => void;
+  addLabel: string;
+  locale: string;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-deep dark:text-foreground">
+          {title}
+        </h3>
+        <Button onClick={onAdd} size="sm">
+          <Plus className="mr-2 h-4 w-4" />
+          {addLabel}
+        </Button>
+      </div>
+      <div className="overflow-x-auto rounded-lg border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-10" />
+              <TableHead className="w-16">Photo</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead className="hidden md:table-cell">Title</TableHead>
+              <TableHead className="w-16">Active</TableHead>
+              <TableHead className="w-24 text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <SortableContainer items={members.map((m) => m.id)} onReorder={onReorder}>
+            <TableBody>
+              {members.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">
+                    {emptyMessage}
+                  </TableCell>
+                </TableRow>
+              )}
+              {members.map((m) => (
+                <SortableItem key={m.id} id={m.id}>
+                  {({ ref, style, handleProps }) => (
+                    <TableRow ref={ref} style={style}>
+                      <TableCell>
+                        <DragHandle handleProps={handleProps} size="sm" />
+                      </TableCell>
+                      <TableCell>
+                        <ImagePreview src={m.photoUrl} alt={m.name} />
+                      </TableCell>
+                      <TableCell className="max-w-48 font-medium">
+                        <span className="block truncate" title={m.name}>
+                          {m.name}
+                        </span>
+                      </TableCell>
+                      <TableCell className="hidden max-w-xs md:table-cell">
+                        <span className="block truncate" title={pickLocalized(m.title, locale)}>
+                          {pickLocalized(m.title, locale)}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className={cn(
+                            "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider",
+                            m.isActive
+                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                              : "bg-muted text-muted-foreground",
+                          )}
+                        >
+                          {m.isActive ? "Yes" : "No"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon-sm" onClick={() => onEdit(m)}>
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button variant="ghost" size="icon-sm" onClick={() => onDelete(m.id)}>
+                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </SortableItem>
+              ))}
+            </TableBody>
+          </SortableContainer>
+        </Table>
+      </div>
+    </div>
   );
 }
 

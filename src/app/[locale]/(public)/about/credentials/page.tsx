@@ -4,7 +4,7 @@ import { SectionIndex } from "@/components/public/landing/section-index";
 import { PageHeader } from "@/components/public/section/page-header";
 import { PageTabs } from "@/components/public/section/page-tabs";
 import { resolveActiveTab } from "@/components/public/section/resolve-active-tab";
-import { getCredentials } from "@/lib/cms/about";
+import { getAboutPage, getCredentials } from "@/lib/cms/about";
 import type { Locale } from "@/lib/cms/localize";
 
 const TABS = [{ key: "certifications" }, { key: "acknowledgements" }] as const;
@@ -26,14 +26,18 @@ export default async function CredentialsPage({ params, searchParams }: Props) {
   const tAbout = await getTranslations("About");
   const active = resolveActiveTab(TABS, tab, "certifications");
   const type = active === "certifications" ? "certification" : "acknowledgement";
-  const credentials = await getCredentials(toLocale(locale), type);
+  const safeLocale = toLocale(locale);
+  const [credentials, about] = await Promise.all([
+    getCredentials(safeLocale, type),
+    getAboutPage(safeLocale),
+  ]);
 
   return (
     <div className="relative">
       <SectionIndex value="05" />
       <PageHeader
         eyebrow={titles("aboutEyebrow")}
-        title={titles("credentialsTitle")}
+        title={about.credentialsTitle?.trim() || titles("credentialsTitle")}
         tabs={
           <PageTabs
             tabs={TABS.map((t) => ({ key: t.key, label: tabsT(t.key) }))}

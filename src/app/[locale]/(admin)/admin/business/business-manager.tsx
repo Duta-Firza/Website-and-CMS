@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
@@ -97,11 +98,12 @@ export function BusinessManager({ initial }: { initial: AffiliatedBusinessRow[] 
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-card">
+      <div className="overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
+              <TableHead className="w-16">Logo</TableHead>
               <TableHead>Name</TableHead>
               <TableHead className="hidden md:table-cell">Website</TableHead>
               <TableHead className="w-24 text-right">Actions</TableHead>
@@ -111,7 +113,7 @@ export function BusinessManager({ initial }: { initial: AffiliatedBusinessRow[] 
             <TableBody>
               {items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-sm text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
                     No affiliated businesses yet.
                   </TableCell>
                 </TableRow>
@@ -123,9 +125,18 @@ export function BusinessManager({ initial }: { initial: AffiliatedBusinessRow[] 
                       <TableCell>
                         <DragHandle handleProps={handleProps} size="sm" />
                       </TableCell>
-                      <TableCell className="font-medium">{b.name}</TableCell>
-                      <TableCell className="hidden text-xs text-muted-foreground md:table-cell">
-                        {b.websiteUrl || "—"}
+                      <TableCell>
+                        <ImagePreview src={b.logoUrl} alt={b.name} />
+                      </TableCell>
+                      <TableCell className="max-w-xs font-medium">
+                        <span className="block truncate" title={b.name}>
+                          {b.name}
+                        </span>
+                      </TableCell>
+                      <TableCell className="hidden max-w-xs text-xs text-muted-foreground md:table-cell">
+                        <span className="block truncate" title={b.websiteUrl || ""}>
+                          {b.websiteUrl || "—"}
+                        </span>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">

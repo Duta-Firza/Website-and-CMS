@@ -49,6 +49,13 @@ export function SettingsForm({ initial }: { initial: FormValues }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="flex justify-end">
+        <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {t("save")}
+        </Button>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Contact</CardTitle>
@@ -99,13 +106,6 @@ export function SettingsForm({ initial }: { initial: FormValues }) {
           </div>
         </CardContent>
       </Card>
-
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isSubmitting} size="lg">
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {t("save")}
-        </Button>
-      </div>
     </form>
   );
 }

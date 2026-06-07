@@ -16,11 +16,15 @@ import { SectionPattern } from "./section-pattern";
 
 interface Props {
   partners: PartnerData[];
+  titleOverride?: string;
+  subtitleOverride?: string;
 }
 
-export function PartnersCarousel({ partners }: Props) {
+export function PartnersCarousel({ partners, titleOverride, subtitleOverride }: Props) {
   const t = useTranslations("Landing");
   const locale = useLocale();
+  const title = titleOverride?.trim() || t("ourPartners");
+  const subtitle = subtitleOverride?.trim() || t("ourPartnersSubtitle");
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, dragFree: true, align: "start" },
     // `stopOnInteraction: false` keeps the auto-scroll alive after the user
@@ -87,9 +91,9 @@ export function PartnersCarousel({ partners }: Props) {
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
           <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />
           <h2 className="text-3xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-4xl">
-            {t("ourPartners")}
+            {title}
           </h2>
-          <p className="text-base text-muted-foreground">{t("ourPartnersSubtitle")}</p>
+          <p className="text-base text-muted-foreground">{subtitle}</p>
         </div>
       </ScrollReveal>
 

@@ -3,7 +3,7 @@ import { HistoryTimeline } from "@/components/public/about/history-timeline";
 import { SectionIndex } from "@/components/public/landing/section-index";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
-import { getHistory } from "@/lib/cms/about";
+import { getAboutPage, getHistory } from "@/lib/cms/about";
 import type { Locale } from "@/lib/cms/localize";
 
 interface PageParams {
@@ -16,14 +16,18 @@ function toLocale(locale: string): Locale {
 
 export default async function HistoryPage({ params }: { params: Promise<PageParams> }) {
   const { locale } = await params;
+  const safeLocale = toLocale(locale);
   const t = await getTranslations("SectionTitles");
   const tAbout = await getTranslations("About");
-  const entries = await getHistory(toLocale(locale));
+  const [entries, about] = await Promise.all([getHistory(safeLocale), getAboutPage(safeLocale)]);
 
   return (
     <div className="relative">
       <SectionIndex value="03" />
-      <PageHeader eyebrow={t("aboutEyebrow")} title={t("historyTitle")} />
+      <PageHeader
+        eyebrow={t("aboutEyebrow")}
+        title={about.historyTitle?.trim() || t("historyTitle")}
+      />
 
       {entries.length === 0 ? (
         <ScrollReveal>

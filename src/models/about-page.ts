@@ -11,6 +11,14 @@ const valueItemSchema = new Schema(
   { _id: false },
 );
 
+const holdingDivisionSchema = new Schema(
+  {
+    key: { type: String, required: true },
+    label: { type: localizedStringSchema, default: () => ({ id: "", en: "" }) },
+  },
+  { _id: false },
+);
+
 const aboutPageSchema = new Schema(
   {
     _id: { type: String, default: ABOUT_PAGE_ID },
@@ -23,6 +31,20 @@ const aboutPageSchema = new Schema(
     coreBusinessDescription: localizedStringOptional,
     affiliatedBusinessTitle: localizedStringOptional,
     affiliatedBusinessDescription: localizedStringOptional,
+    // Page title overrides — when non-empty, render in place of i18n default
+    whoWeAreTitle: localizedStringOptional,
+    leadershipTitle: localizedStringOptional,
+    historyTitle: localizedStringOptional,
+    businessTitle: localizedStringOptional,
+    credentialsTitle: localizedStringOptional,
+    // Business-page label overrides
+    holdingStructureLabel: localizedStringOptional,
+    holdingGroupLabel: localizedStringOptional,
+    // Leadership-page section labels
+    boardOfDirectorsLabel: localizedStringOptional,
+    boardOfCommissionersLabel: localizedStringOptional,
+    // Holding diagram divisions (replaces hardcoded epc/trading/manufacturing)
+    holdingDivisions: { type: [holdingDivisionSchema], default: [] },
   },
   { timestamps: true, ...stripVersion },
 );

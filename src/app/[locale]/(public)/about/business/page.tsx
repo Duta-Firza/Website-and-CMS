@@ -26,16 +26,29 @@ export default async function BusinessPage({ params }: { params: Promise<PagePar
     getAffiliatedBusinesses(safeLocale),
   ]);
 
-  const divisions = [
+  const fallbackDivisions = [
     { key: "epc", label: tNav("epc") },
     { key: "trading", label: tNav("trading") },
     { key: "manufacturing", label: tNav("manufacturing") },
   ];
+  const knownNavKeys = new Set(["epc", "trading", "manufacturing"]);
+  const divisions =
+    about.holdingDivisions.length > 0
+      ? about.holdingDivisions.map((d) => {
+          const label = d.label?.trim();
+          if (label) return { key: d.key, label };
+          if (knownNavKeys.has(d.key)) return { key: d.key, label: tNav(d.key) };
+          return { key: d.key, label: d.key };
+        })
+      : fallbackDivisions;
 
   return (
     <div className="relative">
       <SectionIndex value="04" />
-      <PageHeader eyebrow={t("aboutEyebrow")} title={t("businessTitle")} />
+      <PageHeader
+        eyebrow={t("aboutEyebrow")}
+        title={about.businessTitle?.trim() || t("businessTitle")}
+      />
 
       {about.coreBusinessDescription && (
         <ScrollReveal className="mb-12">
@@ -51,9 +64,12 @@ export default async function BusinessPage({ params }: { params: Promise<PagePar
 
       <ScrollReveal className="mb-12">
         <p className="mb-6 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-          {tAbout("holdingStructure")}
+          {about.holdingStructureLabel?.trim() || tAbout("holdingStructure")}
         </p>
-        <HoldingStructure groupLabel={tAbout("holdingGroupLabel")} divisions={divisions} />
+        <HoldingStructure
+          groupLabel={about.holdingGroupLabel?.trim() || tAbout("holdingGroupLabel")}
+          divisions={divisions}
+        />
       </ScrollReveal>
 
       {(about.affiliatedBusinessDescription || businesses.length > 0) && (

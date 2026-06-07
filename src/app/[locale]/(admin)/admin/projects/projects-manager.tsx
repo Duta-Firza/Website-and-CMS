@@ -3,12 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Plus, Star, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { pickLocalized } from "@/components/admin/localized-text";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -72,6 +74,25 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .normalize("NFKD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function dedupeSlug(base: string, taken: Set<string>): string {
+  if (!taken.has(base)) return base;
+  let i = 2;
+  while (taken.has(`${base}-${i}`)) i++;
+  return `${base}-${i}`;
+}
+
 const empty: FormValues = {
   slug: "",
   title: { id: "", en: "" },
@@ -91,6 +112,7 @@ const empty: FormValues = {
 export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
   const router = useRouter();
   const t = useTranslations("Admin");
+  const locale = useLocale();
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [items, setItems] = useState(initial);
@@ -125,11 +147,12 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-card">
+      <div className="overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
+              <TableHead className="w-16">Image</TableHead>
               <TableHead>Title</TableHead>
               <TableHead className="hidden md:table-cell">Client</TableHead>
               <TableHead className="hidden md:table-cell">Year</TableHead>
@@ -143,7 +166,7 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
             <TableBody>
               {items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center text-sm text-muted-foreground">
                     No projects yet.
                   </TableCell>
                 </TableRow>
@@ -155,11 +178,22 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
                       <TableCell>
                         <DragHandle handleProps={handleProps} size="sm" />
                       </TableCell>
-                      <TableCell className="max-w-xs">
-                        <p className="font-medium">{p.title.id}</p>
-                        <p className="text-xs text-muted-foreground">/{p.slug}</p>
+                      <TableCell>
+                        <ImagePreview src={p.image} alt={pickLocalized(p.title, locale)} />
                       </TableCell>
-                      <TableCell className="hidden md:table-cell">{p.client}</TableCell>
+                      <TableCell className="max-w-xs">
+                        <p className="truncate font-medium" title={pickLocalized(p.title, locale)}>
+                          {pickLocalized(p.title, locale)}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground" title={`/${p.slug}`}>
+                          /{p.slug}
+                        </p>
+                      </TableCell>
+                      <TableCell className="hidden max-w-40 md:table-cell">
+                        <span className="block truncate" title={p.client}>
+                          {p.client}
+                        </span>
+                      </TableCell>
                       <TableCell className="hidden md:table-cell">{p.year ?? "—"}</TableCell>
                       <TableCell className="hidden capitalize md:table-cell">
                         {p.category}
@@ -205,6 +239,7 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
       {editing && (
         <ProjectDialog
           initial={editing}
+          existingSlugs={items.map((p) => p.slug)}
           onClose={() => setEditing(null)}
           onSaved={() => {
             setEditing(null);
@@ -243,10 +278,12 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
 
 function ProjectDialog({
   initial,
+  existingSlugs,
   onClose,
   onSaved,
 }: {
   initial: FormValues;
+  existingSlugs: string[];
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -262,6 +299,20 @@ function ProjectDialog({
     setValue,
     formState: { isSubmitting, errors },
   } = form;
+
+  // For existing entries the slug is treated as manual (don't overwrite). For
+  // new entries it auto-fills from the Indonesian title until the user types
+  // into the slug field.
+  const [manualSlug, setManualSlug] = useState(Boolean(initial.id));
+  const titleId = watch("title.id");
+
+  useEffect(() => {
+    if (manualSlug) return;
+    const base = slugify(titleId ?? "");
+    if (!base) return;
+    const taken = new Set(existingSlugs.filter((s) => s !== initial.slug));
+    setValue("slug", dedupeSlug(base, taken), { shouldDirty: true });
+  }, [titleId, manualSlug, existingSlugs, initial.slug, setValue]);
 
   const onSubmit = async (values: FormValues) => {
     const result = await upsertProject(values);
@@ -280,9 +331,31 @@ function ProjectDialog({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="pr-slug">Slug</Label>
-              <Input id="pr-slug" {...register("slug")} placeholder="rdmp-balikpapan" />
+              <div className="flex items-center justify-between">
+                <Label htmlFor="pr-slug">Slug</Label>
+                {manualSlug && !initial.id && (
+                  <button
+                    type="button"
+                    onClick={() => setManualSlug(false)}
+                    className="text-xs text-muted-foreground hover:text-brand-accent"
+                  >
+                    Reset auto
+                  </button>
+                )}
+              </div>
+              <Input
+                id="pr-slug"
+                {...register("slug", {
+                  onChange: () => setManualSlug(true),
+                })}
+                placeholder="auto from title"
+              />
               {errors.slug && <p className="text-xs text-destructive">{errors.slug.message}</p>}
+              {!manualSlug && (
+                <p className="text-xs text-muted-foreground">
+                  Auto-generated from title. Type to override.
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="pr-client">Client</Label>

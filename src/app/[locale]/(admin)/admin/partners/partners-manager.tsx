@@ -2,14 +2,15 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { pickLocalized } from "@/components/admin/localized-text";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -70,6 +71,7 @@ const empty: FormValues = {
 export function PartnersManager({ initial }: { initial: PartnerRow[] }) {
   const router = useRouter();
   const t = useTranslations("Admin");
+  const locale = useLocale();
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [items, setItems] = useState(initial);
@@ -101,14 +103,14 @@ export function PartnersManager({ initial }: { initial: PartnerRow[] }) {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-card">
+      <div className="overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
               <TableHead className="w-16">Logo</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead className="hidden md:table-cell">Summary (ID)</TableHead>
+              <TableHead className="hidden md:table-cell">Summary</TableHead>
               <TableHead className="w-20">Active</TableHead>
               <TableHead className="w-24 text-right">Actions</TableHead>
             </TableRow>
@@ -130,19 +132,17 @@ export function PartnersManager({ initial }: { initial: PartnerRow[] }) {
                         <DragHandle handleProps={handleProps} size="sm" />
                       </TableCell>
                       <TableCell>
-                        {p.logoUrl && (
-                          <Image
-                            src={p.logoUrl}
-                            alt={p.name}
-                            width={48}
-                            height={32}
-                            className="h-8 w-auto object-contain"
-                          />
-                        )}
+                        <ImagePreview src={p.logoUrl} alt={p.name} invertOnDark={p.invertOnDark} />
                       </TableCell>
-                      <TableCell className="font-medium">{p.name}</TableCell>
-                      <TableCell className="hidden max-w-md truncate text-sm text-muted-foreground md:table-cell">
-                        {p.summary.id}
+                      <TableCell className="max-w-48 font-medium">
+                        <span className="block truncate" title={p.name}>
+                          {p.name}
+                        </span>
+                      </TableCell>
+                      <TableCell className="hidden max-w-xs text-sm text-muted-foreground md:table-cell">
+                        <span className="block truncate" title={pickLocalized(p.summary, locale)}>
+                          {pickLocalized(p.summary, locale)}
+                        </span>
                       </TableCell>
                       <TableCell>
                         <span

@@ -16,6 +16,11 @@ export interface AboutValueItem {
   description: string;
 }
 
+export interface HoldingDivisionData {
+  key: string;
+  label: string;
+}
+
 export interface AboutPageData {
   intro: string;
   videoUrl: string;
@@ -26,6 +31,19 @@ export interface AboutPageData {
   coreBusinessDescription: string;
   affiliatedBusinessTitle: string;
   affiliatedBusinessDescription: string;
+  // Title overrides (empty string → caller should fall back to i18n)
+  whoWeAreTitle: string;
+  leadershipTitle: string;
+  historyTitle: string;
+  businessTitle: string;
+  credentialsTitle: string;
+  // Label overrides
+  holdingStructureLabel: string;
+  holdingGroupLabel: string;
+  boardOfDirectorsLabel: string;
+  boardOfCommissionersLabel: string;
+  // Holding diagram divisions — when non-empty, replaces hardcoded epc/trading/manufacturing
+  holdingDivisions: HoldingDivisionData[];
 }
 
 const EMPTY_ABOUT: AboutPageData = {
@@ -38,31 +56,64 @@ const EMPTY_ABOUT: AboutPageData = {
   coreBusinessDescription: "",
   affiliatedBusinessTitle: "",
   affiliatedBusinessDescription: "",
+  whoWeAreTitle: "",
+  leadershipTitle: "",
+  historyTitle: "",
+  businessTitle: "",
+  credentialsTitle: "",
+  holdingStructureLabel: "",
+  holdingGroupLabel: "",
+  boardOfDirectorsLabel: "",
+  boardOfCommissionersLabel: "",
+  holdingDivisions: [],
 };
+
+const EMPTY_LOCALIZED = { id: "", en: "" };
 
 export async function getAboutPage(locale: Locale): Promise<AboutPageData> {
   await connectDB();
   const doc = await AboutPage.findById(ABOUT_PAGE_ID).lean();
   if (!doc) return EMPTY_ABOUT;
-  return localize(
-    {
-      intro: doc.intro ?? { id: "", en: "" },
-      videoUrl: doc.videoUrl ?? "",
-      vision: doc.vision ?? { id: "", en: "" },
-      mission: doc.mission ?? { id: "", en: "" },
-      values: Array.isArray(doc.values)
-        ? doc.values.map((v: { title?: unknown; description?: unknown }) => ({
-            title: v.title ?? { id: "", en: "" },
-            description: v.description ?? { id: "", en: "" },
-          }))
-        : [],
-      coreBusinessTitle: doc.coreBusinessTitle ?? { id: "", en: "" },
-      coreBusinessDescription: doc.coreBusinessDescription ?? { id: "", en: "" },
-      affiliatedBusinessTitle: doc.affiliatedBusinessTitle ?? { id: "", en: "" },
-      affiliatedBusinessDescription: doc.affiliatedBusinessDescription ?? { id: "", en: "" },
-    },
-    locale,
-  );
+  const divisions = Array.isArray(doc.holdingDivisions)
+    ? doc.holdingDivisions.map((d: { key?: string; label?: unknown }) => ({
+        key: d.key ?? "",
+        label: d.label ?? EMPTY_LOCALIZED,
+      }))
+    : [];
+  return {
+    ...localize(
+      {
+        intro: doc.intro ?? EMPTY_LOCALIZED,
+        videoUrl: doc.videoUrl ?? "",
+        vision: doc.vision ?? EMPTY_LOCALIZED,
+        mission: doc.mission ?? EMPTY_LOCALIZED,
+        values: Array.isArray(doc.values)
+          ? doc.values.map((v: { title?: unknown; description?: unknown }) => ({
+              title: v.title ?? EMPTY_LOCALIZED,
+              description: v.description ?? EMPTY_LOCALIZED,
+            }))
+          : [],
+        coreBusinessTitle: doc.coreBusinessTitle ?? EMPTY_LOCALIZED,
+        coreBusinessDescription: doc.coreBusinessDescription ?? EMPTY_LOCALIZED,
+        affiliatedBusinessTitle: doc.affiliatedBusinessTitle ?? EMPTY_LOCALIZED,
+        affiliatedBusinessDescription: doc.affiliatedBusinessDescription ?? EMPTY_LOCALIZED,
+        whoWeAreTitle: doc.whoWeAreTitle ?? EMPTY_LOCALIZED,
+        leadershipTitle: doc.leadershipTitle ?? EMPTY_LOCALIZED,
+        historyTitle: doc.historyTitle ?? EMPTY_LOCALIZED,
+        businessTitle: doc.businessTitle ?? EMPTY_LOCALIZED,
+        credentialsTitle: doc.credentialsTitle ?? EMPTY_LOCALIZED,
+        holdingStructureLabel: doc.holdingStructureLabel ?? EMPTY_LOCALIZED,
+        holdingGroupLabel: doc.holdingGroupLabel ?? EMPTY_LOCALIZED,
+        boardOfDirectorsLabel: doc.boardOfDirectorsLabel ?? EMPTY_LOCALIZED,
+        boardOfCommissionersLabel: doc.boardOfCommissionersLabel ?? EMPTY_LOCALIZED,
+      },
+      locale,
+    ),
+    holdingDivisions: divisions.map((d: { key: string; label: unknown }) => ({
+      key: d.key,
+      label: localize(d.label, locale),
+    })),
+  };
 }
 
 export interface LeadershipMemberData {

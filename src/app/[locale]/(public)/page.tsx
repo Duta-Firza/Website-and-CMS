@@ -38,11 +38,27 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <HeroSection hero={hero} />
       </div>
       <QuickStats stats={stats} />
-      <PartnersCarousel partners={partners} />
-      <SolutionsSpotlight solutions={solutions} />
-      <ProjectHighlights projects={projects} />
-      <ReachMap reachPoints={reachPoints} />
-      <CustomersCarousel customers={customers} />
+      <PartnersCarousel
+        partners={partners}
+        titleOverride={hero.partnersTitle}
+        subtitleOverride={hero.partnersSubtitle}
+      />
+      <SolutionsSpotlight
+        solutions={solutions}
+        titleOverride={hero.solutionsTitle}
+        subtitleOverride={hero.solutionsSubtitle}
+      />
+      <ProjectHighlights
+        projects={projects}
+        titleOverride={hero.projectsTitle}
+        subtitleOverride={hero.projectsSubtitle}
+      />
+      <ReachMap
+        reachPoints={reachPoints}
+        titleOverride={hero.reachTitle}
+        subtitleOverride={hero.reachSubtitle}
+      />
+      <CustomersCarousel customers={customers} titleOverride={hero.customersTitle} />
       <ScrollToTop />
     </>
   );

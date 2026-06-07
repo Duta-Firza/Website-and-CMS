@@ -69,5 +69,10 @@
   "affiliatedBusinessDescription": {
     "id": "Selain bisnis inti, PT Duta Firza memiliki entitas afiliasi yang memperluas jangkauan layanan dan portofolio teknologi kami.",
     "en": "Beyond our core business, PT Duta Firza is supported by affiliated entities that extend our service reach and technology portfolio."
-  }
+  },
+  "holdingDivisions": [
+    { "key": "epc", "label": { "id": "", "en": "" } },
+    { "key": "trading", "label": { "id": "", "en": "" } },
+    { "key": "manufacturing", "label": { "id": "", "en": "" } }
+  ]
 }

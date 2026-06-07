@@ -3,12 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { pickLocalized } from "@/components/admin/localized-text";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -60,6 +61,7 @@ const empty: FormValues = {
 export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
   const router = useRouter();
   const t = useTranslations("Admin");
+  const locale = useLocale();
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [items, setItems] = useState(initial);
@@ -91,7 +93,7 @@ export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-card">
+      <div className="overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -118,10 +120,15 @@ export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
                         <DragHandle handleProps={handleProps} size="sm" />
                       </TableCell>
                       <TableCell className="font-medium">{e.year}</TableCell>
-                      <TableCell>
-                        <p className="font-medium">{e.title.id}</p>
-                        <p className="line-clamp-1 text-xs text-muted-foreground">
-                          {e.description.id}
+                      <TableCell className="max-w-sm">
+                        <p className="truncate font-medium" title={pickLocalized(e.title, locale)}>
+                          {pickLocalized(e.title, locale)}
+                        </p>
+                        <p
+                          className="truncate text-xs text-muted-foreground"
+                          title={pickLocalized(e.description, locale)}
+                        >
+                          {pickLocalized(e.description, locale)}
                         </p>
                       </TableCell>
                       <TableCell className="text-right">

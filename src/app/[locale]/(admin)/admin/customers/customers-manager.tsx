@@ -2,13 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ImagePreview } from "@/components/admin/image-preview";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -86,7 +86,7 @@ export function CustomersManager({ initial }: { initial: CustomerRow[] }) {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-card">
+      <div className="overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -113,17 +113,13 @@ export function CustomersManager({ initial }: { initial: CustomerRow[] }) {
                         <DragHandle handleProps={handleProps} size="sm" />
                       </TableCell>
                       <TableCell>
-                        {c.logoUrl && (
-                          <Image
-                            src={c.logoUrl}
-                            alt={c.name}
-                            width={48}
-                            height={32}
-                            className="h-8 w-auto object-contain"
-                          />
-                        )}
+                        <ImagePreview src={c.logoUrl} alt={c.name} invertOnDark={c.invertOnDark} />
                       </TableCell>
-                      <TableCell className="font-medium">{c.name}</TableCell>
+                      <TableCell className="max-w-xs font-medium">
+                        <span className="block truncate" title={c.name}>
+                          {c.name}
+                        </span>
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
                           <Button

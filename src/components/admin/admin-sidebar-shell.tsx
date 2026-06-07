@@ -219,7 +219,7 @@ function ItemLink({
         "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium transition-colors",
         collapsed && "justify-center",
         active
-          ? "border-l-2 border-brand-accent bg-brand-accent/8 pl-[6px] text-brand-accent"
+          ? "bg-brand-accent/8 pl-[6px] text-brand-accent"
           : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
         collapsed && active && "border-l-0 pl-2",
       )}

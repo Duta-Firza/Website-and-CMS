@@ -3,12 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { pickLocalized } from "@/components/admin/localized-text";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -75,6 +77,7 @@ const empty = (type: CredentialType = "certification"): FormValues => ({
 export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
   const router = useRouter();
   const t = useTranslations("Admin");
+  const locale = useLocale();
   const [activeType, setActiveType] = useState<CredentialType>("certification");
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -116,11 +119,12 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-card">
+      <div className="overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
+              <TableHead className="w-16">Image</TableHead>
               <TableHead>Title</TableHead>
               <TableHead className="hidden md:table-cell">Issuer</TableHead>
               <TableHead className="hidden w-20 md:table-cell">Year</TableHead>
@@ -131,7 +135,7 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
             <TableBody>
               {filtered.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">
                     No {activeType === "certification" ? "certifications" : "acknowledgements"} yet.
                   </TableCell>
                 </TableRow>
@@ -143,9 +147,18 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
                       <TableCell>
                         <DragHandle handleProps={handleProps} size="sm" />
                       </TableCell>
-                      <TableCell className="font-medium">{c.title.id}</TableCell>
-                      <TableCell className="hidden text-xs text-muted-foreground md:table-cell">
-                        {c.issuer || "—"}
+                      <TableCell>
+                        <ImagePreview src={c.imageUrl} alt={pickLocalized(c.title, locale)} />
+                      </TableCell>
+                      <TableCell className="max-w-xs font-medium">
+                        <span className="block truncate" title={pickLocalized(c.title, locale)}>
+                          {pickLocalized(c.title, locale)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="hidden max-w-40 text-xs text-muted-foreground md:table-cell">
+                        <span className="block truncate" title={c.issuer || ""}>
+                          {c.issuer || "—"}
+                        </span>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">{c.year ?? "—"}</TableCell>
                       <TableCell className="text-right">

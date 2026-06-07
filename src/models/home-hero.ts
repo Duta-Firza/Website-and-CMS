@@ -3,6 +3,8 @@ import { localizedStringRequired, localizedStringSchema, stripVersion } from "./
 
 export const HOME_HERO_ID = "home-hero";
 
+const optionalLocalized = { type: localizedStringSchema, default: () => ({ id: "", en: "" }) };
+
 const homeHeroSchema = new Schema(
   {
     _id: { type: String, default: HOME_HERO_ID },
@@ -21,6 +23,16 @@ const homeHeroSchema = new Schema(
       required: true,
       default: "/images/landing/hero-placeholder.jpg",
     },
+    // Section heading overrides — when non-empty, render in place of the i18n default
+    partnersTitle: optionalLocalized,
+    partnersSubtitle: optionalLocalized,
+    solutionsTitle: optionalLocalized,
+    solutionsSubtitle: optionalLocalized,
+    projectsTitle: optionalLocalized,
+    projectsSubtitle: optionalLocalized,
+    reachTitle: optionalLocalized,
+    reachSubtitle: optionalLocalized,
+    customersTitle: optionalLocalized,
   },
   { timestamps: true, ...stripVersion },
 );

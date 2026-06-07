@@ -8,9 +8,19 @@ import { SolutionCard } from "./solution-card";
  * Server component — pulls i18n + the CMS data in one place, then hands each
  * row to the client `SolutionCard` for IntersectionObserver-driven animation.
  */
-export async function SolutionsSpotlight({ solutions }: { solutions: SolutionData[] }) {
+export async function SolutionsSpotlight({
+  solutions,
+  titleOverride,
+  subtitleOverride,
+}: {
+  solutions: SolutionData[];
+  titleOverride?: string;
+  subtitleOverride?: string;
+}) {
   const t = await getTranslations("Landing");
   if (solutions.length === 0) return null;
+  const title = titleOverride?.trim() || t("ourSolutions");
+  const subtitle = subtitleOverride?.trim() || t("ourSolutionsSubtitle");
 
   return (
     <section className="relative bg-background">
@@ -19,9 +29,9 @@ export async function SolutionsSpotlight({ solutions }: { solutions: SolutionDat
         <ScrollReveal className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-3 text-center">
           <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />
           <h2 className="text-3xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-4xl">
-            {t("ourSolutions")}
+            {title}
           </h2>
-          <p className="text-base text-muted-foreground">{t("ourSolutionsSubtitle")}</p>
+          <p className="text-base text-muted-foreground">{subtitle}</p>
         </ScrollReveal>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {solutions.map((s, idx) => (

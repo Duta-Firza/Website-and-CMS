@@ -25,7 +25,10 @@ export default async function Page({ params }: { params: Promise<PageParams> }) 
   return (
     <div className="relative">
       <SectionIndex value="01" />
-      <PageHeader eyebrow={t("aboutEyebrow")} title={t("whoWeAreTitle")} />
+      <PageHeader
+        eyebrow={t("aboutEyebrow")}
+        title={about.whoWeAreTitle?.trim() || t("whoWeAreTitle")}
+      />
 
       {about.intro && (
         <ScrollReveal className="mx-auto mb-12 max-w-3xl text-center">
