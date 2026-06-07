@@ -10,12 +10,13 @@ import { DesktopNav } from "./desktop-nav";
 import { HeaderOverlayContext } from "./header-context";
 import { LanguageSwitcher } from "./language-switcher";
 import { Logo } from "./logo";
+import type { NavVisibilityMap } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
 import { ThemeToggle } from "./theme-toggle";
 
 const SCROLL_THRESHOLD = 80;
 
-export function Header() {
+export function Header({ visibility }: { visibility: NavVisibilityMap }) {
   const t = useTranslations("Common");
   const locale = useLocale();
   const pathname = usePathname() ?? "";
@@ -54,7 +55,7 @@ export function Header() {
             />
           </Link>
 
-          <DesktopNav />
+          <DesktopNav visibility={visibility} />
 
           <div className="flex items-center gap-2">
             <Link
@@ -68,7 +69,7 @@ export function Header() {
             </Link>
             <ThemeToggle />
             <LanguageSwitcher />
-            <MobileNav />
+            <MobileNav visibility={visibility} />
           </div>
         </div>
       </header>

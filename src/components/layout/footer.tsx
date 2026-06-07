@@ -4,16 +4,20 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import type { Locale } from "@/lib/cms/localize";
 import { getSiteSettings } from "@/lib/cms/site-settings";
+import { getSolutionPageVisibilityMap } from "@/lib/cms/solutions";
 import { Logo } from "./logo";
-import { buildNav } from "./main-nav";
+import { applyVisibilityToNav, buildNav } from "./main-nav";
 
 export async function Footer() {
   const locale = (await getLocale()) as Locale;
   const t = await getTranslations("Footer");
   const tCommon = await getTranslations("Common");
   const tNav = await getTranslations("Nav");
-  const settings = await getSiteSettings(locale);
-  const nav = buildNav(locale);
+  const [settings, visibility] = await Promise.all([
+    getSiteSettings(locale),
+    getSolutionPageVisibilityMap(),
+  ]);
+  const nav = applyVisibilityToNav(buildNav(locale), visibility);
 
   const solutionsItem = nav.find((n) => n.labelKey === "solutions");
   const aboutItem = nav.find((n) => n.labelKey === "about");

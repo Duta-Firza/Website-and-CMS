@@ -15,19 +15,26 @@ import { buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useHeaderOverlay } from "./header-context";
-import { buildNav, type NavSub, type NavTop } from "./main-nav";
+import {
+  applyVisibilityToNav,
+  buildNav,
+  type NavSub,
+  type NavTop,
+  type NavVisibilityMap,
+} from "./main-nav";
 import { findActiveHref, isExactActive, isTopActive } from "./nav-active";
 
-export function MobileNav() {
+export function MobileNav({ visibility }: { visibility: NavVisibilityMap }) {
   const t = useTranslations("Nav");
   const tc = useTranslations("Common");
   const locale = useLocale();
   const pathname = usePathname() ?? "";
   const [open, setOpen] = useState(false);
-  const items = buildNav(locale);
+  const items = applyVisibilityToNav(buildNav(locale), visibility);
   const close = () => setOpen(false);
   const activeHref = findActiveHref(items, pathname);
   const overlay = useHeaderOverlay();
+  const comingSoonLabel = tc("comingSoon");
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -55,6 +62,7 @@ export function MobileNav() {
                     key={item.labelKey}
                     item={item}
                     t={t}
+                    comingSoonLabel={comingSoonLabel}
                     close={close}
                     topActive={topActive}
                     activeHref={activeHref}
@@ -88,12 +96,14 @@ export function MobileNav() {
 function MobileTopAccordion({
   item,
   t,
+  comingSoonLabel,
   close,
   topActive,
   activeHref,
 }: {
   item: NavTop;
   t: ReturnType<typeof useTranslations>;
+  comingSoonLabel: string;
   close: () => void;
   topActive: boolean;
   activeHref: string | undefined;
@@ -136,6 +146,7 @@ function MobileTopAccordion({
                   key={sub.labelKey}
                   sub={sub}
                   t={t}
+                  comingSoonLabel={comingSoonLabel}
                   close={close}
                   activeHref={activeHref}
                 />
@@ -148,13 +159,18 @@ function MobileTopAccordion({
                 onClick={close}
                 aria-current={subActive ? "page" : undefined}
                 className={cn(
-                  "block rounded-md px-3 py-2 text-sm hover:bg-muted hover:text-foreground",
+                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted hover:text-foreground",
                   subActive
                     ? "font-semibold text-brand-deep dark:text-foreground"
                     : "text-muted-foreground",
                 )}
               >
                 {t(sub.labelKey)}
+                {sub.comingSoon && (
+                  <span className="rounded-sm bg-amber-500/20 px-1 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                    {comingSoonLabel}
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -167,11 +183,13 @@ function MobileTopAccordion({
 function MobileSubAccordion({
   sub,
   t,
+  comingSoonLabel,
   close,
   activeHref,
 }: {
   sub: NavSub;
   t: ReturnType<typeof useTranslations>;
+  comingSoonLabel: string;
   close: () => void;
   activeHref: string | undefined;
 }) {
@@ -214,13 +232,18 @@ function MobileSubAccordion({
                   onClick={close}
                   aria-current={ssActive ? "page" : undefined}
                   className={cn(
-                    "block rounded-md px-3 py-1.5 text-sm hover:bg-muted hover:text-foreground",
+                    "flex items-center gap-2 rounded-md px-3 py-1.5 text-sm hover:bg-muted hover:text-foreground",
                     ssActive
                       ? "font-semibold text-brand-deep dark:text-foreground"
                       : "text-muted-foreground",
                   )}
                 >
                   {t(subSub.labelKey)}
+                  {subSub.comingSoon && (
+                    <span className="rounded-sm bg-amber-500/20 px-1 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                      {comingSoonLabel}
+                    </span>
+                  )}
                 </Link>
               );
             })}

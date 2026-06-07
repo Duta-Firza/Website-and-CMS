@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { useHeaderOverlay } from "./header-context";
-import { buildNav, type NavTop } from "./main-nav";
+import { applyVisibilityToNav, buildNav, type NavTop, type NavVisibilityMap } from "./main-nav";
 import { findActiveHref, isExactActive, isTopActive } from "./nav-active";
 
 const triggerBase =
@@ -42,12 +42,13 @@ const subSubItemBase =
   "block rounded-md px-3 py-2 text-sm leading-snug transition-colors hover:bg-muted";
 const itemActive = "font-semibold text-brand-deep dark:text-foreground";
 
-export function DesktopNav() {
+export function DesktopNav({ visibility }: { visibility: NavVisibilityMap }) {
   const t = useTranslations("Nav");
+  const tCommon = useTranslations("Common");
   const locale = useLocale();
   const pathname = usePathname() ?? "";
   const overlay = useHeaderOverlay();
-  const items = buildNav(locale);
+  const items = applyVisibilityToNav(buildNav(locale), visibility);
   const activeHref = findActiveHref(items, pathname);
 
   // Controlled open state so we can dismiss the menu the moment a link is
@@ -91,6 +92,7 @@ export function DesktopNav() {
               key={item.labelKey}
               item={item}
               t={t}
+              comingSoonLabel={tCommon("comingSoon")}
               activeHref={activeHref}
               triggerClassName={className}
               active={active}
@@ -106,6 +108,7 @@ export function DesktopNav() {
 interface TopWithMenuProps {
   item: NavTop;
   t: ReturnType<typeof useTranslations>;
+  comingSoonLabel: string;
   activeHref: string | undefined;
   triggerClassName: string;
   active: boolean;
@@ -115,6 +118,7 @@ interface TopWithMenuProps {
 function TopWithMenu({
   item,
   t,
+  comingSoonLabel,
   activeHref,
   triggerClassName,
   active,
@@ -170,7 +174,14 @@ function TopWithMenu({
                       />
                     }
                   >
-                    <span>{t(sub.labelKey)}</span>
+                    <span className="flex items-center gap-1.5">
+                      {t(sub.labelKey)}
+                      {sub.comingSoon && (
+                        <span className="rounded-sm bg-amber-500/20 px-1 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                          {comingSoonLabel}
+                        </span>
+                      )}
+                    </span>
                     {hasChildren && (
                       <ChevronRight
                         className={cn(
@@ -208,7 +219,14 @@ function TopWithMenu({
                               />
                             }
                           >
-                            {t(subSub.labelKey)}
+                            <span className="flex items-center gap-1.5">
+                              {t(subSub.labelKey)}
+                              {subSub.comingSoon && (
+                                <span className="rounded-sm bg-amber-500/20 px-1 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                                  {comingSoonLabel}
+                                </span>
+                              )}
+                            </span>
                           </NavigationMenuLink>
                         </li>
                       );
