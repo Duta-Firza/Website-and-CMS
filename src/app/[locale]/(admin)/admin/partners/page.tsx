@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { connectDB } from "@/lib/db";
 import { Partner } from "@/models";
@@ -31,12 +32,10 @@ async function loadPartners(): Promise<PartnerRow[]> {
 
 export default async function PartnersAdminPage() {
   const partners = await loadPartners();
+  const t = await getTranslations("Admin.pages.partners");
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        title="Partners"
-        description="Manage the logos shown in the homepage partner carousel and on the Partners page."
-      />
+      <AdminPageHeader title={t("title")} description={t("description")} />
       <PartnersManager initial={partners} />
     </div>
   );

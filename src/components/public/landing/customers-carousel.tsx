@@ -14,10 +14,12 @@ import { SectionPattern } from "./section-pattern";
 
 interface Props {
   customers: CustomerData[];
+  titleOverride?: string;
 }
 
-export function CustomersCarousel({ customers }: Props) {
+export function CustomersCarousel({ customers, titleOverride }: Props) {
   const t = useTranslations("Landing");
+  const title = titleOverride?.trim() || t("trustedAcross");
   // `direction: "rtl"` on the carousel root broke AutoScroll's loop in v8.6
   // (only the first slide rendered before scrolling off-screen with nothing
   // following). To get the reverse-direction effect (Customers scrolls
@@ -91,7 +93,7 @@ export function CustomersCarousel({ customers }: Props) {
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
           <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />
           <h2 className="text-3xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-4xl">
-            {t("trustedAcross")}
+            {title}
           </h2>
         </div>
       </ScrollReveal>

@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { MediaUpload } from "@/components/admin/media-upload";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,15 @@ const schema = z.object({
   secondaryCtaLabel: localizedOptional,
   secondaryCtaHref: z.string(),
   backgroundImage: z.string().min(1),
+  partnersTitle: localizedOptional,
+  partnersSubtitle: localizedOptional,
+  solutionsTitle: localizedOptional,
+  solutionsSubtitle: localizedOptional,
+  projectsTitle: localizedOptional,
+  projectsSubtitle: localizedOptional,
+  reachTitle: localizedOptional,
+  reachSubtitle: localizedOptional,
+  customersTitle: localizedOptional,
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -38,6 +48,8 @@ export function HeroForm({ initial }: { initial: FormValues }) {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { isSubmitting },
   } = form;
 
@@ -48,46 +60,119 @@ export function HeroForm({ initial }: { initial: FormValues }) {
   };
 
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <div className="flex justify-end">
+        <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {t("save")}
+        </Button>
+      </div>
+      <Card>
+        <CardContent className="space-y-5 pt-6">
           <LocalizedField
-            label="Eyebrow (optional)"
+            label={t("fields.heroEyebrow")}
             name="eyebrow"
             form={form}
             placeholder={{ id: "Energi & EPC Indonesia", en: "Indonesia Energy & EPC" }}
           />
-          <LocalizedField label="Title" name="title" form={form} multiline />
-          <LocalizedField label="Subtitle" name="subtitle" form={form} multiline />
-          <LocalizedField label="Primary CTA label" name="ctaLabel" form={form} />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="h-href">Primary CTA link</Label>
-              <Input id="h-href" {...register("ctaHref")} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="h-bg">Background image URL</Label>
-              <Input id="h-bg" {...register("backgroundImage")} />
-            </div>
+          <LocalizedField label={t("fields.heroTitle")} name="title" form={form} multiline />
+          <LocalizedField label={t("fields.heroSubtitle")} name="subtitle" form={form} multiline />
+          <LocalizedField label={t("fields.heroCtaLabel")} name="ctaLabel" form={form} />
+          <div className="space-y-2">
+            <Label htmlFor="h-href">{t("fields.heroCtaHref")}</Label>
+            <Input id="h-href" {...register("ctaHref")} />
+          </div>
+          <div className="space-y-2">
+            <Label>{t("fields.heroBgImage")}</Label>
+            <MediaUpload
+              value={watch("backgroundImage")}
+              onChange={(url) => setValue("backgroundImage", url, { shouldDirty: true })}
+              accept="image"
+              folder="landing"
+              aspectRatio={16 / 9}
+              hint={t("hints.heroBg")}
+            />
           </div>
           <LocalizedField
-            label="Secondary CTA label (optional)"
+            label={t("fields.heroSecondaryCta")}
             name="secondaryCtaLabel"
             form={form}
             placeholder={{ id: "Layanan Kami", en: "Our Services" }}
           />
           <div className="space-y-2">
-            <Label htmlFor="h-href2">Secondary CTA link (optional)</Label>
+            <Label htmlFor="h-href2">{t("fields.heroSecondaryCtaHref")}</Label>
             <Input id="h-href2" {...register("secondaryCtaHref")} placeholder="/solutions" />
           </div>
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isSubmitting} size="lg">
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t("save")}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+
+          <details className="rounded-lg border bg-muted/30 p-4">
+            <summary className="cursor-pointer text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              {t("helpers.overrideLabelsTitle")}
+            </summary>
+            <div className="mt-4 space-y-5">
+              <p className="text-xs text-muted-foreground">{t("helpers.overrideLabelsHint")}</p>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <LocalizedField
+                  label={t("fields.partnersTitleOverride")}
+                  name="partnersTitle"
+                  form={form}
+                  placeholder={{ id: "Mitra Kami", en: "Our Partners" }}
+                />
+                <LocalizedField
+                  label={t("fields.partnersSubtitle")}
+                  name="partnersSubtitle"
+                  form={form}
+                  multiline
+                />
+                <LocalizedField
+                  label={t("fields.solutionsTitleOverride")}
+                  name="solutionsTitle"
+                  form={form}
+                  placeholder={{ id: "Solusi Kami", en: "Our Solutions" }}
+                />
+                <LocalizedField
+                  label={t("fields.solutionsSubtitle")}
+                  name="solutionsSubtitle"
+                  form={form}
+                  multiline
+                />
+                <LocalizedField
+                  label={t("fields.projectsTitleOverride")}
+                  name="projectsTitle"
+                  form={form}
+                  placeholder={{ id: "Proyek Unggulan", en: "Project Highlights" }}
+                />
+                <LocalizedField
+                  label={t("fields.projectsSubtitle")}
+                  name="projectsSubtitle"
+                  form={form}
+                  multiline
+                />
+                <LocalizedField
+                  label={t("fields.reachTitleOverride")}
+                  name="reachTitle"
+                  form={form}
+                  placeholder={{ id: "Jangkauan Kami", en: "Our Reach" }}
+                />
+                <LocalizedField
+                  label={t("fields.reachSubtitle")}
+                  name="reachSubtitle"
+                  form={form}
+                  multiline
+                />
+                <LocalizedField
+                  label={t("fields.customersTitleOverride")}
+                  name="customersTitle"
+                  form={form}
+                  placeholder={{
+                    id: "Dipercaya Lintas Industri",
+                    en: "Trusted Across the Industry",
+                  }}
+                />
+              </div>
+            </div>
+          </details>
+        </CardContent>
+      </Card>
+    </form>
   );
 }

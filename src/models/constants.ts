@@ -13,6 +13,12 @@ export type SolutionKey = (typeof SOLUTION_KEYS)[number];
 export const USER_ROLES = ["super-admin", "editor", "viewer"] as const;
 export type UserRole = (typeof USER_ROLES)[number];
 
+export const LEADERSHIP_TYPES = ["director", "commissioner"] as const;
+export type LeadershipType = (typeof LEADERSHIP_TYPES)[number];
+
+export const CREDENTIAL_TYPES = ["certification", "acknowledgement"] as const;
+export type CredentialType = (typeof CREDENTIAL_TYPES)[number];
+
 /**
  * Whitelist of lucide-react icon names that the Quick Stats card can render.
  * Both the admin Select dropdown and the public component pick from this list,

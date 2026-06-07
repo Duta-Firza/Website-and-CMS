@@ -19,9 +19,10 @@ interface Props {
   name: string;
   email: string;
   role?: string;
+  compact?: boolean;
 }
 
-export function AdminUserMenu({ name, email, role }: Props) {
+export function AdminUserMenu({ name, email, role, compact = false }: Props) {
   const t = useTranslations("Admin");
   const locale = useLocale();
   const initials =
@@ -36,12 +37,16 @@ export function AdminUserMenu({ name, email, role }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "gap-2 px-2")}
+        title={compact ? name : undefined}
+        className={cn(
+          buttonVariants({ variant: "ghost", size: compact ? "icon" : "sm" }),
+          !compact && "gap-2 px-2",
+        )}
       >
-        <Avatar className="h-6 w-6">
+        <Avatar className={compact ? "h-7 w-7" : "h-6 w-6"}>
           <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
         </Avatar>
-        <span className="hidden text-sm sm:inline">{name}</span>
+        {!compact && <span className="hidden max-w-32 truncate text-sm sm:inline">{name}</span>}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>

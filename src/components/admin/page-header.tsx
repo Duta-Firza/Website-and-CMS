@@ -10,7 +10,10 @@ export function AdminPageHeader({ title, description, actions }: Props) {
   return (
     <div className="mb-6 flex items-start justify-between gap-4 border-b pb-4">
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+        <span className="mb-3 block h-0.75 w-10 bg-brand-accent" aria-hidden />
+        <h1 className="text-2xl font-semibold tracking-tight text-brand-deep dark:text-foreground">
+          {title}
+        </h1>
         {description && <p className="text-sm text-muted-foreground">{description}</p>}
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}

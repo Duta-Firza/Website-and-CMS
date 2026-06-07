@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { connectDB } from "@/lib/db";
@@ -15,15 +16,26 @@ async function loadAll() {
     ReachPoint.find().sort({ order: 1 }).lean(),
   ]);
 
+  const empty = { id: "", en: "" };
   const hero = heroDoc ?? {
-    eyebrow: { id: "", en: "" },
-    title: { id: "", en: "" },
-    subtitle: { id: "", en: "" },
+    eyebrow: empty,
+    title: empty,
+    subtitle: empty,
     ctaLabel: { id: "Hubungi Kami", en: "Contact Us" },
     ctaHref: "/contact",
-    secondaryCtaLabel: { id: "", en: "" },
+    secondaryCtaLabel: empty,
     secondaryCtaHref: "",
     backgroundImage: "/images/landing/hero-placeholder.jpg",
+  };
+  const pickLocalized = (field: unknown): { id: string; en: string } => {
+    if (field && typeof field === "object") {
+      const f = field as { id?: unknown; en?: unknown };
+      return {
+        id: typeof f.id === "string" ? f.id : "",
+        en: typeof f.en === "string" ? f.en : "",
+      };
+    }
+    return empty;
   };
 
   return {
@@ -42,6 +54,15 @@ async function loadAll() {
       },
       secondaryCtaHref: hero.secondaryCtaHref ?? "",
       backgroundImage: hero.backgroundImage,
+      partnersTitle: pickLocalized(heroDoc?.partnersTitle),
+      partnersSubtitle: pickLocalized(heroDoc?.partnersSubtitle),
+      solutionsTitle: pickLocalized(heroDoc?.solutionsTitle),
+      solutionsSubtitle: pickLocalized(heroDoc?.solutionsSubtitle),
+      projectsTitle: pickLocalized(heroDoc?.projectsTitle),
+      projectsSubtitle: pickLocalized(heroDoc?.projectsSubtitle),
+      reachTitle: pickLocalized(heroDoc?.reachTitle),
+      reachSubtitle: pickLocalized(heroDoc?.reachSubtitle),
+      customersTitle: pickLocalized(heroDoc?.customersTitle),
     },
     stats: stats.map((s) => ({
       id: String(s._id),
@@ -65,19 +86,31 @@ async function loadAll() {
   };
 }
 
-export default async function LandingAdminPage() {
+const LANDING_SECTIONS = ["hero", "stats", "reach"] as const;
+type LandingSection = (typeof LANDING_SECTIONS)[number];
+
+interface Props {
+  searchParams: Promise<{ section?: string }>;
+}
+
+export default async function LandingAdminPage({ searchParams }: Props) {
+  const { section } = await searchParams;
+  const defaultTab: LandingSection = (LANDING_SECTIONS as readonly string[]).includes(section ?? "")
+    ? (section as LandingSection)
+    : "hero";
   const data = await loadAll();
+  const t = await getTranslations("Admin");
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title="Landing Page"
-        description="Edit content shown on the public homepage. Changes apply immediately after saving."
+        title={t("pages.landing.title")}
+        description={t("pages.landing.description")}
       />
-      <Tabs defaultValue="hero" className="w-full">
+      <Tabs defaultValue={defaultTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 md:w-fit">
-          <TabsTrigger value="hero">Hero</TabsTrigger>
-          <TabsTrigger value="stats">Quick Stats</TabsTrigger>
-          <TabsTrigger value="reach">Our Reach</TabsTrigger>
+          <TabsTrigger value="hero">{t("tabs.hero")}</TabsTrigger>
+          <TabsTrigger value="stats">{t("tabs.stats")}</TabsTrigger>
+          <TabsTrigger value="reach">{t("tabs.reach")}</TabsTrigger>
         </TabsList>
         <TabsContent value="hero" className="mt-6">
           <HeroForm initial={data.hero} />

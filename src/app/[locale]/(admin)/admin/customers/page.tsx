@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { connectDB } from "@/lib/db";
 import { Customer } from "@/models";
@@ -25,12 +26,10 @@ async function loadCustomers(): Promise<CustomerRow[]> {
 
 export default async function CustomersAdminPage() {
   const customers = await loadCustomers();
+  const t = await getTranslations("Admin.pages.customers");
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        title="Customers"
-        description="Logos for the trusted-customers carousel on the homepage."
-      />
+      <AdminPageHeader title={t("title")} description={t("description")} />
       <CustomersManager initial={customers} />
     </div>
   );

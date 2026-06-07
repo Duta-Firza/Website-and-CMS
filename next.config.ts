@@ -7,9 +7,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
     remotePatterns: [
-      // GCS bucket public media (uncomment & fill once bucket is provisioned)
-      // { protocol: "https", hostname: "storage.googleapis.com", pathname: "/<bucket>/**" },
-      // add dutafirza.com
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+        pathname: `/${process.env.GCS_BUCKET || "duta-firza-media"}/**`,
+      },
       { protocol: "https", hostname: "dutafirza.com", pathname: "/**" },
     ],
   },

@@ -20,12 +20,16 @@ const LeafletMap = dynamic(() => import("./reach-map-leaflet").then((m) => m.Lea
 
 interface Props {
   reachPoints: ReachPointData[];
+  titleOverride?: string;
+  subtitleOverride?: string;
 }
 
-export function ReachMap({ reachPoints }: Props) {
+export function ReachMap({ reachPoints, titleOverride, subtitleOverride }: Props) {
   const t = useTranslations("Landing");
   const totalCities = reachPoints.length;
   const totalProvinces = new Set(reachPoints.map((p) => p.province)).size;
+  const title = titleOverride?.trim() || t("ourReach");
+  const subtitle = subtitleOverride?.trim() || t("ourReachSubtitle");
 
   return (
     <section className="relative bg-background">
@@ -34,9 +38,9 @@ export function ReachMap({ reachPoints }: Props) {
         <ScrollReveal className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-3 text-center">
           <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />
           <h2 className="text-3xl font-semibold tracking-tight text-brand-deep dark:text-foreground md:text-4xl">
-            {t("ourReach")}
+            {title}
           </h2>
-          <p className="text-base text-muted-foreground">{t("ourReachSubtitle")}</p>
+          <p className="text-base text-muted-foreground">{subtitle}</p>
         </ScrollReveal>
 
         <ScrollReveal delay={100} className="mb-10 grid grid-cols-1 gap-4 md:grid-cols-3">

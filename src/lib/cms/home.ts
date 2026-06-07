@@ -20,7 +20,18 @@ export interface HeroData {
   secondaryCtaLabel: string;
   secondaryCtaHref: string;
   backgroundImage: string;
+  partnersTitle: string;
+  partnersSubtitle: string;
+  solutionsTitle: string;
+  solutionsSubtitle: string;
+  projectsTitle: string;
+  projectsSubtitle: string;
+  reachTitle: string;
+  reachSubtitle: string;
+  customersTitle: string;
 }
+
+const EMPTY_LOCALIZED = { id: "", en: "" };
 
 export async function getHomeHero(locale: Locale): Promise<HeroData> {
   await connectDB();
@@ -35,18 +46,36 @@ export async function getHomeHero(locale: Locale): Promise<HeroData> {
       secondaryCtaLabel: "",
       secondaryCtaHref: "",
       backgroundImage: "/images/landing/hero-placeholder.jpg",
+      partnersTitle: "",
+      partnersSubtitle: "",
+      solutionsTitle: "",
+      solutionsSubtitle: "",
+      projectsTitle: "",
+      projectsSubtitle: "",
+      reachTitle: "",
+      reachSubtitle: "",
+      customersTitle: "",
     };
   }
   return localize(
     {
-      eyebrow: doc.eyebrow ?? { id: "", en: "" },
+      eyebrow: doc.eyebrow ?? EMPTY_LOCALIZED,
       title: doc.title,
       subtitle: doc.subtitle,
       ctaLabel: doc.ctaLabel,
       ctaHref: doc.ctaHref,
-      secondaryCtaLabel: doc.secondaryCtaLabel ?? { id: "", en: "" },
+      secondaryCtaLabel: doc.secondaryCtaLabel ?? EMPTY_LOCALIZED,
       secondaryCtaHref: doc.secondaryCtaHref ?? "",
       backgroundImage: doc.backgroundImage,
+      partnersTitle: doc.partnersTitle ?? EMPTY_LOCALIZED,
+      partnersSubtitle: doc.partnersSubtitle ?? EMPTY_LOCALIZED,
+      solutionsTitle: doc.solutionsTitle ?? EMPTY_LOCALIZED,
+      solutionsSubtitle: doc.solutionsSubtitle ?? EMPTY_LOCALIZED,
+      projectsTitle: doc.projectsTitle ?? EMPTY_LOCALIZED,
+      projectsSubtitle: doc.projectsSubtitle ?? EMPTY_LOCALIZED,
+      reachTitle: doc.reachTitle ?? EMPTY_LOCALIZED,
+      reachSubtitle: doc.reachSubtitle ?? EMPTY_LOCALIZED,
+      customersTitle: doc.customersTitle ?? EMPTY_LOCALIZED,
     },
     locale,
   );

@@ -1,0 +1,83 @@
+[
+  {
+    "year": "1979",
+    "title": { "id": "Pendirian", "en": "Founding" },
+    "description": {
+      "id": "Berdiri sebagai penyedia spesialis layanan dan peralatan process control serta instrumentasi.",
+      "en": "Established as a specialized provider of process control, instrumentation services, and equipment."
+    },
+    "order": 0
+  },
+  {
+    "year": "1985",
+    "title": { "id": "Tonggak Pertama", "en": "First Milestone" },
+    "description": {
+      "id": "Ditunjuk sebagai perwakilan Masoneilan Control Valve untuk Indonesia, mencapai tingkat instalasi 90% di seluruh jaringan kilang Pertamina.",
+      "en": "Appointed Masoneilan Control Valve representative for Indonesia, achieving 90% installation across Pertamina's refinery network."
+    },
+    "order": 1
+  },
+  {
+    "year": "2010",
+    "title": { "id": "Sole Agent Ashcroft", "en": "Sole Agent Ashcroft" },
+    "description": {
+      "id": "Ditunjuk sebagai sole agent resmi Ashcroft di Indonesia untuk rangkaian lengkap pressure & temperature gauges, switches, dan aksesori.",
+      "en": "Appointed primary authorized sole agent for Ashcroft in Indonesia, providing the full range of pressure & temperature gauges, switches, and accessories."
+    },
+    "order": 2
+  },
+  {
+    "year": "2014",
+    "title": { "id": "Ekspansi Yamari", "en": "Yamari Expansion" },
+    "description": {
+      "id": "Menjadi distributor resmi Yamari Industries Limited (Jepang) untuk temperature elements termasuk RTD, skin-type thermocouples, dan cabling instrumentasi.",
+      "en": "Appointed authorized distributor for Yamari Industries Limited (Japan) for temperature elements including RTDs, skin-type thermocouples, and instrumentation cabling."
+    },
+    "order": 3
+  },
+  {
+    "year": "2015",
+    "title": { "id": "Produksi Lokal", "en": "Local Manufacture" },
+    "description": {
+      "id": "Mendirikan kerja sama produksi lokal dengan Ashcroft di Sentul, Jawa Barat, untuk perakitan pressure gauges di Indonesia.",
+      "en": "Established a third-party agreement with Ashcroft to launch a local production assembly in Sentul, West Java, for Ashcroft pressure gauges in Indonesia."
+    },
+    "order": 4
+  },
+  {
+    "year": "2019",
+    "title": { "id": "Ekspansi Korea", "en": "Korean Expansion" },
+    "description": {
+      "id": "Menambah Samil Industry Co. dan Autrol (Duon System) ke jaringan kemitraan Korea — flow elements, sight glass, level gauges, integrated metering, dan smart transmitters.",
+      "en": "Added Samil Industry Co. and Autrol (Duon System) to our Korean partnerships — flow elements, sight glass, level gauges, integrated metering, and smart transmitters."
+    },
+    "order": 5
+  },
+  {
+    "year": "2023",
+    "title": { "id": "Teknologi Air", "en": "Water Technology" },
+    "description": {
+      "id": "Memasuki teknologi pengolahan air canggih sebagai distributor Evoqua Chlorination Systems (kini bagian Xylem), bermitra dengan Kaitai Valve Group dan Miwival untuk solusi valve industrial.",
+      "en": "Entered advanced water treatment as distributor of Evoqua Chlorination Systems (now part of Xylem), partnering with Kaitai Valve Group and Miwival for high-performance industrial valve solutions."
+    },
+    "order": 6
+  },
+  {
+    "year": "2024",
+    "title": { "id": "Transisi Digital", "en": "Digital Transition" },
+    "description": {
+      "id": "Bermitra dengan Huawei Digital Power untuk memimpin digitalisasi dan transisi energi pintar di sektor minyak dan gas Indonesia.",
+      "en": "Partnered with Huawei Digital Power to lead digitalization and the smart energy transition within Indonesia's oil and gas sector."
+    },
+    "order": 7
+  },
+  {
+    "year": "Present",
+    "title": { "id": "Melangkah ke Depan", "en": "Going Forward" },
+    "description": {
+      "id": "Saat ini memperluas portofolio melalui kerja sama dengan penyedia ahli di teknologi valve, expansion joints, sistem elektrikal, dan gas detection.",
+      "en": "Currently expanding our portfolio through upcoming agreements with expert providers in valve technology, expansion joints, electrical systems, and gas detection."
+    },
+    "order": 8
+  }
+]
