@@ -2,8 +2,8 @@ import { type InferSchemaType, model, models, Schema } from "mongoose";
 import { localizedStringOptional, stripVersion } from "./_shared";
 import { SOLUTION_PAGE_SLUGS, SOLUTION_PAGE_STATUSES } from "./constants";
 
-export { SOLUTION_PAGE_SLUGS, SOLUTION_PAGE_STATUSES };
 export type { SolutionPageSlug, SolutionPageStatus } from "./constants";
+export { SOLUTION_PAGE_SLUGS, SOLUTION_PAGE_STATUSES };
 
 const heroSchema = new Schema(
   {

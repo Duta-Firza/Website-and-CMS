@@ -1,13 +1,73 @@
-import { getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
+import { ComingSoonPage } from "@/components/public/coming-soon-page";
+import { InquiryForm } from "@/components/public/inquiry-form";
+import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
-import { UnderConstruction } from "@/components/public/under-construction";
+import type { Locale } from "@/lib/cms/localize";
+import { getSolutionPage } from "@/lib/cms/solutions";
 
-export default async function Page() {
-  const t = await getTranslations("SectionTitles");
+export default async function ManufacturingPublicPage() {
+  const locale = (await getLocale()) as Locale;
+  const [page, t, tSections] = await Promise.all([
+    getSolutionPage("manufacturing", locale),
+    getTranslations("Solutions"),
+    getTranslations("SectionTitles"),
+  ]);
+
+  if (page.status === "hidden") notFound();
+
+  const eyebrow = page.hero.eyebrow || tSections("solutionsEyebrow");
+  const title = page.hero.title || tSections("manufacturingTitle");
+  const subtitle = page.hero.subtitle || "";
+
+  if (page.status === "comingSoon") {
+    return (
+      <>
+        <PageHeader eyebrow={eyebrow} title={title} description={subtitle} />
+        <ComingSoonPage
+          eyebrow={eyebrow}
+          title={page.body.heading || undefined}
+          message={page.comingSoonMessage || undefined}
+        />
+      </>
+    );
+  }
+
   return (
     <>
-      <PageHeader eyebrow={t("solutionsEyebrow")} title={t("manufacturingTitle")} />
-      <UnderConstruction />
+      <PageHeader eyebrow={eyebrow} title={title} description={subtitle} />
+
+      {(page.body.heading || page.body.content) && (
+        <ScrollReveal className="mb-12 max-w-3xl space-y-3">
+          {page.body.heading && (
+            <h2 className="text-2xl font-semibold tracking-tight text-brand-deep dark:text-foreground">
+              {page.body.heading}
+            </h2>
+          )}
+          {page.body.content && (
+            <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground">
+              {page.body.content}
+            </p>
+          )}
+        </ScrollReveal>
+      )}
+
+      {page.inquiryFormEnabled && (
+        <ScrollReveal>
+          <div className="mt-12 rounded-2xl border bg-card p-6 md:p-10">
+            <div className="mb-6 max-w-2xl space-y-2">
+              <h2 className="text-2xl font-semibold tracking-tight text-brand-deep dark:text-foreground">
+                {t("manufacturing.quoteTitle")}
+              </h2>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {t("manufacturing.quoteSubtitle")}
+              </p>
+            </div>
+            <InquiryForm source="manufacturing" />
+          </div>
+        </ScrollReveal>
+      )}
     </>
   );
 }

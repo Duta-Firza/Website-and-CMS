@@ -2,8 +2,8 @@ import { type InferSchemaType, model, models, Schema } from "mongoose";
 import { stripVersion } from "./_shared";
 import { INQUIRY_SOURCES, INQUIRY_STATUSES } from "./constants";
 
-export { INQUIRY_SOURCES, INQUIRY_STATUSES };
 export type { InquirySource, InquiryStatus } from "./constants";
+export { INQUIRY_SOURCES, INQUIRY_STATUSES };
 
 const inquirySchema = new Schema(
   {

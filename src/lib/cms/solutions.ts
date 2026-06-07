@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import "@/models/partner"; // ensure Partner model is registered for populate("partnerId")
 import {
   Product,
+  Project,
   SOLUTION_PAGE_SLUGS,
   SolutionPage,
   type SolutionPageSlug,
@@ -163,4 +164,33 @@ export async function getPublishedProducts(locale: Locale): Promise<ProductData[
       locale,
     ) as unknown as ProductData;
   });
+}
+
+export interface EpcProjectData {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  image: string;
+  client: string;
+  year: number | undefined;
+}
+
+export async function getPublishedEpcProjects(locale: Locale): Promise<EpcProjectData[]> {
+  await connectDB();
+  const docs = await Project.find({ category: "epc", isPublished: true }).sort({ order: 1 }).lean();
+  return docs.map((d) =>
+    localize(
+      {
+        id: String(d._id),
+        slug: d.slug,
+        title: d.title,
+        summary: d.summary,
+        image: d.image,
+        client: d.client ?? "",
+        year: d.year,
+      },
+      locale,
+    ),
+  );
 }
