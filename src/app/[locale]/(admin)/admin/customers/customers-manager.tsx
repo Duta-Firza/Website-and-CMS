@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { ImagePreview } from "@/components/admin/image-preview";
+import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -224,8 +225,13 @@ function CustomerDialog({
             <Input id="c-name" {...register("name")} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="c-logo">Logo URL</Label>
-            <Input id="c-logo" {...register("logoUrl")} placeholder="https://..." />
+            <Label>Logo</Label>
+            <MediaUpload
+              value={watch("logoUrl")}
+              onChange={(url) => setValue("logoUrl", url, { shouldDirty: true })}
+              accept="image"
+              folder="customers"
+            />
           </div>
           <div className="flex items-center gap-2">
             <Switch

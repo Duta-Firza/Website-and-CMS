@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -217,6 +218,8 @@ function BusinessDialog({
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { isSubmitting, errors },
   } = form;
 
@@ -241,8 +244,13 @@ function BusinessDialog({
             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="ab-logo">Logo URL</Label>
-            <Input id="ab-logo" {...register("logoUrl")} placeholder="https://… /logo.png" />
+            <Label>Logo</Label>
+            <MediaUpload
+              value={watch("logoUrl")}
+              onChange={(url) => setValue("logoUrl", url, { shouldDirty: true })}
+              accept="image"
+              folder="business"
+            />
           </div>
           <LocalizedField label="Description" name="description" form={form} multiline />
           <div className="space-y-2">

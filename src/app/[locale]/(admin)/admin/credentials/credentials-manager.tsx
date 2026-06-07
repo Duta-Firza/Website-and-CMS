@@ -11,6 +11,7 @@ import { z } from "zod";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
+import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -263,11 +264,12 @@ function CredentialDialog({
           <LocalizedField label="Title" name="title" form={form} />
           <LocalizedField label="Description" name="description" form={form} multiline />
           <div className="space-y-2">
-            <Label htmlFor="cr-img">Scan image URL</Label>
-            <Input
-              id="cr-img"
-              {...register("imageUrl")}
-              placeholder="https://… /credentials/iso-9001.jpg"
+            <Label>Scan image</Label>
+            <MediaUpload
+              value={watch("imageUrl")}
+              onChange={(url) => setValue("imageUrl", url, { shouldDirty: true })}
+              accept="image"
+              folder="credentials"
             />
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

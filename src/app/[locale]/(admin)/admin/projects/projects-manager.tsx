@@ -11,6 +11,7 @@ import { z } from "zod";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
+import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -373,8 +374,13 @@ function ProjectDialog({
             placeholder={{ id: "Satu item per baris", en: "One item per line" }}
           />
           <div className="space-y-2">
-            <Label htmlFor="pr-image">Image URL</Label>
-            <Input id="pr-image" {...register("image")} placeholder="https://..." />
+            <Label>Hero image</Label>
+            <MediaUpload
+              value={watch("image")}
+              onChange={(url) => setValue("image", url, { shouldDirty: true })}
+              accept="image"
+              folder="projects"
+            />
           </div>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
             <div className="space-y-2">

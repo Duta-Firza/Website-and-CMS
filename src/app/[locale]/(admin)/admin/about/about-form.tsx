@@ -8,6 +8,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -60,6 +61,8 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
     handleSubmit,
     control,
     getValues,
+    watch,
+    setValue,
     formState: { isSubmitting },
   } = form;
   const { fields, append, remove, move } = useFieldArray({ control, name: "values" });
@@ -122,11 +125,12 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
             <CardContent className="space-y-5 pt-6">
               <LocalizedField label="Intro paragraph" name="intro" form={form} multiline />
               <div className="space-y-2">
-                <Label htmlFor="ab-video">Video Profile URL</Label>
-                <Input
-                  id="ab-video"
-                  {...register("videoUrl")}
-                  placeholder="https://… /videos/profile.mp4"
+                <Label>Video profile</Label>
+                <MediaUpload
+                  value={watch("videoUrl")}
+                  onChange={(url) => setValue("videoUrl", url, { shouldDirty: true })}
+                  accept="video"
+                  folder="about"
                 />
               </div>
               <LocalizedField label="Vision" name="vision" form={form} multiline />

@@ -11,6 +11,7 @@ import { z } from "zod";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
+import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -267,8 +268,13 @@ function PartnerDialog({
             <Input id="p-name" {...register("name")} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="p-logo">Logo URL</Label>
-            <Input id="p-logo" {...register("logoUrl")} placeholder="https://..." />
+            <Label>Logo</Label>
+            <MediaUpload
+              value={watch("logoUrl")}
+              onChange={(url) => setValue("logoUrl", url, { shouldDirty: true })}
+              accept="image"
+              folder="partners"
+            />
           </div>
           <LocalizedField label="Summary" name="summary" form={form} multiline />
           <div className="space-y-2">

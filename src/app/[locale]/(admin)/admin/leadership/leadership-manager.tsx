@@ -11,6 +11,7 @@ import { z } from "zod";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
+import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -330,8 +331,13 @@ function LeadershipDialog({
           <LocalizedField label="Title / Position" name="title" form={form} />
           <LocalizedField label="Bio" name="bio" form={form} multiline />
           <div className="space-y-2">
-            <Label htmlFor="lm-photo">Photo URL</Label>
-            <Input id="lm-photo" {...register("photoUrl")} placeholder="https://… /photo.jpg" />
+            <Label>Photo</Label>
+            <MediaUpload
+              value={watch("photoUrl")}
+              onChange={(url) => setValue("photoUrl", url, { shouldDirty: true })}
+              accept="image"
+              folder="leadership"
+            />
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">

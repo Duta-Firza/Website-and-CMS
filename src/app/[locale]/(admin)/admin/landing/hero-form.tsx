@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { MediaUpload } from "@/components/admin/media-upload";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,8 @@ export function HeroForm({ initial }: { initial: FormValues }) {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { isSubmitting },
   } = form;
 
@@ -75,15 +78,18 @@ export function HeroForm({ initial }: { initial: FormValues }) {
           <LocalizedField label="Title" name="title" form={form} multiline />
           <LocalizedField label="Subtitle" name="subtitle" form={form} multiline />
           <LocalizedField label="Primary CTA label" name="ctaLabel" form={form} />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="h-href">Primary CTA link</Label>
-              <Input id="h-href" {...register("ctaHref")} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="h-bg">Background image URL</Label>
-              <Input id="h-bg" {...register("backgroundImage")} />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="h-href">Primary CTA link</Label>
+            <Input id="h-href" {...register("ctaHref")} />
+          </div>
+          <div className="space-y-2">
+            <Label>Background image</Label>
+            <MediaUpload
+              value={watch("backgroundImage")}
+              onChange={(url) => setValue("backgroundImage", url, { shouldDirty: true })}
+              accept="image"
+              folder="landing"
+            />
           </div>
           <LocalizedField
             label="Secondary CTA label (optional)"
