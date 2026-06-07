@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { connectDB } from "@/lib/db";
 import { Project, type ProjectCategory } from "@/models";
@@ -43,12 +44,10 @@ async function loadProjects(): Promise<ProjectRow[]> {
 
 export default async function ProjectsAdminPage() {
   const projects = await loadProjects();
+  const t = await getTranslations("Admin.pages.projects");
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        title="Projects"
-        description="EPC and case-study projects. Items marked Highlighted appear on the homepage."
-      />
+      <AdminPageHeader title={t("title")} description={t("description")} />
       <ProjectsManager initial={projects} />
     </div>
   );

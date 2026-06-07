@@ -2,8 +2,10 @@
 
 import { ExternalLink, FileText, ImageOff, Loader2, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useId, useRef, useState } from "react";
 import { toast } from "sonner";
+import { CropDialog } from "@/components/admin/crop-dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +29,11 @@ interface Props {
   accept: Accept;
   folder: string;
   className?: string;
+  /** Admin-facing hint shown below the dropzone (e.g. recommended size + format). */
+  hint?: string;
+  /** When set on an image upload, open the crop dialog before uploading and
+   * enforce this width/height ratio (e.g. `16/9`, `4/5`). */
+  aspectRatio?: number;
 }
 
 function formatBytes(n: number): string {
@@ -45,12 +52,47 @@ function basename(url: string): string {
   }
 }
 
-export function MediaUpload({ value, onChange, accept, folder, className }: Props) {
+export function MediaUpload({
+  value,
+  onChange,
+  accept,
+  folder,
+  className,
+  hint,
+  aspectRatio,
+}: Props) {
+  const t = useTranslations("Admin");
   const [busy, setBusy] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [lastStats, setLastStats] = useState<{ orig: number; comp: number } | null>(null);
+  const [cropSource, setCropSource] = useState<{
+    src: string;
+    mime: string;
+    filename: string;
+    rawFile: File;
+  } | null>(null);
   const fileInputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const accept_ = ACCEPT_MAP[accept];
+
+  const handleIncoming = (file: File) => {
+    if (!file) return;
+    // If a crop ratio is requested for an image upload, run the crop UI first
+    // and let the cropped File continue through the same upload pipeline.
+    if (accept === "image" && aspectRatio && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const src = typeof reader.result === "string" ? reader.result : "";
+        if (src) {
+          setCropSource({ src, mime: file.type, filename: file.name, rawFile: file });
+        }
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
+    void upload(file);
+  };
 
   const upload = async (file: File) => {
     if (!file) return;
@@ -67,7 +109,7 @@ export function MediaUpload({ value, onChange, accept, folder, className }: Prop
         compressedSize?: number;
       };
       if (!res.ok || !data.url) {
-        toast.error(data.error || "Upload failed");
+        toast.error(data.error || t("mediaUpload.uploadFailed"));
         return;
       }
       onChange(data.url);
@@ -75,13 +117,17 @@ export function MediaUpload({ value, onChange, accept, folder, className }: Prop
         setLastStats({ orig: data.originalSize, comp: data.compressedSize });
         const pct = Math.max(0, Math.round((1 - data.compressedSize / data.originalSize) * 100));
         toast.success(
-          `Uploaded — ${formatBytes(data.originalSize)} → ${formatBytes(data.compressedSize)} (${pct}% smaller)`,
+          `${t("mediaUpload.uploadSuccess")} — ${t("mediaUpload.uploadStats", {
+            orig: formatBytes(data.originalSize),
+            comp: formatBytes(data.compressedSize),
+            pct,
+          })}`,
         );
       } else {
-        toast.success("Uploaded");
+        toast.success(t("mediaUpload.uploadSuccess"));
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed");
+      toast.error(err instanceof Error ? err.message : t("mediaUpload.uploadFailed"));
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -92,7 +138,7 @@ export function MediaUpload({ value, onChange, accept, folder, className }: Prop
     e.preventDefault();
     setDragOver(false);
     const f = e.dataTransfer.files?.[0];
-    if (f) void upload(f);
+    if (f) handleIncoming(f);
   };
 
   const hasValue = Boolean(value);
@@ -127,7 +173,7 @@ export function MediaUpload({ value, onChange, accept, folder, className }: Prop
             ) : (
               <Upload className="h-3.5 w-3.5" />
             )}
-            {busy ? "Mengunggah…" : hasValue ? "Replace" : "Upload"}
+            {busy ? t("buttons.uploading") : hasValue ? t("buttons.replace") : t("buttons.upload")}
           </label>
           {hasValue && !busy && (
             <Button
@@ -141,31 +187,32 @@ export function MediaUpload({ value, onChange, accept, folder, className }: Prop
               className="h-8 text-xs"
             >
               <Trash2 className="mr-1 h-3.5 w-3.5" />
-              Remove
+              {t("buttons.remove")}
             </Button>
           )}
           <input
             id={fileInputId}
             ref={inputRef}
             type="file"
-            accept={ACCEPT_MAP[accept]}
+            accept={accept_}
             className="sr-only"
             disabled={busy}
             onChange={(e) => {
               const f = e.target.files?.[0];
-              if (f) void upload(f);
+              if (f) handleIncoming(f);
             }}
           />
         </div>
       </div>
       <p className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-        <span>Drag & drop atau klik Upload. Diterima: {ACCEPT_LABEL[accept]}.</span>
+        <span>{t("mediaUpload.dropHint", { types: ACCEPT_LABEL[accept] })}</span>
         {lastStats && (
           <span className="font-mono">
             {formatBytes(lastStats.orig)} → {formatBytes(lastStats.comp)}
           </span>
         )}
       </p>
+      {hint && <p className="text-[11px] text-muted-foreground">{hint}</p>}
       {hasValue && (
         <a
           href={value}
@@ -178,16 +225,39 @@ export function MediaUpload({ value, onChange, accept, folder, className }: Prop
           <span className="truncate font-mono">{basename(value)}</span>
         </a>
       )}
+      {cropSource && aspectRatio && (
+        <CropDialog
+          open
+          src={cropSource.src}
+          mime={cropSource.mime}
+          filename={cropSource.filename}
+          aspectRatio={aspectRatio}
+          onCancel={() => {
+            setCropSource(null);
+            if (inputRef.current) inputRef.current.value = "";
+          }}
+          onConfirm={(file) => {
+            setCropSource(null);
+            void upload(file);
+          }}
+          onConfirmRaw={() => {
+            const raw = cropSource.rawFile;
+            setCropSource(null);
+            void upload(raw);
+          }}
+        />
+      )}
     </div>
   );
 }
 
 function EmptyState({ accept }: { accept: Accept }) {
+  const t = useTranslations("Admin.mediaUpload");
   const Icon = accept === "pdf" ? FileText : ImageOff;
   return (
     <div className="flex h-32 flex-col items-center justify-center gap-2 text-muted-foreground">
       <Icon className="h-6 w-6 opacity-60" />
-      <p className="text-xs">Belum ada media</p>
+      <p className="text-xs">{t("noMedia")}</p>
     </div>
   );
 }

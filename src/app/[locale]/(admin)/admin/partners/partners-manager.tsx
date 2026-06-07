@@ -13,6 +13,7 @@ import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
 import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
+import { StatusToggle } from "@/components/admin/status-toggle";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,8 +43,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deletePartner, reorderPartners, upsertPartner } from "@/lib/cms/actions";
-import { cn } from "@/lib/utils";
+import {
+  deletePartner,
+  reorderPartners,
+  togglePartnerActive,
+  upsertPartner,
+} from "@/lib/cms/actions";
 import type { PartnerRow } from "./page";
 
 const schema = z.object({
@@ -109,11 +114,11 @@ export function PartnersManager({ initial }: { initial: PartnerRow[] }) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
-              <TableHead className="w-16">Logo</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden md:table-cell">Summary</TableHead>
-              <TableHead className="w-20">Active</TableHead>
-              <TableHead className="w-24 text-right">Actions</TableHead>
+              <TableHead className="w-16">{t("common.logo")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("common.summary")}</TableHead>
+              <TableHead className="w-20">{t("common.active")}</TableHead>
+              <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <SortableContainer items={items.map((p) => p.id)} onReorder={handleReorder}>
@@ -121,7 +126,7 @@ export function PartnersManager({ initial }: { initial: PartnerRow[] }) {
               {items.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">
-                    No partners yet.
+                    {t("empty.partners")}
                   </TableCell>
                 </TableRow>
               )}
@@ -146,16 +151,23 @@ export function PartnersManager({ initial }: { initial: PartnerRow[] }) {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span
-                          className={cn(
-                            "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider",
-                            p.isActive
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          {p.isActive ? "Yes" : "No"}
-                        </span>
+                        <StatusToggle
+                          checked={p.isActive}
+                          ariaLabel={t("common.active")}
+                          onToggle={async (next) => {
+                            setItems((prev) =>
+                              prev.map((x) => (x.id === p.id ? { ...x, isActive: next } : x)),
+                            );
+                            const result = await togglePartnerActive(p.id, next);
+                            if (!result.ok) {
+                              setItems((prev) =>
+                                prev.map((x) => (x.id === p.id ? { ...x, isActive: !next } : x)),
+                              );
+                              throw new Error(result.error);
+                            }
+                            router.refresh();
+                          }}
+                        />
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
@@ -201,7 +213,7 @@ export function PartnersManager({ initial }: { initial: PartnerRow[] }) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("confirmDelete")}</AlertDialogTitle>
-            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+            <AlertDialogDescription>{t("alertDelete")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
@@ -260,25 +272,28 @@ function PartnerDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{initial.id ? t("edit") : t("add")} Partner</DialogTitle>
+          <DialogTitle>
+            {initial.id ? t("edit") : t("add")} {t("nouns.partner")}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="p-name">Name</Label>
+            <Label htmlFor="p-name">{t("common.name")}</Label>
             <Input id="p-name" {...register("name")} />
           </div>
           <div className="space-y-2">
-            <Label>Logo</Label>
+            <Label>{t("common.logo")}</Label>
             <MediaUpload
               value={watch("logoUrl")}
               onChange={(url) => setValue("logoUrl", url, { shouldDirty: true })}
               accept="image"
               folder="partners"
+              hint={t("hints.partnerLogo")}
             />
           </div>
-          <LocalizedField label="Summary" name="summary" form={form} multiline />
+          <LocalizedField label={t("common.summary")} name="summary" form={form} multiline />
           <div className="space-y-2">
-            <Label htmlFor="p-web">Website URL</Label>
+            <Label htmlFor="p-web">{t("fields.websiteUrl")}</Label>
             <Input id="p-web" {...register("websiteUrl")} placeholder="https://..." />
           </div>
           <div className="flex flex-wrap items-center gap-4">
@@ -288,7 +303,7 @@ function PartnerDialog({
                 checked={watch("isActive")}
                 onCheckedChange={(v) => setValue("isActive", v, { shouldDirty: true })}
               />
-              <Label htmlFor="p-active">Active</Label>
+              <Label htmlFor="p-active">{t("fields.active")}</Label>
             </div>
             <div className="flex items-center gap-2">
               <Switch
@@ -296,7 +311,7 @@ function PartnerDialog({
                 checked={watch("invertOnDark")}
                 onCheckedChange={(v) => setValue("invertOnDark", v, { shouldDirty: true })}
               />
-              <Label htmlFor="p-invert">Invert on dark</Label>
+              <Label htmlFor="p-invert">{t("fields.invertOnDark")}</Label>
             </div>
           </div>
           <DialogFooter>

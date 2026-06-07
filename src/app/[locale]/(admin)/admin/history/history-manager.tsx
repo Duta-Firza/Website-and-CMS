@@ -98,9 +98,9 @@ export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
-              <TableHead className="w-20">Year</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead className="w-24 text-right">Actions</TableHead>
+              <TableHead className="w-20">{t("common.year")}</TableHead>
+              <TableHead>{t("common.title")}</TableHead>
+              <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <SortableContainer items={items.map((e) => e.id)} onReorder={handleReorder}>
@@ -108,7 +108,7 @@ export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
               {items.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center text-sm text-muted-foreground">
-                    No history entries yet.
+                    {t("empty.history")}
                   </TableCell>
                 </TableRow>
               )}
@@ -225,16 +225,27 @@ function HistoryDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{initial.id ? t("edit") : t("add")} Milestone</DialogTitle>
+          <DialogTitle>
+            {initial.id ? t("edit") : t("add")} {t("nouns.milestone")}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="he-year">Year</Label>
-            <Input id="he-year" {...register("year")} placeholder="1979 or 'Present'" />
+            <Label htmlFor="he-year">{t("fields.milestoneYear")}</Label>
+            <Input
+              id="he-year"
+              {...register("year")}
+              placeholder={t("fields.milestoneYearPlaceholder")}
+            />
             {errors.year && <p className="text-xs text-destructive">{errors.year.message}</p>}
           </div>
-          <LocalizedField label="Title" name="title" form={form} />
-          <LocalizedField label="Description" name="description" form={form} multiline />
+          <LocalizedField label={t("common.title")} name="title" form={form} />
+          <LocalizedField
+            label={t("common.description")}
+            name="description"
+            form={form}
+            multiline
+          />
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               {t("cancel")}

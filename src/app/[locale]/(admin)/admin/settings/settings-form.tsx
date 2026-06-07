@@ -58,19 +58,19 @@ export function SettingsForm({ initial }: { initial: FormValues }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Contact</CardTitle>
+          <CardTitle>{t("groups.contact")}</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="space-y-2">
-            <Label htmlFor="contactEmail">Contact email</Label>
+            <Label htmlFor="contactEmail">{t("fields.contactEmail")}</Label>
             <Input id="contactEmail" {...register("contactEmail")} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="salesEmail">Sales email</Label>
+            <Label htmlFor="salesEmail">{t("fields.salesEmail")}</Label>
             <Input id="salesEmail" {...register("salesEmail")} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="phoneNumber">Phone</Label>
+            <Label htmlFor="phoneNumber">{t("common.phone")}</Label>
             <Input id="phoneNumber" {...register("phoneNumber")} />
           </div>
         </CardContent>
@@ -78,30 +78,35 @@ export function SettingsForm({ initial }: { initial: FormValues }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Addresses & Hours</CardTitle>
+          <CardTitle>{t("groups.addressHours")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <LocalizedField label="Head Office address" name="addressHO" form={form} multiline />
-          <LocalizedField label="Factory address" name="addressFactory" form={form} multiline />
-          <LocalizedField label="Office hours" name="officeHours" form={form} />
+          <LocalizedField label={t("fields.addressHO")} name="addressHO" form={form} multiline />
+          <LocalizedField
+            label={t("fields.addressFactory")}
+            name="addressFactory"
+            form={form}
+            multiline
+          />
+          <LocalizedField label={t("fields.officeHours")} name="officeHours" form={form} />
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Social Links</CardTitle>
+          <CardTitle>{t("groups.socialLinks")}</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="space-y-2">
-            <Label htmlFor="linkedin">LinkedIn URL</Label>
+            <Label htmlFor="linkedin">{t("fields.linkedin")}</Label>
             <Input id="linkedin" {...register("social.linkedin")} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="instagram">Instagram URL</Label>
+            <Label htmlFor="instagram">{t("fields.instagram")}</Label>
             <Input id="instagram" {...register("social.instagram")} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="youtube">YouTube URL</Label>
+            <Label htmlFor="youtube">{t("fields.youtube")}</Label>
             <Input id="youtube" {...register("social.youtube")} />
           </div>
         </CardContent>

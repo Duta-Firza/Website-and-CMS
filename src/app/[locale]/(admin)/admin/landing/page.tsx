@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { connectDB } from "@/lib/db";
@@ -98,17 +99,18 @@ export default async function LandingAdminPage({ searchParams }: Props) {
     ? (section as LandingSection)
     : "hero";
   const data = await loadAll();
+  const t = await getTranslations("Admin");
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title="Landing Page"
-        description="Edit content shown on the public homepage. Changes apply immediately after saving."
+        title={t("pages.landing.title")}
+        description={t("pages.landing.description")}
       />
       <Tabs defaultValue={defaultTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 md:w-fit">
-          <TabsTrigger value="hero">Hero</TabsTrigger>
-          <TabsTrigger value="stats">Quick Stats</TabsTrigger>
-          <TabsTrigger value="reach">Our Reach</TabsTrigger>
+          <TabsTrigger value="hero">{t("tabs.hero")}</TabsTrigger>
+          <TabsTrigger value="stats">{t("tabs.stats")}</TabsTrigger>
+          <TabsTrigger value="reach">{t("tabs.reach")}</TabsTrigger>
         </TabsList>
         <TabsContent value="hero" className="mt-6">
           <HeroForm initial={data.hero} />

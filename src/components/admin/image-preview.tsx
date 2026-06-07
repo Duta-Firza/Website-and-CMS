@@ -2,6 +2,7 @@
 
 import { ImageOff } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
@@ -20,12 +21,13 @@ interface Props {
  * opens a Dialog with the full image preview.
  */
 export function ImagePreview({ src, alt, invertOnDark, thumbClassName }: Props) {
+  const t = useTranslations("Admin.altImage");
   const [open, setOpen] = useState(false);
 
   if (!src) {
     return (
       <span
-        title="No image"
+        title={t("noImage")}
         className={cn(
           "inline-flex h-12 w-12 items-center justify-center rounded-md border bg-muted/40 text-muted-foreground",
           thumbClassName,
@@ -41,7 +43,7 @@ export function ImagePreview({ src, alt, invertOnDark, thumbClassName }: Props) 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        title={`Preview ${alt}`}
+        title={t("preview", { name: alt })}
         className={cn(
           "group/img-thumb relative inline-flex h-12 w-12 shrink-0 cursor-zoom-in items-center justify-center overflow-hidden rounded-md border bg-muted/40 transition-all hover:border-brand-accent/40 hover:shadow-sm",
           thumbClassName,

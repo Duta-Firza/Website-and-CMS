@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { connectDB } from "@/lib/db";
 import { HistoryEntry } from "@/models";
@@ -25,12 +26,10 @@ async function loadEntries(): Promise<HistoryRow[]> {
 
 export default async function HistoryAdminPage() {
   const entries = await loadEntries();
+  const t = await getTranslations("Admin.pages.history");
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        title="History"
-        description="Milestones shown on /about/history. Order controls timeline sequence."
-      />
+      <AdminPageHeader title={t("title")} description={t("description")} />
       <HistoryManager initial={entries} />
     </div>
   );

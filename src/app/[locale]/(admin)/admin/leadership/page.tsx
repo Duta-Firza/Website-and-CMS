@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { connectDB } from "@/lib/db";
 import { LeadershipMember, type LeadershipType } from "@/models";
@@ -31,12 +32,10 @@ async function loadMembers(): Promise<LeadershipRow[]> {
 
 export default async function LeadershipAdminPage() {
   const members = await loadMembers();
+  const t = await getTranslations("Admin.pages.leadership");
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        title="Leadership"
-        description="Board of Directors and Board of Commissioners shown on /about/leadership."
-      />
+      <AdminPageHeader title={t("title")} description={t("description")} />
       <LeadershipManager initial={members} />
     </div>
   );

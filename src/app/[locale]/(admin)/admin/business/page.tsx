@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { connectDB } from "@/lib/db";
 import { AffiliatedBusiness } from "@/models";
@@ -27,12 +28,10 @@ async function loadBusinesses(): Promise<AffiliatedBusinessRow[]> {
 
 export default async function BusinessAdminPage() {
   const businesses = await loadBusinesses();
+  const t = await getTranslations("Admin.pages.business");
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        title="Affiliated Businesses"
-        description="Subsidiary / sister companies shown on /about/business."
-      />
+      <AdminPageHeader title={t("title")} description={t("description")} />
       <BusinessManager initial={businesses} />
     </div>
   );

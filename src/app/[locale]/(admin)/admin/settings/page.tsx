@@ -1,4 +1,4 @@
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { getSiteSettings } from "@/lib/cms/site-settings";
 import { connectDB } from "@/lib/db";
@@ -40,12 +40,10 @@ export default async function SettingsPage() {
   // Use the public-facing fetcher to confirm shape but pass raw localized for editing
   void (await getSiteSettings("id"));
 
+  const t = await getTranslations("Admin.pages.settings");
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        title="Site Settings"
-        description="Global contact info, addresses, and social links shown across the site."
-      />
+      <AdminPageHeader title={t("title")} description={t("description")} />
       <SettingsForm initial={initial} />
     </div>
   );

@@ -110,8 +110,8 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Tabs value={activeType} onValueChange={(v) => setActiveType(v as CredentialType)}>
           <TabsList>
-            <TabsTrigger value="certification">Certifications</TabsTrigger>
-            <TabsTrigger value="acknowledgement">Acknowledgements</TabsTrigger>
+            <TabsTrigger value="certification">{t("tabs.certifications")}</TabsTrigger>
+            <TabsTrigger value="acknowledgement">{t("tabs.acknowledgements")}</TabsTrigger>
           </TabsList>
         </Tabs>
         <Button onClick={() => setEditing({ ...empty(activeType), order: filtered.length + 1 })}>
@@ -125,11 +125,11 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
-              <TableHead className="w-16">Image</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead className="hidden md:table-cell">Issuer</TableHead>
-              <TableHead className="hidden w-20 md:table-cell">Year</TableHead>
-              <TableHead className="w-24 text-right">Actions</TableHead>
+              <TableHead className="w-16">{t("common.image")}</TableHead>
+              <TableHead>{t("common.title")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("common.issuer")}</TableHead>
+              <TableHead className="hidden w-20 md:table-cell">{t("common.year")}</TableHead>
+              <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <SortableContainer items={filtered.map((c) => c.id)} onReorder={handleReorder}>
@@ -137,7 +137,9 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
               {filtered.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">
-                    No {activeType === "certification" ? "certifications" : "acknowledgements"} yet.
+                    {activeType === "certification"
+                      ? t("empty.certifications")
+                      : t("empty.acknowledgements")}
                   </TableCell>
                 </TableRow>
               )}
@@ -258,23 +260,35 @@ function CredentialDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{initial.id ? t("edit") : t("add")} Credential</DialogTitle>
+          <DialogTitle>
+            {initial.id ? t("edit") : t("add")}{" "}
+            {initial.type === "certification"
+              ? t("nouns.certification")
+              : t("nouns.acknowledgement")}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <LocalizedField label="Title" name="title" form={form} />
-          <LocalizedField label="Description" name="description" form={form} multiline />
+          <LocalizedField label={t("common.title")} name="title" form={form} />
+          <LocalizedField
+            label={t("common.description")}
+            name="description"
+            form={form}
+            multiline
+          />
           <div className="space-y-2">
-            <Label>Scan image</Label>
+            <Label>{t("common.image")}</Label>
             <MediaUpload
               value={watch("imageUrl")}
               onChange={(url) => setValue("imageUrl", url, { shouldDirty: true })}
               accept="image"
               folder="credentials"
+              aspectRatio={3 / 4}
+              hint={t("hints.credentialImage")}
             />
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Type</Label>
+              <Label>{t("common.type")}</Label>
               <Select
                 value={watch("type")}
                 onValueChange={(v) => setValue("type", v as CredentialType, { shouldDirty: true })}
@@ -292,11 +306,11 @@ function CredentialDialog({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cr-issuer">Issuer</Label>
+              <Label htmlFor="cr-issuer">{t("common.issuer")}</Label>
               <Input id="cr-issuer" {...register("issuer")} placeholder="TNV / SKK Migas / …" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cr-year">Year</Label>
+              <Label htmlFor="cr-year">{t("common.year")}</Label>
               <Input id="cr-year" type="number" {...register("year", { valueAsNumber: true })} />
             </div>
           </div>

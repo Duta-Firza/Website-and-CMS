@@ -80,15 +80,15 @@ export function LeadershipSection({ groups }: Props) {
                 </DialogTitle>
                 <p className="text-sm text-muted-foreground">{active.title}</p>
               </DialogHeader>
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-[160px_1fr]">
-                <div className="relative aspect-square w-full overflow-hidden rounded-md border bg-muted md:w-40">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-[200px_1fr]">
+                <div className="relative aspect-4/5 w-full max-w-50 overflow-hidden rounded-md border bg-muted">
                   {active.photoUrl ? (
                     <Image
                       src={active.photoUrl}
                       alt={active.name}
                       fill
-                      sizes="160px"
-                      className="object-cover"
+                      sizes="(max-width: 768px) 60vw, 200px"
+                      className="object-cover object-top"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-muted-foreground/40">

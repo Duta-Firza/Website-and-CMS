@@ -20,6 +20,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -110,17 +111,14 @@ interface DragHandleProps {
  * Default visual for the drag handle. Spread `handleProps` from SortableItem
  * onto this button so drag starts on grip only — not the whole row.
  */
-export function DragHandle({
-  handleProps,
-  className,
-  size = "md",
-  ariaLabel = "Drag to reorder",
-}: DragHandleProps) {
+export function DragHandle({ handleProps, className, size = "md", ariaLabel }: DragHandleProps) {
+  const t = useTranslations("Admin.altImage");
+  const label = ariaLabel ?? t("dragHandle");
   return (
     <button
       type="button"
-      aria-label={ariaLabel}
-      title={ariaLabel}
+      aria-label={label}
+      title={label}
       {...handleProps}
       className={cn(
         "inline-flex shrink-0 cursor-grab items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:cursor-grabbing",

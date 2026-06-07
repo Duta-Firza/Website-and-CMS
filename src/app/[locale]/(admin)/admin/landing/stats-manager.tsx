@@ -119,7 +119,7 @@ export function StatsManager({ initial }: { initial: StatRow[] }) {
                       {s.suffix}
                     </p>
                     <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                      {s.label.id}
+                      {s.label.id || s.label.en}
                     </p>
                     <div className="flex justify-end gap-1 pt-2">
                       <Button variant="ghost" size="icon-sm" onClick={() => setEditing({ ...s })}>
@@ -136,7 +136,7 @@ export function StatsManager({ initial }: { initial: StatRow[] }) {
           ))}
           {items.length === 0 && (
             <div className="col-span-full rounded-lg border bg-muted/30 p-8 text-center text-sm text-muted-foreground">
-              No stats yet.
+              {t("empty.stats")}
             </div>
           )}
         </div>
@@ -215,26 +215,28 @@ function StatDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{initial.id ? t("edit") : t("add")} Stat</DialogTitle>
+          <DialogTitle>
+            {initial.id ? t("edit") : t("add")} {t("nouns.stat")}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <LocalizedField label="Label" name="label" form={form} />
+          <LocalizedField label={t("fields.statLabel")} name="label" form={form} />
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-2">
-              <Label htmlFor="s-prefix">Prefix</Label>
+              <Label htmlFor="s-prefix">{t("fields.statPrefix")}</Label>
               <Input id="s-prefix" {...register("prefix")} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="s-value">Value</Label>
+              <Label htmlFor="s-value">{t("fields.statValue")}</Label>
               <Input id="s-value" type="number" {...register("value", { valueAsNumber: true })} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="s-suffix">Suffix</Label>
+              <Label htmlFor="s-suffix">{t("fields.statSuffix")}</Label>
               <Input id="s-suffix" {...register("suffix")} placeholder="+" />
             </div>
           </div>
           <div className="space-y-2">
-            <Label>Icon</Label>
+            <Label>{t("fields.statIcon")}</Label>
             <Select
               value={watch("iconName")}
               onValueChange={(v) => setValue("iconName", v as StatIcon, { shouldDirty: true })}

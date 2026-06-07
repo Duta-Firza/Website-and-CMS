@@ -92,9 +92,9 @@ export function CustomersManager({ initial }: { initial: CustomerRow[] }) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
-              <TableHead className="w-16">Logo</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead className="w-24 text-right">Actions</TableHead>
+              <TableHead className="w-16">{t("common.logo")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <SortableContainer items={items.map((c) => c.id)} onReorder={handleReorder}>
@@ -102,7 +102,7 @@ export function CustomersManager({ initial }: { initial: CustomerRow[] }) {
               {items.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center text-sm text-muted-foreground">
-                    No customers yet.
+                    {t("empty.customers")}
                   </TableCell>
                 </TableRow>
               )}
@@ -217,20 +217,23 @@ function CustomerDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{initial.id ? t("edit") : t("add")} Customer</DialogTitle>
+          <DialogTitle>
+            {initial.id ? t("edit") : t("add")} {t("nouns.customer")}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="c-name">Name</Label>
+            <Label htmlFor="c-name">{t("common.name")}</Label>
             <Input id="c-name" {...register("name")} />
           </div>
           <div className="space-y-2">
-            <Label>Logo</Label>
+            <Label>{t("common.logo")}</Label>
             <MediaUpload
               value={watch("logoUrl")}
               onChange={(url) => setValue("logoUrl", url, { shouldDirty: true })}
               accept="image"
               folder="customers"
+              hint={t("hints.customerLogo")}
             />
           </div>
           <div className="flex items-center gap-2">
@@ -239,7 +242,7 @@ function CustomerDialog({
               checked={watch("invertOnDark")}
               onCheckedChange={(v) => setValue("invertOnDark", v, { shouldDirty: true })}
             />
-            <Label htmlFor="c-invert">Invert on dark</Label>
+            <Label htmlFor="c-invert">{t("fields.invertOnDark")}</Label>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>

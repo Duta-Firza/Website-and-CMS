@@ -13,6 +13,7 @@ import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
 import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
+import { StatusToggle } from "@/components/admin/status-toggle";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,9 +52,9 @@ import {
 import {
   deleteLeadershipMember,
   reorderLeadership,
+  toggleLeadershipActive,
   upsertLeadershipMember,
 } from "@/lib/cms/actions";
-import { cn } from "@/lib/utils";
 import { LEADERSHIP_TYPES, type LeadershipType } from "@/models/constants";
 import type { LeadershipRow } from "./page";
 
@@ -83,6 +84,7 @@ const empty: FormValues = {
 export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
   const router = useRouter();
   const t = useTranslations("Admin");
+  const tAbout = useTranslations("About");
   const locale = useLocale();
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -110,24 +112,36 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
     }
   };
 
+  const handleToggleActive = async (id: string, next: boolean) => {
+    setItems((prev) => prev.map((x) => (x.id === id ? { ...x, isActive: next } : x)));
+    const result = await toggleLeadershipActive(id, next);
+    if (!result.ok) {
+      setItems((prev) => prev.map((x) => (x.id === id ? { ...x, isActive: !next } : x)));
+      throw new Error(result.error);
+    }
+    router.refresh();
+  };
+
   return (
     <>
       <MemberTable
-        title="Board of Directors"
-        emptyMessage="No directors yet."
+        title={tAbout("boardOfDirectors")}
+        emptyMessage={t("empty.directors")}
         members={directors}
         onAdd={() => setEditing({ ...empty, type: "director", order: directors.length + 1 })}
         onEdit={(m) => setEditing({ ...m })}
         onDelete={(id) => setDeleteId(id)}
         onReorder={handleReorder("director")}
+        onToggleActive={handleToggleActive}
         addLabel={t("add")}
+        activeLabel={t("common.active")}
         locale={locale}
       />
 
       <div className="mt-8">
         <MemberTable
-          title="Board of Commissioners"
-          emptyMessage="No commissioners yet."
+          title={tAbout("boardOfCommissioners")}
+          emptyMessage={t("empty.commissioners")}
           members={commissioners}
           onAdd={() =>
             setEditing({ ...empty, type: "commissioner", order: commissioners.length + 1 })
@@ -135,7 +149,9 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
           onEdit={(m) => setEditing({ ...m })}
           onDelete={(id) => setDeleteId(id)}
           onReorder={handleReorder("commissioner")}
+          onToggleActive={handleToggleActive}
           addLabel={t("add")}
+          activeLabel={t("common.active")}
           locale={locale}
         />
       </div>
@@ -187,7 +203,9 @@ function MemberTable({
   onEdit,
   onDelete,
   onReorder,
+  onToggleActive,
   addLabel,
+  activeLabel,
   locale,
 }: {
   title: string;
@@ -197,9 +215,12 @@ function MemberTable({
   onEdit: (m: LeadershipRow) => void;
   onDelete: (id: string) => void;
   onReorder: (ids: string[]) => void;
+  onToggleActive: (id: string, next: boolean) => Promise<void>;
   addLabel: string;
+  activeLabel: string;
   locale: string;
 }) {
+  const tCol = useTranslations("Admin.common");
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
@@ -216,11 +237,11 @@ function MemberTable({
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
-              <TableHead className="w-16">Photo</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden md:table-cell">Title</TableHead>
-              <TableHead className="w-16">Active</TableHead>
-              <TableHead className="w-24 text-right">Actions</TableHead>
+              <TableHead className="w-16">{tCol("photo")}</TableHead>
+              <TableHead>{tCol("name")}</TableHead>
+              <TableHead className="hidden md:table-cell">{tCol("title")}</TableHead>
+              <TableHead className="w-16">{tCol("active")}</TableHead>
+              <TableHead className="w-24 text-right">{tCol("actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <SortableContainer items={members.map((m) => m.id)} onReorder={onReorder}>
@@ -253,16 +274,11 @@ function MemberTable({
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span
-                          className={cn(
-                            "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider",
-                            m.isActive
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          {m.isActive ? "Yes" : "No"}
-                        </span>
+                        <StatusToggle
+                          checked={m.isActive}
+                          ariaLabel={activeLabel}
+                          onToggle={(next) => onToggleActive(m.id, next)}
+                        />
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
@@ -320,28 +336,32 @@ function LeadershipDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{initial.id ? t("edit") : t("add")} Leadership Member</DialogTitle>
+          <DialogTitle>
+            {initial.id ? t("edit") : t("add")} {t("nouns.leadershipMember")}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="lm-name">Name</Label>
-            <Input id="lm-name" {...register("name")} placeholder="Full name" />
+            <Label htmlFor="lm-name">{t("common.name")}</Label>
+            <Input id="lm-name" {...register("name")} placeholder={t("fields.fullName")} />
             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
           </div>
-          <LocalizedField label="Title / Position" name="title" form={form} />
-          <LocalizedField label="Bio" name="bio" form={form} multiline />
+          <LocalizedField label={t("fields.titlePosition")} name="title" form={form} />
+          <LocalizedField label={t("common.bio")} name="bio" form={form} multiline />
           <div className="space-y-2">
-            <Label>Photo</Label>
+            <Label>{t("common.photo")}</Label>
             <MediaUpload
               value={watch("photoUrl")}
               onChange={(url) => setValue("photoUrl", url, { shouldDirty: true })}
               accept="image"
               folder="leadership"
+              aspectRatio={4 / 5}
+              hint={t("hints.leadershipPhoto")}
             />
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Type</Label>
+              <Label>{t("common.type")}</Label>
               <Select
                 value={watch("type")}
                 onValueChange={(v) => setValue("type", v as LeadershipType, { shouldDirty: true })}
@@ -364,7 +384,7 @@ function LeadershipDialog({
                 checked={watch("isActive")}
                 onCheckedChange={(v) => setValue("isActive", v, { shouldDirty: true })}
               />
-              <Label htmlFor="lm-active">Active</Label>
+              <Label htmlFor="lm-active">{t("fields.active")}</Label>
             </div>
           </div>
           <DialogFooter>

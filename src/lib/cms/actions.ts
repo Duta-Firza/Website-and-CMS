@@ -726,6 +726,61 @@ export async function reorderCredentials(ids: string[]): Promise<ActionResult> {
   }
 }
 
+// ─── Status toggle actions ──────────────────────────────────────────────────
+const toggleSchema = z.object({ id: z.string().min(1), value: z.boolean() });
+
+export async function togglePartnerActive(id: string, value: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = toggleSchema.parse({ id, value });
+    await connectDB();
+    await Partner.findByIdAndUpdate(parsed.id, { isActive: parsed.value });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function toggleLeadershipActive(id: string, value: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = toggleSchema.parse({ id, value });
+    await connectDB();
+    await LeadershipMember.findByIdAndUpdate(parsed.id, { isActive: parsed.value });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function toggleProjectPublished(id: string, value: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = toggleSchema.parse({ id, value });
+    await connectDB();
+    await Project.findByIdAndUpdate(parsed.id, { isPublished: parsed.value });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function toggleProjectHighlighted(id: string, value: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = toggleSchema.parse({ id, value });
+    await connectDB();
+    await Project.findByIdAndUpdate(parsed.id, { isHighlighted: parsed.value });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function errorMessage(e: unknown): string {
   if (e instanceof z.ZodError) return e.issues.map((i) => i.message).join("; ");

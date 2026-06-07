@@ -104,10 +104,10 @@ export function BusinessManager({ initial }: { initial: AffiliatedBusinessRow[] 
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
-              <TableHead className="w-16">Logo</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden md:table-cell">Website</TableHead>
-              <TableHead className="w-24 text-right">Actions</TableHead>
+              <TableHead className="w-16">{t("common.logo")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("common.website")}</TableHead>
+              <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <SortableContainer items={items.map((b) => b.id)} onReorder={handleReorder}>
@@ -115,7 +115,7 @@ export function BusinessManager({ initial }: { initial: AffiliatedBusinessRow[] 
               {items.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
-                    No affiliated businesses yet.
+                    {t("empty.businesses")}
                   </TableCell>
                 </TableRow>
               )}
@@ -235,26 +235,34 @@ function BusinessDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{initial.id ? t("edit") : t("add")} Affiliated Business</DialogTitle>
+          <DialogTitle>
+            {initial.id ? t("edit") : t("add")} {t("nouns.business")}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="ab-name">Name</Label>
+            <Label htmlFor="ab-name">{t("common.name")}</Label>
             <Input id="ab-name" {...register("name")} placeholder="PT Duta Firza Technologies" />
             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label>Logo</Label>
+            <Label>{t("common.logo")}</Label>
             <MediaUpload
               value={watch("logoUrl")}
               onChange={(url) => setValue("logoUrl", url, { shouldDirty: true })}
               accept="image"
               folder="business"
+              hint={t("hints.businessLogo")}
             />
           </div>
-          <LocalizedField label="Description" name="description" form={form} multiline />
+          <LocalizedField
+            label={t("common.description")}
+            name="description"
+            form={form}
+            multiline
+          />
           <div className="space-y-2">
-            <Label htmlFor="ab-web">Website URL (optional)</Label>
+            <Label htmlFor="ab-web">{t("fields.websiteUrlOptional")}</Label>
             <Input id="ab-web" {...register("websiteUrl")} placeholder="https://…" />
           </div>
           <DialogFooter>

@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { connectDB } from "@/lib/db";
 import { Credential, type CredentialType } from "@/models";
@@ -31,12 +32,10 @@ async function loadCredentials(): Promise<CredentialRow[]> {
 
 export default async function CredentialsAdminPage() {
   const credentials = await loadCredentials();
+  const t = await getTranslations("Admin.pages.credentials");
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        title="Credentials"
-        description="Certifications and acknowledgements shown on /about/credentials."
-      />
+      <AdminPageHeader title={t("title")} description={t("description")} />
       <CredentialsManager initial={credentials} />
     </div>
   );

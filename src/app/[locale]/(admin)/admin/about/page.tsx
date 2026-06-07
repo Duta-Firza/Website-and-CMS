@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { connectDB } from "@/lib/db";
 import { ABOUT_PAGE_ID, AboutPage } from "@/models";
@@ -101,12 +102,10 @@ async function loadAbout(): Promise<AboutFormValues> {
 
 export default async function AboutAdminPage() {
   const initial = await loadAbout();
+  const t = await getTranslations("Admin.pages.about");
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        title="About Page"
-        description="Content for /about (Who We Are) and intro text for /about/business."
-      />
+      <AdminPageHeader title={t("title")} description={t("description")} />
       <AboutForm initial={initial} />
     </div>
   );

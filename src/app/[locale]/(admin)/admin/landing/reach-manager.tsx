@@ -89,7 +89,7 @@ export function ReachManager({ initial }: { initial: ReachRow[] }) {
       <div className="mb-4 flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           <MapPin className="mr-1 inline h-3.5 w-3.5" />
-          Pinpoints rendered on the Our Reach map ({items.length} points)
+          {t("helpers.reachIntro", { count: items.length })}
         </p>
         <Button onClick={() => setEditing({ ...empty, order: items.length + 1 })}>
           <Plus className="mr-2 h-4 w-4" />
@@ -102,10 +102,10 @@ export function ReachManager({ initial }: { initial: ReachRow[] }) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
-              <TableHead>City</TableHead>
-              <TableHead>Province</TableHead>
+              <TableHead>{t("common.city")}</TableHead>
+              <TableHead>{t("common.province")}</TableHead>
               <TableHead className="hidden md:table-cell">Lat, Lng</TableHead>
-              <TableHead className="w-24 text-right">Actions</TableHead>
+              <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <SortableContainer items={items.map((r) => r.id)} onReorder={handleReorder}>
@@ -113,7 +113,7 @@ export function ReachManager({ initial }: { initial: ReachRow[] }) {
               {items.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
-                    No pinpoints yet.
+                    {t("empty.pinpoints")}
                   </TableCell>
                 </TableRow>
               )}
@@ -223,20 +223,22 @@ function ReachDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{initial.id ? t("edit") : t("add")} Pinpoint</DialogTitle>
+          <DialogTitle>
+            {initial.id ? t("edit") : t("add")} {t("nouns.pinpoint")}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label htmlFor="r-city">City</Label>
+              <Label htmlFor="r-city">{t("common.city")}</Label>
               <Input id="r-city" {...register("city")} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="r-province">Province</Label>
+              <Label htmlFor="r-province">{t("common.province")}</Label>
               <Input id="r-province" {...register("province")} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="r-lat">Latitude</Label>
+              <Label htmlFor="r-lat">{t("fields.latitude")}</Label>
               <Input
                 id="r-lat"
                 type="number"
@@ -245,7 +247,7 @@ function ReachDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="r-lng">Longitude</Label>
+              <Label htmlFor="r-lng">{t("fields.longitude")}</Label>
               <Input
                 id="r-lng"
                 type="number"

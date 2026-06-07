@@ -89,6 +89,9 @@ importers:
       react-dom:
         specifier: 19.2.4
         version: 19.2.4(react@19.2.4)
+      react-easy-crop:
+        specifier: ^5.5.7
+        version: 5.5.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-hook-form:
         specifier: ^7.77.0
         version: 7.77.0(react@19.2.4)
@@ -174,28 +177,6 @@ importers:
       vitest:
         specifier: ^4.1.8
         version: 4.1.8(@types/node@20.19.41)(@vitest/coverage-v8@4.1.8)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.14.6(@types/node@20.19.41)(typescript@5.9.3))(vite@8.0.16(@types/node@20.19.41)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.4))
-
-  node_modules/.pnpm/ffmpeg-static@5.3.0/node_modules/ffmpeg-static:
-    dependencies:
-      '@derhuerst/http-basic':
-        specifier: ^8.2.0
-        version: 8.2.4
-      env-paths:
-        specifier: ^2.2.0
-        version: 2.2.1
-      https-proxy-agent:
-        specifier: ^5.0.0
-        version: 5.0.1
-      progress:
-        specifier: ^2.0.3
-        version: 2.0.3
-      server-only:
-        specifier: ^0.0.1
-        version: 0.0.1
-    devDependencies:
-      any-shell-escape:
-        specifier: ^0.1.1
-        version: 0.1.1
 
 packages:
 
@@ -1696,9 +1677,6 @@ packages:
     resolution: {integrity: sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==}
     engines: {node: '>=10'}
 
-  any-shell-escape@0.1.1:
-    resolution: {integrity: sha512-36j4l5HVkboyRhIWgtMh1I9i8LTdFqVwDEHy1cp+QioJyKgAUG40X0W8s7jakWRta/Sjvm8mUG1fU6Tj8mWagQ==}
-
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
 
@@ -3056,6 +3034,9 @@ packages:
     resolution: {integrity: sha512-GYVXHE2KnrzAfsAjl4uP++evGFCrAU1jta4ubEjIG7YWt/64Gqv66a30yKwWczVjA6j3bM4nBwH7Pk1JmDHaxQ==}
     engines: {node: '>=18'}
 
+  normalize-wheel@1.0.1:
+    resolution: {integrity: sha512-1OnlAPZ3zgrk8B91HyRj+eVv+kS5u+Z0SCsak6Xil/kmgEia50ga7zfkumayonZrImffAxPU/5WcyGhzetHNPA==}
+
   npm-run-path@4.0.1:
     resolution: {integrity: sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==}
     engines: {node: '>=8'}
@@ -3286,6 +3267,12 @@ packages:
     peerDependencies:
       react: ^19.2.4
 
+  react-easy-crop@5.5.7:
+    resolution: {integrity: sha512-kYo4NtMeXFQB7h1U+h5yhUkE46WQbQdq7if54uDlbMdZHdRgNehfvaFrXnFw5NR1PNoUOJIfTwLnWmEx/MaZnA==}
+    peerDependencies:
+      react: '>=16.4.0'
+      react-dom: '>=16.4.0'
+
   react-hook-form@7.77.0:
     resolution: {integrity: sha512-Sslh9YDYc0GDlWT/lxasnIduNo4v3yyvqRGvmGKUre5AFjDs/HV9/OafHGD8d+sB2yoL4UIL9L8X9i0WlZZebg==}
     engines: {node: '>=18.0.0'}
@@ -3406,9 +3393,6 @@ packages:
   serve-static@2.2.1:
     resolution: {integrity: sha512-xRXBn0pPqQTVQiC8wyQrKs2MOlX24zQ0POGaj0kultvoOCstBQM5yvOhAVSUwOMjQtTvsPWoNCHfPGwaaQJhTw==}
     engines: {node: '>= 18'}
-
-  server-only@0.0.1:
-    resolution: {integrity: sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==}
 
   set-cookie-parser@3.1.0:
     resolution: {integrity: sha512-kjnC1DXBHcxaOaOXBHBeRtltsDG2nUiUni+jP92M9gYdW12rsmx92UsfpH7o5tDRs7I1ZZPSQJQGv3UaRfCiuw==}
@@ -5212,8 +5196,6 @@ snapshots:
 
   ansi-styles@5.2.0: {}
 
-  any-shell-escape@0.1.1: {}
-
   argparse@2.0.1: {}
 
   aria-query@5.3.0:
@@ -6506,6 +6488,8 @@ snapshots:
 
   node-releases@2.0.46: {}
 
+  normalize-wheel@1.0.1: {}
+
   npm-run-path@4.0.1:
     dependencies:
       path-key: 3.1.1
@@ -6719,6 +6703,13 @@ snapshots:
       react: 19.2.4
       scheduler: 0.27.0
 
+  react-easy-crop@5.5.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      normalize-wheel: 1.0.1
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      tslib: 2.8.1
+
   react-hook-form@7.77.0(react@19.2.4):
     dependencies:
       react: 19.2.4
@@ -6861,8 +6852,6 @@ snapshots:
       send: 1.2.1
     transitivePeerDependencies:
       - supports-color
-
-  server-only@0.0.1: {}
 
   set-cookie-parser@3.1.0: {}
 

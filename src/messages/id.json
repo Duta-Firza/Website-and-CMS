@@ -165,7 +165,264 @@
     "edit": "Edit",
     "delete": "Hapus",
     "add": "Tambah",
-    "confirmDelete": "Yakin ingin menghapus?"
+    "confirmDelete": "Yakin ingin menghapus?",
+    "common": {
+      "name": "Nama",
+      "title": "Judul",
+      "description": "Deskripsi",
+      "image": "Gambar",
+      "logo": "Logo",
+      "photo": "Foto",
+      "summary": "Ringkasan",
+      "year": "Tahun",
+      "client": "Klien",
+      "category": "Kategori",
+      "type": "Tipe",
+      "active": "Aktif",
+      "published": "Terbit",
+      "featured": "Unggulan",
+      "live": "Tayang",
+      "actions": "Aksi",
+      "issuer": "Penerbit",
+      "website": "Website",
+      "city": "Kota",
+      "province": "Provinsi",
+      "order": "Urutan",
+      "slug": "Slug",
+      "bio": "Bio",
+      "phone": "Telepon",
+      "address": "Alamat"
+    },
+    "pages": {
+      "landing": {
+        "title": "Halaman Beranda",
+        "description": "Edit konten yang tampil di homepage publik. Perubahan langsung berlaku setelah disimpan."
+      },
+      "about": {
+        "title": "Halaman About",
+        "description": "Konten /about (Who We Are) dan intro halaman /about/business."
+      },
+      "leadership": {
+        "title": "Kepemimpinan",
+        "description": "Direksi dan Komisaris yang tampil di /about/leadership."
+      },
+      "history": {
+        "title": "Sejarah",
+        "description": "Timeline perjalanan perusahaan untuk /about/history."
+      },
+      "credentials": {
+        "title": "Kredensial",
+        "description": "Sertifikasi dan penghargaan untuk /about/credentials."
+      },
+      "business": {
+        "title": "Bisnis Afiliasi",
+        "description": "Anak perusahaan dan sister company yang tampil di /about/business."
+      },
+      "partners": {
+        "title": "Mitra",
+        "description": "Logo mitra yang tampil di strip homepage."
+      },
+      "projects": {
+        "title": "Proyek",
+        "description": "Proyek EPC dan studi kasus."
+      },
+      "customers": {
+        "title": "Pelanggan",
+        "description": "Logo pelanggan untuk carousel di homepage."
+      },
+      "settings": {
+        "title": "Pengaturan",
+        "description": "Kontak, alamat, dan tautan media sosial."
+      }
+    },
+    "tabs": {
+      "hero": "Hero",
+      "stats": "Statistik",
+      "reach": "Jangkauan",
+      "whoWeAre": "Tentang Kami",
+      "values": "Nilai",
+      "business": "Bisnis",
+      "overrides": "Override Label",
+      "certifications": "Sertifikasi",
+      "acknowledgements": "Penghargaan"
+    },
+    "nouns": {
+      "stat": "Statistik",
+      "pinpoint": "Pinpoint",
+      "partner": "Mitra",
+      "customer": "Pelanggan",
+      "project": "Proyek",
+      "director": "Direktur",
+      "commissioner": "Komisaris",
+      "milestone": "Milestone",
+      "certification": "Sertifikasi",
+      "acknowledgement": "Penghargaan",
+      "business": "Bisnis",
+      "value": "Nilai",
+      "division": "Divisi",
+      "leadershipMember": "Anggota Pimpinan"
+    },
+    "empty": {
+      "stats": "Belum ada statistik.",
+      "pinpoints": "Belum ada pinpoint.",
+      "partners": "Belum ada mitra.",
+      "customers": "Belum ada pelanggan.",
+      "projects": "Belum ada proyek.",
+      "directors": "Belum ada direksi.",
+      "commissioners": "Belum ada komisaris.",
+      "history": "Belum ada milestone.",
+      "certifications": "Belum ada sertifikasi.",
+      "acknowledgements": "Belum ada penghargaan.",
+      "businesses": "Belum ada bisnis afiliasi.",
+      "values": "Belum ada nilai. Tambah satu untuk tampil di Who We Are.",
+      "divisions": "Belum ada divisi. Default ke EPC, Trading, Manufaktur."
+    },
+    "buttons": {
+      "addValue": "Tambah nilai",
+      "addDivision": "Tambah divisi",
+      "replace": "Ganti",
+      "remove": "Hapus",
+      "upload": "Unggah",
+      "uploading": "Mengunggah…",
+      "applyCrop": "Terapkan crop",
+      "uploadOriginal": "Unggah gambar utuh",
+      "resetAuto": "Reset otomatis"
+    },
+    "helpers": {
+      "reorderValues": "Drag-and-drop mengurutkan ulang nilai langsung. Edit judul atau deskripsi tetap butuh Simpan.",
+      "reorderProjectsByCategory": "Drag-and-drop mengurutkan ulang proyek dalam kategori-nya.",
+      "reorderLeadership": "Drag-and-drop mengurutkan dalam tiap tipe (direksi atau komisaris).",
+      "reachIntro": "Pinpoint yang ditampilkan di peta Our Reach ({count} titik)",
+      "overrideHint": "Kosongkan untuk pakai default terjemahan. Nilai yang diisi mengoverride per-locale.",
+      "overrideLabelsTitle": "Override label section (opsional)",
+      "overrideLabelsHint": "Kosongkan untuk pakai label i18n default. Nilai yang diisi mengoverride heading di tiap section homepage.",
+      "slugAutoActive": "Auto dari judul. Ketik untuk override manual.",
+      "businessIntroNote": "Intro untuk halaman /about/business. Daftar perusahaan afiliasi diatur terpisah di Konten Master.",
+      "holdingDivisionsHint": "Kotak di bawah parent group pada diagram. Kalau kosong, default ke label public nav.",
+      "overrideTitlesIntro": "Override judul halaman. Kosongkan untuk pakai default i18n.",
+      "overrideLabelsIntro": "Override label section."
+    },
+    "mediaUpload": {
+      "dropHint": "Drag & drop atau klik Unggah. Diterima: {types}.",
+      "noMedia": "Belum ada media",
+      "uploadSuccess": "Berhasil diunggah",
+      "uploadFailed": "Unggah gagal",
+      "uploadStats": "{orig} → {comp} ({pct}% lebih kecil)",
+      "missingFile": "Pilih file dulu",
+      "fileTooLarge": "Ukuran file terlalu besar"
+    },
+    "cropDialog": {
+      "titleCrop": "Crop gambar",
+      "titlePreview": "Preview gambar",
+      "toggleLabel": "Aktifkan crop",
+      "zoomLabel": "Zoom",
+      "zoomHint": "Geser ke kiri untuk muat seluruh gambar.",
+      "applyCrop": "Terapkan crop",
+      "uploadOriginal": "Unggah gambar utuh"
+    },
+    "hints": {
+      "heroBg": "Disarankan 1920×1080 (16:9 landscape), JPG/WebP. Akan ditampilkan full-width sebagai backdrop hero.",
+      "partnerLogo": "Logo landscape, PNG transparent (min 400×133). Tinggi tampilan ~48px di public, lebar otomatis.",
+      "customerLogo": "Logo landscape, PNG transparent (min 280×93). Tinggi tampilan ~40px di marquee public.",
+      "businessLogo": "Logo landscape, PNG transparent (min 400×100). Tampil rata kiri di card afiliasi, tinggi ~64px.",
+      "projectImage": "Disarankan 1600×900 (16:9), JPG. Dipakai untuk thumbnail card dan hero halaman proyek.",
+      "leadershipPhoto": "Portrait 4:5 (min 400×500), JPG. Wajah usahakan di tengah-atas frame untuk hasil crop optimal.",
+      "credentialImage": "Scan dokumen portrait 3:4 (min 600×800), JPG/PNG. Crop seluruh dokumen, hindari background berlebih.",
+      "aboutVideo": "MP4 H.264 720p+ (16:9 landscape). Akan dikompres ke 1080p/H.264; ukuran asli max 200MB."
+    },
+    "status": {
+      "toggleSaved": "Status diperbarui",
+      "toggleFailed": "Gagal memperbarui status"
+    },
+    "altImage": {
+      "noImage": "Tanpa gambar",
+      "preview": "Preview {name}",
+      "dragHandle": "Drag untuk mengubah urutan"
+    },
+    "fields": {
+      "heroEyebrow": "Eyebrow (opsional)",
+      "heroTitle": "Judul",
+      "heroSubtitle": "Subjudul",
+      "heroCtaLabel": "Label CTA utama",
+      "heroCtaHref": "Link CTA utama",
+      "heroBgImage": "Gambar background",
+      "heroSecondaryCta": "Label CTA sekunder (opsional)",
+      "heroSecondaryCtaHref": "Link CTA sekunder (opsional)",
+      "videoProfile": "Video profil",
+      "introParagraph": "Paragraf intro",
+      "vision": "Visi",
+      "mission": "Misi",
+      "valueTitle": "Judul",
+      "valueDescription": "Deskripsi",
+      "coreBusinessHeading": "Heading Bisnis Inti",
+      "coreBusinessDescription": "Deskripsi Bisnis Inti",
+      "affiliatedBusinessHeading": "Heading Bisnis Afiliasi",
+      "affiliatedBusinessDescription": "Deskripsi Bisnis Afiliasi",
+      "whoWeAreTitle": "Judul Who We Are",
+      "leadershipTitle": "Judul Kepemimpinan",
+      "historyTitle": "Judul Sejarah",
+      "businessTitle": "Judul Bisnis",
+      "credentialsTitle": "Judul Kredensial",
+      "boardOfDirectorsLabel": "Label Dewan Direksi",
+      "boardOfCommissionersLabel": "Label Dewan Komisaris",
+      "holdingStructureCaption": "Caption Struktur Holding",
+      "holdingGroupLabel": "Label Grup Holding (kotak parent)",
+      "divisionKey": "Key",
+      "divisionLabel": "Label",
+      "partnersTitleOverride": "Judul Mitra",
+      "partnersSubtitle": "Subjudul Mitra",
+      "solutionsTitleOverride": "Judul Solusi",
+      "solutionsSubtitle": "Subjudul Solusi",
+      "projectsTitleOverride": "Judul Proyek",
+      "projectsSubtitle": "Subjudul Proyek",
+      "reachTitleOverride": "Judul Reach",
+      "reachSubtitle": "Subjudul Reach",
+      "customersTitleOverride": "Judul Pelanggan",
+      "statLabel": "Label",
+      "statPrefix": "Prefix",
+      "statValue": "Nilai",
+      "statSuffix": "Suffix",
+      "statIcon": "Ikon",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "websiteUrl": "URL Website",
+      "websiteUrlOptional": "URL Website (opsional)",
+      "scopeOfWork": "Ruang lingkup pekerjaan",
+      "aboutProject": "Tentang proyek",
+      "highlightOrder": "Urutan unggulan",
+      "featuredOnHomepage": "Tampilkan di Homepage",
+      "published": "Diterbitkan",
+      "active": "Aktif",
+      "invertOnDark": "Invert di tema gelap",
+      "fullName": "Nama lengkap",
+      "titlePosition": "Jabatan / Posisi",
+      "milestoneYear": "Tahun",
+      "milestoneYearPlaceholder": "1979 atau 'Sekarang'",
+      "contactEmail": "Email kontak",
+      "salesEmail": "Email sales",
+      "addressHO": "Alamat Kantor Pusat",
+      "addressFactory": "Alamat Pabrik",
+      "officeHours": "Jam kerja",
+      "linkedin": "LinkedIn",
+      "instagram": "Instagram",
+      "youtube": "YouTube"
+    },
+    "groups": {
+      "contact": "Kontak",
+      "addressHours": "Alamat & Jam",
+      "socialLinks": "Media Sosial",
+      "pageTitleOverrides": "Override Judul Halaman",
+      "sectionLabelOverrides": "Override Label Section",
+      "holdingDivisions": "Divisi Holding",
+      "whoWeAre": "Who We Are",
+      "companyValues": "Nilai Perusahaan",
+      "ourBusinessIntro": "Our Business (intro untuk /about/business)"
+    },
+    "credentials": {
+      "valueIndex": "Nilai #{index}",
+      "divisionIndex": "Divisi #{index}"
+    },
+    "alertDelete": "Aksi ini tidak bisa dibatalkan."
   },
   "AdminNav": {
     "dashboard": "Dasbor",

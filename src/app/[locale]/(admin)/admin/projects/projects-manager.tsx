@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Pencil, Plus, Star, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
 import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
+import { StatusToggle } from "@/components/admin/status-toggle";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,8 +49,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteProject, reorderProjects, upsertProject } from "@/lib/cms/actions";
-import { cn } from "@/lib/utils";
+import {
+  deleteProject,
+  reorderProjects,
+  toggleProjectHighlighted,
+  toggleProjectPublished,
+  upsertProject,
+} from "@/lib/cms/actions";
 import { PROJECT_CATEGORIES, type ProjectCategory } from "@/models/constants";
 import type { ProjectRow } from "./page";
 
@@ -139,9 +145,7 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <p className="text-xs text-muted-foreground">
-          Drag and drop reorders projects within their category.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("helpers.reorderProjectsByCategory")}</p>
         <Button onClick={() => setEditing({ ...empty, order: items.length + 1 })}>
           <Plus className="mr-2 h-4 w-4" />
           {t("add")}
@@ -153,14 +157,14 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
-              <TableHead className="w-16">Image</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead className="hidden md:table-cell">Client</TableHead>
-              <TableHead className="hidden md:table-cell">Year</TableHead>
-              <TableHead className="hidden md:table-cell">Category</TableHead>
-              <TableHead className="w-16">Featured</TableHead>
-              <TableHead className="w-16">Live</TableHead>
-              <TableHead className="w-24 text-right">Actions</TableHead>
+              <TableHead className="w-16">{t("common.image")}</TableHead>
+              <TableHead>{t("common.title")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("common.client")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("common.year")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("common.category")}</TableHead>
+              <TableHead className="w-16">{t("common.featured")}</TableHead>
+              <TableHead className="w-16">{t("common.live")}</TableHead>
+              <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <SortableContainer items={items.map((p) => p.id)} onReorder={handleReorder}>
@@ -168,7 +172,7 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
               {items.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={9} className="text-center text-sm text-muted-foreground">
-                    No projects yet.
+                    {t("empty.projects")}
                   </TableCell>
                 </TableRow>
               )}
@@ -200,19 +204,44 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
                         {p.category}
                       </TableCell>
                       <TableCell>
-                        {p.isHighlighted && <Star className="h-4 w-4 text-brand-accent" />}
+                        <StatusToggle
+                          checked={p.isHighlighted}
+                          ariaLabel={t("common.featured")}
+                          onToggle={async (next) => {
+                            setItems((prev) =>
+                              prev.map((x) => (x.id === p.id ? { ...x, isHighlighted: next } : x)),
+                            );
+                            const result = await toggleProjectHighlighted(p.id, next);
+                            if (!result.ok) {
+                              setItems((prev) =>
+                                prev.map((x) =>
+                                  x.id === p.id ? { ...x, isHighlighted: !next } : x,
+                                ),
+                              );
+                              throw new Error(result.error);
+                            }
+                            router.refresh();
+                          }}
+                        />
                       </TableCell>
                       <TableCell>
-                        <span
-                          className={cn(
-                            "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider",
-                            p.isPublished
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          {p.isPublished ? "Yes" : "No"}
-                        </span>
+                        <StatusToggle
+                          checked={p.isPublished}
+                          ariaLabel={t("common.live")}
+                          onToggle={async (next) => {
+                            setItems((prev) =>
+                              prev.map((x) => (x.id === p.id ? { ...x, isPublished: next } : x)),
+                            );
+                            const result = await toggleProjectPublished(p.id, next);
+                            if (!result.ok) {
+                              setItems((prev) =>
+                                prev.map((x) => (x.id === p.id ? { ...x, isPublished: !next } : x)),
+                              );
+                              throw new Error(result.error);
+                            }
+                            router.refresh();
+                          }}
+                        />
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
@@ -327,20 +356,22 @@ function ProjectDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{initial.id ? t("edit") : t("add")} Project</DialogTitle>
+          <DialogTitle>
+            {initial.id ? t("edit") : t("add")} {t("nouns.project")}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="pr-slug">Slug</Label>
+                <Label htmlFor="pr-slug">{t("common.slug")}</Label>
                 {manualSlug && !initial.id && (
                   <button
                     type="button"
                     onClick={() => setManualSlug(false)}
                     className="text-xs text-muted-foreground hover:text-brand-accent"
                   >
-                    Reset auto
+                    {t("buttons.resetAuto")}
                   </button>
                 )}
               </div>
@@ -349,46 +380,46 @@ function ProjectDialog({
                 {...register("slug", {
                   onChange: () => setManualSlug(true),
                 })}
-                placeholder="auto from title"
+                placeholder="auto"
               />
               {errors.slug && <p className="text-xs text-destructive">{errors.slug.message}</p>}
               {!manualSlug && (
-                <p className="text-xs text-muted-foreground">
-                  Auto-generated from title. Type to override.
-                </p>
+                <p className="text-xs text-muted-foreground">{t("helpers.slugAutoActive")}</p>
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="pr-client">Client</Label>
+              <Label htmlFor="pr-client">{t("common.client")}</Label>
               <Input id="pr-client" {...register("client")} />
             </div>
           </div>
-          <LocalizedField label="Title" name="title" form={form} />
-          <LocalizedField label="Summary" name="summary" form={form} multiline />
-          <LocalizedField label="About the project" name="about" form={form} multiline />
+          <LocalizedField label={t("common.title")} name="title" form={form} />
+          <LocalizedField label={t("common.summary")} name="summary" form={form} multiline />
+          <LocalizedField label={t("fields.aboutProject")} name="about" form={form} multiline />
           <LocalizedField
-            label="Scope of work"
+            label={t("fields.scopeOfWork")}
             name="scopeOfWork"
             form={form}
             multiline
             placeholder={{ id: "Satu item per baris", en: "One item per line" }}
           />
           <div className="space-y-2">
-            <Label>Hero image</Label>
+            <Label>{t("common.image")}</Label>
             <MediaUpload
               value={watch("image")}
               onChange={(url) => setValue("image", url, { shouldDirty: true })}
               accept="image"
               folder="projects"
+              aspectRatio={16 / 9}
+              hint={t("hints.projectImage")}
             />
           </div>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
             <div className="space-y-2">
-              <Label htmlFor="pr-year">Year</Label>
+              <Label htmlFor="pr-year">{t("common.year")}</Label>
               <Input id="pr-year" type="number" {...register("year", { valueAsNumber: true })} />
             </div>
             <div className="space-y-2">
-              <Label>Category</Label>
+              <Label>{t("common.category")}</Label>
               <Select
                 value={watch("category")}
                 onValueChange={(v) =>
@@ -408,7 +439,7 @@ function ProjectDialog({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="pr-horder">Featured order</Label>
+              <Label htmlFor="pr-horder">{t("fields.highlightOrder")}</Label>
               <Input
                 id="pr-horder"
                 type="number"
@@ -423,7 +454,7 @@ function ProjectDialog({
                 checked={watch("isHighlighted")}
                 onCheckedChange={(v) => setValue("isHighlighted", v, { shouldDirty: true })}
               />
-              <Label htmlFor="pr-feat">Featured on homepage</Label>
+              <Label htmlFor="pr-feat">{t("fields.featuredOnHomepage")}</Label>
             </div>
             <div className="flex items-center gap-2">
               <Switch
@@ -431,7 +462,7 @@ function ProjectDialog({
                 checked={watch("isPublished")}
                 onCheckedChange={(v) => setValue("isPublished", v, { shouldDirty: true })}
               />
-              <Label htmlFor="pr-pub">Published</Label>
+              <Label htmlFor="pr-pub">{t("fields.published")}</Label>
             </div>
           </div>
           <DialogFooter>

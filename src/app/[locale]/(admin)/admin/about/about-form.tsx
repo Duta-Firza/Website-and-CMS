@@ -109,10 +109,10 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
       <Tabs defaultValue="who" className="w-full">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <TabsList className="grid grid-cols-2 md:flex md:w-fit">
-            <TabsTrigger value="who">Who We Are</TabsTrigger>
-            <TabsTrigger value="values">Values</TabsTrigger>
-            <TabsTrigger value="business">Business</TabsTrigger>
-            <TabsTrigger value="overrides">Overrides</TabsTrigger>
+            <TabsTrigger value="who">{t("tabs.whoWeAre")}</TabsTrigger>
+            <TabsTrigger value="values">{t("tabs.values")}</TabsTrigger>
+            <TabsTrigger value="business">{t("tabs.business")}</TabsTrigger>
+            <TabsTrigger value="overrides">{t("tabs.overrides")}</TabsTrigger>
           </TabsList>
           <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -123,18 +123,24 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
         <TabsContent value="who" className="mt-6">
           <Card>
             <CardContent className="space-y-5 pt-6">
-              <LocalizedField label="Intro paragraph" name="intro" form={form} multiline />
+              <LocalizedField
+                label={t("fields.introParagraph")}
+                name="intro"
+                form={form}
+                multiline
+              />
               <div className="space-y-2">
-                <Label>Video profile</Label>
+                <Label>{t("fields.videoProfile")}</Label>
                 <MediaUpload
                   value={watch("videoUrl")}
                   onChange={(url) => setValue("videoUrl", url, { shouldDirty: true })}
                   accept="video"
                   folder="about"
+                  hint={t("hints.aboutVideo")}
                 />
               </div>
-              <LocalizedField label="Vision" name="vision" form={form} multiline />
-              <LocalizedField label="Mission" name="mission" form={form} multiline />
+              <LocalizedField label={t("fields.vision")} name="vision" form={form} multiline />
+              <LocalizedField label={t("fields.mission")} name="mission" form={form} multiline />
             </CardContent>
           </Card>
         </TabsContent>
@@ -143,10 +149,7 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
           <Card>
             <CardContent className="space-y-4 pt-6">
               <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">
-                  Drag and drop reorders values immediately. Edits to title or description still
-                  require Save.
-                </p>
+                <p className="text-xs text-muted-foreground">{t("helpers.reorderValues")}</p>
                 <Button
                   type="button"
                   variant="outline"
@@ -156,13 +159,11 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
                   }
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Add value
+                  {t("buttons.addValue")}
                 </Button>
               </div>
               {fields.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  No values yet. Add one to display on the Who We Are page.
-                </p>
+                <p className="text-sm text-muted-foreground">{t("empty.values")}</p>
               )}
               <SortableContainer items={fields.map((f) => f.id)} onReorder={handleReorderValues}>
                 <div className="space-y-3">
@@ -178,7 +179,7 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
                             <div className="flex items-center gap-2">
                               <DragHandle handleProps={handleProps} size="sm" />
                               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                Value #{index + 1}
+                                {t("credentials.valueIndex", { index: index + 1 })}
                               </p>
                             </div>
                             <Button
@@ -191,12 +192,12 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
                             </Button>
                           </div>
                           <LocalizedField
-                            label="Title"
+                            label={t("fields.valueTitle")}
                             name={`values.${index}.title`}
                             form={form}
                           />
                           <LocalizedField
-                            label="Description"
+                            label={t("fields.valueDescription")}
                             name={`values.${index}.description`}
                             form={form}
                             multiline
@@ -214,30 +215,27 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
         <TabsContent value="business" className="mt-6">
           <Card>
             <CardContent className="space-y-5 pt-6">
-              <p className="text-xs text-muted-foreground">
-                Intro text for the /about/business page. Affiliated company list is managed
-                separately under Master Content.
-              </p>
+              <p className="text-xs text-muted-foreground">{t("helpers.businessIntroNote")}</p>
               <LocalizedField
-                label="Core Business heading"
+                label={t("fields.coreBusinessHeading")}
                 name="coreBusinessTitle"
                 form={form}
                 placeholder={{ id: "Bisnis Inti", en: "Core Business" }}
               />
               <LocalizedField
-                label="Core Business description"
+                label={t("fields.coreBusinessDescription")}
                 name="coreBusinessDescription"
                 form={form}
                 multiline
               />
               <LocalizedField
-                label="Affiliated Business heading"
+                label={t("fields.affiliatedBusinessHeading")}
                 name="affiliatedBusinessTitle"
                 form={form}
                 placeholder={{ id: "Bisnis Afiliasi", en: "Affiliated Business" }}
               />
               <LocalizedField
-                label="Affiliated Business description"
+                label={t("fields.affiliatedBusinessDescription")}
                 name="affiliatedBusinessDescription"
                 form={form}
                 multiline
@@ -251,38 +249,36 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
             <CardContent className="space-y-5 pt-6">
               <div>
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                  Page title overrides
+                  {t("groups.pageTitleOverrides")}
                 </h3>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Leave empty to use the default translation. Filled values override per-locale.
-                </p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("helpers.overrideHint")}</p>
               </div>
               <LocalizedField
-                label="Who We Are title"
+                label={t("fields.whoWeAreTitle")}
                 name="whoWeAreTitle"
                 form={form}
                 placeholder={{ id: "Tentang PT Duta Firza", en: "About PT Duta Firza" }}
               />
               <LocalizedField
-                label="Leadership title"
+                label={t("fields.leadershipTitle")}
                 name="leadershipTitle"
                 form={form}
                 placeholder={{ id: "Kepemimpinan", en: "Leadership" }}
               />
               <LocalizedField
-                label="History title"
+                label={t("fields.historyTitle")}
                 name="historyTitle"
                 form={form}
                 placeholder={{ id: "Sejarah", en: "History" }}
               />
               <LocalizedField
-                label="Business title"
+                label={t("fields.businessTitle")}
                 name="businessTitle"
                 form={form}
                 placeholder={{ id: "Bisnis Kami", en: "Our Business" }}
               />
               <LocalizedField
-                label="Credentials title"
+                label={t("fields.credentialsTitle")}
                 name="credentialsTitle"
                 form={form}
                 placeholder={{ id: "Kredensial", en: "Credentials" }}
@@ -293,28 +289,28 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
           <Card>
             <CardContent className="space-y-5 pt-6">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                Section label overrides
+                {t("groups.sectionLabelOverrides")}
               </h3>
               <LocalizedField
-                label="Board of Directors label"
+                label={t("fields.boardOfDirectorsLabel")}
                 name="boardOfDirectorsLabel"
                 form={form}
                 placeholder={{ id: "Dewan Direksi", en: "Board of Directors" }}
               />
               <LocalizedField
-                label="Board of Commissioners label"
+                label={t("fields.boardOfCommissionersLabel")}
                 name="boardOfCommissionersLabel"
                 form={form}
                 placeholder={{ id: "Dewan Komisaris", en: "Board of Commissioners" }}
               />
               <LocalizedField
-                label="Holding structure caption"
+                label={t("fields.holdingStructureCaption")}
                 name="holdingStructureLabel"
                 form={form}
                 placeholder={{ id: "Struktur Holding", en: "Corporate Holding Structure" }}
               />
               <LocalizedField
-                label="Holding group label (parent box)"
+                label={t("fields.holdingGroupLabel")}
                 name="holdingGroupLabel"
                 form={form}
                 placeholder={{ id: "Duta Firza Holding Group", en: "Duta Firza Holding Group" }}
@@ -327,11 +323,10 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                    Holding divisions
+                    {t("groups.holdingDivisions")}
                   </h3>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Boxes under the parent group on the diagram. Default falls back to the public
-                    nav labels when this list is empty.
+                    {t("helpers.holdingDivisionsHint")}
                   </p>
                 </div>
                 <Button
@@ -341,13 +336,11 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
                   onClick={() => appendDivision({ key: "", label: { id: "", en: "" } })}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Add division
+                  {t("buttons.addDivision")}
                 </Button>
               </div>
               {divisionFields.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  No custom divisions. Defaults to EPC, Trading, Manufacturing.
-                </p>
+                <p className="text-sm text-muted-foreground">{t("empty.divisions")}</p>
               )}
               <SortableContainer
                 items={divisionFields.map((f) => f.id)}
@@ -366,7 +359,7 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
                             <div className="flex items-center gap-2">
                               <DragHandle handleProps={handleProps} size="sm" />
                               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                Division #{index + 1}
+                                {t("credentials.divisionIndex", { index: index + 1 })}
                               </p>
                             </div>
                             <Button
@@ -379,7 +372,7 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
                             </Button>
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor={`hd-key-${index}`}>Key</Label>
+                            <Label htmlFor={`hd-key-${index}`}>{t("fields.divisionKey")}</Label>
                             <Input
                               id={`hd-key-${index}`}
                               {...register(`holdingDivisions.${index}.key`)}
@@ -387,7 +380,7 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
                             />
                           </div>
                           <LocalizedField
-                            label="Label"
+                            label={t("fields.divisionLabel")}
                             name={`holdingDivisions.${index}.label`}
                             form={form}
                             placeholder={{ id: "EPC & Proyek", en: "EPC & Projects" }}
