@@ -268,7 +268,7 @@ function GroupSection({
         />
       </button>
       {open && (
-        <ul className="mb-2 mt-1 space-y-0.5 pl-1">
+        <ul className="mb-2 ml-3 mt-1 space-y-0.5 border-l border-border/60 pl-3">
           {group.items.map((item) => (
             <li key={item.labelKey}>
               <ItemLink

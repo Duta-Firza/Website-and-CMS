@@ -2,7 +2,6 @@ import type { LucideIcon } from "lucide-react";
 import {
   ArrowRightLeft,
   Award,
-  BarChart3,
   Briefcase,
   Building2,
   Clock,
@@ -21,7 +20,6 @@ import {
   LineChart,
   Mail,
   MailQuestion,
-  MapPin,
   Megaphone,
   Network,
   Newspaper,
@@ -62,11 +60,7 @@ export function buildAdminNav(locale: string): AdminNavData {
         key: "home",
         titleKey: "groupHome",
         icon: Home,
-        items: [
-          { labelKey: "hero", href: `${base}/landing?section=hero`, icon: Sparkles },
-          { labelKey: "stats", href: `${base}/landing?section=stats`, icon: BarChart3 },
-          { labelKey: "reach", href: `${base}/landing?section=reach`, icon: MapPin },
-        ],
+        items: [{ labelKey: "landing", href: `${base}/landing`, icon: Sparkles }],
       },
       {
         key: "about",
