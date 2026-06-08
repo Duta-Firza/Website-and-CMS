@@ -177,11 +177,7 @@ export function buildAdminNav(locale: string): AdminNavData {
         key: "content",
         titleKey: "groupContent",
         icon: FolderOpen,
-        items: [
-          { labelKey: "partners", href: `${base}/partners`, icon: Handshake },
-          { labelKey: "projects", href: `${base}/projects`, icon: Briefcase },
-          { labelKey: "customers", href: `${base}/customers`, icon: Building2 },
-        ],
+        items: [{ labelKey: "customers", href: `${base}/customers`, icon: Building2 }],
       },
       {
         key: "inbox",

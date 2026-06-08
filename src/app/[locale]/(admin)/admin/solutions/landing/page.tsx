@@ -36,35 +36,31 @@ export default async function SolutionsLandingAdminPage() {
     loadSolutionPageForAdmin("solutions"),
     loadSolutionCards(),
   ]);
-  const t = await getTranslations("Admin.pages.solutionsLanding");
+  const t = await getTranslations("Admin");
+  const tLanding = await getTranslations("Landing");
   return (
-    <div className="space-y-8">
-      <AdminPageHeader title={t("title")} description={t("description")} />
-      <SolutionPageForm slug="solutions" initial={page} />
-      <SolutionCardsSection cards={cards} />
+    <div className="space-y-6">
+      <AdminPageHeader
+        title={t("pages.solutionsLanding.title")}
+        description={t("pages.solutionsLanding.description")}
+      />
+      <SolutionPageForm
+        slug="solutions"
+        initial={page}
+        additionalTabs={[
+          {
+            value: "cards",
+            label: tLanding("ourSolutions"),
+            content: (
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                {cards.map((c) => (
+                  <SolutionForm key={c.key} initial={c} />
+                ))}
+              </div>
+            ),
+          },
+        ]}
+      />
     </div>
-  );
-}
-
-async function SolutionCardsSection({
-  cards,
-}: {
-  cards: Awaited<ReturnType<typeof loadSolutionCards>>;
-}) {
-  const t = await getTranslations("Landing");
-  return (
-    <section className="space-y-3">
-      <div className="border-b pb-2">
-        <h2 className="text-lg font-semibold tracking-tight text-brand-deep dark:text-foreground">
-          {t("ourSolutions")}
-        </h2>
-        <p className="text-sm text-muted-foreground">{t("ourSolutionsSubtitle")}</p>
-      </div>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {cards.map((c) => (
-          <SolutionForm key={c.key} initial={c} />
-        ))}
-      </div>
-    </section>
   );
 }

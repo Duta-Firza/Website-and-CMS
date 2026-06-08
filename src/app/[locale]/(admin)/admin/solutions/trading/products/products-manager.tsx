@@ -348,7 +348,9 @@ function ProductDialog({
                   onValueChange={(v) => setValue("partnerId", v || null, { shouldDirty: true })}
                 >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder={t("fields.principleName")}>
+                      {partners.find((p) => p.id === linkedPartnerId)?.name ?? ""}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {partners.map((p) => (

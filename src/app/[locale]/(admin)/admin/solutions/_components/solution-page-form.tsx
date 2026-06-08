@@ -2,23 +2,28 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { type ReactNode, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { LocalizedField } from "@/components/admin/localized-field";
-import { MediaUpload } from "@/components/admin/media-upload";
+import { StickyFormBar } from "@/components/admin/sticky-form-bar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateSolutionPage } from "@/lib/cms/actions";
 import type { SolutionPageSlug, SolutionPageStatus } from "@/models/constants";
 import { StatusGroup } from "./status-group";
 
 const localized = z.object({ id: z.string(), en: z.string() });
 
+// `hero.backgroundImage` and `comingSoonMessage` remain in the schema for
+// backward compatibility with existing docs + the server action, but the form
+// UI no longer exposes them — the public page renders neither.
 const schema = z.object({
   status: z.enum(["published", "comingSoon", "hidden"]),
   hero: z.object({
@@ -37,16 +42,54 @@ const schema = z.object({
 
 export type SolutionPageFormValues = z.infer<typeof schema>;
 
+export interface AdditionalTab {
+  value: string;
+  label: string;
+  /** Rendered outside the page-form `<form>` — items in this tab manage their
+   * own state and save action (typically a list-manager with its own dialog). */
+  content: ReactNode;
+}
+
+const FORM_TABS_BASE = ["visibility", "hero", "body"] as const;
+type FormTabValue = (typeof FORM_TABS_BASE)[number] | "form";
+
 interface Props {
   slug: SolutionPageSlug;
   initial: SolutionPageFormValues;
-  /** Some pages (partners, products, epc) don't have an inquiry form — hide the toggle. */
+  /** Some pages (partners, products, epc) don't have an inquiry form — hide the tab. */
   showInquiryToggle?: boolean;
+  /** Extra tabs appended to the right of the form-field tabs. Their content is
+   * rendered outside the page-form `<form>` so each manager can host its own
+   * nested dialog/form without invalid HTML. */
+  additionalTabs?: AdditionalTab[];
 }
 
-export function SolutionPageForm({ slug, initial, showInquiryToggle = false }: Props) {
+export function SolutionPageForm({
+  slug,
+  initial,
+  showInquiryToggle = false,
+  additionalTabs = [],
+}: Props) {
   const t = useTranslations("Admin");
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const formTabs = useMemo<FormTabValue[]>(
+    () => (showInquiryToggle ? [...FORM_TABS_BASE, "form"] : [...FORM_TABS_BASE]),
+    [showInquiryToggle],
+  );
+  const allowedTabs = useMemo(
+    () => [...formTabs, ...additionalTabs.map((a) => a.value)],
+    [formTabs, additionalTabs],
+  );
+  const initialTab = (() => {
+    const raw = searchParams.get("tab");
+    return raw && (allowedTabs as string[]).includes(raw) ? raw : "visibility";
+  })();
+  const [tab, setTab] = useState<string>(initialTab);
+  const isFormTab = (formTabs as string[]).includes(tab);
+
   const form = useForm<SolutionPageFormValues>({
     resolver: zodResolver(schema),
     defaultValues: initial,
@@ -68,111 +111,111 @@ export function SolutionPageForm({ slug, initial, showInquiryToggle = false }: P
     }
   };
 
+  const handleTabChange = (next: string) => {
+    setTab(next);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", next);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
   const status = watch("status") as SolutionPageStatus;
+  const totalCols = formTabs.length + additionalTabs.length;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="flex justify-end">
-        <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {t("save")}
-        </Button>
-      </div>
+    <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
+      <TabsList
+        className="grid w-full md:w-fit"
+        style={{ gridTemplateColumns: `repeat(${totalCols}, minmax(0, 1fr))` }}
+      >
+        <TabsTrigger value="visibility">{t("groups.pageVisibility")}</TabsTrigger>
+        <TabsTrigger value="hero">{t("groups.pageHero")}</TabsTrigger>
+        <TabsTrigger value="body">{t("groups.pageBody")}</TabsTrigger>
+        {showInquiryToggle && <TabsTrigger value="form">{t("groups.formSettings")}</TabsTrigger>}
+        {additionalTabs.map((extra) => (
+          <TabsTrigger key={extra.value} value={extra.value}>
+            {extra.label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("groups.pageVisibility")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <StatusGroup
-            value={status}
-            onChange={(next) => setValue("status", next, { shouldDirty: true })}
-          />
-          <p className="mt-3 text-xs text-muted-foreground">
-            {t("helpers.solutionsPageStatusHint")}
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("groups.pageHero")}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <LocalizedField label={t("fields.heroEyebrow")} name="hero.eyebrow" form={form} />
-          <LocalizedField label={t("fields.heroTitle")} name="hero.title" form={form} />
-          <LocalizedField
-            label={t("fields.heroSubtitle")}
-            name="hero.subtitle"
-            form={form}
-            multiline
-          />
-          <div className="space-y-2">
-            <Label>{t("fields.heroBgImage")}</Label>
-            <MediaUpload
-              value={watch("hero.backgroundImage")}
-              onChange={(url) => setValue("hero.backgroundImage", url, { shouldDirty: true })}
-              accept="image"
-              folder={`solutions/${slug}`}
-              hint={t("hints.heroBg")}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("groups.pageBody")}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <LocalizedField label={t("fields.bodyHeading")} name="body.heading" form={form} />
-          <LocalizedField
-            label={t("fields.bodyContent")}
-            name="body.content"
-            form={form}
-            multiline
-          />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("groups.comingSoonContent")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <LocalizedField
-            label={t("fields.comingSoonMessage")}
-            name="comingSoonMessage"
-            form={form}
-            multiline
-          />
-        </CardContent>
-      </Card>
-
-      {showInquiryToggle && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("groups.formSettings")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-3">
-              <Switch
-                id="inquiry-enabled"
-                checked={watch("inquiryFormEnabled")}
-                onCheckedChange={(v) => setValue("inquiryFormEnabled", v, { shouldDirty: true })}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <TabsContent value="visibility" className="mt-6">
+          <Card>
+            <CardContent className="space-y-3 pt-6">
+              <StatusGroup
+                value={status}
+                onChange={(next) => setValue("status", next, { shouldDirty: true })}
               />
-              <Label htmlFor="inquiry-enabled">{t("fields.inquiryFormEnabled")}</Label>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              <p className="text-xs text-muted-foreground">
+                {t("helpers.solutionsPageStatusHint")}
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      <div className="flex justify-end">
-        <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {t("save")}
-        </Button>
-      </div>
-    </form>
+        <TabsContent value="hero" className="mt-6">
+          <Card>
+            <CardContent className="space-y-4 pt-6">
+              <LocalizedField label={t("fields.heroEyebrow")} name="hero.eyebrow" form={form} />
+              <LocalizedField label={t("fields.heroTitle")} name="hero.title" form={form} />
+              <LocalizedField
+                label={t("fields.heroSubtitle")}
+                name="hero.subtitle"
+                form={form}
+                multiline
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="body" className="mt-6">
+          <Card>
+            <CardContent className="space-y-4 pt-6">
+              <LocalizedField label={t("fields.bodyHeading")} name="body.heading" form={form} />
+              <LocalizedField
+                label={t("fields.bodyContent")}
+                name="body.content"
+                form={form}
+                multiline
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {showInquiryToggle && (
+          <TabsContent value="form" className="mt-6">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <Switch
+                    id="inquiry-enabled"
+                    checked={watch("inquiryFormEnabled")}
+                    onCheckedChange={(v) =>
+                      setValue("inquiryFormEnabled", v, { shouldDirty: true })
+                    }
+                  />
+                  <Label htmlFor="inquiry-enabled">{t("fields.inquiryFormEnabled")}</Label>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {isFormTab && (
+          <StickyFormBar>
+            <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t("save")}
+            </Button>
+          </StickyFormBar>
+        )}
+      </form>
+
+      {additionalTabs.map((extra) => (
+        <TabsContent key={extra.value} value={extra.value} className="mt-6">
+          {extra.content}
+        </TabsContent>
+      ))}
+    </Tabs>
   );
 }

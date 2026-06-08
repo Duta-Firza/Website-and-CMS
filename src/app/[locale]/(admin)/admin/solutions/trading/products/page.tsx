@@ -63,12 +63,24 @@ export default async function TradingProductsAdminPage() {
     loadProducts(),
     loadPartnerOptions(),
   ]);
-  const t = await getTranslations("Admin.pages.tradingProducts");
+  const t = await getTranslations("Admin");
   return (
-    <div className="space-y-8">
-      <AdminPageHeader title={t("title")} description={t("description")} />
-      <SolutionPageForm slug="trading-products" initial={page} />
-      <ProductsManager initial={products} partners={partners} />
+    <div className="space-y-6">
+      <AdminPageHeader
+        title={t("pages.tradingProducts.title")}
+        description={t("pages.tradingProducts.description")}
+      />
+      <SolutionPageForm
+        slug="trading-products"
+        initial={page}
+        additionalTabs={[
+          {
+            value: "products",
+            label: t("nouns.product"),
+            content: <ProductsManager initial={products} partners={partners} />,
+          },
+        ]}
+      />
     </div>
   );
 }
