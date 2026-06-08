@@ -10,6 +10,7 @@ import { z } from "zod";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
+import { StickyFormBar } from "@/components/admin/sticky-form-bar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -107,18 +108,12 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <Tabs defaultValue="who" className="w-full">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <TabsList className="grid grid-cols-2 md:flex md:w-fit">
-            <TabsTrigger value="who">{t("tabs.whoWeAre")}</TabsTrigger>
-            <TabsTrigger value="values">{t("tabs.values")}</TabsTrigger>
-            <TabsTrigger value="business">{t("tabs.business")}</TabsTrigger>
-            <TabsTrigger value="overrides">{t("tabs.overrides")}</TabsTrigger>
-          </TabsList>
-          <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {t("save")}
-          </Button>
-        </div>
+        <TabsList className="grid grid-cols-2 md:flex md:w-fit">
+          <TabsTrigger value="who">{t("tabs.whoWeAre")}</TabsTrigger>
+          <TabsTrigger value="values">{t("tabs.values")}</TabsTrigger>
+          <TabsTrigger value="business">{t("tabs.business")}</TabsTrigger>
+          <TabsTrigger value="overrides">{t("tabs.overrides")}</TabsTrigger>
+        </TabsList>
 
         <TabsContent value="who" className="mt-6">
           <Card>
@@ -395,6 +390,13 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <StickyFormBar>
+        <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {t("save")}
+        </Button>
+      </StickyFormBar>
     </form>
   );
 }
