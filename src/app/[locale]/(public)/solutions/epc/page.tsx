@@ -4,14 +4,17 @@ import { ComingSoonPage } from "@/components/public/coming-soon-page";
 import { ProjectCard } from "@/components/public/projects/project-card";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
+import { SolutionsRow } from "@/components/public/solutions/solutions-row";
+import { getSolutions } from "@/lib/cms/home";
 import type { Locale } from "@/lib/cms/localize";
 import { getPublishedEpcProjects, getSolutionPage } from "@/lib/cms/solutions";
 
 export default async function EpcPublicPage() {
   const locale = (await getLocale()) as Locale;
-  const [page, projects, t, tSections, tLanding, tProjects] = await Promise.all([
+  const [page, projects, solutions, t, tSections, tLanding, tProjects] = await Promise.all([
     getSolutionPage("epc", locale),
     getPublishedEpcProjects(locale),
+    getSolutions(locale),
     getTranslations("Solutions"),
     getTranslations("SectionTitles"),
     getTranslations("Landing"),
@@ -74,6 +77,8 @@ export default async function EpcPublicPage() {
           ))}
         </div>
       )}
+
+      <SolutionsRow solutions={solutions} activeKey="epc" />
     </>
   );
 }

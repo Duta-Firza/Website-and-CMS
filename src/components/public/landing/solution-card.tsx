@@ -5,15 +5,19 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SolutionData } from "@/lib/cms/home";
+import { cn } from "@/lib/utils";
 import { SolutionIllustration } from "./solution-illustration";
 
 interface Props {
   solution: SolutionData;
   learnMoreLabel: string;
   index: number;
+  /** When true, render the card with persistent brand-accent treatment — used
+   * on solutions sub-pages to mark the entry that matches the current page. */
+  isActive?: boolean;
 }
 
-export function SolutionCard({ solution, learnMoreLabel, index }: Props) {
+export function SolutionCard({ solution, learnMoreLabel, index: _index, isActive = false }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
   const [hoverKey, setHoverKey] = useState(0);
@@ -34,25 +38,30 @@ export function SolutionCard({ solution, learnMoreLabel, index }: Props) {
     return () => observer.disconnect();
   }, []);
 
-  const numberLabel = String(index + 1).padStart(2, "0");
-
   return (
     <Card
       ref={ref}
       onMouseEnter={() => setHoverKey((k) => k + 1)}
-      className="group/card relative flex h-full flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-brand-accent/30 hover:shadow-md"
+      aria-current={isActive ? "page" : undefined}
+      className={cn(
+        "group/card relative flex h-full flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-brand-accent/30 hover:shadow-md",
+        isActive && "border-brand-accent bg-brand-accent/5 shadow-md",
+      )}
     >
-      {/* Top accent stripe — invisible at rest, slides in from the left on hover */}
-      <span className="pointer-events-none absolute inset-x-0 top-0 h-0.75 origin-left scale-x-0 bg-brand-accent transition-transform duration-500 group-hover/card:scale-x-100" />
-
-      {/* Numbered counter — corner index in a muted monospace tone */}
-      {/* <span className="pointer-events-none absolute right-5 top-4 font-mono text-[11px] font-semibold tracking-wider text-brand-deep/30 transition-colors duration-300 group-hover/card:text-brand-accent dark:text-foreground/30">
-        {numberLabel}
-      </span> */}
-
-      {/* Diagonal corner cut — soft brand-accent triangle in bottom-right */}
+      {/* Top accent stripe — visible always when active; slides in on hover otherwise. */}
       <span
-        className="pointer-events-none absolute bottom-0 right-0 h-16 w-16 bg-brand-accent/6 transition-all duration-300 group-hover/card:bg-brand-accent/10"
+        className={cn(
+          "pointer-events-none absolute inset-x-0 top-0 h-0.75 origin-left bg-brand-accent transition-transform duration-500",
+          isActive ? "scale-x-100" : "scale-x-0 group-hover/card:scale-x-100",
+        )}
+      />
+
+      {/* Diagonal corner cut — stronger brand-accent triangle when active. */}
+      <span
+        className={cn(
+          "pointer-events-none absolute bottom-0 right-0 h-16 w-16 transition-all duration-300",
+          isActive ? "bg-brand-accent/15" : "bg-brand-accent/6 group-hover/card:bg-brand-accent/10",
+        )}
         style={{ clipPath: "polygon(100% 0, 100% 100%, 0 100%)" }}
         aria-hidden
       />
@@ -70,19 +79,31 @@ export function SolutionCard({ solution, learnMoreLabel, index }: Props) {
             />
           </div>
         </div>
-        <CardTitle className="text-xl text-brand-deep dark:text-foreground">
+        <CardTitle
+          className={cn(
+            "text-xl text-brand-deep dark:text-foreground",
+            isActive && "text-brand-accent",
+          )}
+        >
           {solution.title}
         </CardTitle>
       </CardHeader>
       <CardContent className="relative flex flex-1 flex-col gap-4">
         <p className="text-sm leading-relaxed text-muted-foreground">{solution.description}</p>
-        <Link
-          href={solution.href}
-          className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-brand-deep transition-colors group-hover/card:text-brand-accent dark:text-foreground"
-        >
-          {learnMoreLabel}
-          <ArrowRight className="h-4 w-4 transition-transform group-hover/card:translate-x-1" />
-        </Link>
+        {!isActive && (
+          <Link
+            href={solution.href}
+            className={cn(
+              "mt-auto inline-flex items-center gap-1 text-sm font-medium transition-colors group-hover/card:text-brand-accent",
+              isActive
+                ? "text-brand-accent"
+                : "text-brand-deep dark:text-foreground",
+            )}
+          >
+            {learnMoreLabel}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover/card:translate-x-1" />
+          </Link>
+        )}
       </CardContent>
     </Card>
   );

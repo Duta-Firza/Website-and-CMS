@@ -6,14 +6,17 @@ import { ComingSoonPage } from "@/components/public/coming-soon-page";
 import { InquiryForm } from "@/components/public/inquiry-form";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
+import { SolutionsRow } from "@/components/public/solutions/solutions-row";
 import { Card, CardContent } from "@/components/ui/card";
+import { getSolutions } from "@/lib/cms/home";
 import type { Locale } from "@/lib/cms/localize";
 import { getSolutionPage, getSolutionPageVisibilityMap } from "@/lib/cms/solutions";
 
 export default async function TradingPublicPage() {
   const locale = (await getLocale()) as Locale;
-  const [page, t, tSections, visibility] = await Promise.all([
+  const [page, solutions, t, tSections, visibility] = await Promise.all([
     getSolutionPage("trading", locale),
+    getSolutions(locale),
     getTranslations("Solutions"),
     getTranslations("SectionTitles"),
     getSolutionPageVisibilityMap(),
@@ -80,6 +83,8 @@ export default async function TradingPublicPage() {
           </div>
         </ScrollReveal>
       )}
+
+      <SolutionsRow solutions={solutions} activeKey="trading" />
     </>
   );
 }

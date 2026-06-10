@@ -58,9 +58,6 @@ export function applyVisibilityToNav(nav: NavTop[], visibility: NavVisibilityMap
     return tail.slice(1).replace(/\//g, "-");
   };
   const filterTop = (top: NavTop): NavTop | null => {
-    const topSlug = slugFor(top.href);
-    const topStatus = topSlug ? visibility[topSlug] : undefined;
-    if (topStatus === "hidden") return null;
     const filteredChildren: NavSub[] = [];
     for (const sub of top.children ?? []) {
       const subSlug = slugFor(sub.href);
@@ -79,10 +76,25 @@ export function applyVisibilityToNav(nav: NavTop[], visibility: NavVisibilityMap
         comingSoon: subStatus === "comingSoon",
       });
     }
+    // When a parent has children defined, its own visibility is irrelevant —
+    // visibility is implied by what's still showing underneath. This matters
+    // for /solutions, whose href now redirects to /solutions/trading: hiding
+    // Trading should not also wipe out Manufacturing + EPC from the menu.
+    // For leaf parents (no children), fall back to the parent's own status.
+    const hasChildren = (top.children?.length ?? 0) > 0;
+    if (hasChildren) {
+      if (filteredChildren.length === 0) return null;
+    } else {
+      const topSlug = slugFor(top.href);
+      const topStatus = topSlug ? visibility[topSlug] : undefined;
+      if (topStatus === "hidden") return null;
+    }
+    const topSlug = slugFor(top.href);
+    const topStatus = topSlug ? visibility[topSlug] : undefined;
     return {
       ...top,
       children: filteredChildren.length > 0 ? filteredChildren : undefined,
-      comingSoon: topStatus === "comingSoon",
+      comingSoon: !hasChildren && topStatus === "comingSoon",
     };
   };
   return nav.map(filterTop).filter((t): t is NavTop => t !== null);
@@ -108,7 +120,10 @@ export function buildNav(locale: string): NavTop[] {
     },
     {
       labelKey: "solutions",
-      href: `${base}/solutions`,
+      // No standalone /solutions landing — clicking the parent jumps straight
+      // to the first sub-page. The 3 solution cards now live at the bottom of
+      // each sub-page with the active one highlighted.
+      href: `${base}/solutions/trading`,
       children: [
         {
           labelKey: "trading",
