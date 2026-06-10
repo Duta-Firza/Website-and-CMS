@@ -1,19 +1,21 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ComingSoonPage } from "@/components/public/coming-soon-page";
+import { ProjectCard } from "@/components/public/projects/project-card";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
 import type { Locale } from "@/lib/cms/localize";
 import { getPublishedEpcProjects, getSolutionPage } from "@/lib/cms/solutions";
-import { EpcProjectTabs } from "./epc-project-tabs";
 
 export default async function EpcPublicPage() {
   const locale = (await getLocale()) as Locale;
-  const [page, projects, t, tSections] = await Promise.all([
+  const [page, projects, t, tSections, tLanding, tProjects] = await Promise.all([
     getSolutionPage("epc", locale),
     getPublishedEpcProjects(locale),
     getTranslations("Solutions"),
     getTranslations("SectionTitles"),
+    getTranslations("Landing"),
+    getTranslations("Projects"),
   ]);
 
   if (page.status === "hidden") notFound();
@@ -59,12 +61,18 @@ export default async function EpcPublicPage() {
           {t("epc.empty")}
         </p>
       ) : (
-        <EpcProjectTabs
-          projects={projects}
-          tabsAriaLabel={t("epc.tabsAria")}
-          viewDetailLabel={t("epc.viewDetail")}
-          locale={locale}
-        />
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {projects.map((p, idx) => (
+            <ScrollReveal key={p.id} delay={Math.min(idx, 5) * 60}>
+              <ProjectCard
+                project={{ ...p, category: "epc" }}
+                locale={locale}
+                fallbackBadge={tLanding("caseStudy")}
+                viewProjectLabel={tProjects("viewProject")}
+              />
+            </ScrollReveal>
+          ))}
+        </div>
       )}
     </>
   );

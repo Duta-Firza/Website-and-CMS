@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { connectDB } from "@/lib/db";
-import "@/models/partner"; // ensure Partner model is registered for populate("partnerId")
 import {
+  Partner,
   Product,
   Project,
   SOLUTION_PAGE_SLUGS,
@@ -131,16 +131,14 @@ export interface ProductData {
   isActive: boolean;
 }
 
-type PartnerRef = { _id: unknown; name?: string; logoUrl?: string } | null | undefined;
-
-interface ProductDocShape {
+interface RawProductDoc {
   _id: unknown;
   // new fields
-  principles?: { partnerId?: PartnerRef; name?: string; logoUrl?: string }[];
+  principles?: { partnerId?: unknown; name?: string; logoUrl?: string }[];
   origin?: string;
   items?: { name?: unknown; photos?: string[] }[];
   // legacy fields
-  partnerId?: PartnerRef;
+  partnerId?: unknown;
   principleOverride?: { name?: string; logoUrl?: string; origin?: string };
   photos?: string[];
   // shared
@@ -151,40 +149,55 @@ interface ProductDocShape {
   isActive?: boolean;
 }
 
+type PartnerLookup = Map<string, { name: string; logoUrl: string }>;
+
 export async function getPublishedProducts(locale: Locale): Promise<ProductData[]> {
   await connectDB();
-  const docs = await Product.find({ isActive: true })
-    .sort({ order: 1 })
-    // Populate both the legacy single partnerId and the new principles[].partnerId
-    // so getter doesn't issue a second round trip per row.
-    .populate({ path: "partnerId", select: "name logoUrl" })
-    .populate({ path: "principles.partnerId", select: "name logoUrl" })
-    .lean<ProductDocShape[]>();
+  // Single read of all active products; partners are joined in a second
+  // round-trip rather than via populate() so the query doesn't depend on
+  // Mongoose strict-populate or HMR-cached schema state.
+  const docs = await Product.find({ isActive: true }).sort({ order: 1 }).lean<RawProductDoc[]>();
 
-  return docs.map((d) => mapProductDoc(d, locale));
+  const partnerIds = new Set<string>();
+  for (const d of docs) {
+    if (d.partnerId) partnerIds.add(String(d.partnerId));
+    for (const p of d.principles ?? []) {
+      if (p.partnerId) partnerIds.add(String(p.partnerId));
+    }
+  }
+  const partnerDocs = partnerIds.size
+    ? await Partner.find({ _id: { $in: [...partnerIds] } })
+        .select("_id name logoUrl")
+        .lean<{ _id: unknown; name?: string; logoUrl?: string }[]>()
+    : [];
+  const partners: PartnerLookup = new Map(
+    partnerDocs.map((p) => [String(p._id), { name: p.name ?? "", logoUrl: p.logoUrl ?? "" }]),
+  );
+
+  return docs.map((d) => mapProductDoc(d, partners, locale));
 }
 
-function mapProductDoc(d: ProductDocShape, locale: Locale): ProductData {
+function mapProductDoc(d: RawProductDoc, partners: PartnerLookup, locale: Locale): ProductData {
   // Principles: prefer the new array; fall back to legacy single principle.
   const principles: ProductPrincipleData[] = (() => {
     if (Array.isArray(d.principles) && d.principles.length > 0) {
       return d.principles.map((p) => {
-        const partner = p.partnerId && typeof p.partnerId === "object" ? p.partnerId : null;
+        const partner = p.partnerId ? partners.get(String(p.partnerId)) : undefined;
         return {
-          partnerId: partner ? String(partner._id) : null,
-          name: partner?.name ?? p.name ?? "",
-          logoUrl: partner?.logoUrl ?? p.logoUrl ?? "",
+          partnerId: p.partnerId ? String(p.partnerId) : null,
+          name: partner?.name || p.name || "",
+          logoUrl: partner?.logoUrl || p.logoUrl || "",
         };
       });
     }
-    const legacyPartner = d.partnerId && typeof d.partnerId === "object" ? d.partnerId : null;
+    const legacyPartner = d.partnerId ? partners.get(String(d.partnerId)) : undefined;
     const override = d.principleOverride ?? {};
-    if (legacyPartner || override.name || override.logoUrl) {
+    if (d.partnerId || override.name || override.logoUrl) {
       return [
         {
-          partnerId: legacyPartner ? String(legacyPartner._id) : null,
-          name: legacyPartner?.name ?? override.name ?? "",
-          logoUrl: legacyPartner?.logoUrl ?? override.logoUrl ?? "",
+          partnerId: d.partnerId ? String(d.partnerId) : null,
+          name: legacyPartner?.name || override.name || "",
+          logoUrl: legacyPartner?.logoUrl || override.logoUrl || "",
         },
       ];
     }

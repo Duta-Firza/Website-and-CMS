@@ -1,0 +1,126 @@
+[
+  {
+    "_principleNames": ["Ashcroft", "Weksler", "Heise"],
+    "origin": "USA",
+    "productType": {
+      "id": "Pressure Gauge, Temperature Gauge, Switch, Transducer, Test Gauge, Thermowell, Accessories.",
+      "en": "Pressure Gauge, Temperature Gauge, Switch, Transducer, Test Gauge, Thermowell, Accessories."
+    },
+    "skuCount": 68,
+    "partnershipStart": 2010,
+    "items": [
+      {
+        "name": { "id": "Pressure Gauge", "en": "Pressure Gauge" },
+        "photos": []
+      },
+      {
+        "name": { "id": "Pressure Switch", "en": "Pressure Switch" },
+        "photos": []
+      },
+      {
+        "name": { "id": "Pressure Transducers", "en": "Pressure Transducers" },
+        "photos": []
+      },
+      {
+        "name": { "id": "Diaphragm Seals", "en": "Diaphragm Seals" },
+        "photos": []
+      }
+    ],
+    "order": 0,
+    "isActive": true
+  },
+  {
+    "_principleNames": ["Samil Industry"],
+    "origin": "South Korea",
+    "productType": {
+      "id": "Flow element, level gauge, sight glass, steam trap.",
+      "en": "Flow element, level gauge, sight glass, steam trap."
+    },
+    "skuCount": 13,
+    "partnershipStart": 2019,
+    "items": [
+      {
+        "name": { "id": "Flow Element", "en": "Flow Element" },
+        "photos": []
+      }
+    ],
+    "order": 1,
+    "isActive": true
+  },
+  {
+    "_principleNames": ["Yamari"],
+    "origin": "Japan",
+    "productType": {
+      "id": "Temperature element, Thermowell, Cable, RTD.",
+      "en": "Temperature element, Thermowell, Cable, RTD."
+    },
+    "skuCount": 10,
+    "partnershipStart": 2013,
+    "items": [
+      {
+        "name": { "id": "Temperature Element", "en": "Temperature Element" },
+        "photos": []
+      }
+    ],
+    "order": 2,
+    "isActive": true
+  },
+  {
+    "_principleNames": ["Autrol"],
+    "origin": "South Korea",
+    "productType": {
+      "id": "Hart Protocol pressure transmitter, differential pressure transmitter, level transmitter.",
+      "en": "Hart Protocol pressure transmitter, differential pressure transmitter, level transmitter."
+    },
+    "skuCount": 20,
+    "partnershipStart": 2019,
+    "items": [
+      {
+        "name": {
+          "id": "Pressure Transmitter, Differential Pressure Transmitter",
+          "en": "Pressure Transmitter, Differential Pressure Transmitter"
+        },
+        "photos": []
+      },
+      {
+        "name": { "id": "Level Transmitter", "en": "Level Transmitter" },
+        "photos": []
+      }
+    ],
+    "order": 3,
+    "isActive": true
+  },
+  {
+    "_principleNames": ["Woosung Flowtec"],
+    "origin": "South Korea",
+    "productType": { "id": "Strainer.", "en": "Strainer." },
+    "skuCount": 30,
+    "partnershipStart": 2019,
+    "items": [
+      {
+        "name": { "id": "Strainer", "en": "Strainer" },
+        "photos": []
+      }
+    ],
+    "order": 4,
+    "isActive": true
+  },
+  {
+    "_principleNames": ["Key-Sung"],
+    "origin": "South Korea",
+    "productType": {
+      "id": "Bronze valve dengan berbagai tipe varian.",
+      "en": "Bronze valve with variant types."
+    },
+    "skuCount": 15,
+    "partnershipStart": 2019,
+    "items": [
+      {
+        "name": { "id": "Valve", "en": "Valve" },
+        "photos": []
+      }
+    ],
+    "order": 5,
+    "isActive": true
+  }
+]

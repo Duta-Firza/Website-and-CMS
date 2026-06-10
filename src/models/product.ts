@@ -58,4 +58,14 @@ const productSchema = new Schema(
 
 export type ProductDoc = InferSchemaType<typeof productSchema>;
 
+// HMR safety: when this file hot-reloads in dev, the previously-registered
+// model is kept in `mongoose.models` with its old schema. Writes through the
+// stale model silently drop fields the old schema didn't know about (e.g.
+// `principles`, `items`, `origin`) thanks to strict mode. Re-register the
+// model in dev so the latest schema always wins; in production the module
+// cache is stable so plain lookup is fine.
+if (process.env.NODE_ENV !== "production" && models.Product) {
+  delete models.Product;
+}
+
 export const Product = models.Product ?? model("Product", productSchema);
