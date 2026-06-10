@@ -6,14 +6,25 @@ import { loadSolutionPageForAdmin } from "../../_components/load-solution-page";
 import { SolutionPageForm } from "../../_components/solution-page-form";
 import { ProductsManager } from "./products-manager";
 
+export interface PrincipleEntryRow {
+  partnerId: string | null;
+  name: string;
+  logoUrl: string;
+}
+
+export interface ProductItemRow {
+  name: { id: string; en: string };
+  photos: string[];
+}
+
 export interface ProductRow {
   id: string;
-  partnerId: string | null;
-  principleOverride: { name: string; logoUrl: string; origin: string };
+  principles: PrincipleEntryRow[];
+  origin: string;
   productType: { id: string; en: string };
   skuCount: number;
   partnershipStart: number | null;
-  photos: string[];
+  items: ProductItemRow[];
   order: number;
   isActive: boolean;
 }
@@ -24,27 +35,71 @@ export interface PartnerOption {
   logoUrl: string;
 }
 
+const EMPTY_LOCALIZED = { id: "", en: "" };
+
+interface RawProductDoc {
+  _id: unknown;
+  principles?: { partnerId?: unknown; name?: string; logoUrl?: string }[];
+  origin?: string;
+  items?: { name?: { id?: string; en?: string }; photos?: string[] }[];
+  partnerId?: unknown;
+  principleOverride?: { name?: string; logoUrl?: string; origin?: string };
+  photos?: string[];
+  productType?: { id?: string; en?: string };
+  skuCount?: number;
+  partnershipStart?: number | null;
+  order?: number;
+  isActive?: boolean;
+}
+
 async function loadProducts(): Promise<ProductRow[]> {
   await connectDB();
-  const docs = await Product.find().sort({ order: 1 }).lean();
-  return docs.map((d) => ({
-    id: String(d._id),
-    partnerId: d.partnerId ? String(d.partnerId) : null,
-    principleOverride: {
-      name: d.principleOverride?.name ?? "",
-      logoUrl: d.principleOverride?.logoUrl ?? "",
-      origin: d.principleOverride?.origin ?? "",
-    },
-    productType: {
-      id: d.productType?.id ?? "",
-      en: d.productType?.en ?? "",
-    },
-    skuCount: d.skuCount ?? 0,
-    partnershipStart: d.partnershipStart ?? null,
-    photos: Array.isArray(d.photos) ? d.photos : [],
-    order: d.order ?? 0,
-    isActive: d.isActive ?? true,
-  }));
+  const docs = await Product.find().sort({ order: 1 }).lean<RawProductDoc[]>();
+  return docs.map((d) => {
+    // Map principles: prefer new array; fall back to legacy single-principle shape.
+    const principles: PrincipleEntryRow[] =
+      Array.isArray(d.principles) && d.principles.length > 0
+        ? d.principles.map((p) => ({
+            partnerId: p?.partnerId ? String(p.partnerId) : null,
+            name: p?.name ?? "",
+            logoUrl: p?.logoUrl ?? "",
+          }))
+        : d.partnerId || d.principleOverride?.name || d.principleOverride?.logoUrl
+          ? [
+              {
+                partnerId: d.partnerId ? String(d.partnerId) : null,
+                name: d.principleOverride?.name ?? "",
+                logoUrl: d.principleOverride?.logoUrl ?? "",
+              },
+            ]
+          : [];
+
+    // Items: prefer new array; fall back to wrapping legacy photos[] as one unnamed item.
+    const items: ProductItemRow[] =
+      Array.isArray(d.items) && d.items.length > 0
+        ? d.items.map((it) => ({
+            name: { id: it?.name?.id ?? "", en: it?.name?.en ?? "" },
+            photos: Array.isArray(it?.photos) ? it.photos : [],
+          }))
+        : Array.isArray(d.photos) && d.photos.length > 0
+          ? [{ name: EMPTY_LOCALIZED, photos: d.photos }]
+          : [];
+
+    return {
+      id: String(d._id),
+      principles,
+      origin: d.origin || d.principleOverride?.origin || "",
+      productType: {
+        id: d.productType?.id ?? "",
+        en: d.productType?.en ?? "",
+      },
+      skuCount: d.skuCount ?? 0,
+      partnershipStart: d.partnershipStart ?? null,
+      items,
+      order: d.order ?? 0,
+      isActive: d.isActive ?? true,
+    };
+  });
 }
 
 async function loadPartnerOptions(): Promise<PartnerOption[]> {

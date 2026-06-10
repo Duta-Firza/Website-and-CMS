@@ -108,62 +108,121 @@ export const getSolutionPageVisibilityMap = cache(async (): Promise<SolutionPage
   return map;
 });
 
+export interface ProductPrincipleData {
+  partnerId: string | null;
+  name: string;
+  logoUrl: string;
+}
+
+export interface ProductItemData {
+  name: string;
+  photos: string[];
+}
+
 export interface ProductData {
   id: string;
-  partnerId: string | null;
-  principle: {
-    name: string;
-    logoUrl: string;
-    origin: string;
-  };
+  principles: ProductPrincipleData[];
+  origin: string;
   productType: string;
   skuCount: number;
   partnershipStart: number | null;
-  photos: string[];
+  items: ProductItemData[];
   order: number;
   isActive: boolean;
+}
+
+type PartnerRef = { _id: unknown; name?: string; logoUrl?: string } | null | undefined;
+
+interface ProductDocShape {
+  _id: unknown;
+  // new fields
+  principles?: { partnerId?: PartnerRef; name?: string; logoUrl?: string }[];
+  origin?: string;
+  items?: { name?: unknown; photos?: string[] }[];
+  // legacy fields
+  partnerId?: PartnerRef;
+  principleOverride?: { name?: string; logoUrl?: string; origin?: string };
+  photos?: string[];
+  // shared
+  productType?: unknown;
+  skuCount?: number;
+  partnershipStart?: number | null;
+  order?: number;
+  isActive?: boolean;
 }
 
 export async function getPublishedProducts(locale: Locale): Promise<ProductData[]> {
   await connectDB();
   const docs = await Product.find({ isActive: true })
     .sort({ order: 1 })
+    // Populate both the legacy single partnerId and the new principles[].partnerId
+    // so getter doesn't issue a second round trip per row.
     .populate({ path: "partnerId", select: "name logoUrl" })
-    .lean<
-      {
-        _id: unknown;
-        partnerId?: { _id: unknown; name?: string; logoUrl?: string } | null;
-        principleOverride?: { name?: string; logoUrl?: string; origin?: string };
-        productType?: unknown;
-        skuCount?: number;
-        partnershipStart?: number | null;
-        photos?: string[];
-        order?: number;
-        isActive?: boolean;
-      }[]
-    >();
-  return docs.map((d) => {
-    const partner = d.partnerId && typeof d.partnerId === "object" ? d.partnerId : null;
+    .populate({ path: "principles.partnerId", select: "name logoUrl" })
+    .lean<ProductDocShape[]>();
+
+  return docs.map((d) => mapProductDoc(d, locale));
+}
+
+function mapProductDoc(d: ProductDocShape, locale: Locale): ProductData {
+  // Principles: prefer the new array; fall back to legacy single principle.
+  const principles: ProductPrincipleData[] = (() => {
+    if (Array.isArray(d.principles) && d.principles.length > 0) {
+      return d.principles.map((p) => {
+        const partner = p.partnerId && typeof p.partnerId === "object" ? p.partnerId : null;
+        return {
+          partnerId: partner ? String(partner._id) : null,
+          name: partner?.name ?? p.name ?? "",
+          logoUrl: partner?.logoUrl ?? p.logoUrl ?? "",
+        };
+      });
+    }
+    const legacyPartner = d.partnerId && typeof d.partnerId === "object" ? d.partnerId : null;
     const override = d.principleOverride ?? {};
-    return localize(
-      {
-        id: String(d._id),
-        partnerId: partner ? String(partner._id) : null,
-        principle: {
-          name: partner?.name ?? override.name ?? "",
-          logoUrl: partner?.logoUrl ?? override.logoUrl ?? "",
-          origin: override.origin ?? "",
+    if (legacyPartner || override.name || override.logoUrl) {
+      return [
+        {
+          partnerId: legacyPartner ? String(legacyPartner._id) : null,
+          name: legacyPartner?.name ?? override.name ?? "",
+          logoUrl: legacyPartner?.logoUrl ?? override.logoUrl ?? "",
         },
-        productType: d.productType ?? EMPTY_LOCALIZED,
-        skuCount: d.skuCount ?? 0,
-        partnershipStart: d.partnershipStart ?? null,
-        photos: Array.isArray(d.photos) ? d.photos : [],
-        order: d.order ?? 0,
-        isActive: d.isActive ?? true,
-      },
-      locale,
-    ) as unknown as ProductData;
-  });
+      ];
+    }
+    return [];
+  })();
+
+  // Items: prefer the new array; fall back to wrapping legacy photos[] as a
+  // single unnamed item.
+  const rawItems: ProductItemData[] = (() => {
+    if (Array.isArray(d.items) && d.items.length > 0) {
+      return d.items.map((it) => ({
+        // localized name — pass through localize() below
+        name: (it.name ?? EMPTY_LOCALIZED) as unknown as string,
+        photos: Array.isArray(it.photos) ? it.photos : [],
+      }));
+    }
+    if (Array.isArray(d.photos) && d.photos.length > 0) {
+      return [{ name: "" as unknown as string, photos: d.photos }];
+    }
+    return [];
+  })();
+
+  const origin = d.origin || d.principleOverride?.origin || "";
+
+  return localize(
+    {
+      id: String(d._id),
+      principles,
+      origin,
+      productType: d.productType ?? EMPTY_LOCALIZED,
+      skuCount: d.skuCount ?? 0,
+      partnershipStart: d.partnershipStart ?? null,
+      items: rawItems,
+      order: d.order ?? 0,
+      isActive: d.isActive ?? true,
+    },
+    locale,
+  ) as unknown as ProductData;
 }
 
 export interface EpcProjectData {

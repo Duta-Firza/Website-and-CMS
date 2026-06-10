@@ -5,7 +5,7 @@ import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { ImagePreview } from "@/components/admin/image-preview";
@@ -59,18 +59,25 @@ import {
 } from "@/lib/cms/actions";
 import type { PartnerOption, ProductRow } from "./page";
 
+const principleZod = z.object({
+  partnerId: z.string().nullable(),
+  name: z.string(),
+  logoUrl: z.string(),
+});
+
+const itemZod = z.object({
+  name: z.object({ id: z.string(), en: z.string() }),
+  photos: z.array(z.string()),
+});
+
 const schema = z.object({
   id: z.string().optional(),
-  partnerId: z.string().nullable(),
-  principleOverride: z.object({
-    name: z.string(),
-    logoUrl: z.string(),
-    origin: z.string(),
-  }),
+  principles: z.array(principleZod),
+  origin: z.string(),
   productType: z.object({ id: z.string(), en: z.string() }),
   skuCount: z.number().int().nonnegative(),
   partnershipStart: z.number().int().nullable(),
-  photos: z.array(z.string()),
+  items: z.array(itemZod),
   order: z.number().int(),
   isActive: z.boolean(),
 });
@@ -78,12 +85,12 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 const empty: FormValues = {
-  partnerId: null,
-  principleOverride: { name: "", logoUrl: "", origin: "" },
+  principles: [],
+  origin: "",
   productType: { id: "", en: "" },
   skuCount: 0,
   partnershipStart: null,
-  photos: [],
+  items: [],
   order: 0,
   isActive: true,
 };
@@ -139,10 +146,13 @@ export function ProductsManager({ initial, partners }: Props) {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-10" />
-                  <TableHead className="w-16">{t("common.logo")}</TableHead>
+                  <TableHead className="w-32">{t("common.logo")}</TableHead>
                   <TableHead>{t("fields.principleName")}</TableHead>
-                  <TableHead className="hidden md:table-cell">{t("fields.productType")}</TableHead>
-                  <TableHead className="hidden w-24 lg:table-cell">
+                  <TableHead className="hidden md:table-cell">
+                    {t("fields.principleOrigin")}
+                  </TableHead>
+                  <TableHead className="hidden lg:table-cell">{t("fields.productType")}</TableHead>
+                  <TableHead className="hidden w-20 xl:table-cell">
                     {t("fields.skuCount")}
                   </TableHead>
                   <TableHead className="w-20">{t("common.active")}</TableHead>
@@ -153,15 +163,18 @@ export function ProductsManager({ initial, partners }: Props) {
                 <TableBody>
                   {items.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center text-sm text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
                         {t("empty.products")}
                       </TableCell>
                     </TableRow>
                   )}
                   {items.map((p) => {
-                    const partner = p.partnerId ? partnerById.get(p.partnerId) : undefined;
-                    const principleName = partner?.name ?? p.principleOverride.name;
-                    const logoUrl = partner?.logoUrl ?? p.principleOverride.logoUrl;
+                    const principleNames = p.principles
+                      .map((pr) => partnerById.get(pr.partnerId ?? "")?.name ?? pr.name)
+                      .filter(Boolean);
+                    const principleLogos = p.principles
+                      .map((pr) => partnerById.get(pr.partnerId ?? "")?.logoUrl ?? pr.logoUrl)
+                      .filter(Boolean);
                     return (
                       <SortableItem key={p.id} id={p.id}>
                         {({ ref, style, handleProps }) => (
@@ -170,14 +183,34 @@ export function ProductsManager({ initial, partners }: Props) {
                               <DragHandle handleProps={handleProps} size="sm" />
                             </TableCell>
                             <TableCell>
-                              <ImagePreview src={logoUrl} alt={principleName || "—"} />
+                              <div className="flex flex-wrap gap-1">
+                                {principleLogos.slice(0, 3).map((url, i) => (
+                                  <ImagePreview
+                                    // biome-ignore lint/suspicious/noArrayIndexKey: stable per product row
+                                    key={i}
+                                    src={url}
+                                    alt={principleNames[i] || "Principle logo"}
+                                  />
+                                ))}
+                                {principleLogos.length > 3 && (
+                                  <span className="inline-flex h-8 items-center justify-center rounded-md border bg-muted px-2 text-[10px] font-semibold text-muted-foreground">
+                                    +{principleLogos.length - 3}
+                                  </span>
+                                )}
+                                {principleLogos.length === 0 && (
+                                  <span className="text-xs text-muted-foreground">—</span>
+                                )}
+                              </div>
                             </TableCell>
                             <TableCell className="max-w-48 font-medium">
-                              <span className="block truncate" title={principleName}>
-                                {principleName || "—"}
+                              <span className="block truncate" title={principleNames.join(" · ")}>
+                                {principleNames.join(" · ") || "—"}
                               </span>
                             </TableCell>
-                            <TableCell className="hidden max-w-xs text-sm text-muted-foreground md:table-cell">
+                            <TableCell className="hidden text-xs text-muted-foreground md:table-cell">
+                              {p.origin || "—"}
+                            </TableCell>
+                            <TableCell className="hidden max-w-xs text-sm text-muted-foreground lg:table-cell">
                               <span
                                 className="block truncate"
                                 title={pickLocalized(p.productType, locale)}
@@ -185,7 +218,7 @@ export function ProductsManager({ initial, partners }: Props) {
                                 {pickLocalized(p.productType, locale) || "—"}
                               </span>
                             </TableCell>
-                            <TableCell className="hidden text-sm text-muted-foreground lg:table-cell">
+                            <TableCell className="hidden text-sm text-muted-foreground xl:table-cell">
                               {p.skuCount > 0 ? p.skuCount : "—"}
                             </TableCell>
                             <TableCell>
@@ -303,12 +336,12 @@ function ProductDialog({
     handleSubmit,
     watch,
     setValue,
-    formState: { isSubmitting, errors },
+    control,
+    formState: { isSubmitting },
   } = form;
 
-  const linkedPartnerId = watch("partnerId");
-  const linked = Boolean(linkedPartnerId);
-  const photos = watch("photos");
+  const principlesArray = useFieldArray({ control, name: "principles" });
+  const itemsArray = useFieldArray({ control, name: "items" });
 
   const onSubmit = async (values: FormValues) => {
     const result = await upsertProduct(values);
@@ -320,85 +353,57 @@ function ProductDialog({
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>
             {initial.id ? t("edit") : t("add")} {t("nouns.product")}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Principles array — hybrid (partner link or manual) per entry */}
           <div className="space-y-3 rounded-md border bg-muted/30 p-3">
-            <div className="flex items-center gap-3">
-              <Switch
-                id="link-partner"
-                checked={linked}
-                onCheckedChange={(v) =>
-                  setValue("partnerId", v ? (partners[0]?.id ?? null) : null, {
-                    shouldDirty: true,
-                  })
-                }
-              />
-              <Label htmlFor="link-partner">{t("fields.linkToPartner")}</Label>
+            <div className="flex items-center justify-between">
+              <Label>
+                {t("groups.principleSource")} · {principlesArray.fields.length}
+              </Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => principlesArray.append({ partnerId: null, name: "", logoUrl: "" })}
+              >
+                <Plus className="mr-1 h-3.5 w-3.5" />
+                {t("fields.principleName")}
+              </Button>
             </div>
-            {linked ? (
-              <div className="space-y-2">
-                <Label>{t("fields.principleName")}</Label>
-                <Select
-                  value={linkedPartnerId ?? ""}
-                  onValueChange={(v) => setValue("partnerId", v || null, { shouldDirty: true })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("fields.principleName")}>
-                      {partners.find((p) => p.id === linkedPartnerId)?.name ?? ""}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {partners.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="pr-name">{t("fields.principleName")}</Label>
-                  <Input id="pr-name" {...register("principleOverride.name")} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="pr-origin">{t("fields.principleOrigin")}</Label>
-                  <Input
-                    id="pr-origin"
-                    {...register("principleOverride.origin")}
-                    placeholder="USA / Japan / …"
-                  />
-                </div>
-                <div className="md:col-span-2 space-y-2">
-                  <Label>{t("fields.principleLogo")}</Label>
-                  <MediaUpload
-                    value={watch("principleOverride.logoUrl")}
-                    onChange={(url) =>
-                      setValue("principleOverride.logoUrl", url, { shouldDirty: true })
-                    }
-                    accept="image"
-                    folder="products/logos"
-                    hint={t("hints.partnerLogo")}
-                  />
-                </div>
-              </div>
+            {principlesArray.fields.length === 0 && (
+              <p className="rounded-md border border-dashed p-3 text-center text-xs text-muted-foreground">
+                {t("empty.products")}
+              </p>
             )}
+            <div className="space-y-3">
+              {principlesArray.fields.map((field, i) => (
+                <PrincipleEntryField
+                  key={field.id}
+                  index={i}
+                  form={form}
+                  partners={partners}
+                  onRemove={() => principlesArray.remove(i)}
+                  removeLabel={t("delete")}
+                  linkLabel={t("fields.linkToPartner")}
+                  nameLabel={t("fields.principleName")}
+                  logoLabel={t("fields.principleLogo")}
+                  logoHint={t("hints.partnerLogo")}
+                />
+              ))}
+            </div>
           </div>
 
-          <LocalizedField
-            label={t("fields.productType")}
-            name="productType"
-            form={form}
-            multiline
-          />
-
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="space-y-2 md:col-span-1">
+              <Label htmlFor="pr-origin">{t("fields.principleOrigin")}</Label>
+              <Input id="pr-origin" {...register("origin")} placeholder="USA / Japan / …" />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="pr-sku">{t("fields.skuCount")}</Label>
               <Input
@@ -423,53 +428,48 @@ function ProductDialog({
             </div>
           </div>
 
-          <div className="space-y-2">
+          <LocalizedField
+            label={t("fields.productType")}
+            name="productType"
+            form={form}
+            multiline
+          />
+
+          {/* Items array — sub-products (Pressure Gauge / Pressure Switch / …) */}
+          <div className="space-y-3 rounded-md border bg-muted/30 p-3">
             <div className="flex items-center justify-between">
-              <Label>{t("fields.productPhotos")}</Label>
+              <Label>
+                {t("groups.productDetails")} · {itemsArray.fields.length}
+              </Label>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => setValue("photos", [...photos, ""], { shouldDirty: true })}
+                onClick={() => itemsArray.append({ name: { id: "", en: "" }, photos: [] })}
               >
                 <Plus className="mr-1 h-3.5 w-3.5" />
-                {t("fields.addPhoto")}
+                {t("nouns.product")}
               </Button>
             </div>
-            {photos.length === 0 && (
+            {itemsArray.fields.length === 0 && (
               <p className="rounded-md border border-dashed p-3 text-center text-xs text-muted-foreground">
                 {t("mediaUpload.noMedia")}
               </p>
             )}
-            <div className="space-y-3">
-              {photos.map((photo, i) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: order is stable within a single dialog edit session
-                <div key={i} className="flex items-start gap-2">
-                  <div className="flex-1">
-                    <MediaUpload
-                      value={photo}
-                      onChange={(url) => {
-                        const next = [...photos];
-                        next[i] = url;
-                        setValue("photos", next, { shouldDirty: true });
-                      }}
-                      accept="image"
-                      folder="products/photos"
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    onClick={() => {
-                      const next = photos.filter((_, j) => j !== i);
-                      setValue("photos", next, { shouldDirty: true });
-                    }}
-                    aria-label={t("fields.removePhoto")}
-                  >
-                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                  </Button>
-                </div>
+            <div className="space-y-4">
+              {itemsArray.fields.map((field, i) => (
+                <ProductItemField
+                  key={field.id}
+                  index={i}
+                  form={form}
+                  onRemove={() => itemsArray.remove(i)}
+                  removeLabel={t("delete")}
+                  nameLabel={t("fields.productType")}
+                  photosLabel={t("fields.productPhotos")}
+                  addPhotoLabel={t("fields.addPhoto")}
+                  removePhotoLabel={t("fields.removePhoto")}
+                  noPhotoLabel={t("mediaUpload.noMedia")}
+                />
               ))}
             </div>
           </div>
@@ -483,10 +483,6 @@ function ProductDialog({
             <Label htmlFor="pr-active">{t("fields.active")}</Label>
           </div>
 
-          {errors.productType && (
-            <p className="text-xs text-destructive">{String(errors.productType.message)}</p>
-          )}
-
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               {t("cancel")}
@@ -499,5 +495,212 @@ function ProductDialog({
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+interface PrincipleEntryFieldProps {
+  index: number;
+  // biome-ignore lint/suspicious/noExplicitAny: react-hook-form types resolve at runtime via setValue/watch paths
+  form: any;
+  partners: PartnerOption[];
+  onRemove: () => void;
+  removeLabel: string;
+  linkLabel: string;
+  nameLabel: string;
+  logoLabel: string;
+  logoHint: string;
+}
+
+function PrincipleEntryField({
+  index,
+  form,
+  partners,
+  onRemove,
+  removeLabel,
+  linkLabel,
+  nameLabel,
+  logoLabel,
+  logoHint,
+}: PrincipleEntryFieldProps) {
+  const partnerId: string | null = form.watch(`principles.${index}.partnerId`);
+  const linked = Boolean(partnerId);
+  const name: string = form.watch(`principles.${index}.name`);
+  const logoUrl: string = form.watch(`principles.${index}.logoUrl`);
+
+  return (
+    <div className="space-y-3 rounded-md border bg-background p-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Switch
+            id={`link-partner-${index}`}
+            checked={linked}
+            onCheckedChange={(v) =>
+              form.setValue(`principles.${index}.partnerId`, v ? (partners[0]?.id ?? null) : null, {
+                shouldDirty: true,
+              })
+            }
+          />
+          <Label htmlFor={`link-partner-${index}`}>{linkLabel}</Label>
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          onClick={onRemove}
+          aria-label={removeLabel}
+        >
+          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+        </Button>
+      </div>
+      {linked ? (
+        <div className="space-y-2">
+          <Label>{nameLabel}</Label>
+          <Select
+            value={partnerId ?? ""}
+            onValueChange={(v) =>
+              form.setValue(`principles.${index}.partnerId`, v || null, { shouldDirty: true })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={nameLabel}>
+                {partners.find((p) => p.id === partnerId)?.name ?? ""}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {partners.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor={`pr-name-${index}`}>{nameLabel}</Label>
+            <Input
+              id={`pr-name-${index}`}
+              value={name}
+              onChange={(e) =>
+                form.setValue(`principles.${index}.name`, e.target.value, {
+                  shouldDirty: true,
+                })
+              }
+            />
+          </div>
+          <div className="space-y-2 md:col-span-2">
+            <Label>{logoLabel}</Label>
+            <MediaUpload
+              value={logoUrl}
+              onChange={(url) =>
+                form.setValue(`principles.${index}.logoUrl`, url, { shouldDirty: true })
+              }
+              accept="image"
+              folder="products/logos"
+              hint={logoHint}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface ProductItemFieldProps {
+  index: number;
+  // biome-ignore lint/suspicious/noExplicitAny: react-hook-form types resolve at runtime via setValue/watch paths
+  form: any;
+  onRemove: () => void;
+  removeLabel: string;
+  nameLabel: string;
+  photosLabel: string;
+  addPhotoLabel: string;
+  removePhotoLabel: string;
+  noPhotoLabel: string;
+}
+
+function ProductItemField({
+  index,
+  form,
+  onRemove,
+  removeLabel,
+  nameLabel,
+  photosLabel,
+  addPhotoLabel,
+  removePhotoLabel,
+  noPhotoLabel,
+}: ProductItemFieldProps) {
+  const photos: string[] = form.watch(`items.${index}.photos`) ?? [];
+  return (
+    <div className="space-y-3 rounded-md border bg-background p-3">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          #{index + 1}
+        </p>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          onClick={onRemove}
+          aria-label={removeLabel}
+        >
+          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+        </Button>
+      </div>
+      <LocalizedField label={nameLabel} name={`items.${index}.name`} form={form} />
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label>{photosLabel}</Label>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              form.setValue(`items.${index}.photos`, [...photos, ""], { shouldDirty: true })
+            }
+          >
+            <Plus className="mr-1 h-3.5 w-3.5" />
+            {addPhotoLabel}
+          </Button>
+        </div>
+        {photos.length === 0 && (
+          <p className="rounded-md border border-dashed p-3 text-center text-xs text-muted-foreground">
+            {noPhotoLabel}
+          </p>
+        )}
+        <div className="space-y-3">
+          {photos.map((photo, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: photo order is stable per item edit session
+            <div key={i} className="flex items-start gap-2">
+              <div className="flex-1">
+                <MediaUpload
+                  value={photo}
+                  onChange={(url) => {
+                    const next = [...photos];
+                    next[i] = url;
+                    form.setValue(`items.${index}.photos`, next, { shouldDirty: true });
+                  }}
+                  accept="image"
+                  folder="products/photos"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => {
+                  const next = photos.filter((_, j) => j !== i);
+                  form.setValue(`items.${index}.photos`, next, { shouldDirty: true });
+                }}
+                aria-label={removePhotoLabel}
+              >
+                <Trash2 className="h-3.5 w-3.5 text-destructive" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

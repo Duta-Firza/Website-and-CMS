@@ -842,18 +842,25 @@ export async function setSolutionPageStatus(slug: string, status: string): Promi
 }
 
 // ─── Products ────────────────────────────────────────────────────────────────
+const principleEntryZod = z.object({
+  partnerId: z.string().nullable().default(null),
+  name: z.string().default(""),
+  logoUrl: z.string().default(""),
+});
+
+const productItemZod = z.object({
+  name: localizedSchema,
+  photos: z.array(z.string()).default([]),
+});
+
 const productSchema = z.object({
   id: z.string().optional(),
-  partnerId: z.string().nullable().default(null),
-  principleOverride: z.object({
-    name: z.string().default(""),
-    logoUrl: z.string().default(""),
-    origin: z.string().default(""),
-  }),
+  principles: z.array(principleEntryZod).default([]),
+  origin: z.string().default(""),
   productType: localizedSchema,
   skuCount: z.number().int().nonnegative().default(0),
   partnershipStart: z.number().int().nullable().default(null),
-  photos: z.array(z.string()).default([]),
+  items: z.array(productItemZod).default([]),
   order: z.number().int().default(0),
   isActive: z.boolean().default(true),
 });
@@ -863,8 +870,18 @@ export async function upsertProduct(input: z.infer<typeof productSchema>): Promi
     await requireAdmin();
     const { id, ...data } = productSchema.parse(input);
     await connectDB();
-    if (id) await Product.findByIdAndUpdate(id, data);
-    else await Product.create(data);
+    if (id) {
+      // Clear legacy single-principle fields when writing the new shape so they
+      // don't shadow the new principles[]/items[] in subsequent reads.
+      await Product.findByIdAndUpdate(id, {
+        ...data,
+        partnerId: null,
+        principleOverride: { name: "", logoUrl: "", origin: "" },
+        photos: [],
+      });
+    } else {
+      await Product.create(data);
+    }
     bust();
     return { ok: true };
   } catch (e) {
