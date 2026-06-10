@@ -59,16 +59,6 @@ export default async function TradingPublicPage() {
         </ScrollReveal>
       )}
 
-      <SidePanel
-        locale={locale}
-        visibility={visibility}
-        sidePanelTitle={t("trading.sidePanelTitle")}
-        viewPartnersLabel={t("trading.viewPartners")}
-        viewProductsLabel={t("trading.viewProducts")}
-        partnersDescription={t("partners.defaultSubtitle")}
-        productsDescription={t("products.defaultSubtitle")}
-      />
-
       {page.inquiryFormEnabled && (
         <ScrollReveal>
           <div className="mt-12 rounded-2xl border bg-card p-6 md:p-10">
@@ -84,6 +74,16 @@ export default async function TradingPublicPage() {
           </div>
         </ScrollReveal>
       )}
+
+      <SidePanel
+        locale={locale}
+        visibility={visibility}
+        sidePanelTitle={t("trading.sidePanelTitle")}
+        viewPartnersLabel={t("trading.viewPartners")}
+        viewProductsLabel={t("trading.viewProducts")}
+        partnersDescription={t("partners.defaultSubtitle")}
+        productsDescription={t("products.defaultSubtitle")}
+      />
 
       <SolutionsRow solutions={solutions} activeKey="trading" />
     </>

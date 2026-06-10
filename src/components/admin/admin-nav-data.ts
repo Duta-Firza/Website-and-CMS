@@ -85,11 +85,6 @@ export function buildAdminNav(locale: string): AdminNavData {
             icon: LayoutGrid,
           },
           {
-            labelKey: "solutionsLanding",
-            href: `${base}/solutions/landing`,
-            icon: Sparkles,
-          },
-          {
             labelKey: "trading",
             href: `${base}/solutions/trading`,
             icon: ArrowRightLeft,

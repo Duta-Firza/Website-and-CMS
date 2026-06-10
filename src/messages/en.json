@@ -343,6 +343,8 @@
     "tabs": {
       "hero": "Hero",
       "stats": "Quick Stats",
+      "partners": "Our Partners",
+      "solutions": "Our Solutions",
       "reach": "Our Reach",
       "whoWeAre": "Who We Are",
       "values": "Values",
@@ -427,6 +429,8 @@
       "solutionsPageStatusHint": "Choose how this page behaves on the public site. Hidden pages also drop from the navigation.",
       "solutionsPartnersDelegated": "Logo items rendered on this page come from Master · Partners. Edit hero and intro here.",
       "solutionsEpcDelegated": "Project tabs rendered on this page come from Master · Projects (category EPC). Edit hero and intro here.",
+      "landingPartnersDelegated": "Partner logos shown on the homepage are managed under Solutions · Trading · Partners.",
+      "landingPartnersDelegatedHint": "Open the Partners CMS to add, edit, or reorder the logos shown in the homepage strip.",
       "inquiryFormReplyHint": "Reply directly via email — clicking opens your mail client with the inquiry email pre-filled."
     },
     "mediaUpload": {

@@ -343,6 +343,8 @@
     "tabs": {
       "hero": "Hero",
       "stats": "Statistik",
+      "partners": "Mitra Kami",
+      "solutions": "Solusi Kami",
       "reach": "Jangkauan",
       "whoWeAre": "Tentang Kami",
       "values": "Nilai",
@@ -427,6 +429,8 @@
       "solutionsPageStatusHint": "Pilih perilaku halaman ini di site publik. Status disembunyikan juga membuat halaman hilang dari navigasi.",
       "solutionsPartnersDelegated": "Item logo yang tampil di halaman ini diambil dari Master · Mitra. Edit hero dan intro di sini.",
       "solutionsEpcDelegated": "Tab proyek yang tampil di halaman ini diambil dari Master · Proyek (kategori EPC). Edit hero dan intro di sini.",
+      "landingPartnersDelegated": "Logo mitra yang tampil di homepage diatur di Solutions · Trading · Partners.",
+      "landingPartnersDelegatedHint": "Buka CMS Partners untuk menambah, mengedit, atau mengurutkan ulang logo di strip homepage.",
       "inquiryFormReplyHint": "Balas langsung via email — klik tombol akan membuka mail client dengan email inquiry sudah diisi."
     },
     "mediaUpload": {
