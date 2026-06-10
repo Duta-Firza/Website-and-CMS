@@ -1,5 +1,6 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { PreviewLink } from "@/components/admin/preview-link";
 import { connectDB } from "@/lib/db";
 import { Partner, Product } from "@/models";
 import { loadSolutionPageForAdmin } from "../../_components/load-solution-page";
@@ -113,17 +114,24 @@ async function loadPartnerOptions(): Promise<PartnerOption[]> {
 }
 
 export default async function TradingProductsAdminPage() {
-  const [page, products, partners] = await Promise.all([
+  const [page, products, partners, locale, t] = await Promise.all([
     loadSolutionPageForAdmin("trading-products"),
     loadProducts(),
     loadPartnerOptions(),
+    getLocale(),
+    getTranslations("Admin"),
   ]);
-  const t = await getTranslations("Admin");
   return (
     <div className="space-y-6">
       <AdminPageHeader
         title={t("pages.tradingProducts.title")}
         description={t("pages.tradingProducts.description")}
+        actions={
+          <PreviewLink
+            href={`/${locale}/solutions/trading/products`}
+            label={t("buttons.viewPublic")}
+          />
+        }
       />
       <SolutionPageForm
         slug="trading-products"

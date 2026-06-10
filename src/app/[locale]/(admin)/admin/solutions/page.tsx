@@ -1,16 +1,13 @@
-import { getTranslations } from "next-intl/server";
-import { AdminPageHeader } from "@/components/admin/page-header";
-import { SOLUTION_PAGE_SLUGS } from "@/models";
-import { loadSolutionPagesForOverview } from "./_components/load-solution-page";
-import { SolutionsOverviewTable } from "./_components/solutions-overview-table";
+import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
 
-export default async function SolutionsOverviewPage() {
-  const rows = await loadSolutionPagesForOverview(SOLUTION_PAGE_SLUGS);
-  const t = await getTranslations("Admin.pages.solutionsOverview");
-  return (
-    <div className="space-y-6">
-      <AdminPageHeader title={t("title")} description={t("description")} />
-      <SolutionsOverviewTable initial={rows} />
-    </div>
-  );
+/**
+ * The Solutions overview page was retired — its only real value was the
+ * per-page Status switcher, which is now redundant: every sub-page already
+ * exposes a 'Page visibility' tab. Send anyone landing here to Trading (the
+ * first sub-page) so old bookmarks still resolve to something useful.
+ */
+export default async function SolutionsOverviewRedirect() {
+  const locale = await getLocale();
+  redirect(`/${locale}/admin/solutions/trading`);
 }

@@ -1,7 +1,8 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { ProjectRow } from "@/app/[locale]/(admin)/admin/projects/page";
 import { ProjectsManager } from "@/app/[locale]/(admin)/admin/projects/projects-manager";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { PreviewLink } from "@/components/admin/preview-link";
 import { connectDB } from "@/lib/db";
 import { Project, type ProjectCategory } from "@/models";
 import { loadSolutionPageForAdmin } from "../_components/load-solution-page";
@@ -29,11 +30,19 @@ async function loadProjects(): Promise<ProjectRow[]> {
 }
 
 export default async function EpcAdminPage() {
-  const [page, projects] = await Promise.all([loadSolutionPageForAdmin("epc"), loadProjects()]);
-  const t = await getTranslations("Admin");
+  const [page, projects, locale, t] = await Promise.all([
+    loadSolutionPageForAdmin("epc"),
+    loadProjects(),
+    getLocale(),
+    getTranslations("Admin"),
+  ]);
   return (
     <div className="space-y-6">
-      <AdminPageHeader title={t("pages.epc.title")} description={t("pages.epc.description")} />
+      <AdminPageHeader
+        title={t("pages.epc.title")}
+        description={t("pages.epc.description")}
+        actions={<PreviewLink href={`/${locale}/solutions/epc`} label={t("buttons.viewPublic")} />}
+      />
       <SolutionPageForm
         slug="epc"
         initial={page}

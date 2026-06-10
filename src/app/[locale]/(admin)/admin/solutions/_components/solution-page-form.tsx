@@ -185,7 +185,7 @@ export function SolutionPageForm({
         {showInquiryToggle && (
           <TabsContent value="form" className="mt-6">
             <Card>
-              <CardContent className="pt-6">
+              <CardContent className="py-6">
                 <div className="flex items-center gap-3">
                   <Switch
                     id="inquiry-enabled"

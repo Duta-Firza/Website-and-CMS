@@ -80,27 +80,3 @@ export async function loadSolutionPageForAdmin(
     },
   };
 }
-
-export interface SolutionPageOverviewRow {
-  slug: SolutionPageSlug;
-  status: SolutionPageStatus;
-  updatedAt: Date | null;
-}
-
-export async function loadSolutionPagesForOverview(
-  slugs: readonly SolutionPageSlug[],
-): Promise<SolutionPageOverviewRow[]> {
-  await connectDB();
-  const docs = await SolutionPage.find({ _id: { $in: slugs } })
-    .select("_id status updatedAt")
-    .lean<{ _id: SolutionPageSlug; status?: SolutionPageStatus; updatedAt?: Date }[]>();
-  const map = new Map(docs.map((d) => [d._id, d]));
-  return slugs.map((slug) => {
-    const doc = map.get(slug);
-    return {
-      slug,
-      status: doc?.status ?? "comingSoon",
-      updatedAt: doc?.updatedAt ?? null,
-    };
-  });
-}

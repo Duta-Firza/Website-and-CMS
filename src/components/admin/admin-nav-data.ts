@@ -16,7 +16,6 @@ import {
   Info,
   Layers,
   LayoutDashboard,
-  LayoutGrid,
   LineChart,
   Mail,
   MailQuestion,
@@ -79,11 +78,6 @@ export function buildAdminNav(locale: string): AdminNavData {
         titleKey: "groupSolutions",
         icon: Layers,
         items: [
-          {
-            labelKey: "solutionsOverview",
-            href: `${base}/solutions`,
-            icon: LayoutGrid,
-          },
           {
             labelKey: "trading",
             href: `${base}/solutions/trading`,
