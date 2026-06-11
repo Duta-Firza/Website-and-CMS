@@ -1,13 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Eye, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { DetailDialog } from "@/components/admin/detail-dialog";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
@@ -57,7 +58,7 @@ import {
   toggleProductActive,
   upsertProduct,
 } from "@/lib/cms/actions";
-import type { PartnerOption, ProductRow } from "./page";
+import type { PartnerOption, ProductItemRow, ProductRow } from "./page";
 
 const principleZod = z.object({
   partnerId: z.string().nullable(),
@@ -106,6 +107,7 @@ export function ProductsManager({ initial, partners }: Props) {
   const locale = useLocale();
   const [items, setItems] = useState(initial);
   const [editing, setEditing] = useState<FormValues | null>(null);
+  const [viewing, setViewing] = useState<ProductRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -247,6 +249,14 @@ export function ProductsManager({ initial, partners }: Props) {
                                 <Button
                                   variant="ghost"
                                   size="icon-sm"
+                                  onClick={() => setViewing(p)}
+                                  aria-label={t("common.view")}
+                                >
+                                  <Eye className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon-sm"
                                   onClick={() => setEditing({ ...p })}
                                   aria-label={t("edit")}
                                 >
@@ -285,6 +295,58 @@ export function ProductsManager({ initial, partners }: Props) {
           }}
         />
       )}
+
+      <DetailDialog
+        open={viewing !== null}
+        onClose={() => setViewing(null)}
+        title={
+          viewing
+            ? viewing.principles
+                .map((pr) => partnerById.get(pr.partnerId ?? "")?.name ?? pr.name)
+                .filter(Boolean)
+                .join(" · ") || pickLocalized(viewing.productType, locale)
+            : ""
+        }
+        fields={
+          viewing
+            ? [
+                {
+                  label: t("fields.principleLogo"),
+                  value: viewing.principles
+                    .map((pr) => partnerById.get(pr.partnerId ?? "")?.logoUrl ?? pr.logoUrl)
+                    .filter(Boolean),
+                  type: "imageList",
+                },
+                {
+                  label: t("fields.principleName"),
+                  value: viewing.principles
+                    .map((pr) => partnerById.get(pr.partnerId ?? "")?.name ?? pr.name)
+                    .filter(Boolean),
+                  type: "list",
+                },
+                { label: t("fields.principleOrigin"), value: viewing.origin },
+                {
+                  label: t("fields.productType"),
+                  value: viewing.productType,
+                  type: "localized",
+                },
+                { label: t("fields.skuCount"), value: viewing.skuCount },
+                {
+                  label: t("fields.partnershipStart"),
+                  value: viewing.partnershipStart ?? "",
+                },
+                {
+                  label: t("fields.productItems"),
+                  value: viewing.items,
+                  type: "custom",
+                  custom: <ProductItemsList items={viewing.items} locale={locale} />,
+                },
+                { label: t("common.active"), value: viewing.isActive, type: "boolean" },
+                { label: t("common.order"), value: viewing.order },
+              ]
+            : []
+        }
+      />
 
       <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
@@ -701,6 +763,42 @@ function ProductItemField({
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function ProductItemsList({ items, locale }: { items: ProductItemRow[]; locale: string }) {
+  if (items.length === 0) {
+    return <span className="text-muted-foreground">—</span>;
+  }
+  return (
+    <div className="space-y-3">
+      {items.map((item, idx) => {
+        const itemName = pickLocalized(item.name, locale);
+        return (
+          <div
+            // biome-ignore lint/suspicious/noArrayIndexKey: items are stable within the read-only detail view
+            key={`${itemName}-${idx}`}
+            className="space-y-2 rounded-md border bg-muted/30 p-2"
+          >
+            <p className="text-sm font-medium">{itemName || `Item ${idx + 1}`}</p>
+            {item.photos.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {item.photos.map((src, pi) => (
+                  <ImagePreview
+                    // biome-ignore lint/suspicious/noArrayIndexKey: photos are stable within the read-only detail view
+                    key={`${src}-${pi}`}
+                    src={src}
+                    alt={`${itemName || "Item"} ${pi + 1}`}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">—</p>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

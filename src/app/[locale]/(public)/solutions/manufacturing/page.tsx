@@ -7,15 +7,16 @@ import { PageHeader } from "@/components/public/section/page-header";
 import { SolutionsRow } from "@/components/public/solutions/solutions-row";
 import { getSolutions } from "@/lib/cms/home";
 import type { Locale } from "@/lib/cms/localize";
-import { getSolutionPage } from "@/lib/cms/solutions";
+import { getSolutionPage, getSolutionPageFormSettings } from "@/lib/cms/solutions";
 
 export default async function ManufacturingPublicPage() {
   const locale = (await getLocale()) as Locale;
-  const [page, solutions, t, tSections] = await Promise.all([
+  const [page, solutions, t, tSections, formSettings] = await Promise.all([
     getSolutionPage("manufacturing", locale),
     getSolutions(locale),
     getTranslations("Solutions"),
     getTranslations("SectionTitles"),
+    getSolutionPageFormSettings("manufacturing", locale),
   ]);
 
   if (page.status === "hidden") notFound();
@@ -56,7 +57,7 @@ export default async function ManufacturingPublicPage() {
         </ScrollReveal>
       )}
 
-      {page.inquiryFormEnabled && (
+      {formSettings.enabled && (
         <ScrollReveal>
           <div className="mt-12 rounded-2xl border bg-card p-6 md:p-10">
             <div className="mb-6 max-w-2xl space-y-2">
@@ -67,7 +68,12 @@ export default async function ManufacturingPublicPage() {
                 {t("manufacturing.quoteSubtitle")}
               </p>
             </div>
-            <InquiryForm source="manufacturing" />
+            <InquiryForm
+              source="manufacturing"
+              fields={formSettings.fields}
+              submitLabel={formSettings.submitLabel}
+              successMessage={formSettings.successMessage}
+            />
           </div>
         </ScrollReveal>
       )}

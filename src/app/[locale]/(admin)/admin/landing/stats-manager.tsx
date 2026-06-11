@@ -1,13 +1,15 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Eye, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { DetailDialog } from "@/components/admin/detail-dialog";
+import { IconPicker } from "@/components/admin/icon-picker";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
@@ -30,13 +32,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { deleteStat, reorderStats, upsertStat } from "@/lib/cms/actions";
 import { STAT_ICONS, type StatIcon } from "@/models/constants";
 
@@ -74,6 +69,7 @@ export function StatsManager({ initial }: { initial: StatRow[] }) {
   const router = useRouter();
   const t = useTranslations("Admin");
   const [editing, setEditing] = useState<FormValues | null>(null);
+  const [viewing, setViewing] = useState<StatRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [items, setItems] = useState(initial);
 
@@ -97,14 +93,14 @@ export function StatsManager({ initial }: { initial: StatRow[] }) {
 
   return (
     <>
-      <div className="mb-4 flex justify-end">
+      <div className="flex items-center justify-end gap-3">
         <Button onClick={() => setEditing({ ...empty, order: items.length + 1 })}>
           <Plus className="mr-2 h-4 w-4" />
           {t("add")}
         </Button>
       </div>
       <SortableContainer items={items.map((s) => s.id)} onReorder={handleReorder} strategy="grid">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
           {items.map((s) => (
             <SortableItem key={s.id} id={s.id}>
               {({ ref, style, handleProps }) => (
@@ -122,6 +118,9 @@ export function StatsManager({ initial }: { initial: StatRow[] }) {
                       {s.label.id || s.label.en}
                     </p>
                     <div className="flex justify-end gap-1 pt-2">
+                      <Button variant="ghost" size="icon-sm" onClick={() => setViewing(s)}>
+                        <Eye className="h-3.5 w-3.5" />
+                      </Button>
                       <Button variant="ghost" size="icon-sm" onClick={() => setEditing({ ...s })}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
@@ -152,6 +151,24 @@ export function StatsManager({ initial }: { initial: StatRow[] }) {
           }}
         />
       )}
+
+      <DetailDialog
+        open={viewing !== null}
+        onClose={() => setViewing(null)}
+        title={viewing?.label.id || viewing?.label.en || ""}
+        fields={
+          viewing
+            ? [
+                { label: t("fields.statIcon"), value: viewing.iconName, type: "icon" },
+                { label: t("fields.statLabel"), value: viewing.label, type: "localized" },
+                { label: t("fields.statPrefix"), value: viewing.prefix },
+                { label: t("fields.statValue"), value: viewing.value },
+                { label: t("fields.statSuffix"), value: viewing.suffix },
+                { label: t("common.order"), value: viewing.order },
+              ]
+            : []
+        }
+      />
 
       <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
@@ -237,21 +254,11 @@ function StatDialog({
           </div>
           <div className="space-y-2">
             <Label>{t("fields.statIcon")}</Label>
-            <Select
+            <IconPicker
               value={watch("iconName")}
-              onValueChange={(v) => setValue("iconName", v as StatIcon, { shouldDirty: true })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STAT_ICONS.map((icon) => (
-                  <SelectItem key={icon} value={icon}>
-                    {icon}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              icons={STAT_ICONS}
+              onChange={(v) => setValue("iconName", v as StatIcon, { shouldDirty: true })}
+            />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>

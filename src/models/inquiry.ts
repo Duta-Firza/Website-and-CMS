@@ -16,6 +16,7 @@ const inquirySchema = new Schema(
     websiteUrl: { type: String, default: "", trim: true },
     country: { type: String, default: "", trim: true },
     message: { type: String, required: true, trim: true },
+    customFieldValues: { type: Map, of: String, default: {} },
     status: { type: String, enum: INQUIRY_STATUSES, default: "new", index: true },
     notes: { type: String, default: "" },
   },
@@ -23,5 +24,9 @@ const inquirySchema = new Schema(
 );
 
 export type InquiryDoc = InferSchemaType<typeof inquirySchema>;
+
+if (process.env.NODE_ENV !== "production" && models.Inquiry) {
+  delete models.Inquiry;
+}
 
 export const Inquiry = models.Inquiry ?? model("Inquiry", inquirySchema);

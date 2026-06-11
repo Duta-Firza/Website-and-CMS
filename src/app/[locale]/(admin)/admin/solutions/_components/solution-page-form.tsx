@@ -11,19 +11,43 @@ import { z } from "zod";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { StickyFormBar } from "@/components/admin/sticky-form-bar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateSolutionPage } from "@/lib/cms/actions";
+import { FORM_FIELD_TYPES } from "@/lib/cms/form-fields";
 import type { SolutionPageSlug, SolutionPageStatus } from "@/models/constants";
+import { FormBuilderSection } from "./form-builder-section";
 import { StatusGroup } from "./status-group";
 
 const localized = z.object({ id: z.string(), en: z.string() });
 
+const formFieldOptionZod = z.object({
+  value: z.string(),
+  label: localized,
+});
+
+const formFieldZod = z.object({
+  key: z.string().min(1),
+  label: localized,
+  placeholder: localized,
+  type: z.enum(FORM_FIELD_TYPES),
+  required: z.boolean(),
+  order: z.number().int(),
+  options: z.array(formFieldOptionZod),
+});
+
+const formSettingsZod = z.object({
+  enabled: z.boolean(),
+  submitLabel: localized,
+  successMessage: localized,
+  fields: z.array(formFieldZod),
+});
+
 // `hero.backgroundImage` and `comingSoonMessage` remain in the schema for
 // backward compatibility with existing docs + the server action, but the form
 // UI no longer exposes them — the public page renders neither.
+// `inquiryFormEnabled` is the legacy flag, kept in the schema so old docs keep
+// parsing; `formSettings.enabled` is the new source of truth.
 const schema = z.object({
   status: z.enum(["published", "comingSoon", "hidden"]),
   hero: z.object({
@@ -37,6 +61,7 @@ const schema = z.object({
     content: localized,
   }),
   inquiryFormEnabled: z.boolean(),
+  formSettings: formSettingsZod,
   comingSoonMessage: localized,
 });
 
@@ -50,7 +75,7 @@ export interface AdditionalTab {
   content: ReactNode;
 }
 
-const FORM_TABS_BASE = ["visibility", "hero", "body"] as const;
+const FORM_TABS_BASE = ["content"] as const;
 type FormTabValue = (typeof FORM_TABS_BASE)[number] | "form";
 
 interface Props {
@@ -85,7 +110,7 @@ export function SolutionPageForm({
   );
   const initialTab = (() => {
     const raw = searchParams.get("tab");
-    return raw && (allowedTabs as string[]).includes(raw) ? raw : "visibility";
+    return raw && (allowedTabs as string[]).includes(raw) ? raw : "content";
   })();
   const [tab, setTab] = useState<string>(initialTab);
   const isFormTab = (formTabs as string[]).includes(tab);
@@ -127,9 +152,7 @@ export function SolutionPageForm({
         className="grid w-full md:w-fit"
         style={{ gridTemplateColumns: `repeat(${totalCols}, minmax(0, 1fr))` }}
       >
-        <TabsTrigger value="visibility">{t("groups.pageVisibility")}</TabsTrigger>
-        <TabsTrigger value="hero">{t("groups.pageHero")}</TabsTrigger>
-        <TabsTrigger value="body">{t("groups.pageBody")}</TabsTrigger>
+        <TabsTrigger value="content">{t("tabs.content")}</TabsTrigger>
         {showInquiryToggle && <TabsTrigger value="form">{t("groups.formSettings")}</TabsTrigger>}
         {additionalTabs.map((extra) => (
           <TabsTrigger key={extra.value} value={extra.value}>
@@ -139,9 +162,12 @@ export function SolutionPageForm({
       </TabsList>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <TabsContent value="visibility" className="mt-6">
+        <TabsContent value="content" className="mt-6 space-y-4">
           <Card>
-            <CardContent className="space-y-3 pt-6">
+            <CardHeader>
+              <CardTitle className="text-base">{t("groups.pageVisibility")}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
               <StatusGroup
                 value={status}
                 onChange={(next) => setValue("status", next, { shouldDirty: true })}
@@ -151,11 +177,12 @@ export function SolutionPageForm({
               </p>
             </CardContent>
           </Card>
-        </TabsContent>
 
-        <TabsContent value="hero" className="mt-6">
           <Card>
-            <CardContent className="space-y-4 pt-6">
+            <CardHeader>
+              <CardTitle className="text-base">{t("groups.pageHero")}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <LocalizedField label={t("fields.heroEyebrow")} name="hero.eyebrow" form={form} />
               <LocalizedField label={t("fields.heroTitle")} name="hero.title" form={form} />
               <LocalizedField
@@ -166,11 +193,12 @@ export function SolutionPageForm({
               />
             </CardContent>
           </Card>
-        </TabsContent>
 
-        <TabsContent value="body" className="mt-6">
           <Card>
-            <CardContent className="space-y-4 pt-6">
+            <CardHeader>
+              <CardTitle className="text-base">{t("groups.pageBody")}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <LocalizedField label={t("fields.bodyHeading")} name="body.heading" form={form} />
               <LocalizedField
                 label={t("fields.bodyContent")}
@@ -184,20 +212,7 @@ export function SolutionPageForm({
 
         {showInquiryToggle && (
           <TabsContent value="form" className="mt-6">
-            <Card>
-              <CardContent className="py-6">
-                <div className="flex items-center gap-3">
-                  <Switch
-                    id="inquiry-enabled"
-                    checked={watch("inquiryFormEnabled")}
-                    onCheckedChange={(v) =>
-                      setValue("inquiryFormEnabled", v, { shouldDirty: true })
-                    }
-                  />
-                  <Label htmlFor="inquiry-enabled">{t("fields.inquiryFormEnabled")}</Label>
-                </div>
-              </CardContent>
-            </Card>
+            <FormBuilderSection form={form} />
           </TabsContent>
         )}
 

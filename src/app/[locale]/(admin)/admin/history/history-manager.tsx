@@ -1,13 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Eye, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { DetailDialog } from "@/components/admin/detail-dialog";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
@@ -63,6 +64,7 @@ export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
   const t = useTranslations("Admin");
   const locale = useLocale();
   const [editing, setEditing] = useState<FormValues | null>(null);
+  const [viewing, setViewing] = useState<HistoryRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [items, setItems] = useState(initial);
 
@@ -86,14 +88,14 @@ export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
 
   return (
     <>
-      <div className="flex justify-end">
+      <div className="flex items-center justify-end gap-3">
         <Button onClick={() => setEditing({ ...empty, order: items.length + 1 })}>
           <Plus className="mr-2 h-4 w-4" />
           {t("add")}
         </Button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border bg-card">
+      <div className="mt-4 overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -133,6 +135,9 @@ export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon-sm" onClick={() => setViewing(e)}>
+                            <Eye className="h-3.5 w-3.5" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon-sm"
@@ -164,6 +169,26 @@ export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
           }}
         />
       )}
+
+      <DetailDialog
+        open={viewing !== null}
+        onClose={() => setViewing(null)}
+        title={viewing ? `${viewing.year} — ${pickLocalized(viewing.title, locale)}` : ""}
+        fields={
+          viewing
+            ? [
+                { label: t("common.year"), value: viewing.year },
+                { label: t("common.title"), value: viewing.title, type: "localized" },
+                {
+                  label: t("common.description"),
+                  value: viewing.description,
+                  type: "localizedLongtext",
+                },
+                { label: t("common.order"), value: viewing.order },
+              ]
+            : []
+        }
+      />
 
       <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>

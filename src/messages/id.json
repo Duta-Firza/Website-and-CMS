@@ -264,7 +264,10 @@
       "slug": "Slug",
       "bio": "Bio",
       "phone": "Telepon",
-      "address": "Alamat"
+      "address": "Alamat",
+      "yes": "Ya",
+      "no": "Tidak",
+      "view": "Lihat detail"
     },
     "pages": {
       "landing": {
@@ -341,11 +344,13 @@
       }
     },
     "tabs": {
+      "content": "Konten",
       "hero": "Hero",
       "stats": "Statistik",
       "partners": "Mitra Kami",
       "solutions": "Solusi Kami",
       "reach": "Jangkauan",
+      "customers": "Pelanggan",
       "whoWeAre": "Tentang Kami",
       "values": "Nilai",
       "business": "Bisnis",
@@ -476,7 +481,37 @@
     "altImage": {
       "noImage": "Tanpa gambar",
       "preview": "Preview {name}",
-      "dragHandle": "Drag untuk mengubah urutan"
+      "dragHandle": "Drag untuk mengubah urutan",
+      "fullPreview": "Preview penuh",
+      "expand": "Buka preview penuh"
+    },
+    "viewMode": {
+      "card": "Tampilan kartu",
+      "table": "Tampilan tabel"
+    },
+    "iconPicker": {
+      "title": "Pilih ikon"
+    },
+    "mapPicker": {
+      "hint": "Klik di peta atau geser pin untuk menentukan koordinat."
+    },
+    "formBuilder": {
+      "globalSettings": "Pengaturan form",
+      "fields": "Field",
+      "addField": "Tambah field",
+      "empty": "Belum ada field. Klik \"Tambah field\" untuk mulai.",
+      "key": "Key",
+      "system": "bawaan",
+      "type": "Tipe",
+      "label": "Label",
+      "placeholder": "Placeholder",
+      "required": "Wajib",
+      "submitLabel": "Label tombol kirim",
+      "successMessage": "Pesan sukses",
+      "options": "Opsi",
+      "addOption": "Tambah opsi",
+      "noOptions": "Belum ada opsi.",
+      "moveUp": "Pindah ke atas"
     },
     "fields": {
       "heroEyebrow": "Eyebrow (opsional)",
@@ -557,6 +592,7 @@
       "skuCount": "Jumlah SKU",
       "partnershipStart": "Tahun mulai partnership",
       "productPhotos": "Foto produk",
+      "productItems": "Daftar produk",
       "addPhoto": "Tambah foto",
       "removePhoto": "Hapus foto",
       "noteFromUser": "Catatan dari user",

@@ -8,7 +8,6 @@ import {
   Factory,
   FileBarChart,
   FileText,
-  FolderOpen,
   Handshake,
   HardHat,
   Home,
@@ -155,12 +154,6 @@ export function buildAdminNav(locale: string): AdminNavData {
             comingSoon: true,
           },
         ],
-      },
-      {
-        key: "content",
-        titleKey: "groupContent",
-        icon: FolderOpen,
-        items: [{ labelKey: "customers", href: `${base}/customers`, icon: Building2 }],
       },
       {
         key: "inbox",

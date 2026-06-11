@@ -264,7 +264,10 @@
       "slug": "Slug",
       "bio": "Bio",
       "phone": "Phone",
-      "address": "Address"
+      "address": "Address",
+      "yes": "Yes",
+      "no": "No",
+      "view": "View details"
     },
     "pages": {
       "landing": {
@@ -341,11 +344,13 @@
       }
     },
     "tabs": {
+      "content": "Content",
       "hero": "Hero",
       "stats": "Quick Stats",
       "partners": "Our Partners",
       "solutions": "Our Solutions",
       "reach": "Our Reach",
+      "customers": "Trusted Customers",
       "whoWeAre": "Who We Are",
       "values": "Values",
       "business": "Business",
@@ -476,7 +481,37 @@
     "altImage": {
       "noImage": "No image",
       "preview": "Preview {name}",
-      "dragHandle": "Drag to reorder"
+      "dragHandle": "Drag to reorder",
+      "fullPreview": "Full preview",
+      "expand": "Open full preview"
+    },
+    "viewMode": {
+      "card": "Card view",
+      "table": "Table view"
+    },
+    "iconPicker": {
+      "title": "Choose icon"
+    },
+    "mapPicker": {
+      "hint": "Click on the map or drag the pin to set the coordinate."
+    },
+    "formBuilder": {
+      "globalSettings": "Form settings",
+      "fields": "Fields",
+      "addField": "Add field",
+      "empty": "No fields yet. Click \"Add field\" to start.",
+      "key": "Key",
+      "system": "system",
+      "type": "Type",
+      "label": "Label",
+      "placeholder": "Placeholder",
+      "required": "Required",
+      "submitLabel": "Submit button label",
+      "successMessage": "Success message",
+      "options": "Options",
+      "addOption": "Add option",
+      "noOptions": "No options yet.",
+      "moveUp": "Move up"
     },
     "fields": {
       "heroEyebrow": "Eyebrow (optional)",
@@ -557,6 +592,7 @@
       "skuCount": "SKU count",
       "partnershipStart": "Partnership start year",
       "productPhotos": "Product photos",
+      "productItems": "Product items",
       "addPhoto": "Add photo",
       "removePhoto": "Remove photo",
       "noteFromUser": "User note",

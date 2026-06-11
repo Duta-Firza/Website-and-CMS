@@ -11,11 +11,12 @@ import { LocalizedField } from "@/components/admin/localized-field";
 import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import { StickyFormBar } from "@/components/admin/sticky-form-bar";
+import { UrlTabs } from "@/components/admin/url-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateAboutPage, updateAboutValues } from "@/lib/cms/actions";
 import type { AboutFormValues } from "./page";
 
@@ -107,7 +108,11 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <Tabs defaultValue="who" className="w-full">
+      <UrlTabs
+        defaultTab="who"
+        validValues={["who", "values", "business", "overrides"]}
+        className="w-full"
+      >
         <TabsList className="grid grid-cols-2 md:flex md:w-fit">
           <TabsTrigger value="who">{t("tabs.whoWeAre")}</TabsTrigger>
           <TabsTrigger value="values">{t("tabs.values")}</TabsTrigger>
@@ -389,7 +394,7 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
+      </UrlTabs>
 
       <StickyFormBar>
         <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">

@@ -1,38 +1,9 @@
 "use client";
 
-import {
-  Award,
-  Briefcase,
-  Building2,
-  CalendarClock,
-  ChartBar,
-  Factory,
-  Globe,
-  type LucideIcon,
-  TrendingUp,
-  Users,
-  Wrench,
-} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import type { StatData } from "@/lib/cms/home";
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  ChartBar,
-  CalendarClock,
-  Users,
-  Briefcase,
-  Award,
-  Building2,
-  Factory,
-  Wrench,
-  Globe,
-  TrendingUp,
-};
-
-function pickIcon(name: string): LucideIcon {
-  return ICON_MAP[name] ?? ChartBar;
-}
+import { pickIcon } from "@/lib/icon-map";
 
 /**
  * No outer <section> with bg-background — that backdrop was visually wrapping

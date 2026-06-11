@@ -1,3 +1,4 @@
+import { DEFAULT_FORM_SETTINGS, type FormField, type FormSettings } from "@/lib/cms/form-fields";
 import { connectDB } from "@/lib/db";
 import { SolutionPage, type SolutionPageSlug, type SolutionPageStatus } from "@/models";
 import type { SolutionPageFormValues } from "./solution-page-form";
@@ -17,8 +18,37 @@ const DEFAULT_FORM_VALUES: SolutionPageFormValues = {
     content: EMPTY_LOCALIZED,
   },
   inquiryFormEnabled: true,
+  formSettings: DEFAULT_FORM_SETTINGS,
   comingSoonMessage: EMPTY_LOCALIZED,
 };
+
+function normalizeFormSettings(raw: unknown, legacyEnabled?: boolean): FormSettings {
+  const data = (raw ?? {}) as Partial<FormSettings>;
+  const fields: FormField[] =
+    Array.isArray(data.fields) && data.fields.length > 0
+      ? (data.fields as FormField[]).map((f) => ({
+          key: f.key,
+          label: { id: f.label?.id ?? "", en: f.label?.en ?? "" },
+          placeholder: { id: f.placeholder?.id ?? "", en: f.placeholder?.en ?? "" },
+          type: f.type ?? "text",
+          required: Boolean(f.required),
+          order: f.order ?? 0,
+          options: Array.isArray(f.options) ? f.options : [],
+        }))
+      : DEFAULT_FORM_SETTINGS.fields;
+  return {
+    enabled: data.enabled ?? legacyEnabled ?? true,
+    submitLabel: {
+      id: data.submitLabel?.id ?? DEFAULT_FORM_SETTINGS.submitLabel.id,
+      en: data.submitLabel?.en ?? DEFAULT_FORM_SETTINGS.submitLabel.en,
+    },
+    successMessage: {
+      id: data.successMessage?.id ?? DEFAULT_FORM_SETTINGS.successMessage.id,
+      en: data.successMessage?.en ?? DEFAULT_FORM_SETTINGS.successMessage.en,
+    },
+    fields,
+  };
+}
 
 /**
  * Server-side loader: return raw (un-localized) SolutionPage doc as form values,
@@ -42,10 +72,13 @@ export async function loadSolutionPageForAdmin(
       content?: { id?: string; en?: string };
     };
     inquiryFormEnabled?: boolean;
+    formSettings?: unknown;
     comingSoonMessage?: { id?: string; en?: string };
     updatedAt?: Date;
   } | null>();
   if (!doc) return DEFAULT_FORM_VALUES;
+  const legacyEnabled = doc.inquiryFormEnabled ?? true;
+  const formSettings = normalizeFormSettings(doc.formSettings, legacyEnabled);
   return {
     status: doc.status ?? "comingSoon",
     hero: {
@@ -73,7 +106,8 @@ export async function loadSolutionPageForAdmin(
         en: doc.body?.content?.en ?? "",
       },
     },
-    inquiryFormEnabled: doc.inquiryFormEnabled ?? true,
+    inquiryFormEnabled: legacyEnabled,
+    formSettings,
     comingSoonMessage: {
       id: doc.comingSoonMessage?.id ?? "",
       en: doc.comingSoonMessage?.en ?? "",

@@ -1,13 +1,15 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
+import { Eye, Loader2, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { DetailDialog } from "@/components/admin/detail-dialog";
+import { MapPicker } from "@/components/admin/map-picker";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -63,6 +65,7 @@ export function ReachManager({ initial }: { initial: ReachRow[] }) {
   const router = useRouter();
   const t = useTranslations("Admin");
   const [editing, setEditing] = useState<FormValues | null>(null);
+  const [viewing, setViewing] = useState<ReachRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [items, setItems] = useState(initial);
 
@@ -86,7 +89,7 @@ export function ReachManager({ initial }: { initial: ReachRow[] }) {
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
           <MapPin className="mr-1 inline h-3.5 w-3.5" />
           {t("helpers.reachIntro", { count: items.length })}
@@ -97,7 +100,7 @@ export function ReachManager({ initial }: { initial: ReachRow[] }) {
         </Button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border bg-card">
+      <div className="mt-4 overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -131,6 +134,9 @@ export function ReachManager({ initial }: { initial: ReachRow[] }) {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon-sm" onClick={() => setViewing(r)}>
+                            <Eye className="h-3.5 w-3.5" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon-sm"
@@ -162,6 +168,23 @@ export function ReachManager({ initial }: { initial: ReachRow[] }) {
           }}
         />
       )}
+
+      <DetailDialog
+        open={viewing !== null}
+        onClose={() => setViewing(null)}
+        title={viewing ? `${viewing.city}, ${viewing.province}` : ""}
+        fields={
+          viewing
+            ? [
+                { label: t("common.city"), value: viewing.city },
+                { label: t("common.province"), value: viewing.province },
+                { label: t("fields.latitude"), value: viewing.latitude },
+                { label: t("fields.longitude"), value: viewing.longitude },
+                { label: t("common.order"), value: viewing.order },
+              ]
+            : []
+        }
+      />
 
       <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
@@ -208,6 +231,8 @@ function ReachDialog({
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { isSubmitting },
   } = form;
 
@@ -221,13 +246,23 @@ function ReachDialog({
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>
             {initial.id ? t("edit") : t("add")} {t("nouns.pinpoint")}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <MapPicker
+            latitude={watch("latitude")}
+            longitude={watch("longitude")}
+            onChange={(lat, lng, label) => {
+              setValue("latitude", lat, { shouldDirty: true });
+              setValue("longitude", lng, { shouldDirty: true });
+              if (label?.city) setValue("city", label.city, { shouldDirty: true });
+              if (label?.province) setValue("province", label.province, { shouldDirty: true });
+            }}
+          />
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label htmlFor="r-city">{t("common.city")}</Label>

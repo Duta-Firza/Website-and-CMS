@@ -1,18 +1,20 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Eye, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { DetailDialog } from "@/components/admin/detail-dialog";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
 import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
+import { useUrlTabState } from "@/components/admin/url-tabs";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -79,8 +81,12 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
   const router = useRouter();
   const t = useTranslations("Admin");
   const locale = useLocale();
-  const [activeType, setActiveType] = useState<CredentialType>("certification");
+  const [activeType, setActiveType] = useUrlTabState<CredentialType>(
+    "certification",
+    CREDENTIAL_TYPES,
+  );
   const [editing, setEditing] = useState<FormValues | null>(null);
+  const [viewing, setViewing] = useState<CredentialRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [items, setItems] = useState(initial);
 
@@ -120,7 +126,7 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
         </Button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border bg-card">
+      <div className="mt-4 overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -166,6 +172,9 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
                       <TableCell className="hidden md:table-cell">{c.year ?? "—"}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon-sm" onClick={() => setViewing(c)}>
+                            <Eye className="h-3.5 w-3.5" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon-sm"
@@ -197,6 +206,35 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
           }}
         />
       )}
+
+      <DetailDialog
+        open={viewing !== null}
+        onClose={() => setViewing(null)}
+        title={viewing ? pickLocalized(viewing.title, locale) : ""}
+        fields={
+          viewing
+            ? [
+                { label: t("common.image"), value: viewing.imageUrl, type: "image" },
+                { label: t("common.title"), value: viewing.title, type: "localized" },
+                {
+                  label: t("common.description"),
+                  value: viewing.description,
+                  type: "localizedLongtext",
+                },
+                {
+                  label: t("common.type"),
+                  value:
+                    viewing.type === "certification"
+                      ? t("nouns.certification")
+                      : t("nouns.acknowledgement"),
+                },
+                { label: t("common.issuer"), value: viewing.issuer },
+                { label: t("common.year"), value: viewing.year ?? "" },
+                { label: t("common.order"), value: viewing.order },
+              ]
+            : []
+        }
+      />
 
       <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>

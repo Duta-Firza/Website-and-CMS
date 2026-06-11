@@ -241,6 +241,7 @@ const customerSchema = z.object({
   logoUrl: z.string().min(1),
   order: z.number().int().default(0),
   invertOnDark: z.boolean().default(false),
+  isActive: z.boolean().default(true),
 });
 
 export async function upsertCustomer(input: z.infer<typeof customerSchema>): Promise<ActionResult> {
@@ -262,6 +263,18 @@ export async function deleteCustomer(id: string): Promise<ActionResult> {
     await requireAdmin();
     await connectDB();
     await Customer.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function toggleCustomerActive(id: string, value: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Customer.findByIdAndUpdate(id, { isActive: value });
     bust();
     return { ok: true };
   } catch (e) {
@@ -790,6 +803,28 @@ export async function toggleProjectHighlighted(id: string, value: boolean): Prom
 }
 
 // ─── Solution Pages ─────────────────────────────────────────────────────────
+const formFieldOptionSchema = z.object({
+  value: z.string(),
+  label: localizedSchema,
+});
+
+const formFieldSchema = z.object({
+  key: z.string().min(1),
+  label: localizedSchema,
+  placeholder: localizedSchema,
+  type: z.enum(["text", "email", "tel", "textarea", "number", "select"]),
+  required: z.boolean().default(false),
+  order: z.number().int().default(0),
+  options: z.array(formFieldOptionSchema).default([]),
+});
+
+const formSettingsSchema = z.object({
+  enabled: z.boolean().default(true),
+  submitLabel: localizedSchema,
+  successMessage: localizedSchema,
+  fields: z.array(formFieldSchema).default([]),
+});
+
 const solutionPageContentSchema = z.object({
   hero: z.object({
     eyebrow: localizedSchema,
@@ -802,6 +837,12 @@ const solutionPageContentSchema = z.object({
     content: localizedSchema,
   }),
   inquiryFormEnabled: z.boolean().default(true),
+  formSettings: formSettingsSchema.default({
+    enabled: true,
+    submitLabel: { id: "", en: "" },
+    successMessage: { id: "", en: "" },
+    fields: [],
+  }),
   comingSoonMessage: localizedSchema,
   status: z.enum(SOLUTION_PAGE_STATUSES),
 });
@@ -928,35 +969,60 @@ export async function toggleProductActive(id: string, value: boolean): Promise<A
 // ─── Inquiry ─────────────────────────────────────────────────────────────────
 const inquiryPayloadSchema = z.object({
   source: z.enum(INQUIRY_SOURCES),
-  firstName: z.string().min(1).max(80),
-  lastName: z.string().max(80).default(""),
-  email: z.string().email().max(160),
-  company: z.string().min(1).max(160),
-  phone: z.string().max(40).default(""),
-  websiteUrl: z.string().max(200).default(""),
-  country: z.string().max(80).default(""),
-  message: z.string().min(1).max(4000),
+  values: z.record(z.string(), z.string()),
 });
 
 /**
  * Public-facing — no requireAdmin. Persists the inquiry first; email send
  * runs after but failure is not fatal (DB is the source of truth).
+ *
+ * Accepts a flat `values` map keyed by field name. Known system keys
+ * (firstName, email, etc.) land in their dedicated columns; anything else
+ * ends up in `customFieldValues`.
  */
 export async function submitInquiry(
   input: z.infer<typeof inquiryPayloadSchema>,
 ): Promise<ActionResult> {
   try {
     const parsed = inquiryPayloadSchema.parse(input);
+    const { splitInquiryPayload, SYSTEM_FIELD_KEYS } = await import("./form-fields");
+    const { system, custom } = splitInquiryPayload(parsed.values);
+    if (!system.firstName?.trim()) {
+      return { ok: false, error: "First name is required" };
+    }
+    if (!system.email?.trim()) {
+      return { ok: false, error: "Email is required" };
+    }
+    if (!system.company?.trim()) {
+      return { ok: false, error: "Company is required" };
+    }
+    if (!system.message?.trim()) {
+      return { ok: false, error: "Message is required" };
+    }
+    const doc = {
+      source: parsed.source,
+      firstName: system.firstName.trim(),
+      lastName: (system.lastName ?? "").trim(),
+      email: system.email.trim(),
+      company: system.company.trim(),
+      phone: (system.phone ?? "").trim(),
+      websiteUrl: (system.websiteUrl ?? "").trim(),
+      country: (system.country ?? "").trim(),
+      message: system.message.trim(),
+      customFieldValues: custom,
+    };
+    // Touch SYSTEM_FIELD_KEYS to keep tree-shaker honest in case helper changes.
+    void SYSTEM_FIELD_KEYS;
     await connectDB();
-    await Inquiry.create(parsed);
+    await Inquiry.create(doc);
     try {
-      const fullName = [parsed.firstName, parsed.lastName].filter(Boolean).join(" ");
+      const fullName = [doc.firstName, doc.lastName].filter(Boolean).join(" ");
       await sendInquiryEmail({
         name: fullName,
-        company: parsed.company,
-        email: parsed.email,
-        phone: parsed.phone || undefined,
-        message: parsed.message,
+        company: doc.company,
+        email: doc.email,
+        phone: doc.phone || undefined,
+        message: doc.message,
         source: parsed.source,
       });
     } catch (emailErr) {

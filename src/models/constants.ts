@@ -58,3 +58,20 @@ export const STAT_ICONS = [
   "TrendingUp",
 ] as const;
 export type StatIcon = (typeof STAT_ICONS)[number];
+
+/**
+ * Whitelist of lucide-react icon names available to the Solution card editor
+ * on /admin/landing. Reuses several stat icons plus the two trade-specific
+ * ones (Handshake/HardHat) already used as defaults.
+ */
+export const SOLUTION_ICONS = [
+  "Handshake",
+  "Factory",
+  "HardHat",
+  "Wrench",
+  "Building2",
+  "Briefcase",
+  "Globe",
+  "TrendingUp",
+] as const;
+export type SolutionIcon = (typeof SOLUTION_ICONS)[number];

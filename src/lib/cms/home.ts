@@ -268,7 +268,9 @@ export interface CustomerData {
 
 export async function getCustomers(): Promise<CustomerData[]> {
   await connectDB();
-  const docs = await Customer.find().sort({ order: 1 }).lean();
+  const docs = await Customer.find({ isActive: { $ne: false } })
+    .sort({ order: 1 })
+    .lean();
   return docs.map((d) => ({
     id: String(d._id),
     name: d.name,

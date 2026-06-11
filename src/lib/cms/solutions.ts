@@ -9,6 +9,7 @@ import {
   type SolutionPageSlug,
   type SolutionPageStatus,
 } from "@/models";
+import { DEFAULT_FORM_SETTINGS, type FormField, type FormSettings } from "./form-fields";
 import { type Locale, localize } from "./localize";
 
 const EMPTY_LOCALIZED = { id: "", en: "" };
@@ -94,6 +95,70 @@ export type SolutionPageVisibilityMap = Record<SolutionPageSlug, SolutionPageSta
  * so the public layout + every solutions page render in one request share one
  * DB round-trip.
  */
+export interface LocalizedFormField {
+  key: string;
+  label: string;
+  placeholder: string;
+  type: FormField["type"];
+  required: boolean;
+  order: number;
+  options: { value: string; label: string }[];
+}
+
+export interface LocalizedFormSettings {
+  enabled: boolean;
+  submitLabel: string;
+  successMessage: string;
+  fields: LocalizedFormField[];
+}
+
+function pickLocale(field: { id?: string; en?: string } | undefined, locale: Locale): string {
+  if (!field) return "";
+  const primary = locale === "en" ? field.en : field.id;
+  if (primary?.trim()) return primary;
+  const fallback = locale === "en" ? field.id : field.en;
+  return fallback ?? "";
+}
+
+export async function getSolutionPageFormSettings(
+  slug: SolutionPageSlug,
+  locale: Locale,
+): Promise<LocalizedFormSettings> {
+  await connectDB();
+  const doc = await SolutionPage.findById(slug)
+    .select("formSettings inquiryFormEnabled")
+    .lean<{ formSettings?: Partial<FormSettings>; inquiryFormEnabled?: boolean } | null>();
+  const raw = doc?.formSettings ?? {};
+  const fallbackEnabled = doc?.inquiryFormEnabled ?? true;
+  const rawFields =
+    Array.isArray(raw.fields) && raw.fields.length > 0
+      ? (raw.fields as FormField[])
+      : DEFAULT_FORM_SETTINGS.fields;
+  const fields: LocalizedFormField[] = [...rawFields]
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .map((f) => ({
+      key: f.key,
+      label: pickLocale(f.label, locale),
+      placeholder: pickLocale(f.placeholder, locale),
+      type: f.type ?? "text",
+      required: Boolean(f.required),
+      order: f.order ?? 0,
+      options: (f.options ?? []).map((o) => ({
+        value: o.value,
+        label: pickLocale(o.label, locale),
+      })),
+    }));
+  return {
+    enabled: raw.enabled ?? fallbackEnabled,
+    submitLabel:
+      pickLocale(raw.submitLabel, locale) || pickLocale(DEFAULT_FORM_SETTINGS.submitLabel, locale),
+    successMessage:
+      pickLocale(raw.successMessage, locale) ||
+      pickLocale(DEFAULT_FORM_SETTINGS.successMessage, locale),
+    fields,
+  };
+}
+
 export const getSolutionPageVisibilityMap = cache(async (): Promise<SolutionPageVisibilityMap> => {
   await connectDB();
   const docs = await SolutionPage.find({ _id: { $in: SOLUTION_PAGE_SLUGS } })
