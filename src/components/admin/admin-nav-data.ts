@@ -66,10 +66,10 @@ export function buildAdminNav(locale: string): AdminNavData {
         icon: Info,
         items: [
           { labelKey: "about", href: `${base}/about`, icon: FileText },
-          { labelKey: "leadership", href: `${base}/leadership`, icon: Users },
-          { labelKey: "history", href: `${base}/history`, icon: Clock },
-          { labelKey: "business", href: `${base}/business`, icon: Network },
-          { labelKey: "credentials", href: `${base}/credentials`, icon: Award },
+          { labelKey: "leadership", href: `${base}/about/leadership`, icon: Users },
+          { labelKey: "history", href: `${base}/about/history`, icon: Clock },
+          { labelKey: "business", href: `${base}/about/business`, icon: Network },
+          { labelKey: "credentials", href: `${base}/about/credentials`, icon: Award },
         ],
       },
       {

@@ -1,7 +1,11 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { PreviewLink } from "@/components/admin/preview-link";
 import { connectDB } from "@/lib/db";
 import { ABOUT_PAGE_ID, AboutPage } from "@/models";
+import { AboutSubPageForm } from "./_components/about-sub-page-form";
+import { AboutSubPageShell } from "./_components/about-sub-page-shell";
+import { loadAboutSubPageForAdmin } from "./_components/load-about-sub-page";
 import { AboutForm } from "./about-form";
 
 export interface AboutFormValues {
@@ -101,12 +105,24 @@ async function loadAbout(): Promise<AboutFormValues> {
 }
 
 export default async function AboutAdminPage() {
-  const initial = await loadAbout();
-  const t = await getTranslations("Admin.pages.about");
+  const [initial, meta, locale, t] = await Promise.all([
+    loadAbout(),
+    loadAboutSubPageForAdmin("who-we-are"),
+    getLocale(),
+    getTranslations("Admin"),
+  ]);
   return (
     <div className="space-y-6">
-      <AdminPageHeader title={t("title")} description={t("description")} />
-      <AboutForm initial={initial} />
+      <AdminPageHeader
+        title={t("pages.about.title")}
+        description={t("pages.about.description")}
+        titleAction={<PreviewLink href={`/${locale}/about`} label={t("buttons.viewPublic")} />}
+      />
+      <AboutSubPageShell
+        itemsLabelKey="tabs.sections"
+        contentTab={<AboutSubPageForm slug="who-we-are" initial={meta} />}
+        itemsTab={<AboutForm initial={initial} />}
+      />
     </div>
   );
 }

@@ -7,7 +7,10 @@ import { connectDB } from "@/lib/db";
 import { sendInquiryEmail } from "@/lib/email";
 import {
   ABOUT_PAGE_ID,
+  ABOUT_SUB_PAGE_SLUGS,
+  ABOUT_SUB_PAGE_STATUSES,
   AboutPage,
+  AboutSubPage,
   AffiliatedBusiness,
   CREDENTIAL_TYPES,
   Credential,
@@ -875,6 +878,37 @@ export async function setSolutionPageStatus(slug: string, status: string): Promi
       { status: parsedStatus },
       { upsert: true, new: true },
     );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── About Sub-Pages ────────────────────────────────────────────────────────
+const aboutSubPageContentSchema = z.object({
+  status: z.enum(ABOUT_SUB_PAGE_STATUSES),
+  hero: z.object({
+    eyebrow: localizedSchema,
+    title: localizedSchema,
+    subtitle: localizedSchema,
+  }),
+  body: z.object({
+    heading: localizedSchema,
+    content: localizedSchema,
+  }),
+});
+
+export async function updateAboutSubPage(
+  slug: string,
+  input: z.infer<typeof aboutSubPageContentSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsedSlug = z.enum(ABOUT_SUB_PAGE_SLUGS).parse(slug);
+    const parsed = aboutSubPageContentSchema.parse(input);
+    await connectDB();
+    await AboutSubPage.findByIdAndUpdate(parsedSlug, parsed, { upsert: true, new: true });
     bust();
     return { ok: true };
   } catch (e) {

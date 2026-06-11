@@ -121,7 +121,12 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
 
   return (
     <>
-      <UrlTabs defaultTab="director" validValues={LEADERSHIP_TYPES} className="w-full">
+      <UrlTabs
+        defaultTab="director"
+        validValues={LEADERSHIP_TYPES}
+        paramKey="memberType"
+        className="w-full"
+      >
         <TabsList className="grid grid-cols-2 md:w-fit md:grid-cols-2">
           <TabsTrigger value="director">{tAbout("boardOfDirectors")}</TabsTrigger>
           <TabsTrigger value="commissioner">{tAbout("boardOfCommissioners")}</TabsTrigger>

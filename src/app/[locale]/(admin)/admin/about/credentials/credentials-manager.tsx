@@ -84,6 +84,7 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
   const [activeType, setActiveType] = useUrlTabState<CredentialType>(
     "certification",
     CREDENTIAL_TYPES,
+    "credType",
   );
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [viewing, setViewing] = useState<CredentialRow | null>(null);

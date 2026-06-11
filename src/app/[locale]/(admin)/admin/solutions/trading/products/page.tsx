@@ -126,7 +126,7 @@ export default async function TradingProductsAdminPage() {
       <AdminPageHeader
         title={t("pages.tradingProducts.title")}
         description={t("pages.tradingProducts.description")}
-        actions={
+        titleAction={
           <PreviewLink
             href={`/${locale}/solutions/trading/products`}
             label={t("buttons.viewPublic")}

@@ -59,6 +59,18 @@ export const STAT_ICONS = [
 ] as const;
 export type StatIcon = (typeof STAT_ICONS)[number];
 
+export const ABOUT_SUB_PAGE_SLUGS = [
+  "who-we-are",
+  "leadership",
+  "history",
+  "business",
+  "credentials",
+] as const;
+export type AboutSubPageSlug = (typeof ABOUT_SUB_PAGE_SLUGS)[number];
+
+export const ABOUT_SUB_PAGE_STATUSES = ["published", "comingSoon", "hidden"] as const;
+export type AboutSubPageStatus = (typeof ABOUT_SUB_PAGE_STATUSES)[number];
+
 /**
  * Whitelist of lucide-react icon names available to the Solution card editor
  * on /admin/landing. Reuses several stat icons plus the two trade-specific

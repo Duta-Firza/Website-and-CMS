@@ -15,7 +15,7 @@ export default async function ManufacturingAdminPage() {
       <AdminPageHeader
         title={t("pages.manufacturing.title")}
         description={t("pages.manufacturing.description")}
-        actions={
+        titleAction={
           <PreviewLink
             href={`/${locale}/solutions/manufacturing`}
             label={t("buttons.viewPublic")}

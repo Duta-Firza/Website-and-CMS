@@ -1,9 +1,11 @@
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { VideoPlayer } from "@/components/public/about/video-player";
+import { ComingSoonPage } from "@/components/public/coming-soon-page";
 import { SectionIndex } from "@/components/public/landing/section-index";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
-import { getAboutPage } from "@/lib/cms/about";
+import { getAboutPage, getAboutSubPage } from "@/lib/cms/about";
 import type { Locale } from "@/lib/cms/localize";
 
 interface PageParams {
@@ -16,19 +18,51 @@ function toLocale(locale: string): Locale {
 
 export default async function Page({ params }: { params: Promise<PageParams> }) {
   const { locale } = await params;
+  const loc = toLocale(locale);
   const t = await getTranslations("SectionTitles");
   const tAbout = await getTranslations("About");
-  const about = await getAboutPage(toLocale(locale));
+  const [about, meta] = await Promise.all([getAboutPage(loc), getAboutSubPage("who-we-are", loc)]);
+
+  if (meta.status === "hidden") notFound();
+
+  const eyebrow = meta.hero.eyebrow || t("aboutEyebrow");
+  const title = meta.hero.title || about.whoWeAreTitle?.trim() || t("whoWeAreTitle");
+  const subtitle = meta.hero.subtitle || "";
+
+  if (meta.status === "comingSoon") {
+    return (
+      <>
+        <PageHeader eyebrow={eyebrow} title={title} description={subtitle} />
+        <ComingSoonPage
+          eyebrow={eyebrow}
+          title={meta.body.heading || undefined}
+          message={meta.body.content || undefined}
+        />
+      </>
+    );
+  }
 
   const hasValues = about.values.some((v) => v.title.trim() || v.description.trim());
 
   return (
     <div className="relative">
       <SectionIndex value="01" />
-      <PageHeader
-        eyebrow={t("aboutEyebrow")}
-        title={about.whoWeAreTitle?.trim() || t("whoWeAreTitle")}
-      />
+      <PageHeader eyebrow={eyebrow} title={title} description={subtitle} />
+
+      {(meta.body.heading || meta.body.content) && (
+        <ScrollReveal className="mb-12 max-w-3xl space-y-3">
+          {meta.body.heading && (
+            <h2 className="text-2xl font-semibold tracking-tight text-brand-deep dark:text-foreground">
+              {meta.body.heading}
+            </h2>
+          )}
+          {meta.body.content && (
+            <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground">
+              {meta.body.content}
+            </p>
+          )}
+        </ScrollReveal>
+      )}
 
       {about.intro && (
         <ScrollReveal className="mx-auto mb-12 max-w-3xl text-center">

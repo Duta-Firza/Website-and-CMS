@@ -1,10 +1,12 @@
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { AffiliatedBusinessCard } from "@/components/public/about/affiliated-business-card";
 import { HoldingStructure } from "@/components/public/about/holding-structure";
+import { ComingSoonPage } from "@/components/public/coming-soon-page";
 import { SectionIndex } from "@/components/public/landing/section-index";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
-import { getAboutPage, getAffiliatedBusinesses } from "@/lib/cms/about";
+import { getAboutPage, getAboutSubPage, getAffiliatedBusinesses } from "@/lib/cms/about";
 import type { Locale } from "@/lib/cms/localize";
 
 interface PageParams {
@@ -21,10 +23,30 @@ export default async function BusinessPage({ params }: { params: Promise<PagePar
   const t = await getTranslations("SectionTitles");
   const tNav = await getTranslations("Nav");
   const tAbout = await getTranslations("About");
-  const [about, businesses] = await Promise.all([
+  const [about, businesses, meta] = await Promise.all([
     getAboutPage(safeLocale),
     getAffiliatedBusinesses(safeLocale),
+    getAboutSubPage("business", safeLocale),
   ]);
+
+  if (meta.status === "hidden") notFound();
+
+  const eyebrow = meta.hero.eyebrow || t("aboutEyebrow");
+  const title = meta.hero.title || about.businessTitle?.trim() || t("businessTitle");
+  const subtitle = meta.hero.subtitle || "";
+
+  if (meta.status === "comingSoon") {
+    return (
+      <>
+        <PageHeader eyebrow={eyebrow} title={title} description={subtitle} />
+        <ComingSoonPage
+          eyebrow={eyebrow}
+          title={meta.body.heading || undefined}
+          message={meta.body.content || undefined}
+        />
+      </>
+    );
+  }
 
   const fallbackDivisions = [
     { key: "epc", label: tNav("epc") },
@@ -45,10 +67,22 @@ export default async function BusinessPage({ params }: { params: Promise<PagePar
   return (
     <div className="relative">
       <SectionIndex value="04" />
-      <PageHeader
-        eyebrow={t("aboutEyebrow")}
-        title={about.businessTitle?.trim() || t("businessTitle")}
-      />
+      <PageHeader eyebrow={eyebrow} title={title} description={subtitle} />
+
+      {(meta.body.heading || meta.body.content) && (
+        <ScrollReveal className="mb-12 max-w-3xl space-y-3">
+          {meta.body.heading && (
+            <h2 className="text-2xl font-semibold tracking-tight text-brand-deep dark:text-foreground">
+              {meta.body.heading}
+            </h2>
+          )}
+          {meta.body.content && (
+            <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground">
+              {meta.body.content}
+            </p>
+          )}
+        </ScrollReveal>
+      )}
 
       {about.coreBusinessDescription && (
         <ScrollReveal className="mb-12">

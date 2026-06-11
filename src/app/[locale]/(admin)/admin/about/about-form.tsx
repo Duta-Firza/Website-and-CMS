@@ -111,6 +111,7 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
       <UrlTabs
         defaultTab="who"
         validValues={["who", "values", "business", "overrides"]}
+        paramKey="section"
         className="w-full"
       >
         <TabsList className="grid grid-cols-2 md:flex md:w-fit">

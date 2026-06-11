@@ -1,5 +1,13 @@
 export type { LocalizedString } from "./_shared";
 export { ABOUT_PAGE_ID, AboutPage, type AboutPageDoc } from "./about-page";
+export {
+  ABOUT_SUB_PAGE_SLUGS,
+  ABOUT_SUB_PAGE_STATUSES,
+  AboutSubPage,
+  type AboutSubPageDoc,
+  type AboutSubPageSlug,
+  type AboutSubPageStatus,
+} from "./about-sub-page";
 export { AffiliatedBusiness, type AffiliatedBusinessDoc } from "./affiliated-business";
 export {
   CREDENTIAL_TYPES,

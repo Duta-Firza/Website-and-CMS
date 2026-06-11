@@ -180,7 +180,7 @@ export function SolutionPageForm({
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">{t("groups.pageHero")}</CardTitle>
+              <CardTitle className="text-base">{t("groups.pageTitle")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <LocalizedField label={t("fields.heroEyebrow")} name="hero.eyebrow" form={form} />

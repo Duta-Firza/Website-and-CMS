@@ -41,7 +41,9 @@ export default async function EpcAdminPage() {
       <AdminPageHeader
         title={t("pages.epc.title")}
         description={t("pages.epc.description")}
-        actions={<PreviewLink href={`/${locale}/solutions/epc`} label={t("buttons.viewPublic")} />}
+        titleAction={
+          <PreviewLink href={`/${locale}/solutions/epc`} label={t("buttons.viewPublic")} />
+        }
       />
       <SolutionPageForm
         slug="epc"

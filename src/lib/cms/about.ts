@@ -2,6 +2,9 @@ import { connectDB } from "@/lib/db";
 import {
   ABOUT_PAGE_ID,
   AboutPage,
+  AboutSubPage,
+  type AboutSubPageSlug,
+  type AboutSubPageStatus,
   AffiliatedBusiness,
   Credential,
   type CredentialType,
@@ -236,4 +239,98 @@ export async function getCredentials(
       locale,
     ),
   );
+}
+
+// ─── About sub-page metadata (status + hero + body) ─────────────────────────
+export interface AboutSubPageMeta {
+  status: AboutSubPageStatus;
+  hero: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+  };
+  body: {
+    heading: string;
+    content: string;
+  };
+}
+
+// Slug → legacy AboutPage override field. The override predates the
+// dedicated AboutSubPage doc; we keep reading from it so existing CMS content
+// keeps showing until the editor saves a fresh AboutSubPage.
+const LEGACY_TITLE_FIELD: Record<AboutSubPageSlug, string> = {
+  "who-we-are": "whoWeAreTitle",
+  leadership: "leadershipTitle",
+  history: "historyTitle",
+  business: "businessTitle",
+  credentials: "credentialsTitle",
+};
+
+const EMPTY_META: AboutSubPageMeta = {
+  status: "published",
+  hero: { eyebrow: "", title: "", subtitle: "" },
+  body: { heading: "", content: "" },
+};
+
+export async function getAboutSubPage(
+  slug: AboutSubPageSlug,
+  locale: Locale,
+): Promise<AboutSubPageMeta> {
+  await connectDB();
+  const [subDoc, aboutDoc] = await Promise.all([
+    AboutSubPage.findById(slug).lean<{
+      _id?: string;
+      status?: AboutSubPageStatus;
+      hero?: { eyebrow?: unknown; title?: unknown; subtitle?: unknown };
+      body?: { heading?: unknown; content?: unknown };
+    } | null>(),
+    AboutPage.findById(ABOUT_PAGE_ID)
+      .select(`${LEGACY_TITLE_FIELD[slug]}`)
+      .lean<Record<string, unknown> | null>(),
+  ]);
+
+  if (!subDoc) {
+    const legacyTitle = aboutDoc?.[LEGACY_TITLE_FIELD[slug]] as
+      | { id?: string; en?: string }
+      | undefined;
+    return {
+      ...EMPTY_META,
+      hero: {
+        ...EMPTY_META.hero,
+        title: localize(legacyTitle ?? { id: "", en: "" }, locale) as string,
+      },
+    };
+  }
+
+  const localized = localize(
+    {
+      eyebrow: subDoc.hero?.eyebrow ?? { id: "", en: "" },
+      title: subDoc.hero?.title ?? { id: "", en: "" },
+      subtitle: subDoc.hero?.subtitle ?? { id: "", en: "" },
+      heading: subDoc.body?.heading ?? { id: "", en: "" },
+      content: subDoc.body?.content ?? { id: "", en: "" },
+    },
+    locale,
+  ) as {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    heading: string;
+    content: string;
+  };
+
+  // If the new doc's title is still blank, fall back to the legacy override.
+  let title = localized.title;
+  if (!title.trim()) {
+    const legacyTitle = aboutDoc?.[LEGACY_TITLE_FIELD[slug]] as
+      | { id?: string; en?: string }
+      | undefined;
+    if (legacyTitle) title = localize(legacyTitle, locale) as string;
+  }
+
+  return {
+    status: subDoc.status ?? "published",
+    hero: { eyebrow: localized.eyebrow, title, subtitle: localized.subtitle },
+    body: { heading: localized.heading, content: localized.content },
+  };
 }
