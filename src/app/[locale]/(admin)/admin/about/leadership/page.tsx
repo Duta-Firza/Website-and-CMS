@@ -1,10 +1,11 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
+import { UrlTabs } from "@/components/admin/url-tabs";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { connectDB } from "@/lib/db";
 import { LeadershipMember, type LeadershipType } from "@/models";
 import { AboutSubPageForm } from "../_components/about-sub-page-form";
-import { AboutSubPageShell } from "../_components/about-sub-page-shell";
 import { loadAboutSubPageForAdmin } from "../_components/load-about-sub-page";
 import { LeadershipManager } from "./leadership-manager";
 
@@ -35,11 +36,12 @@ async function loadMembers(): Promise<LeadershipRow[]> {
 }
 
 export default async function LeadershipAdminPage() {
-  const [members, meta, locale, t] = await Promise.all([
+  const [members, meta, locale, t, tAbout] = await Promise.all([
     loadMembers(),
     loadAboutSubPageForAdmin("leadership"),
     getLocale(),
     getTranslations("Admin"),
+    getTranslations("About"),
   ]);
   return (
     <div className="space-y-6">
@@ -50,11 +52,21 @@ export default async function LeadershipAdminPage() {
           <PreviewLink href={`/${locale}/about/leadership`} label={t("buttons.viewPublic")} />
         }
       />
-      <AboutSubPageShell
-        itemsLabelKey="tabs.members"
-        contentTab={<AboutSubPageForm slug="leadership" initial={meta} />}
-        itemsTab={<LeadershipManager initial={members} />}
-      />
+      <UrlTabs
+        defaultTab="content"
+        validValues={["content", "director", "commissioner"]}
+        className="w-full"
+      >
+        <TabsList className="grid grid-cols-3 md:w-fit md:grid-cols-3">
+          <TabsTrigger value="content">{t("tabs.content")}</TabsTrigger>
+          <TabsTrigger value="director">{tAbout("boardOfDirectors")}</TabsTrigger>
+          <TabsTrigger value="commissioner">{tAbout("boardOfCommissioners")}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="content" className="mt-6">
+          <AboutSubPageForm slug="leadership" initial={meta} />
+        </TabsContent>
+        <LeadershipManager initial={members} />
+      </UrlTabs>
     </div>
   );
 }

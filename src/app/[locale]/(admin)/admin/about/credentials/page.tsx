@@ -1,10 +1,11 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
+import { UrlTabs } from "@/components/admin/url-tabs";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { connectDB } from "@/lib/db";
 import { Credential, type CredentialType } from "@/models";
 import { AboutSubPageForm } from "../_components/about-sub-page-form";
-import { AboutSubPageShell } from "../_components/about-sub-page-shell";
 import { loadAboutSubPageForAdmin } from "../_components/load-about-sub-page";
 import { CredentialsManager } from "./credentials-manager";
 
@@ -50,11 +51,21 @@ export default async function CredentialsAdminPage() {
           <PreviewLink href={`/${locale}/about/credentials`} label={t("buttons.viewPublic")} />
         }
       />
-      <AboutSubPageShell
-        itemsLabelKey="tabs.list"
-        contentTab={<AboutSubPageForm slug="credentials" initial={meta} />}
-        itemsTab={<CredentialsManager initial={credentials} />}
-      />
+      <UrlTabs
+        defaultTab="content"
+        validValues={["content", "certification", "acknowledgement"]}
+        className="w-full"
+      >
+        <TabsList className="grid grid-cols-3 md:w-fit md:grid-cols-3">
+          <TabsTrigger value="content">{t("tabs.content")}</TabsTrigger>
+          <TabsTrigger value="certification">{t("tabs.certifications")}</TabsTrigger>
+          <TabsTrigger value="acknowledgement">{t("tabs.acknowledgements")}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="content" className="mt-6">
+          <AboutSubPageForm slug="credentials" initial={meta} />
+        </TabsContent>
+        <CredentialsManager initial={credentials} />
+      </UrlTabs>
     </div>
   );
 }

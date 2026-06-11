@@ -14,7 +14,6 @@ import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
 import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
-import { useUrlTabState } from "@/components/admin/url-tabs";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,7 +48,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsContent } from "@/components/ui/tabs";
 import { deleteCredential, reorderCredentials, upsertCredential } from "@/lib/cms/actions";
 import { CREDENTIAL_TYPES, type CredentialType } from "@/models/constants";
 import type { CredentialRow } from "./page";
@@ -81,11 +80,6 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
   const router = useRouter();
   const t = useTranslations("Admin");
   const locale = useLocale();
-  const [activeType, setActiveType] = useUrlTabState<CredentialType>(
-    "certification",
-    CREDENTIAL_TYPES,
-    "credType",
-  );
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [viewing, setViewing] = useState<CredentialRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -95,10 +89,14 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
     setItems(initial);
   }, [initial]);
 
-  const filtered = useMemo(() => items.filter((c) => c.type === activeType), [items, activeType]);
+  const certifications = useMemo(() => items.filter((c) => c.type === "certification"), [items]);
+  const acknowledgements = useMemo(
+    () => items.filter((c) => c.type === "acknowledgement"),
+    [items],
+  );
 
-  const handleReorder = async (newIds: string[]) => {
-    const others = items.filter((c) => c.type !== activeType);
+  const handleReorder = (type: CredentialType) => async (newIds: string[]) => {
+    const others = items.filter((c) => c.type !== type);
     const newOrder = newIds
       .map((id) => items.find((c) => c.id === id))
       .filter((c): c is CredentialRow => !!c);
@@ -114,88 +112,34 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
 
   return (
     <>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Tabs value={activeType} onValueChange={(v) => setActiveType(v as CredentialType)}>
-          <TabsList>
-            <TabsTrigger value="certification">{t("tabs.certifications")}</TabsTrigger>
-            <TabsTrigger value="acknowledgement">{t("tabs.acknowledgements")}</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <Button onClick={() => setEditing({ ...empty(activeType), order: filtered.length + 1 })}>
-          <Plus className="mr-2 h-4 w-4" />
-          {t("add")}
-        </Button>
-      </div>
-
-      <div className="mt-4 overflow-x-auto rounded-lg border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-10" />
-              <TableHead className="w-16">{t("common.image")}</TableHead>
-              <TableHead>{t("common.title")}</TableHead>
-              <TableHead className="hidden md:table-cell">{t("common.issuer")}</TableHead>
-              <TableHead className="hidden w-20 md:table-cell">{t("common.year")}</TableHead>
-              <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <SortableContainer items={filtered.map((c) => c.id)} onReorder={handleReorder}>
-            <TableBody>
-              {filtered.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">
-                    {activeType === "certification"
-                      ? t("empty.certifications")
-                      : t("empty.acknowledgements")}
-                  </TableCell>
-                </TableRow>
-              )}
-              {filtered.map((c) => (
-                <SortableItem key={c.id} id={c.id}>
-                  {({ ref, style, handleProps }) => (
-                    <TableRow ref={ref} style={style}>
-                      <TableCell>
-                        <DragHandle handleProps={handleProps} size="sm" />
-                      </TableCell>
-                      <TableCell>
-                        <ImagePreview src={c.imageUrl} alt={pickLocalized(c.title, locale)} />
-                      </TableCell>
-                      <TableCell className="max-w-xs font-medium">
-                        <span className="block truncate" title={pickLocalized(c.title, locale)}>
-                          {pickLocalized(c.title, locale)}
-                        </span>
-                      </TableCell>
-                      <TableCell className="hidden max-w-40 text-xs text-muted-foreground md:table-cell">
-                        <span className="block truncate" title={c.issuer || ""}>
-                          {c.issuer || "—"}
-                        </span>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">{c.year ?? "—"}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
-                          <Button variant="ghost" size="icon-sm" onClick={() => setViewing(c)}>
-                            <Eye className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={() => setEditing({ ...c })}
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button variant="ghost" size="icon-sm" onClick={() => setDeleteId(c.id)}>
-                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </SortableItem>
-              ))}
-            </TableBody>
-          </SortableContainer>
-        </Table>
-      </div>
+      <TabsContent value="certification" className="mt-6">
+        <CredentialsTypeTable
+          rows={certifications}
+          emptyMessage={t("empty.certifications")}
+          addLabel={t("add")}
+          onAdd={() => setEditing({ ...empty("certification"), order: certifications.length + 1 })}
+          onView={(c) => setViewing(c)}
+          onEdit={(c) => setEditing({ ...c })}
+          onDelete={(id) => setDeleteId(id)}
+          onReorder={handleReorder("certification")}
+          locale={locale}
+        />
+      </TabsContent>
+      <TabsContent value="acknowledgement" className="mt-6">
+        <CredentialsTypeTable
+          rows={acknowledgements}
+          emptyMessage={t("empty.acknowledgements")}
+          addLabel={t("add")}
+          onAdd={() =>
+            setEditing({ ...empty("acknowledgement"), order: acknowledgements.length + 1 })
+          }
+          onView={(c) => setViewing(c)}
+          onEdit={(c) => setEditing({ ...c })}
+          onDelete={(id) => setDeleteId(id)}
+          onReorder={handleReorder("acknowledgement")}
+          locale={locale}
+        />
+      </TabsContent>
 
       {editing && (
         <CredentialDialog
@@ -261,6 +205,103 @@ export function CredentialsManager({ initial }: { initial: CredentialRow[] }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </>
+  );
+}
+
+function CredentialsTypeTable({
+  rows,
+  emptyMessage,
+  addLabel,
+  onAdd,
+  onView,
+  onEdit,
+  onDelete,
+  onReorder,
+  locale,
+}: {
+  rows: CredentialRow[];
+  emptyMessage: string;
+  addLabel: string;
+  onAdd: () => void;
+  onView: (c: CredentialRow) => void;
+  onEdit: (c: CredentialRow) => void;
+  onDelete: (id: string) => void;
+  onReorder: (ids: string[]) => Promise<void>;
+  locale: string;
+}) {
+  const t = useTranslations("Admin");
+  return (
+    <>
+      <div className="flex items-center justify-end gap-3">
+        <Button onClick={onAdd}>
+          <Plus className="mr-2 h-4 w-4" />
+          {addLabel}
+        </Button>
+      </div>
+      <div className="mt-4 overflow-x-auto rounded-lg border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-10" />
+              <TableHead className="w-16">{t("common.image")}</TableHead>
+              <TableHead>{t("common.title")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("common.issuer")}</TableHead>
+              <TableHead className="hidden w-20 md:table-cell">{t("common.year")}</TableHead>
+              <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <SortableContainer items={rows.map((c) => c.id)} onReorder={onReorder}>
+            <TableBody>
+              {rows.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-sm text-muted-foreground">
+                    {emptyMessage}
+                  </TableCell>
+                </TableRow>
+              )}
+              {rows.map((c) => (
+                <SortableItem key={c.id} id={c.id}>
+                  {({ ref, style, handleProps }) => (
+                    <TableRow ref={ref} style={style}>
+                      <TableCell>
+                        <DragHandle handleProps={handleProps} size="sm" />
+                      </TableCell>
+                      <TableCell>
+                        <ImagePreview src={c.imageUrl} alt={pickLocalized(c.title, locale)} />
+                      </TableCell>
+                      <TableCell className="max-w-xs font-medium">
+                        <span className="block truncate" title={pickLocalized(c.title, locale)}>
+                          {pickLocalized(c.title, locale)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="hidden max-w-40 text-xs text-muted-foreground md:table-cell">
+                        <span className="block truncate" title={c.issuer || ""}>
+                          {c.issuer || "—"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">{c.year ?? "—"}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon-sm" onClick={() => onView(c)}>
+                            <Eye className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button variant="ghost" size="icon-sm" onClick={() => onEdit(c)}>
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button variant="ghost" size="icon-sm" onClick={() => onDelete(c.id)}>
+                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </SortableItem>
+              ))}
+            </TableBody>
+          </SortableContainer>
+        </Table>
+      </div>
     </>
   );
 }

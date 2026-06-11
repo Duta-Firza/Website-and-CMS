@@ -1,10 +1,11 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
+import { UrlTabs } from "@/components/admin/url-tabs";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { connectDB } from "@/lib/db";
 import { ABOUT_PAGE_ID, AboutPage } from "@/models";
 import { AboutSubPageForm } from "./_components/about-sub-page-form";
-import { AboutSubPageShell } from "./_components/about-sub-page-shell";
 import { loadAboutSubPageForAdmin } from "./_components/load-about-sub-page";
 import { AboutForm } from "./about-form";
 
@@ -118,11 +119,23 @@ export default async function AboutAdminPage() {
         description={t("pages.about.description")}
         titleAction={<PreviewLink href={`/${locale}/about`} label={t("buttons.viewPublic")} />}
       />
-      <AboutSubPageShell
-        itemsLabelKey="tabs.sections"
-        contentTab={<AboutSubPageForm slug="who-we-are" initial={meta} />}
-        itemsTab={<AboutForm initial={initial} />}
-      />
+      <UrlTabs
+        defaultTab="content"
+        validValues={["content", "who", "values", "business", "overrides"]}
+        className="w-full"
+      >
+        <TabsList className="grid grid-cols-2 md:flex md:w-fit">
+          <TabsTrigger value="content">{t("tabs.content")}</TabsTrigger>
+          <TabsTrigger value="who">{t("tabs.whoWeAre")}</TabsTrigger>
+          <TabsTrigger value="values">{t("tabs.values")}</TabsTrigger>
+          <TabsTrigger value="business">{t("tabs.business")}</TabsTrigger>
+          <TabsTrigger value="overrides">{t("tabs.overrides")}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="content" className="mt-6">
+          <AboutSubPageForm slug="who-we-are" initial={meta} />
+        </TabsContent>
+        <AboutForm initial={initial} />
+      </UrlTabs>
     </div>
   );
 }

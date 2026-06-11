@@ -15,7 +15,6 @@ import { pickLocalized } from "@/components/admin/localized-text";
 import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import { StatusToggle } from "@/components/admin/status-toggle";
-import { UrlTabs } from "@/components/admin/url-tabs";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,7 +43,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsContent } from "@/components/ui/tabs";
 import {
   deleteLeadershipMember,
   reorderLeadership,
@@ -80,7 +79,6 @@ const empty: FormValues = {
 export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
   const router = useRouter();
   const t = useTranslations("Admin");
-  const tAbout = useTranslations("About");
   const locale = useLocale();
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [viewing, setViewing] = useState<LeadershipRow | null>(null);
@@ -121,49 +119,38 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
 
   return (
     <>
-      <UrlTabs
-        defaultTab="director"
-        validValues={LEADERSHIP_TYPES}
-        paramKey="memberType"
-        className="w-full"
-      >
-        <TabsList className="grid grid-cols-2 md:w-fit md:grid-cols-2">
-          <TabsTrigger value="director">{tAbout("boardOfDirectors")}</TabsTrigger>
-          <TabsTrigger value="commissioner">{tAbout("boardOfCommissioners")}</TabsTrigger>
-        </TabsList>
-        <TabsContent value="director" className="mt-6">
-          <MemberTable
-            emptyMessage={t("empty.directors")}
-            members={directors}
-            onAdd={() => setEditing({ ...empty, type: "director", order: directors.length + 1 })}
-            onView={(m) => setViewing(m)}
-            onEdit={(m) => setEditing({ ...m })}
-            onDelete={(id) => setDeleteId(id)}
-            onReorder={handleReorder("director")}
-            onToggleActive={handleToggleActive}
-            addLabel={t("add")}
-            activeLabel={t("common.active")}
-            locale={locale}
-          />
-        </TabsContent>
-        <TabsContent value="commissioner" className="mt-6">
-          <MemberTable
-            emptyMessage={t("empty.commissioners")}
-            members={commissioners}
-            onAdd={() =>
-              setEditing({ ...empty, type: "commissioner", order: commissioners.length + 1 })
-            }
-            onView={(m) => setViewing(m)}
-            onEdit={(m) => setEditing({ ...m })}
-            onDelete={(id) => setDeleteId(id)}
-            onReorder={handleReorder("commissioner")}
-            onToggleActive={handleToggleActive}
-            addLabel={t("add")}
-            activeLabel={t("common.active")}
-            locale={locale}
-          />
-        </TabsContent>
-      </UrlTabs>
+      <TabsContent value="director" className="mt-6">
+        <MemberTable
+          emptyMessage={t("empty.directors")}
+          members={directors}
+          onAdd={() => setEditing({ ...empty, type: "director", order: directors.length + 1 })}
+          onView={(m) => setViewing(m)}
+          onEdit={(m) => setEditing({ ...m })}
+          onDelete={(id) => setDeleteId(id)}
+          onReorder={handleReorder("director")}
+          onToggleActive={handleToggleActive}
+          addLabel={t("add")}
+          activeLabel={t("common.active")}
+          locale={locale}
+        />
+      </TabsContent>
+      <TabsContent value="commissioner" className="mt-6">
+        <MemberTable
+          emptyMessage={t("empty.commissioners")}
+          members={commissioners}
+          onAdd={() =>
+            setEditing({ ...empty, type: "commissioner", order: commissioners.length + 1 })
+          }
+          onView={(m) => setViewing(m)}
+          onEdit={(m) => setEditing({ ...m })}
+          onDelete={(id) => setDeleteId(id)}
+          onReorder={handleReorder("commissioner")}
+          onToggleActive={handleToggleActive}
+          addLabel={t("add")}
+          activeLabel={t("common.active")}
+          locale={locale}
+        />
+      </TabsContent>
 
       {editing && (
         <LeadershipDialog
