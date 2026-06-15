@@ -1,13 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Eye, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { DetailDialog } from "@/components/admin/detail-dialog";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
@@ -121,6 +122,7 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
   const t = useTranslations("Admin");
   const locale = useLocale();
   const [editing, setEditing] = useState<FormValues | null>(null);
+  const [viewing, setViewing] = useState<ProjectRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [items, setItems] = useState(initial);
 
@@ -144,7 +146,7 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <p className="text-xs text-muted-foreground">{t("helpers.reorderProjectsByCategory")}</p>
         <Button onClick={() => setEditing({ ...empty, order: items.length + 1 })}>
           <Plus className="mr-2 h-4 w-4" />
@@ -152,7 +154,7 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
         </Button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border bg-card">
+      <div className="mt-4 overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -245,6 +247,9 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon-sm" onClick={() => setViewing(p)}>
+                            <Eye className="h-3.5 w-3.5" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon-sm"
@@ -277,6 +282,50 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
           }}
         />
       )}
+
+      <DetailDialog
+        open={viewing !== null}
+        onClose={() => setViewing(null)}
+        title={viewing ? pickLocalized(viewing.title, locale) : ""}
+        fields={
+          viewing
+            ? [
+                { label: t("common.image"), value: viewing.image, type: "image" },
+                { label: t("common.title"), value: viewing.title, type: "localized" },
+                { label: t("common.slug"), value: viewing.slug },
+                {
+                  label: t("common.summary"),
+                  value: viewing.summary,
+                  type: "localizedLongtext",
+                },
+                {
+                  label: t("fields.aboutProject"),
+                  value: viewing.about,
+                  type: "localizedLongtext",
+                },
+                {
+                  label: t("fields.scopeOfWork"),
+                  value: viewing.scopeOfWork,
+                  type: "localizedLongtext",
+                },
+                { label: t("common.client"), value: viewing.client },
+                { label: t("common.year"), value: viewing.year ?? "" },
+                { label: t("common.category"), value: viewing.category },
+                {
+                  label: t("common.published"),
+                  value: viewing.isPublished,
+                  type: "boolean",
+                },
+                {
+                  label: t("common.featured"),
+                  value: viewing.isHighlighted,
+                  type: "boolean",
+                },
+                { label: t("common.order"), value: viewing.order },
+              ]
+            : []
+        }
+      />
 
       <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>

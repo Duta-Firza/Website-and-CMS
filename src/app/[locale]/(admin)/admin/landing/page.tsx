@@ -1,19 +1,29 @@
-import { getTranslations } from "next-intl/server";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
+import { CustomersManager } from "@/app/[locale]/(admin)/admin/customers/customers-manager";
+import type { CustomerRow } from "@/app/[locale]/(admin)/admin/customers/page";
 import { AdminPageHeader } from "@/components/admin/page-header";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UrlTabs } from "@/components/admin/url-tabs";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { connectDB } from "@/lib/db";
-import { HOME_HERO_ID, HomeHero, ReachPoint, Stat } from "@/models";
-import { STAT_ICONS, type StatIcon } from "@/models/constants";
+import { Customer, HOME_HERO_ID, HomeHero, ReachPoint, Solution, Stat } from "@/models";
+import { SOLUTION_KEYS, type SolutionKey, STAT_ICONS, type StatIcon } from "@/models/constants";
 import { HeroForm } from "./hero-form";
 import { ReachManager } from "./reach-manager";
+import { SolutionForm } from "./solution-card-form";
 import { StatsManager } from "./stats-manager";
 
 async function loadAll() {
   await connectDB();
-  const [heroDoc, stats, reach] = await Promise.all([
+  const [heroDoc, stats, reach, solutionDocs, customerDocs] = await Promise.all([
     HomeHero.findById(HOME_HERO_ID).lean(),
     Stat.find().sort({ order: 1 }).lean(),
     ReachPoint.find().sort({ order: 1 }).lean(),
+    Solution.find().sort({ order: 1 }).lean(),
+    Customer.find().sort({ order: 1 }).lean(),
   ]);
 
   const empty = { id: "", en: "" };
@@ -37,6 +47,23 @@ async function loadAll() {
     }
     return empty;
   };
+
+  // Ensure all 3 Solution keys are present (with defaults) so admin can edit
+  // before the seed has run.
+  const byKey = new Map<SolutionKey, (typeof solutionDocs)[number]>();
+  for (const d of solutionDocs) byKey.set(d.key as SolutionKey, d);
+  const solutions = SOLUTION_KEYS.map((key, idx) => {
+    const doc = byKey.get(key);
+    return {
+      id: doc ? String(doc._id) : undefined,
+      key,
+      title: doc?.title ?? empty,
+      description: doc?.description ?? empty,
+      iconName: doc?.iconName ?? defaultIcon(key),
+      href: doc?.href ?? `/id/solutions/${key}`,
+      order: doc?.order ?? idx,
+    };
+  });
 
   return {
     hero: {
@@ -83,34 +110,48 @@ async function loadAll() {
       longitude: r.longitude,
       order: r.order ?? 0,
     })),
+    solutions,
+    customers: customerDocs.map(
+      (c): CustomerRow => ({
+        id: String(c._id),
+        name: c.name,
+        logoUrl: c.logoUrl,
+        order: c.order ?? 0,
+        invertOnDark: c.invertOnDark ?? false,
+        isActive: c.isActive ?? true,
+      }),
+    ),
   };
 }
 
-const LANDING_SECTIONS = ["hero", "stats", "reach"] as const;
-type LandingSection = (typeof LANDING_SECTIONS)[number];
-
-interface Props {
-  searchParams: Promise<{ section?: string }>;
+function defaultIcon(key: SolutionKey): string {
+  if (key === "trading") return "Handshake";
+  if (key === "manufacturing") return "Factory";
+  return "HardHat";
 }
 
-export default async function LandingAdminPage({ searchParams }: Props) {
-  const { section } = await searchParams;
-  const defaultTab: LandingSection = (LANDING_SECTIONS as readonly string[]).includes(section ?? "")
-    ? (section as LandingSection)
-    : "hero";
-  const data = await loadAll();
-  const t = await getTranslations("Admin");
+// Tab order mirrors the public homepage section order: Hero → Stats →
+// Partners → Solutions → Reach → Customers. Partners is delegated to the
+// master Partners CMS (Solutions / Trading / Partners). Projects isn't
+// editable from this page yet, so it stays out of the tab list.
+const LANDING_SECTIONS = ["hero", "stats", "partners", "solutions", "reach", "customers"] as const;
+
+export default async function LandingAdminPage() {
+  const [data, locale, t] = await Promise.all([loadAll(), getLocale(), getTranslations("Admin")]);
   return (
     <div className="space-y-6">
       <AdminPageHeader
         title={t("pages.landing.title")}
         description={t("pages.landing.description")}
       />
-      <Tabs defaultValue={defaultTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 md:w-fit">
+      <UrlTabs defaultTab="hero" validValues={LANDING_SECTIONS} className="w-full">
+        <TabsList className="grid w-full grid-cols-3 md:w-fit md:grid-cols-6">
           <TabsTrigger value="hero">{t("tabs.hero")}</TabsTrigger>
           <TabsTrigger value="stats">{t("tabs.stats")}</TabsTrigger>
+          <TabsTrigger value="partners">{t("tabs.partners")}</TabsTrigger>
+          <TabsTrigger value="solutions">{t("tabs.solutions")}</TabsTrigger>
           <TabsTrigger value="reach">{t("tabs.reach")}</TabsTrigger>
+          <TabsTrigger value="customers">{t("tabs.customers")}</TabsTrigger>
         </TabsList>
         <TabsContent value="hero" className="mt-6">
           <HeroForm initial={data.hero} />
@@ -118,10 +159,41 @@ export default async function LandingAdminPage({ searchParams }: Props) {
         <TabsContent value="stats" className="mt-6">
           <StatsManager initial={data.stats} />
         </TabsContent>
+        <TabsContent value="partners" className="mt-6">
+          <Card className="border-dashed bg-muted/40">
+            <CardContent className="flex flex-col items-start gap-3 py-6 md:flex-row md:items-center md:justify-between">
+              <div className="max-w-xl space-y-1">
+                <p className="text-sm font-medium text-brand-deep dark:text-foreground">
+                  {t("helpers.landingPartnersDelegated")}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {t("helpers.landingPartnersDelegatedHint")}
+                </p>
+              </div>
+              <Link
+                href={`/${locale}/admin/solutions/trading/partners?tab=partners`}
+                className={buttonVariants({ variant: "outline", size: "sm" })}
+              >
+                {t("buttons.manageInPartners")}
+                <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+              </Link>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="solutions" className="mt-6">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            {data.solutions.map((s) => (
+              <SolutionForm key={s.key} initial={s} />
+            ))}
+          </div>
+        </TabsContent>
         <TabsContent value="reach" className="mt-6">
           <ReachManager initial={data.reach} />
         </TabsContent>
-      </Tabs>
+        <TabsContent value="customers" className="mt-6">
+          <CustomersManager initial={data.customers} />
+        </TabsContent>
+      </UrlTabs>
     </div>
   );
 }

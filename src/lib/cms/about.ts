@@ -2,12 +2,16 @@ import { connectDB } from "@/lib/db";
 import {
   ABOUT_PAGE_ID,
   AboutPage,
+  AboutSubPage,
+  type AboutSubPageSlug,
+  type AboutSubPageStatus,
   AffiliatedBusiness,
   Credential,
   type CredentialType,
   HistoryEntry,
   LeadershipMember,
   type LeadershipType,
+  type SectionMode,
 } from "@/models";
 import { type Locale, localize } from "./localize";
 
@@ -27,23 +31,17 @@ export interface AboutPageData {
   vision: string;
   mission: string;
   values: AboutValueItem[];
+  // /about/business sections
   coreBusinessTitle: string;
   coreBusinessDescription: string;
   affiliatedBusinessTitle: string;
   affiliatedBusinessDescription: string;
-  // Title overrides (empty string → caller should fall back to i18n)
-  whoWeAreTitle: string;
-  leadershipTitle: string;
-  historyTitle: string;
-  businessTitle: string;
-  credentialsTitle: string;
-  // Label overrides
   holdingStructureLabel: string;
   holdingGroupLabel: string;
+  holdingDivisions: HoldingDivisionData[];
+  // /about/leadership section labels
   boardOfDirectorsLabel: string;
   boardOfCommissionersLabel: string;
-  // Holding diagram divisions — when non-empty, replaces hardcoded epc/trading/manufacturing
-  holdingDivisions: HoldingDivisionData[];
 }
 
 const EMPTY_ABOUT: AboutPageData = {
@@ -56,16 +54,11 @@ const EMPTY_ABOUT: AboutPageData = {
   coreBusinessDescription: "",
   affiliatedBusinessTitle: "",
   affiliatedBusinessDescription: "",
-  whoWeAreTitle: "",
-  leadershipTitle: "",
-  historyTitle: "",
-  businessTitle: "",
-  credentialsTitle: "",
   holdingStructureLabel: "",
   holdingGroupLabel: "",
+  holdingDivisions: [],
   boardOfDirectorsLabel: "",
   boardOfCommissionersLabel: "",
-  holdingDivisions: [],
 };
 
 const EMPTY_LOCALIZED = { id: "", en: "" };
@@ -97,11 +90,6 @@ export async function getAboutPage(locale: Locale): Promise<AboutPageData> {
         coreBusinessDescription: doc.coreBusinessDescription ?? EMPTY_LOCALIZED,
         affiliatedBusinessTitle: doc.affiliatedBusinessTitle ?? EMPTY_LOCALIZED,
         affiliatedBusinessDescription: doc.affiliatedBusinessDescription ?? EMPTY_LOCALIZED,
-        whoWeAreTitle: doc.whoWeAreTitle ?? EMPTY_LOCALIZED,
-        leadershipTitle: doc.leadershipTitle ?? EMPTY_LOCALIZED,
-        historyTitle: doc.historyTitle ?? EMPTY_LOCALIZED,
-        businessTitle: doc.businessTitle ?? EMPTY_LOCALIZED,
-        credentialsTitle: doc.credentialsTitle ?? EMPTY_LOCALIZED,
         holdingStructureLabel: doc.holdingStructureLabel ?? EMPTY_LOCALIZED,
         holdingGroupLabel: doc.holdingGroupLabel ?? EMPTY_LOCALIZED,
         boardOfDirectorsLabel: doc.boardOfDirectorsLabel ?? EMPTY_LOCALIZED,
@@ -236,4 +224,74 @@ export async function getCredentials(
       locale,
     ),
   );
+}
+
+// ─── About sub-page metadata (status + hero + body + modes) ─────────────────
+export interface AboutSubPageMeta {
+  status: AboutSubPageStatus;
+  heroMode: SectionMode;
+  bodyMode: SectionMode;
+  hero: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+  };
+  body: {
+    heading: string;
+    content: string;
+  };
+}
+
+const EMPTY_META: AboutSubPageMeta = {
+  status: "published",
+  heroMode: "default",
+  bodyMode: "default",
+  hero: { eyebrow: "", title: "", subtitle: "" },
+  body: { heading: "", content: "" },
+};
+
+export async function getAboutSubPage(
+  slug: AboutSubPageSlug,
+  locale: Locale,
+): Promise<AboutSubPageMeta> {
+  await connectDB();
+  const subDoc = await AboutSubPage.findById(slug).lean<{
+    _id?: string;
+    status?: AboutSubPageStatus;
+    heroMode?: SectionMode;
+    bodyMode?: SectionMode;
+    hero?: { eyebrow?: unknown; title?: unknown; subtitle?: unknown };
+    body?: { heading?: unknown; content?: unknown };
+  } | null>();
+
+  if (!subDoc) return EMPTY_META;
+
+  const localized = localize(
+    {
+      eyebrow: subDoc.hero?.eyebrow ?? { id: "", en: "" },
+      title: subDoc.hero?.title ?? { id: "", en: "" },
+      subtitle: subDoc.hero?.subtitle ?? { id: "", en: "" },
+      heading: subDoc.body?.heading ?? { id: "", en: "" },
+      content: subDoc.body?.content ?? { id: "", en: "" },
+    },
+    locale,
+  ) as {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    heading: string;
+    content: string;
+  };
+
+  return {
+    status: subDoc.status ?? "published",
+    heroMode: subDoc.heroMode ?? "default",
+    bodyMode: subDoc.bodyMode ?? "default",
+    hero: {
+      eyebrow: localized.eyebrow,
+      title: localized.title,
+      subtitle: localized.subtitle,
+    },
+    body: { heading: localized.heading, content: localized.content },
+  };
 }

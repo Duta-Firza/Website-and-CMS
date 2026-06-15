@@ -4,9 +4,13 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
+import { sendInquiryEmail } from "@/lib/email";
 import {
   ABOUT_PAGE_ID,
+  ABOUT_SUB_PAGE_SLUGS,
+  ABOUT_SUB_PAGE_STATUSES,
   AboutPage,
+  AboutSubPage,
   AffiliatedBusiness,
   CREDENTIAL_TYPES,
   Credential,
@@ -14,16 +18,24 @@ import {
   HistoryEntry,
   HOME_HERO_ID,
   HomeHero,
+  INQUIRY_SOURCES,
+  INQUIRY_STATUSES,
+  Inquiry,
   LEADERSHIP_TYPES,
   LeadershipMember,
   Partner,
   PROJECT_CATEGORIES,
+  Product,
   Project,
   ReachPoint,
+  SECTION_MODES,
   SITE_SETTINGS_ID,
   SiteSettings,
   SOLUTION_KEYS,
+  SOLUTION_PAGE_SLUGS,
+  SOLUTION_PAGE_STATUSES,
   Solution,
+  SolutionPage,
   Stat,
 } from "@/models";
 import { STAT_ICONS } from "@/models/constants";
@@ -233,6 +245,7 @@ const customerSchema = z.object({
   logoUrl: z.string().min(1),
   order: z.number().int().default(0),
   invertOnDark: z.boolean().default(false),
+  isActive: z.boolean().default(true),
 });
 
 export async function upsertCustomer(input: z.infer<typeof customerSchema>): Promise<ActionResult> {
@@ -254,6 +267,18 @@ export async function deleteCustomer(id: string): Promise<ActionResult> {
     await requireAdmin();
     await connectDB();
     await Customer.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function toggleCustomerActive(id: string, value: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Customer.findByIdAndUpdate(id, { isActive: value });
     bust();
     return { ok: true };
   } catch (e) {
@@ -335,31 +360,12 @@ const aboutValueItemSchema = z.object({
   description: localizedSchema,
 });
 
-const holdingDivisionSchema = z.object({
-  key: z.string().min(1),
-  label: localizedSchema.default({ id: "", en: "" }),
-});
-
 const aboutPageSchema = z.object({
   intro: localizedSchema,
   videoUrl: z.string().default(""),
   vision: localizedSchema,
   mission: localizedSchema,
   values: z.array(aboutValueItemSchema).default([]),
-  coreBusinessTitle: localizedSchema,
-  coreBusinessDescription: localizedSchema,
-  affiliatedBusinessTitle: localizedSchema,
-  affiliatedBusinessDescription: localizedSchema,
-  whoWeAreTitle: localizedSchema.default({ id: "", en: "" }),
-  leadershipTitle: localizedSchema.default({ id: "", en: "" }),
-  historyTitle: localizedSchema.default({ id: "", en: "" }),
-  businessTitle: localizedSchema.default({ id: "", en: "" }),
-  credentialsTitle: localizedSchema.default({ id: "", en: "" }),
-  holdingStructureLabel: localizedSchema.default({ id: "", en: "" }),
-  holdingGroupLabel: localizedSchema.default({ id: "", en: "" }),
-  boardOfDirectorsLabel: localizedSchema.default({ id: "", en: "" }),
-  boardOfCommissionersLabel: localizedSchema.default({ id: "", en: "" }),
-  holdingDivisions: z.array(holdingDivisionSchema).default([]),
 });
 
 export async function updateAboutPage(
@@ -389,6 +395,100 @@ export async function updateAboutValues(
       { values: parsed },
       { upsert: true, new: true },
     );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── About Page — per-sub-page focused updates ───────────────────────────────
+// These actions touch only the sub-page-specific fields on the AboutPage
+// singleton, so the per-page admin tabs (leadership labels, business sections,
+// holding diagram) can save without round-tripping the whole AboutForm payload.
+
+const leadershipLabelFields = z.enum(["boardOfDirectorsLabel", "boardOfCommissionersLabel"]);
+
+export async function updateLeadershipLabel(
+  field: z.infer<typeof leadershipLabelFields>,
+  value: z.infer<typeof localizedSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsedField = leadershipLabelFields.parse(field);
+    const parsedValue = localizedSchema.parse(value);
+    await connectDB();
+    await AboutPage.findByIdAndUpdate(
+      ABOUT_PAGE_ID,
+      { [parsedField]: parsedValue },
+      { upsert: true, new: true },
+    );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+const coreBusinessSchema = z.object({
+  coreBusinessTitle: localizedSchema,
+  coreBusinessDescription: localizedSchema,
+});
+
+export async function updateCoreBusinessSection(
+  input: z.infer<typeof coreBusinessSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = coreBusinessSchema.parse(input);
+    await connectDB();
+    await AboutPage.findByIdAndUpdate(ABOUT_PAGE_ID, { $set: parsed }, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+const affiliatedHeaderSchema = z.object({
+  affiliatedBusinessTitle: localizedSchema,
+  affiliatedBusinessDescription: localizedSchema,
+});
+
+export async function updateAffiliatedBusinessSection(
+  input: z.infer<typeof affiliatedHeaderSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = affiliatedHeaderSchema.parse(input);
+    await connectDB();
+    await AboutPage.findByIdAndUpdate(ABOUT_PAGE_ID, { $set: parsed }, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+const holdingDivisionSchema = z.object({
+  key: z.string().min(1),
+  label: localizedSchema,
+});
+
+const aboutHoldingSchema = z.object({
+  holdingStructureLabel: localizedSchema,
+  holdingGroupLabel: localizedSchema,
+  holdingDivisions: z.array(holdingDivisionSchema).default([]),
+});
+
+export async function updateAboutHolding(
+  input: z.infer<typeof aboutHoldingSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = aboutHoldingSchema.parse(input);
+    await connectDB();
+    await AboutPage.findByIdAndUpdate(ABOUT_PAGE_ID, { $set: parsed }, { upsert: true, new: true });
     bust();
     return { ok: true };
   } catch (e) {
@@ -774,6 +874,310 @@ export async function toggleProjectHighlighted(id: string, value: boolean): Prom
     const parsed = toggleSchema.parse({ id, value });
     await connectDB();
     await Project.findByIdAndUpdate(parsed.id, { isHighlighted: parsed.value });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Solution Pages ─────────────────────────────────────────────────────────
+const formFieldOptionSchema = z.object({
+  value: z.string(),
+  label: localizedSchema,
+});
+
+const formFieldSchema = z.object({
+  key: z.string().min(1),
+  label: localizedSchema,
+  placeholder: localizedSchema,
+  type: z.enum(["text", "email", "tel", "textarea", "number", "select"]),
+  required: z.boolean().default(false),
+  order: z.number().int().default(0),
+  options: z.array(formFieldOptionSchema).default([]),
+});
+
+const formSettingsSchema = z.object({
+  enabled: z.boolean().default(true),
+  submitLabel: localizedSchema,
+  successMessage: localizedSchema,
+  fields: z.array(formFieldSchema).default([]),
+});
+
+const solutionPageContentSchema = z.object({
+  heroMode: z.enum(SECTION_MODES).default("default"),
+  bodyMode: z.enum(SECTION_MODES).default("default"),
+  hero: z.object({
+    eyebrow: localizedSchema,
+    title: localizedSchema,
+    subtitle: localizedSchema,
+    backgroundImage: z.string().default(""),
+  }),
+  body: z.object({
+    heading: localizedSchema,
+    content: localizedSchema,
+  }),
+  inquiryFormEnabled: z.boolean().default(true),
+  formSettings: formSettingsSchema.default({
+    enabled: true,
+    submitLabel: { id: "", en: "" },
+    successMessage: { id: "", en: "" },
+    fields: [],
+  }),
+  comingSoonMessage: localizedSchema,
+  status: z.enum(SOLUTION_PAGE_STATUSES),
+});
+
+export async function updateSolutionPage(
+  slug: string,
+  input: z.infer<typeof solutionPageContentSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsedSlug = z.enum(SOLUTION_PAGE_SLUGS).parse(slug);
+    const parsed = solutionPageContentSchema.parse(input);
+    await connectDB();
+    await SolutionPage.findByIdAndUpdate(parsedSlug, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function setSolutionPageStatus(slug: string, status: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsedSlug = z.enum(SOLUTION_PAGE_SLUGS).parse(slug);
+    const parsedStatus = z.enum(SOLUTION_PAGE_STATUSES).parse(status);
+    await connectDB();
+    await SolutionPage.findByIdAndUpdate(
+      parsedSlug,
+      { status: parsedStatus },
+      { upsert: true, new: true },
+    );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── About Sub-Pages ────────────────────────────────────────────────────────
+const aboutSubPageContentSchema = z.object({
+  status: z.enum(ABOUT_SUB_PAGE_STATUSES),
+  heroMode: z.enum(SECTION_MODES).default("default"),
+  bodyMode: z.enum(SECTION_MODES).default("default"),
+  hero: z.object({
+    eyebrow: localizedSchema,
+    title: localizedSchema,
+    subtitle: localizedSchema,
+  }),
+  body: z.object({
+    heading: localizedSchema,
+    content: localizedSchema,
+  }),
+});
+
+export async function updateAboutSubPage(
+  slug: string,
+  input: z.infer<typeof aboutSubPageContentSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsedSlug = z.enum(ABOUT_SUB_PAGE_SLUGS).parse(slug);
+    const parsed = aboutSubPageContentSchema.parse(input);
+    await connectDB();
+    await AboutSubPage.findByIdAndUpdate(parsedSlug, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Products ────────────────────────────────────────────────────────────────
+const principleEntryZod = z.object({
+  partnerId: z.string().nullable().default(null),
+  name: z.string().default(""),
+  logoUrl: z.string().default(""),
+});
+
+const productItemZod = z.object({
+  name: localizedSchema,
+  photos: z.array(z.string()).default([]),
+});
+
+const productSchema = z.object({
+  id: z.string().optional(),
+  principles: z.array(principleEntryZod).default([]),
+  origin: z.string().default(""),
+  productType: localizedSchema,
+  skuCount: z.number().int().nonnegative().default(0),
+  partnershipStart: z.number().int().nullable().default(null),
+  items: z.array(productItemZod).default([]),
+  order: z.number().int().default(0),
+  isActive: z.boolean().default(true),
+});
+
+export async function upsertProduct(input: z.infer<typeof productSchema>): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { id, ...data } = productSchema.parse(input);
+    await connectDB();
+    if (id) {
+      // Clear legacy single-principle fields when writing the new shape so they
+      // don't shadow the new principles[]/items[] in subsequent reads.
+      await Product.findByIdAndUpdate(id, {
+        ...data,
+        partnerId: null,
+        principleOverride: { name: "", logoUrl: "", origin: "" },
+        photos: [],
+      });
+    } else {
+      await Product.create(data);
+    }
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteProduct(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Product.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderProducts(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await reorderDocs(Product, reorderSchema.parse(ids));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function toggleProductActive(id: string, value: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = toggleSchema.parse({ id, value });
+    await connectDB();
+    await Product.findByIdAndUpdate(parsed.id, { isActive: parsed.value });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Inquiry ─────────────────────────────────────────────────────────────────
+const inquiryPayloadSchema = z.object({
+  source: z.enum(INQUIRY_SOURCES),
+  values: z.record(z.string(), z.string()),
+});
+
+/**
+ * Public-facing — no requireAdmin. Persists the inquiry first; email send
+ * runs after but failure is not fatal (DB is the source of truth).
+ *
+ * Accepts a flat `values` map keyed by field name. Known system keys
+ * (firstName, email, etc.) land in their dedicated columns; anything else
+ * ends up in `customFieldValues`.
+ */
+export async function submitInquiry(
+  input: z.infer<typeof inquiryPayloadSchema>,
+): Promise<ActionResult> {
+  try {
+    const parsed = inquiryPayloadSchema.parse(input);
+    const { splitInquiryPayload, SYSTEM_FIELD_KEYS } = await import("./form-fields");
+    const { system, custom } = splitInquiryPayload(parsed.values);
+    if (!system.firstName?.trim()) {
+      return { ok: false, error: "First name is required" };
+    }
+    if (!system.email?.trim()) {
+      return { ok: false, error: "Email is required" };
+    }
+    if (!system.company?.trim()) {
+      return { ok: false, error: "Company is required" };
+    }
+    if (!system.message?.trim()) {
+      return { ok: false, error: "Message is required" };
+    }
+    const doc = {
+      source: parsed.source,
+      firstName: system.firstName.trim(),
+      lastName: (system.lastName ?? "").trim(),
+      email: system.email.trim(),
+      company: system.company.trim(),
+      phone: (system.phone ?? "").trim(),
+      websiteUrl: (system.websiteUrl ?? "").trim(),
+      country: (system.country ?? "").trim(),
+      message: system.message.trim(),
+      customFieldValues: custom,
+    };
+    // Touch SYSTEM_FIELD_KEYS to keep tree-shaker honest in case helper changes.
+    void SYSTEM_FIELD_KEYS;
+    await connectDB();
+    await Inquiry.create(doc);
+    try {
+      const fullName = [doc.firstName, doc.lastName].filter(Boolean).join(" ");
+      await sendInquiryEmail({
+        name: fullName,
+        company: doc.company,
+        email: doc.email,
+        phone: doc.phone || undefined,
+        message: doc.message,
+        source: parsed.source,
+      });
+    } catch (emailErr) {
+      console.error("[inquiry] email send failed", emailErr);
+    }
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function updateInquiryStatus(
+  id: string,
+  status: string,
+  notes?: string,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = z
+      .object({
+        id: z.string().min(1),
+        status: z.enum(INQUIRY_STATUSES),
+        notes: z.string().max(2000).optional(),
+      })
+      .parse({ id, status, notes });
+    await connectDB();
+    const update: Record<string, unknown> = { status: parsed.status };
+    if (parsed.notes !== undefined) update.notes = parsed.notes;
+    await Inquiry.findByIdAndUpdate(parsed.id, update);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteInquiry(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Inquiry.findByIdAndDelete(id);
     bust();
     return { ok: true };
   } catch (e) {

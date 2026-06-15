@@ -1,13 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Eye, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { DetailDialog } from "@/components/admin/detail-dialog";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
@@ -79,6 +80,7 @@ export function PartnersManager({ initial }: { initial: PartnerRow[] }) {
   const t = useTranslations("Admin");
   const locale = useLocale();
   const [editing, setEditing] = useState<FormValues | null>(null);
+  const [viewing, setViewing] = useState<PartnerRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [items, setItems] = useState(initial);
 
@@ -102,14 +104,14 @@ export function PartnersManager({ initial }: { initial: PartnerRow[] }) {
 
   return (
     <>
-      <div className="flex justify-end">
+      <div className="flex items-center justify-end gap-3">
         <Button onClick={() => setEditing({ ...empty, order: items.length + 1 })}>
           <Plus className="mr-2 h-4 w-4" />
           {t("add")}
         </Button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border bg-card">
+      <div className="mt-4 overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -174,6 +176,14 @@ export function PartnersManager({ initial }: { initial: PartnerRow[] }) {
                           <Button
                             variant="ghost"
                             size="icon-sm"
+                            onClick={() => setViewing(p)}
+                            aria-label={t("common.view")}
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
                             onClick={() => setEditing({ ...p })}
                             aria-label={t("edit")}
                           >
@@ -208,6 +218,33 @@ export function PartnersManager({ initial }: { initial: PartnerRow[] }) {
           }}
         />
       )}
+
+      <DetailDialog
+        open={viewing !== null}
+        onClose={() => setViewing(null)}
+        title={viewing?.name ?? ""}
+        fields={
+          viewing
+            ? [
+                { label: t("common.logo"), value: viewing.logoUrl, type: "image" },
+                { label: t("common.name"), value: viewing.name },
+                {
+                  label: t("common.summary"),
+                  value: viewing.summary,
+                  type: "localizedLongtext",
+                },
+                { label: t("common.website"), value: viewing.websiteUrl, type: "url" },
+                { label: t("common.active"), value: viewing.isActive, type: "boolean" },
+                {
+                  label: t("fields.invertOnDark"),
+                  value: viewing.invertOnDark,
+                  type: "boolean",
+                },
+                { label: t("common.order"), value: viewing.order },
+              ]
+            : []
+        }
+      />
 
       <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>

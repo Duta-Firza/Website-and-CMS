@@ -1,11 +1,14 @@
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { AffiliatedBusinessCard } from "@/components/public/about/affiliated-business-card";
 import { HoldingStructure } from "@/components/public/about/holding-structure";
+import { ComingSoonPage } from "@/components/public/coming-soon-page";
 import { SectionIndex } from "@/components/public/landing/section-index";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
-import { getAboutPage, getAffiliatedBusinesses } from "@/lib/cms/about";
+import { getAboutPage, getAboutSubPage, getAffiliatedBusinesses } from "@/lib/cms/about";
 import type { Locale } from "@/lib/cms/localize";
+import { resolveBody, resolveHero } from "@/lib/cms/section-mode";
 
 interface PageParams {
   locale: string;
@@ -21,10 +24,39 @@ export default async function BusinessPage({ params }: { params: Promise<PagePar
   const t = await getTranslations("SectionTitles");
   const tNav = await getTranslations("Nav");
   const tAbout = await getTranslations("About");
-  const [about, businesses] = await Promise.all([
+  const [about, businesses, meta] = await Promise.all([
     getAboutPage(safeLocale),
     getAffiliatedBusinesses(safeLocale),
+    getAboutSubPage("business", safeLocale),
   ]);
+
+  if (meta.status === "hidden") notFound();
+
+  const hero = resolveHero({
+    mode: meta.heroMode,
+    hero: meta.hero,
+    defaults: { eyebrow: t("aboutEyebrow"), title: t("businessTitle"), subtitle: "" },
+  });
+  const body = resolveBody({
+    mode: meta.bodyMode,
+    body: meta.body,
+    defaults: { heading: "", content: "" },
+  });
+
+  if (meta.status === "comingSoon") {
+    return (
+      <>
+        {hero && (
+          <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />
+        )}
+        <ComingSoonPage
+          eyebrow={hero?.eyebrow}
+          title={body?.heading || undefined}
+          message={body?.content || undefined}
+        />
+      </>
+    );
+  }
 
   const fallbackDivisions = [
     { key: "epc", label: tNav("epc") },
@@ -45,10 +77,22 @@ export default async function BusinessPage({ params }: { params: Promise<PagePar
   return (
     <div className="relative">
       <SectionIndex value="04" />
-      <PageHeader
-        eyebrow={t("aboutEyebrow")}
-        title={about.businessTitle?.trim() || t("businessTitle")}
-      />
+      {hero && <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />}
+
+      {body && (body.heading || body.content) && (
+        <ScrollReveal className="mb-12 max-w-3xl space-y-3">
+          {body.heading && (
+            <h2 className="text-2xl font-semibold tracking-tight text-brand-deep dark:text-foreground">
+              {body.heading}
+            </h2>
+          )}
+          {body.content && (
+            <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground">
+              {body.content}
+            </p>
+          )}
+        </ScrollReveal>
+      )}
 
       {about.coreBusinessDescription && (
         <ScrollReveal className="mb-12">

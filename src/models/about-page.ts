@@ -22,33 +22,31 @@ const holdingDivisionSchema = new Schema(
 const aboutPageSchema = new Schema(
   {
     _id: { type: String, default: ABOUT_PAGE_ID },
+    // /about (Who We Are) content
     intro: localizedStringOptional,
     videoUrl: { type: String, default: "" },
     vision: localizedStringOptional,
     mission: localizedStringOptional,
     values: { type: [valueItemSchema], default: [] },
+    // /about/business sections
     coreBusinessTitle: localizedStringOptional,
     coreBusinessDescription: localizedStringOptional,
     affiliatedBusinessTitle: localizedStringOptional,
     affiliatedBusinessDescription: localizedStringOptional,
-    // Page title overrides — when non-empty, render in place of i18n default
-    whoWeAreTitle: localizedStringOptional,
-    leadershipTitle: localizedStringOptional,
-    historyTitle: localizedStringOptional,
-    businessTitle: localizedStringOptional,
-    credentialsTitle: localizedStringOptional,
-    // Business-page label overrides
     holdingStructureLabel: localizedStringOptional,
     holdingGroupLabel: localizedStringOptional,
-    // Leadership-page section labels
+    holdingDivisions: { type: [holdingDivisionSchema], default: [] },
+    // /about/leadership section labels
     boardOfDirectorsLabel: localizedStringOptional,
     boardOfCommissionersLabel: localizedStringOptional,
-    // Holding diagram divisions (replaces hardcoded epc/trading/manufacturing)
-    holdingDivisions: { type: [holdingDivisionSchema], default: [] },
   },
   { timestamps: true, ...stripVersion },
 );
 
 export type AboutPageDoc = InferSchemaType<typeof aboutPageSchema>;
+
+if (process.env.NODE_ENV !== "production" && models.AboutPage) {
+  delete models.AboutPage;
+}
 
 export const AboutPage = models.AboutPage ?? model("AboutPage", aboutPageSchema);

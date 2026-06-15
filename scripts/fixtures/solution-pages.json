@@ -1,0 +1,167 @@
+[
+  {
+    "_id": "solutions",
+    "status": "published",
+    "heroMode": "custom",
+    "bodyMode": "custom",
+    "hero": {
+      "eyebrow": { "id": "Solusi", "en": "Solutions" },
+      "title": {
+        "id": "Solusi terintegrasi di rantai nilai energi",
+        "en": "Integrated solutions across the energy value chain"
+      },
+      "subtitle": {
+        "id": "Tiga lini bisnis yang bersama-sama mencakup trading, manufaktur, dan delivery EPC penuh untuk sektor energi Indonesia.",
+        "en": "Three business lines that together cover trading, manufacturing, and full EPC delivery for Indonesia's energy sector."
+      },
+      "backgroundImage": ""
+    },
+    "body": {
+      "heading": {
+        "id": "Tiga lini bisnis, satu standar performa",
+        "en": "Three business lines, one performance standard"
+      },
+      "content": {
+        "id": "Sejak 1979, Duta Firza menghadirkan instrumentasi kelas dunia, perakitan lokal yang patuh regulasi, dan eksekusi EPC end-to-end untuk sektor minyak, gas, dan energi Indonesia.",
+        "en": "Since 1979, Duta Firza has delivered world-class instrumentation, locally-compliant assembly, and end-to-end EPC execution for Indonesia's oil, gas, and energy sectors."
+      }
+    },
+    "inquiryFormEnabled": false,
+    "comingSoonMessage": { "id": "", "en": "" }
+  },
+  {
+    "_id": "trading",
+    "status": "published",
+    "heroMode": "custom",
+    "bodyMode": "custom",
+    "hero": {
+      "eyebrow": { "id": "Solusi", "en": "Solutions" },
+      "title": { "id": "Trading", "en": "Trading" },
+      "subtitle": {
+        "id": "Pilar teknis pertama kami — kemitraan eksklusif jangka panjang dengan produsen kelas dunia dari Amerika, Jepang, dan Korea.",
+        "en": "Our original technical pillar — long-term exclusive partnerships with world-class manufacturers from the United States, Japan, and Korea."
+      },
+      "backgroundImage": ""
+    },
+    "body": {
+      "heading": {
+        "id": "Standar emas untuk industri minyak, gas, dan energi",
+        "en": "The gold standard for oil, gas, and energy"
+      },
+      "content": {
+        "id": "Trading adalah lini bisnis inti pertama kami dan tetap menjadi pilar keahlian teknis hingga hari ini. Portofolio kurasi kami mewakili standar emas untuk industri minyak, gas, dan energi — dari pressure gauges presisi Ashcroft, smart transmitters Autrol, sampai integrated metering Samil dan temperature elements Yamari.",
+        "en": "Trading was our first core business line and it remains a pillar of our technical expertise today. Our curated portfolio represents the gold standard for the oil, gas, and energy industries — from Ashcroft precision pressure gauges and Autrol smart transmitters to Samil integrated metering systems and Yamari temperature elements."
+      }
+    },
+    "inquiryFormEnabled": true,
+    "comingSoonMessage": { "id": "", "en": "" }
+  },
+  {
+    "_id": "trading-partners",
+    "status": "published",
+    "heroMode": "custom",
+    "bodyMode": "custom",
+    "hero": {
+      "eyebrow": { "id": "Trading", "en": "Trading" },
+      "title": { "id": "Mitra Principal", "en": "Our Partners" },
+      "subtitle": {
+        "id": "Produsen kelas dunia yang kami wakili di Indonesia.",
+        "en": "World-class manufacturers we represent across Indonesia."
+      },
+      "backgroundImage": ""
+    },
+    "body": {
+      "heading": {
+        "id": "Kemitraan eksklusif yang berlangsung puluhan tahun",
+        "en": "Decade-long exclusive partnerships"
+      },
+      "content": {
+        "id": "Setiap principal di portofolio kami dipilih karena rekam jejak kualitasnya dan dukungan teknis berkelanjutan. Mulai dari kemitraan Masoneilan di 1985, Ashcroft sebagai sole agent di 2010, Yamari di 2014, hingga Samil, Autrol, Evoqua, Huawei Digital Power, dan lainnya.",
+        "en": "Every principal in our portfolio is chosen for its quality track record and ongoing technical support. From the 1985 Masoneilan partnership and the 2010 Ashcroft sole-agent appointment, through Yamari (2014), Samil and Autrol (2019), Evoqua, Huawei Digital Power, and more."
+      }
+    },
+    "inquiryFormEnabled": false,
+    "comingSoonMessage": { "id": "", "en": "" }
+  },
+  {
+    "_id": "trading-products",
+    "status": "published",
+    "heroMode": "custom",
+    "bodyMode": "custom",
+    "hero": {
+      "eyebrow": { "id": "Trading", "en": "Trading" },
+      "title": { "id": "Produk Kami", "en": "Our Products" },
+      "subtitle": {
+        "id": "Instrumentasi presisi dan solusi kontrol dari principal terpercaya — kalibrasi, dukungan teknis, dan ketersediaan stok lokal di seluruh portofolio.",
+        "en": "Precision instrumentation and control solutions from trusted principals — calibration, technical support, and local stock availability across the portfolio."
+      },
+      "backgroundImage": ""
+    },
+    "body": {
+      "heading": {
+        "id": "Pressure, temperature, flow, dan level — semua dalam satu portofolio",
+        "en": "Pressure, temperature, flow, and level — all under one portfolio"
+      },
+      "content": {
+        "id": "Lebih dari 130 SKU lintas pressure gauges, transmitters, temperature elements, flow elements, strainers, dan valves. Tersedia stok lokal di gudang Sentul untuk pengiriman cepat ke seluruh Indonesia.",
+        "en": "More than 130 SKUs spanning pressure gauges, transmitters, temperature elements, flow elements, strainers, and valves. Local stock available at our Sentul warehouse for rapid nationwide delivery."
+      }
+    },
+    "inquiryFormEnabled": false,
+    "comingSoonMessage": { "id": "", "en": "" }
+  },
+  {
+    "_id": "manufacturing",
+    "status": "published",
+    "heroMode": "custom",
+    "bodyMode": "custom",
+    "hero": {
+      "eyebrow": { "id": "Solusi", "en": "Solutions" },
+      "title": { "id": "Manufaktur", "en": "Manufacturing" },
+      "subtitle": {
+        "id": "Perakitan lokal yang patuh regulasi di Sentul, Jawa Barat — inventaris kuat, siklus pengiriman tepat waktu, dan kepatuhan TKDN.",
+        "en": "Locally-compliant assembly in Sentul, West Java — robust inventory, timely delivery cycles, and full TKDN compliance."
+      },
+      "backgroundImage": ""
+    },
+    "body": {
+      "heading": {
+        "id": "Fasilitas perakitan dedicated untuk sektor energi Indonesia",
+        "en": "A dedicated assembly facility for Indonesia's energy sector"
+      },
+      "content": {
+        "id": "Untuk melayani sektor energi Indonesia dengan lebih baik, PT Duta Firza Technologies memperluas kapabilitas pada 2010 dengan meluncurkan fasilitas perakitan dedicated di Sentul, Jawa Barat. Langkah strategis ini memastikan kami menjaga inventaris lokal yang kuat dan siklus pengiriman yang tepat waktu, sambil sepenuhnya mematuhi regulasi nasional untuk mendukung pertumbuhan industri domestik Indonesia.",
+        "en": "To better serve the Indonesian energy sector, PT Duta Firza Technologies expanded its capabilities in 2010 by launching a dedicated assembly facility in Sentul, West Java. This strategic move ensures we maintain a robust local inventory and timely delivery cycles, while fully complying with national regulations to support Indonesia's domestic industrial growth."
+      }
+    },
+    "inquiryFormEnabled": true,
+    "comingSoonMessage": { "id": "", "en": "" }
+  },
+  {
+    "_id": "epc",
+    "status": "published",
+    "heroMode": "custom",
+    "bodyMode": "custom",
+    "hero": {
+      "eyebrow": { "id": "Solusi", "en": "Solutions" },
+      "title": { "id": "EPC & Proyek", "en": "EPC & Projects" },
+      "subtitle": {
+        "id": "Rekam jejak EPC dan procurement untuk pemain utama di sektor minyak, gas, energi, dan manufaktur.",
+        "en": "A proven EPC and procurement track record serving leading players across the oil, gas, energy, and manufacturing sectors."
+      },
+      "backgroundImage": ""
+    },
+    "body": {
+      "heading": {
+        "id": "Lebih dari tiga dekade eksekusi EPC",
+        "en": "Three decades of EPC execution"
+      },
+      "content": {
+        "id": "Duta Firza memiliki rekam jejak yang terbukti dalam memberikan layanan EPC dan procurement kepada klien-klien terkemuka di sektor minyak, gas, energi, dan manufaktur. Mulai dari Fuel & LPG Transit Terminal di Labuhan Amuk (1993) hingga RDMP RU-V Balikpapan dan Lotte Chemical LINE Project saat ini, kami menggabungkan kompetensi teknis multidisiplin dengan eksekusi lapangan yang teruji.",
+        "en": "Duta Firza has a proven track record of delivering EPC and procurement services to leading clients across the oil, gas, energy, and manufacturing sectors. From the 1993 Fuel & LPG Transit Terminal at Labuhan Amuk to today's RDMP RU-V Balikpapan and Lotte Chemical LINE Project, we combine multi-disciplinary technical competence with proven field execution."
+      }
+    },
+    "inquiryFormEnabled": false,
+    "comingSoonMessage": { "id": "", "en": "" }
+  }
+]

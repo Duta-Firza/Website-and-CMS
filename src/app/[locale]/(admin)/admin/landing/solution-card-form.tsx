@@ -6,22 +6,14 @@ import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { IconPicker } from "@/components/admin/icon-picker";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { upsertSolution } from "@/lib/cms/actions";
-import { SOLUTION_KEYS, type SolutionKey } from "@/models/constants";
-
-const ICON_OPTIONS = ["Handshake", "Factory", "Wrench", "HardHat", "Box"] as const;
+import { SOLUTION_ICONS, SOLUTION_KEYS, type SolutionKey } from "@/models/constants";
 
 const schema = z.object({
   id: z.string().optional(),
@@ -78,21 +70,11 @@ export function SolutionForm({ initial }: Props) {
           <LocalizedField label="Description" name="description" form={form} multiline />
           <div className="space-y-2">
             <Label>Icon</Label>
-            <Select
+            <IconPicker
               value={watch("iconName")}
-              onValueChange={(v) => setValue("iconName", v ?? "", { shouldDirty: true })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {ICON_OPTIONS.map((icon) => (
-                  <SelectItem key={icon} value={icon}>
-                    {icon}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              icons={SOLUTION_ICONS}
+              onChange={(v) => setValue("iconName", v, { shouldDirty: true })}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor={`href-${initial.key}`}>Link</Label>

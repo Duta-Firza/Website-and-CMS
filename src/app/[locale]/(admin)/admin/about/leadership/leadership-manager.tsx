@@ -1,13 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Eye, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { DetailDialog } from "@/components/admin/detail-dialog";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
@@ -33,13 +34,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -49,6 +43,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { TabsContent } from "@/components/ui/tabs";
 import {
   deleteLeadershipMember,
   reorderLeadership,
@@ -56,7 +51,8 @@ import {
   upsertLeadershipMember,
 } from "@/lib/cms/actions";
 import { LEADERSHIP_TYPES, type LeadershipType } from "@/models/constants";
-import type { LeadershipRow } from "./page";
+import { BoardLabelCard } from "../_components/board-label-card";
+import type { BoardLabels, LeadershipRow } from "./page";
 
 const schema = z.object({
   id: z.string().optional(),
@@ -81,12 +77,18 @@ const empty: FormValues = {
   isActive: true,
 };
 
-export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
+export function LeadershipManager({
+  initial,
+  boardLabels,
+}: {
+  initial: LeadershipRow[];
+  boardLabels: BoardLabels;
+}) {
   const router = useRouter();
   const t = useTranslations("Admin");
-  const tAbout = useTranslations("About");
   const locale = useLocale();
   const [editing, setEditing] = useState<FormValues | null>(null);
+  const [viewing, setViewing] = useState<LeadershipRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [items, setItems] = useState(initial);
 
@@ -124,28 +126,34 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
 
   return (
     <>
-      <MemberTable
-        title={tAbout("boardOfDirectors")}
-        emptyMessage={t("empty.directors")}
-        members={directors}
-        onAdd={() => setEditing({ ...empty, type: "director", order: directors.length + 1 })}
-        onEdit={(m) => setEditing({ ...m })}
-        onDelete={(id) => setDeleteId(id)}
-        onReorder={handleReorder("director")}
-        onToggleActive={handleToggleActive}
-        addLabel={t("add")}
-        activeLabel={t("common.active")}
-        locale={locale}
-      />
-
-      <div className="mt-8">
+      <TabsContent value="director" className="mt-6 space-y-6">
+        <BoardLabelCard field="boardOfDirectorsLabel" initial={boardLabels.boardOfDirectorsLabel} />
         <MemberTable
-          title={tAbout("boardOfCommissioners")}
+          emptyMessage={t("empty.directors")}
+          members={directors}
+          onAdd={() => setEditing({ ...empty, type: "director", order: directors.length + 1 })}
+          onView={(m) => setViewing(m)}
+          onEdit={(m) => setEditing({ ...m })}
+          onDelete={(id) => setDeleteId(id)}
+          onReorder={handleReorder("director")}
+          onToggleActive={handleToggleActive}
+          addLabel={t("add")}
+          activeLabel={t("common.active")}
+          locale={locale}
+        />
+      </TabsContent>
+      <TabsContent value="commissioner" className="mt-6 space-y-6">
+        <BoardLabelCard
+          field="boardOfCommissionersLabel"
+          initial={boardLabels.boardOfCommissionersLabel}
+        />
+        <MemberTable
           emptyMessage={t("empty.commissioners")}
           members={commissioners}
           onAdd={() =>
             setEditing({ ...empty, type: "commissioner", order: commissioners.length + 1 })
           }
+          onView={(m) => setViewing(m)}
           onEdit={(m) => setEditing({ ...m })}
           onDelete={(id) => setDeleteId(id)}
           onReorder={handleReorder("commissioner")}
@@ -154,7 +162,7 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
           activeLabel={t("common.active")}
           locale={locale}
         />
-      </div>
+      </TabsContent>
 
       {editing && (
         <LeadershipDialog
@@ -166,6 +174,29 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
           }}
         />
       )}
+
+      <DetailDialog
+        open={viewing !== null}
+        onClose={() => setViewing(null)}
+        title={viewing?.name ?? ""}
+        fields={
+          viewing
+            ? [
+                { label: t("common.photo"), value: viewing.photoUrl, type: "image" },
+                { label: t("common.name"), value: viewing.name },
+                {
+                  label: t("fields.titlePosition"),
+                  value: viewing.title,
+                  type: "localized",
+                },
+                { label: t("common.bio"), value: viewing.bio, type: "localizedLongtext" },
+                { label: t("common.type"), value: t(`nouns.${viewing.type}`) },
+                { label: t("common.active"), value: viewing.isActive, type: "boolean" },
+                { label: t("common.order"), value: viewing.order },
+              ]
+            : []
+        }
+      />
 
       <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
@@ -196,10 +227,10 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
 }
 
 function MemberTable({
-  title,
   emptyMessage,
   members,
   onAdd,
+  onView,
   onEdit,
   onDelete,
   onReorder,
@@ -208,10 +239,10 @@ function MemberTable({
   activeLabel,
   locale,
 }: {
-  title: string;
   emptyMessage: string;
   members: LeadershipRow[];
   onAdd: () => void;
+  onView: (m: LeadershipRow) => void;
   onEdit: (m: LeadershipRow) => void;
   onDelete: (id: string) => void;
   onReorder: (ids: string[]) => void;
@@ -222,11 +253,8 @@ function MemberTable({
 }) {
   const tCol = useTranslations("Admin.common");
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-deep dark:text-foreground">
-          {title}
-        </h3>
+    <div className="space-y-4">
+      <div className="flex items-center justify-end gap-3">
         <Button onClick={onAdd} size="sm">
           <Plus className="mr-2 h-4 w-4" />
           {addLabel}
@@ -282,6 +310,9 @@ function MemberTable({
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon-sm" onClick={() => onView(m)}>
+                            <Eye className="h-3.5 w-3.5" />
+                          </Button>
                           <Button variant="ghost" size="icon-sm" onClick={() => onEdit(m)}>
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
@@ -337,7 +368,7 @@ function LeadershipDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>
-            {initial.id ? t("edit") : t("add")} {t("nouns.leadershipMember")}
+            {initial.id ? t("edit") : t("add")} {t(`nouns.${initial.type}`)}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -359,33 +390,13 @@ function LeadershipDialog({
               hint={t("hints.leadershipPhoto")}
             />
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label>{t("common.type")}</Label>
-              <Select
-                value={watch("type")}
-                onValueChange={(v) => setValue("type", v as LeadershipType, { shouldDirty: true })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {LEADERSHIP_TYPES.map((c) => (
-                    <SelectItem key={c} value={c} className="capitalize">
-                      {c}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center gap-2 pt-7">
-              <Switch
-                id="lm-active"
-                checked={watch("isActive")}
-                onCheckedChange={(v) => setValue("isActive", v, { shouldDirty: true })}
-              />
-              <Label htmlFor="lm-active">{t("fields.active")}</Label>
-            </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              id="lm-active"
+              checked={watch("isActive")}
+              onCheckedChange={(v) => setValue("isActive", v, { shouldDirty: true })}
+            />
+            <Label htmlFor="lm-active">{t("fields.active")}</Label>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>

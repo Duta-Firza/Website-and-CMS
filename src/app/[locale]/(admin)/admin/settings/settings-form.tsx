@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { StickyFormBar } from "@/components/admin/sticky-form-bar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -49,13 +50,6 @@ export function SettingsForm({ initial }: { initial: FormValues }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="flex justify-end">
-        <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {t("save")}
-        </Button>
-      </div>
-
       <Card>
         <CardHeader>
           <CardTitle>{t("groups.contact")}</CardTitle>
@@ -111,6 +105,13 @@ export function SettingsForm({ initial }: { initial: FormValues }) {
           </div>
         </CardContent>
       </Card>
+
+      <StickyFormBar>
+        <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {t("save")}
+        </Button>
+      </StickyFormBar>
     </form>
   );
 }

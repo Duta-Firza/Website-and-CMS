@@ -149,6 +149,79 @@
     "certificationsEmpty": "Sertifikasi akan muncul di sini setelah ditambahkan.",
     "acknowledgementsEmpty": "Penghargaan akan muncul di sini setelah ditambahkan."
   },
+  "Solutions": {
+    "landing": {
+      "eyebrow": "Solusi",
+      "title": "Solusi terintegrasi di rantai nilai energi",
+      "subtitle": "Tiga lini bisnis yang bersama-sama mencakup trading, manufaktur, dan delivery EPC penuh untuk sektor energi Indonesia.",
+      "tradingCardTitle": "Trading",
+      "tradingCardDescription": "Solusi pengukuran dan kontrol berkualitas tinggi dari produsen global terpercaya.",
+      "manufacturingCardTitle": "Manufaktur",
+      "manufacturingCardDescription": "Desain, integrasi sistem, dan dukungan teknis untuk fasilitas migas, energi, dan ICT.",
+      "epcCardTitle": "EPC & Proyek",
+      "epcCardDescription": "Engineering, procurement, dan construction untuk proyek infrastruktur energi.",
+      "exploreCta": "Pelajari"
+    },
+    "trading": {
+      "inquiryTitle": "Kirim Inquiry",
+      "inquirySubtitle": "Sampaikan kebutuhan Anda. Tim trading kami akan merespons segera.",
+      "sidePanelTitle": "Lainnya dari Trading",
+      "viewPartners": "Lihat Partner",
+      "viewProducts": "Lihat Produk"
+    },
+    "partners": {
+      "eyebrow": "Trading",
+      "defaultTitle": "Partner Kami",
+      "defaultSubtitle": "Produsen kelas dunia yang kami wakili di Indonesia.",
+      "hoverHint": "Arahkan untuk detail",
+      "empty": "Profil partner sedang disiapkan."
+    },
+    "products": {
+      "eyebrow": "Trading",
+      "defaultTitle": "Produk Kami",
+      "defaultSubtitle": "Pilihan produk instrumentasi dan kontrol yang kami suplai.",
+      "skuLabel": "{count} SKU",
+      "originLabel": "Asal",
+      "partnershipLabel": "Partnership sejak {year}",
+      "empty": "Katalog produk sedang disiapkan."
+    },
+    "manufacturing": {
+      "quoteTitle": "Minta Penawaran",
+      "quoteSubtitle": "Bagikan kebutuhan, kami akan kembali dengan harga dan lead time."
+    },
+    "epc": {
+      "eyebrow": "Solusi",
+      "defaultTitle": "EPC & Proyek",
+      "defaultSubtitle": "Proyek terpilih di sektor minyak, gas, dan energi.",
+      "tabsAria": "Tab proyek",
+      "viewDetail": "Lihat detail",
+      "empty": "Studi kasus proyek sedang disiapkan."
+    },
+    "comingSoon": {
+      "title": "Segera Hadir",
+      "subtitle": "Halaman ini sedang dipersiapkan. Silakan kembali lagi nanti.",
+      "homeCta": "Kembali ke Beranda",
+      "contactCta": "Hubungi Kami"
+    }
+  },
+  "InquiryForm": {
+    "firstName": "Nama depan",
+    "lastName": "Nama belakang",
+    "email": "Email",
+    "company": "Nama perusahaan",
+    "phone": "Nomor telepon",
+    "websiteUrl": "URL Website",
+    "country": "Negara",
+    "message": "Pesan",
+    "messagePlaceholder": "Ceritakan kebutuhan atau proyek Anda…",
+    "required": "Wajib",
+    "submitTrading": "Kirim Inquiry",
+    "submitManufacturing": "Minta Penawaran",
+    "submitContact": "Kirim Pesan",
+    "submitting": "Mengirim…",
+    "successToast": "Terima kasih — pesan Anda sudah kami terima.",
+    "errorToast": "Terjadi kesalahan. Silakan coba lagi."
+  },
   "Admin": {
     "dashboard": "Dasbor",
     "login": "Masuk",
@@ -161,6 +234,12 @@
     "save": "Simpan",
     "saving": "Menyimpan...",
     "saved": "Tersimpan",
+    "optional": "opsional",
+    "modes": {
+      "sectionEnabled": "Section aktif",
+      "useDefault": "Default",
+      "useCustom": "Custom"
+    },
     "cancel": "Batal",
     "edit": "Edit",
     "delete": "Hapus",
@@ -191,7 +270,10 @@
       "slug": "Slug",
       "bio": "Bio",
       "phone": "Telepon",
-      "address": "Alamat"
+      "address": "Alamat",
+      "yes": "Ya",
+      "no": "Tidak",
+      "view": "Lihat detail"
     },
     "pages": {
       "landing": {
@@ -233,18 +315,61 @@
       "settings": {
         "title": "Pengaturan",
         "description": "Kontak, alamat, dan tautan media sosial."
+      },
+      "solutionsOverview": {
+        "title": "Solusi",
+        "description": "Atur status dan konten setiap halaman di bawah Solusi."
+      },
+      "solutionsLanding": {
+        "title": "Halaman Solusi",
+        "description": "Hero dan intro untuk /solutions."
+      },
+      "trading": {
+        "title": "Halaman Trading",
+        "description": "Konten untuk /solutions/trading beserta form inquiry."
+      },
+      "tradingPartners": {
+        "title": "Halaman Trading · Partner",
+        "description": "Hero dan intro untuk /solutions/trading/partners. Item logo dikelola di Master · Mitra."
+      },
+      "tradingProducts": {
+        "title": "Halaman Trading · Produk",
+        "description": "Hero dan intro beserta katalog produk."
+      },
+      "manufacturing": {
+        "title": "Halaman Manufaktur",
+        "description": "Konten untuk /solutions/manufacturing beserta form quote."
+      },
+      "epc": {
+        "title": "Halaman EPC",
+        "description": "Hero dan intro untuk /solutions/epc. Item proyek dikelola di Master · Proyek."
+      },
+      "inquiries": {
+        "title": "Inbox Inquiry",
+        "description": "Submission dari form Trading, Manufaktur, EPC, dan Kontak."
       }
     },
     "tabs": {
+      "content": "Konten",
+      "milestones": "Tonggak Sejarah",
+      "businesses": "Bisnis",
+      "holding": "Holding",
       "hero": "Hero",
       "stats": "Statistik",
+      "partners": "Mitra Kami",
+      "solutions": "Solusi Kami",
       "reach": "Jangkauan",
+      "customers": "Pelanggan",
       "whoWeAre": "Tentang Kami",
       "values": "Nilai",
       "business": "Bisnis",
       "overrides": "Override Label",
       "certifications": "Sertifikasi",
-      "acknowledgements": "Penghargaan"
+      "acknowledgements": "Penghargaan",
+      "inquiriesAll": "Semua",
+      "inquiriesNew": "Baru",
+      "inquiriesRead": "Dibaca",
+      "inquiriesArchived": "Diarsipkan"
     },
     "nouns": {
       "stat": "Statistik",
@@ -260,7 +385,9 @@
       "business": "Bisnis",
       "value": "Nilai",
       "division": "Divisi",
-      "leadershipMember": "Anggota Pimpinan"
+      "leadershipMember": "Anggota Pimpinan",
+      "product": "Produk",
+      "inquiry": "Inquiry"
     },
     "empty": {
       "stats": "Belum ada statistik.",
@@ -275,7 +402,9 @@
       "acknowledgements": "Belum ada penghargaan.",
       "businesses": "Belum ada bisnis afiliasi.",
       "values": "Belum ada nilai. Tambah satu untuk tampil di Who We Are.",
-      "divisions": "Belum ada divisi. Default ke EPC, Trading, Manufaktur."
+      "divisions": "Belum ada divisi. Default ke EPC, Trading, Manufaktur.",
+      "products": "Belum ada produk.",
+      "inquiries": "Belum ada inquiry."
     },
     "buttons": {
       "addValue": "Tambah nilai",
@@ -286,7 +415,16 @@
       "uploading": "Mengunggah…",
       "applyCrop": "Terapkan crop",
       "uploadOriginal": "Unggah gambar utuh",
-      "resetAuto": "Reset otomatis"
+      "resetAuto": "Reset otomatis",
+      "editContent": "Edit konten",
+      "viewPublic": "Lihat halaman publik",
+      "manageInPartners": "Kelola di Mitra",
+      "manageInProjects": "Kelola di Proyek",
+      "markRead": "Tandai dibaca",
+      "markNew": "Tandai baru",
+      "archive": "Arsipkan",
+      "viewDetail": "Lihat detail",
+      "replyEmail": "Balas via email"
     },
     "helpers": {
       "reorderValues": "Drag-and-drop mengurutkan ulang nilai langsung. Edit judul atau deskripsi tetap butuh Simpan.",
@@ -298,9 +436,15 @@
       "overrideLabelsHint": "Kosongkan untuk pakai label i18n default. Nilai yang diisi mengoverride heading di tiap section homepage.",
       "slugAutoActive": "Auto dari judul. Ketik untuk override manual.",
       "businessIntroNote": "Intro untuk halaman /about/business. Daftar perusahaan afiliasi diatur terpisah di Konten Master.",
-      "holdingDivisionsHint": "Kotak di bawah parent group pada diagram. Kalau kosong, default ke label public nav.",
       "overrideTitlesIntro": "Override judul halaman. Kosongkan untuk pakai default i18n.",
-      "overrideLabelsIntro": "Override label section."
+      "overrideLabelsIntro": "Override label section.",
+      "solutionsOverviewIntro": "Atur status tiap halaman Solusi: tayang, segera hadir, atau disembunyikan. Perubahan langsung berlaku.",
+      "solutionsPageStatusHint": "Pilih perilaku halaman ini di site publik. Status disembunyikan juga membuat halaman hilang dari navigasi.",
+      "solutionsPartnersDelegated": "Item logo yang tampil di halaman ini diambil dari Master · Mitra. Edit hero dan intro di sini.",
+      "solutionsEpcDelegated": "Tab proyek yang tampil di halaman ini diambil dari Master · Proyek (kategori EPC). Edit hero dan intro di sini.",
+      "landingPartnersDelegated": "Logo mitra yang tampil di homepage diatur di Solutions · Trading · Partners.",
+      "landingPartnersDelegatedHint": "Buka CMS Partners untuk menambah, mengedit, atau mengurutkan ulang logo di strip homepage.",
+      "inquiryFormReplyHint": "Balas langsung via email — klik tombol akan membuka mail client dengan email inquiry sudah diisi."
     },
     "mediaUpload": {
       "dropHint": "Drag & drop atau klik Unggah. Diterima: {types}.",
@@ -332,15 +476,53 @@
     },
     "status": {
       "toggleSaved": "Status diperbarui",
-      "toggleFailed": "Gagal memperbarui status"
+      "toggleFailed": "Gagal memperbarui status",
+      "published": "Tayang",
+      "comingSoon": "Segera Hadir",
+      "hidden": "Disembunyikan",
+      "publishedDesc": "Halaman dapat diakses publik.",
+      "comingSoonDesc": "Halaman tampil sebagai 'Segera Hadir'.",
+      "hiddenDesc": "Halaman 404 dan tidak muncul di navigasi.",
+      "lastUpdated": "Diperbarui",
+      "neverUpdated": "Belum pernah diedit"
     },
     "altImage": {
       "noImage": "Tanpa gambar",
       "preview": "Preview {name}",
-      "dragHandle": "Drag untuk mengubah urutan"
+      "dragHandle": "Drag untuk mengubah urutan",
+      "fullPreview": "Preview penuh",
+      "expand": "Buka preview penuh"
+    },
+    "viewMode": {
+      "card": "Tampilan kartu",
+      "table": "Tampilan tabel"
+    },
+    "iconPicker": {
+      "title": "Pilih ikon"
+    },
+    "mapPicker": {
+      "hint": "Klik di peta atau geser pin untuk menentukan koordinat."
+    },
+    "formBuilder": {
+      "globalSettings": "Pengaturan form",
+      "fields": "Field",
+      "addField": "Tambah field",
+      "empty": "Belum ada field. Klik \"Tambah field\" untuk mulai.",
+      "key": "Key",
+      "system": "bawaan",
+      "type": "Tipe",
+      "label": "Label",
+      "placeholder": "Placeholder",
+      "required": "Wajib",
+      "submitLabel": "Label tombol kirim",
+      "successMessage": "Pesan sukses",
+      "options": "Opsi",
+      "addOption": "Tambah opsi",
+      "noOptions": "Belum ada opsi.",
+      "moveUp": "Pindah ke atas"
     },
     "fields": {
-      "heroEyebrow": "Eyebrow (opsional)",
+      "heroEyebrow": "Eyebrow",
       "heroTitle": "Judul",
       "heroSubtitle": "Subjudul",
       "heroCtaLabel": "Label CTA utama",
@@ -369,6 +551,8 @@
       "holdingGroupLabel": "Label Grup Holding (kotak parent)",
       "divisionKey": "Key",
       "divisionLabel": "Label",
+      "holdingDivisions": "Divisi",
+      "holdingDivisionsDesc": "Tambahkan entri custom, atau biarkan kosong untuk pakai default — EPC, Trading, Manufacturing.",
       "partnersTitleOverride": "Judul Mitra",
       "partnersSubtitle": "Subjudul Mitra",
       "solutionsTitleOverride": "Judul Solusi",
@@ -405,7 +589,34 @@
       "officeHours": "Jam kerja",
       "linkedin": "LinkedIn",
       "instagram": "Instagram",
-      "youtube": "YouTube"
+      "youtube": "YouTube",
+      "bodyHeading": "Heading body",
+      "bodyContent": "Konten body",
+      "comingSoonMessage": "Pesan Coming Soon (opsional)",
+      "inquiryFormEnabled": "Tampilkan form inquiry",
+      "linkToPartner": "Tautkan ke Mitra",
+      "principleName": "Nama principle",
+      "principleLogo": "Logo principle",
+      "principleOrigin": "Asal",
+      "productType": "Tipe produk",
+      "skuCount": "Jumlah SKU",
+      "partnershipStart": "Tahun mulai partnership",
+      "productPhotos": "Foto produk",
+      "productItems": "Daftar produk",
+      "addPhoto": "Tambah foto",
+      "removePhoto": "Hapus foto",
+      "noteFromUser": "Catatan dari user",
+      "adminNotes": "Catatan internal",
+      "inquiryFirstName": "Nama depan",
+      "inquiryLastName": "Nama belakang",
+      "inquiryEmail": "Email",
+      "inquiryCompany": "Perusahaan",
+      "inquiryPhone": "Telepon",
+      "inquiryCountry": "Negara",
+      "inquiryMessage": "Pesan",
+      "inquiryWebsiteUrl": "Website",
+      "inquirySource": "Sumber",
+      "inquiryReceivedAt": "Diterima"
     },
     "groups": {
       "contact": "Kontak",
@@ -413,10 +624,22 @@
       "socialLinks": "Media Sosial",
       "pageTitleOverrides": "Override Judul Halaman",
       "sectionLabelOverrides": "Override Label Section",
-      "holdingDivisions": "Divisi Holding",
+      "boardLabel": "Label section",
+      "coreBusiness": "Bisnis Inti",
+      "affiliatedHeader": "Header Bisnis Afiliasi",
+      "holdingLabels": "Label section Holding",
       "whoWeAre": "Who We Are",
       "companyValues": "Nilai Perusahaan",
-      "ourBusinessIntro": "Our Business (intro untuk /about/business)"
+      "ourBusinessIntro": "Our Business (intro untuk /about/business)",
+      "pageVisibility": "Visibilitas halaman",
+      "pageTitle": "Judul halaman",
+      "pageBody": "Body halaman",
+      "comingSoonContent": "Konten Coming Soon",
+      "formSettings": "Pengaturan form",
+      "principleSource": "Sumber principle",
+      "productDetails": "Detail produk",
+      "inquiryDetails": "Detail inquiry",
+      "inquiryMeta": "Info submission"
     },
     "credentials": {
       "valueIndex": "Nilai #{index}",
@@ -433,14 +656,18 @@
     "groupContact": "Kontak",
     "groupContent": "Konten Master",
     "groupSystem": "Sistem",
+    "groupInbox": "Inbox",
+    "landing": "Halaman Beranda",
     "hero": "Hero",
     "stats": "Statistik",
     "reach": "Jangkauan",
-    "about": "Profil Perusahaan",
+    "about": "Tentang Kami",
     "leadership": "Kepemimpinan",
     "history": "Sejarah",
-    "business": "Bisnis Afiliasi",
+    "business": "Bisnis Kami",
     "credentials": "Kredensial",
+    "solutionsOverview": "Overview",
+    "solutionsLanding": "Landing",
     "trading": "Trading",
     "tradingPartners": "Trading · Mitra",
     "tradingProducts": "Trading · Produk",
@@ -459,6 +686,7 @@
     "solutions": "Solusi",
     "settings": "Pengaturan",
     "users": "Pengguna",
+    "inquiries": "Inquiry",
     "comingSoon": "Segera",
     "expand": "Perluas sidebar",
     "collapse": "Ringkas sidebar"

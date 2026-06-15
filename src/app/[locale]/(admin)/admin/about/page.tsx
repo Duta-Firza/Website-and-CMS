@@ -1,7 +1,12 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { PreviewLink } from "@/components/admin/preview-link";
+import { UrlTabs } from "@/components/admin/url-tabs";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { connectDB } from "@/lib/db";
 import { ABOUT_PAGE_ID, AboutPage } from "@/models";
+import { AboutSubPageForm } from "./_components/about-sub-page-form";
+import { loadAboutSubPageForAdmin } from "./_components/load-about-sub-page";
 import { AboutForm } from "./about-form";
 
 export interface AboutFormValues {
@@ -13,20 +18,6 @@ export interface AboutFormValues {
     title: { id: string; en: string };
     description: { id: string; en: string };
   }[];
-  coreBusinessTitle: { id: string; en: string };
-  coreBusinessDescription: { id: string; en: string };
-  affiliatedBusinessTitle: { id: string; en: string };
-  affiliatedBusinessDescription: { id: string; en: string };
-  whoWeAreTitle: { id: string; en: string };
-  leadershipTitle: { id: string; en: string };
-  historyTitle: { id: string; en: string };
-  businessTitle: { id: string; en: string };
-  credentialsTitle: { id: string; en: string };
-  holdingStructureLabel: { id: string; en: string };
-  holdingGroupLabel: { id: string; en: string };
-  boardOfDirectorsLabel: { id: string; en: string };
-  boardOfCommissionersLabel: { id: string; en: string };
-  holdingDivisions: { key: string; label: { id: string; en: string } }[];
 }
 
 const empty = (): AboutFormValues => ({
@@ -35,20 +26,6 @@ const empty = (): AboutFormValues => ({
   vision: { id: "", en: "" },
   mission: { id: "", en: "" },
   values: [],
-  coreBusinessTitle: { id: "", en: "" },
-  coreBusinessDescription: { id: "", en: "" },
-  affiliatedBusinessTitle: { id: "", en: "" },
-  affiliatedBusinessDescription: { id: "", en: "" },
-  whoWeAreTitle: { id: "", en: "" },
-  leadershipTitle: { id: "", en: "" },
-  historyTitle: { id: "", en: "" },
-  businessTitle: { id: "", en: "" },
-  credentialsTitle: { id: "", en: "" },
-  holdingStructureLabel: { id: "", en: "" },
-  holdingGroupLabel: { id: "", en: "" },
-  boardOfDirectorsLabel: { id: "", en: "" },
-  boardOfCommissionersLabel: { id: "", en: "" },
-  holdingDivisions: [],
 });
 
 function pickLocalized(field: unknown): { id: string; en: string } {
@@ -78,35 +55,34 @@ async function loadAbout(): Promise<AboutFormValues> {
           description: pickLocalized(v.description),
         }))
       : base.values,
-    coreBusinessTitle: pickLocalized(doc.coreBusinessTitle),
-    coreBusinessDescription: pickLocalized(doc.coreBusinessDescription),
-    affiliatedBusinessTitle: pickLocalized(doc.affiliatedBusinessTitle),
-    affiliatedBusinessDescription: pickLocalized(doc.affiliatedBusinessDescription),
-    whoWeAreTitle: pickLocalized(doc.whoWeAreTitle),
-    leadershipTitle: pickLocalized(doc.leadershipTitle),
-    historyTitle: pickLocalized(doc.historyTitle),
-    businessTitle: pickLocalized(doc.businessTitle),
-    credentialsTitle: pickLocalized(doc.credentialsTitle),
-    holdingStructureLabel: pickLocalized(doc.holdingStructureLabel),
-    holdingGroupLabel: pickLocalized(doc.holdingGroupLabel),
-    boardOfDirectorsLabel: pickLocalized(doc.boardOfDirectorsLabel),
-    boardOfCommissionersLabel: pickLocalized(doc.boardOfCommissionersLabel),
-    holdingDivisions: Array.isArray(doc.holdingDivisions)
-      ? doc.holdingDivisions.map((d: { key?: unknown; label?: unknown }) => ({
-          key: typeof d.key === "string" ? d.key : "",
-          label: pickLocalized(d.label),
-        }))
-      : base.holdingDivisions,
   };
 }
 
 export default async function AboutAdminPage() {
-  const initial = await loadAbout();
-  const t = await getTranslations("Admin.pages.about");
+  const [initial, meta, locale, t] = await Promise.all([
+    loadAbout(),
+    loadAboutSubPageForAdmin("who-we-are"),
+    getLocale(),
+    getTranslations("Admin"),
+  ]);
   return (
     <div className="space-y-6">
-      <AdminPageHeader title={t("title")} description={t("description")} />
-      <AboutForm initial={initial} />
+      <AdminPageHeader
+        title={t("pages.about.title")}
+        description={t("pages.about.description")}
+        titleAction={<PreviewLink href={`/${locale}/about`} label={t("buttons.viewPublic")} />}
+      />
+      <UrlTabs defaultTab="content" validValues={["content", "who", "values"]} className="w-full">
+        <TabsList className="grid grid-cols-3 md:flex md:w-fit">
+          <TabsTrigger value="content">{t("tabs.content")}</TabsTrigger>
+          <TabsTrigger value="who">{t("tabs.whoWeAre")}</TabsTrigger>
+          <TabsTrigger value="values">{t("tabs.values")}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="content" className="mt-6">
+          <AboutSubPageForm slug="who-we-are" initial={meta} />
+        </TabsContent>
+        <AboutForm initial={initial} />
+      </UrlTabs>
     </div>
   );
 }

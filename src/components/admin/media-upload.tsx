@@ -159,7 +159,11 @@ export function MediaUpload({
           busy && "opacity-60",
         )}
       >
-        {hasValue ? <Preview value={value} accept={accept} /> : <EmptyState accept={accept} />}
+        {hasValue ? (
+          <Preview value={value} accept={accept} aspectRatio={aspectRatio} />
+        ) : (
+          <EmptyState accept={accept} />
+        )}
         <div className="flex flex-wrap items-center justify-end gap-2 border-t px-3 py-2">
           <label
             htmlFor={fileInputId}
@@ -262,18 +266,33 @@ function EmptyState({ accept }: { accept: Accept }) {
   );
 }
 
-function Preview({ value, accept }: { value: string; accept: Accept }) {
+function aspectClass(ratio?: number): string {
+  if (!ratio) return "max-h-64";
+  if (Math.abs(ratio - 16 / 9) < 0.01) return "aspect-video";
+  if (Math.abs(ratio - 4 / 3) < 0.01) return "aspect-[4/3]";
+  if (Math.abs(ratio - 4 / 5) < 0.01) return "aspect-[4/5]";
+  if (Math.abs(ratio - 3 / 4) < 0.01) return "aspect-[3/4]";
+  if (Math.abs(ratio - 1) < 0.01) return "aspect-square";
+  return "max-h-64";
+}
+
+function Preview({
+  value,
+  accept,
+  aspectRatio,
+}: {
+  value: string;
+  accept: Accept;
+  aspectRatio?: number;
+}) {
   if (accept === "video") {
     return (
-      <div className="relative max-h-64 overflow-hidden bg-black/5">
-        <video
-          src={value}
-          controls
-          className="mx-auto max-h-64 w-full max-w-full"
-          preload="metadata"
-        >
-          <track kind="captions" />
-        </video>
+      <div className="relative mx-auto max-w-2xl overflow-hidden bg-black/5">
+        <div className="relative aspect-video">
+          <video src={value} controls preload="metadata" className="h-full w-full object-contain">
+            <track kind="captions" />
+          </video>
+        </div>
       </div>
     );
   }
@@ -291,13 +310,19 @@ function Preview({ value, accept }: { value: string; accept: Accept }) {
     );
   }
   return (
-    <div className="relative flex h-40 items-center justify-center overflow-hidden bg-checker">
+    <div
+      className={cn(
+        "bg-checker relative mx-auto overflow-hidden",
+        aspectClass(aspectRatio),
+        aspectRatio ? "max-w-2xl" : "max-w-2xl",
+      )}
+    >
       <Image
         src={value}
         alt="Uploaded media"
-        width={1200}
-        height={600}
-        className="max-h-40 w-auto max-w-full object-contain"
+        width={1600}
+        height={900}
+        className="h-full w-full object-contain"
       />
     </div>
   );

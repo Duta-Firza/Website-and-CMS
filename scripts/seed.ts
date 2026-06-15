@@ -6,7 +6,9 @@
  * `pnpm seed customers partners`    → seed multiple targets, in the given order.
  *
  * Available targets: user, siteSettings, homeHero, stats, solutions,
- *                    partners, customers, projects, reachPoints.
+ *                    solutionPages, partners, products, customers,
+ *                    projects, reachPoints, aboutPage, aboutSubPages,
+ *                    leadership, history, affiliatedBusinesses, credentials.
  *
  * - Upserts singleton documents (SiteSettings, HomeHero) by their fixed _id.
  * - For collections without a natural unique field, clears and re-inserts.
@@ -33,6 +35,7 @@ loadEnv({ path: ".env" });
 import {
   ABOUT_PAGE_ID,
   AboutPage,
+  AboutSubPage,
   AffiliatedBusiness,
   Credential,
   Customer,
@@ -41,11 +44,13 @@ import {
   HomeHero,
   LeadershipMember,
   Partner,
+  Product,
   Project,
   ReachPoint,
   SITE_SETTINGS_ID,
   SiteSettings,
   Solution,
+  SolutionPage,
   Stat,
   User,
 } from "../src/models";
@@ -170,17 +175,93 @@ async function seedCredentials() {
   return items.length;
 }
 
+async function seedSolutionPages() {
+  // Each fixture entry has its own `_id` (slug). Upsert by id so admin edits
+  // already in the DB aren't wiped — only the seeded fields are reset.
+  const items = readJson<Array<Record<string, unknown> & { _id: string }>>("solution-pages.json");
+  for (const item of items) {
+    const { _id, ...data } = item;
+    await SolutionPage.findByIdAndUpdate(_id, data, { upsert: true, new: true });
+  }
+  return items.length;
+}
+
+async function seedAboutSubPages() {
+  // Each entry has its own `_id` (slug). Upsert by id so CMS edits already in
+  // the DB aren't wiped — only the seeded default fields are applied.
+  const items = readJson<Array<Record<string, unknown> & { _id: string }>>("about-sub-pages.json");
+  for (const item of items) {
+    const { _id, ...data } = item;
+    await AboutSubPage.findByIdAndUpdate(_id, data, { upsert: true, new: true });
+  }
+  return items.length;
+}
+
+interface ProductFixture {
+  _principleNames: string[];
+  origin: string;
+  productType: { id: string; en: string };
+  skuCount: number;
+  partnershipStart: number;
+  items: { name: { id: string; en: string }; photos: string[] }[];
+  order: number;
+  isActive: boolean;
+}
+
+async function seedProducts() {
+  // Products reference Partners by name in the fixture; resolve to ObjectIds
+  // first, then bulk replace. Run AFTER partners so the lookup hits the
+  // freshly seeded data.
+  const items = readJson<ProductFixture[]>("products.json");
+  const partnerByName = new Map<string, { _id: unknown }>();
+  const partnerDocs = await Partner.find().select("_id name").lean();
+  for (const p of partnerDocs as Array<{ _id: unknown; name: string }>) {
+    partnerByName.set(p.name, { _id: p._id });
+  }
+
+  const docs = items.map((item) => {
+    const principles = item._principleNames.map((name) => {
+      const partner = partnerByName.get(name);
+      if (!partner) {
+        console.warn(`  ⚠ products: principal "${name}" not found in Partner master`);
+      }
+      return {
+        partnerId: partner?._id ?? null,
+        name: partner ? "" : name,
+        logoUrl: "",
+      };
+    });
+    return {
+      principles,
+      origin: item.origin,
+      productType: item.productType,
+      skuCount: item.skuCount,
+      partnershipStart: item.partnershipStart,
+      items: item.items,
+      order: item.order,
+      isActive: item.isActive,
+    };
+  });
+
+  await Product.deleteMany({});
+  await Product.insertMany(docs);
+  return docs.length;
+}
+
 const SEEDERS = {
   user: seedUser,
   siteSettings: seedSiteSettings,
   homeHero: seedHomeHero,
   stats: seedStats,
   solutions: seedSolutions,
+  solutionPages: seedSolutionPages,
   partners: seedPartners,
+  products: seedProducts,
   customers: seedCustomers,
   projects: seedProjects,
   reachPoints: seedReachPoints,
   aboutPage: seedAboutPage,
+  aboutSubPages: seedAboutSubPages,
   leadership: seedLeadership,
   history: seedHistory,
   affiliatedBusinesses: seedAffiliatedBusinesses,

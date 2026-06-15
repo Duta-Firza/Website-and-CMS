@@ -6,6 +6,32 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
+interface StaticProps {
+  label: ReactNode;
+  value: { id: string; en: string };
+  multiline?: boolean;
+}
+
+/** Read-only variant — same layout as LocalizedField but with a static value and disabled inputs. */
+export function LocalizedFieldStatic({ label, value, multiline = false }: StaticProps) {
+  const Component = multiline ? Textarea : Input;
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+        <div className="space-y-1">
+          <Component value={value.id} disabled readOnly />
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">ID</p>
+        </div>
+        <div className="space-y-1">
+          <Component value={value.en} disabled readOnly />
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">EN</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface Props {
   label: ReactNode;
   /** Parent path like "title" — component appends `.id` / `.en` internally */

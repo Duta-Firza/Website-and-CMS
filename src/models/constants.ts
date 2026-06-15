@@ -19,6 +19,25 @@ export type LeadershipType = (typeof LEADERSHIP_TYPES)[number];
 export const CREDENTIAL_TYPES = ["certification", "acknowledgement"] as const;
 export type CredentialType = (typeof CREDENTIAL_TYPES)[number];
 
+export const SOLUTION_PAGE_SLUGS = [
+  "solutions",
+  "trading",
+  "trading-partners",
+  "trading-products",
+  "manufacturing",
+  "epc",
+] as const;
+export type SolutionPageSlug = (typeof SOLUTION_PAGE_SLUGS)[number];
+
+export const SOLUTION_PAGE_STATUSES = ["published", "comingSoon", "hidden"] as const;
+export type SolutionPageStatus = (typeof SOLUTION_PAGE_STATUSES)[number];
+
+export const INQUIRY_SOURCES = ["trading", "manufacturing", "epc", "contact"] as const;
+export type InquirySource = (typeof INQUIRY_SOURCES)[number];
+
+export const INQUIRY_STATUSES = ["new", "read", "archived"] as const;
+export type InquiryStatus = (typeof INQUIRY_STATUSES)[number];
+
 /**
  * Whitelist of lucide-react icon names that the Quick Stats card can render.
  * Both the admin Select dropdown and the public component pick from this list,
@@ -39,3 +58,44 @@ export const STAT_ICONS = [
   "TrendingUp",
 ] as const;
 export type StatIcon = (typeof STAT_ICONS)[number];
+
+export const ABOUT_SUB_PAGE_SLUGS = [
+  "who-we-are",
+  "leadership",
+  "history",
+  "business",
+  "credentials",
+] as const;
+export type AboutSubPageSlug = (typeof ABOUT_SUB_PAGE_SLUGS)[number];
+
+export const ABOUT_SUB_PAGE_STATUSES = ["published", "comingSoon", "hidden"] as const;
+export type AboutSubPageStatus = (typeof ABOUT_SUB_PAGE_STATUSES)[number];
+
+/**
+ * Section render mode used by Page Title + Page Body on every CMS-driven
+ * public page (About sub-pages + Solution sub-pages). Stored per section on
+ * AboutSubPage + SolutionPage docs.
+ *
+ * - disabled → public skips the section entirely
+ * - default  → public renders i18n defaults (SectionTitles + eyebrow)
+ * - custom   → public renders the localized fields the editor saved
+ */
+export const SECTION_MODES = ["disabled", "default", "custom"] as const;
+export type SectionMode = (typeof SECTION_MODES)[number];
+
+/**
+ * Whitelist of lucide-react icon names available to the Solution card editor
+ * on /admin/landing. Reuses several stat icons plus the two trade-specific
+ * ones (Handshake/HardHat) already used as defaults.
+ */
+export const SOLUTION_ICONS = [
+  "Handshake",
+  "Factory",
+  "HardHat",
+  "Wrench",
+  "Building2",
+  "Briefcase",
+  "Globe",
+  "TrendingUp",
+] as const;
+export type SolutionIcon = (typeof SOLUTION_ICONS)[number];

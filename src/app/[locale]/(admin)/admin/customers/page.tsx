@@ -1,36 +1,23 @@
-import { getTranslations } from "next-intl/server";
-import { AdminPageHeader } from "@/components/admin/page-header";
-import { connectDB } from "@/lib/db";
-import { Customer } from "@/models";
-import { CustomersManager } from "./customers-manager";
+import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
 
+// The row shape stays exported from here because the landing admin page (and
+// any future caller) imports `CustomerRow` from this module path.
 export interface CustomerRow {
   id: string;
   name: string;
   logoUrl: string;
   order: number;
   invertOnDark: boolean;
+  isActive: boolean;
 }
 
-async function loadCustomers(): Promise<CustomerRow[]> {
-  await connectDB();
-  const docs = await Customer.find().sort({ order: 1 }).lean();
-  return docs.map((d) => ({
-    id: String(d._id),
-    name: d.name,
-    logoUrl: d.logoUrl,
-    order: d.order ?? 0,
-    invertOnDark: d.invertOnDark ?? false,
-  }));
-}
-
-export default async function CustomersAdminPage() {
-  const customers = await loadCustomers();
-  const t = await getTranslations("Admin.pages.customers");
-  return (
-    <div className="space-y-6">
-      <AdminPageHeader title={t("title")} description={t("description")} />
-      <CustomersManager initial={customers} />
-    </div>
-  );
+/**
+ * The standalone Customers admin page was retired — the Customers manager is
+ * now mounted as a tab inside /admin/landing, matching where the section
+ * appears on the public homepage. Send any deep-link to that tab.
+ */
+export default async function CustomersAdminRedirect() {
+  const locale = await getLocale();
+  redirect(`/${locale}/admin/landing?tab=customers`);
 }

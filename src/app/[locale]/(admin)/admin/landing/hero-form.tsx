@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { MediaUpload } from "@/components/admin/media-upload";
+import { StickyFormBar } from "@/components/admin/sticky-form-bar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -61,12 +62,6 @@ export function HeroForm({ initial }: { initial: FormValues }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div className="flex justify-end">
-        <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {t("save")}
-        </Button>
-      </div>
       <Card>
         <CardContent className="space-y-5 pt-6">
           <LocalizedField
@@ -173,6 +168,13 @@ export function HeroForm({ initial }: { initial: FormValues }) {
           </details>
         </CardContent>
       </Card>
+
+      <StickyFormBar>
+        <Button type="submit" variant="brand" disabled={isSubmitting} size="lg">
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {t("save")}
+        </Button>
+      </StickyFormBar>
     </form>
   );
 }

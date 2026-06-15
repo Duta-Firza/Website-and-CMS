@@ -1,59 +1,218 @@
 [
   {
-    "slug": "rdmp-balikpapan",
+    "slug": "fuel-lpg-terminal-bali",
     "title": {
-      "id": "RDMP RU-V Balikpapan \u2013 Pertamina",
-      "en": "RDMP RU-V Balikpapan Project \u2013 Pertamina"
+      "id": "Fuel & LPG Transit Terminal, Labuhan Amuk, Bali",
+      "en": "Fuel & LPG Transit Terminal, Labuhan Amuk, Bali"
     },
     "summary": {
-      "id": "Penyediaan instalasi dan fabrikasi pipa di Piping Work Shop untuk proyek RDMP Balikpapan JO (HEC).",
-      "en": "Providing pipe installation and fabrication in the Piping Work Shop for the RDMP Balikpapan JO (HEC) project."
+      "id": "Full EPC (detailed engineering, procurement, construction, start-up & commissioning) untuk hub strategis pasokan bahan bakar dan LPG di wilayah Bali, NTT, dan NTB.",
+      "en": "Full EPC (detailed engineering, procurement, construction, start-up & commissioning) for a strategic fuel and LPG supply hub serving the Bali, NTT, and NTB regions."
     },
     "image": "/images/project-placeholder.svg",
-    "client": "PT Pertamina",
-    "year": 2023,
+    "client": "Pertamina UPPDN V Surabaya",
+    "year": 1995,
     "category": "epc",
-    "isHighlighted": true,
+    "about": {
+      "id": "Konsorsium Duta Firza, Intimarindo Primacon, Citramuda Nusasarana, dan Benua Mekanika. Total nilai proyek IDR 43 Miliar + USD 10 Juta.",
+      "en": "Consortium of Duta Firza, Intimarindo Primacon, Citramuda Nusasarana, and Benua Mekanika. Total contract value IDR 43 billion + USD 10 million."
+    },
+    "scopeOfWork": {
+      "id": "Detailed engineering, procurement, construction, start-up & commissioning untuk terminal transit Fuel & LPG.",
+      "en": "Detailed engineering, procurement, construction, start-up & commissioning for the Fuel & LPG transit terminal."
+    },
+    "isHighlighted": false,
     "highlightOrder": 0,
     "order": 0,
     "isPublished": true
   },
   {
-    "slug": "berthing-pulau-laut",
+    "slug": "lpg-storage-tank-bali",
     "title": {
-      "id": "Construction of Berthing Facility and Jetty Piping, Pulau Laut",
-      "en": "Construction of Berthing Facility and Jetty Piping, Pulau Laut"
+      "id": "1,000 MT LPG Storage Tank, Labuhan Amuk, Bali",
+      "en": "1,000 MT LPG Storage Tank, Labuhan Amuk, Bali"
     },
     "summary": {
-      "id": "Engineering, procurement, dan construction untuk fasilitas berthing dan jetty piping di Indonesia Bulk Terminal.",
-      "en": "Engineering, procurement, and construction for berthing and jetty piping at Indonesia Bulk Terminal."
+      "id": "Detailed engineering, procurement, dan construction tangki LPG 1,000 MT sesuai ASME Section VIII Div. 2 untuk hub pasokan Bali, NTT, dan NTB.",
+      "en": "Detailed engineering, procurement, and construction of a 1,000 MT LPG tank to ASME Section VIII Div. 2 for the Bali, NTT, and NTB supply hub."
     },
     "image": "/images/project-placeholder.svg",
-    "client": "PT Indonesia Bulk Terminal",
-    "year": 2022,
+    "client": "Pertamina UPPDN V Surabaya",
+    "year": 1997,
     "category": "epc",
-    "isHighlighted": true,
-    "highlightOrder": 1,
+    "about": {
+      "id": "Tangki ID 17,03 m dengan ketebalan dinding 46 mm, disangga 8 kolom Schedule 40 (24\" × 12 m). Nilai proyek IDR 3 Miliar + USD 1,7 Juta. Mitra: Inti Duta.",
+      "en": "Tank ID 17.03 m with 46 mm wall thickness, supported by 8 Schedule 40 columns (24\" × 12 m). Contract value IDR 3 billion + USD 1.7 million. Partner: Inti Duta."
+    },
+    "scopeOfWork": {
+      "id": "Detailed engineering, procurement, dan construction (EPC) tangki LPG.",
+      "en": "Detailed engineering, procurement, and construction (EPC) of the LPG storage tank."
+    },
+    "isHighlighted": false,
+    "highlightOrder": 0,
     "order": 1,
     "isPublished": true
   },
   {
     "slug": "tank-foundation-gresik",
     "title": {
-      "id": "Tank Foundation and Construction, Gresik Terminal",
-      "en": "Tank Foundation and Construction, Gresik Terminal"
+      "id": "Tank Farm & Tank Foundation, Gresik Terminal (Package 1)",
+      "en": "Tank Farm & Tank Foundation, Gresik Terminal (Package 1)"
     },
     "summary": {
-      "id": "Tambahan scope pekerjaan untuk kontrak pembangunan tank farm di Gresik Terminal, Surabaya.",
-      "en": "Additional scope of work for the tank farm construction contract at Gresik Terminal, Surabaya."
+      "id": "EPCC Package 1 untuk pembangunan tank farm Gresik: enam tangki vertikal 5.000 m³, dua tangki 1.000 m³, lengkap dengan fondasi, bund wall, dan sistem drainase.",
+      "en": "EPCC Package 1 for the Gresik tank farm: six 5,000 m³ vertical storage tanks, two 1,000 m³ tanks, plus tank foundations, bund walls, and drainage systems."
     },
     "image": "/images/project-placeholder.svg",
-    "client": "Shell Gresik Terminal",
-    "year": 2021,
+    "client": "PT Shell Indonesia",
+    "year": 2009,
     "category": "epc",
+    "about": {
+      "id": "Konsorsium Duta Firza, Intimarindo Primacon, & Bangun Cipta Kontraktor. Nilai proyek IDR 57 Miliar.",
+      "en": "Consortium of Duta Firza, Intimarindo Primacon, & Bangun Cipta Kontraktor. Contract value IDR 57 billion."
+    },
+    "scopeOfWork": {
+      "id": "EPCC (engineering, procurement, construction, dan commissioning) untuk Package 1.",
+      "en": "EPCC (engineering, procurement, construction, and commissioning) for Package 1."
+    },
     "isHighlighted": true,
     "highlightOrder": 2,
     "order": 2,
+    "isPublished": true
+  },
+  {
+    "slug": "tank-foundation-gresik-additional",
+    "title": {
+      "id": "Gresik Terminal Civil & Environmental Infrastructure",
+      "en": "Gresik Terminal Civil & Environmental Infrastructure"
+    },
+    "summary": {
+      "id": "Additional scope di Gresik Terminal: instalasi HDPE membrane, gravel filling, sub-base preparation, dan konstruksi external/intermediate bund walls.",
+      "en": "Additional scope at Gresik Terminal: HDPE membrane installation, gravel filling, sub-base preparation, and external/intermediate bund wall construction."
+    },
+    "image": "/images/project-placeholder.svg",
+    "client": "PT Shell Indonesia",
+    "year": 2009,
+    "category": "epc",
+    "about": {
+      "id": "Lingkup tambahan infrastruktur sipil dan lingkungan untuk Gresik Terminal. Nilai proyek USD 5 Juta.",
+      "en": "Additional civil and environmental infrastructure scope for the Gresik Terminal. Contract value USD 5 million."
+    },
+    "scopeOfWork": {
+      "id": "Civil and environmental infrastructure: HDPE membrane, gravel filling, bund walls.",
+      "en": "Civil and environmental infrastructure: HDPE membrane, gravel filling, bund walls."
+    },
+    "isHighlighted": false,
+    "highlightOrder": 0,
+    "order": 3,
+    "isPublished": true
+  },
+  {
+    "slug": "berthing-pulau-laut",
+    "title": {
+      "id": "Berthing Facility & Jetty Piping, Pulau Laut Oil Terminal",
+      "en": "Berthing Facility & Jetty Piping, Pulau Laut Oil Terminal"
+    },
+    "summary": {
+      "id": "EPC marine facilities dan pipeline infrastructure: 1 loading platform, 2 breasting dolphins, 4 mooring dolphins, plus piping dari battery limit ke loading platform.",
+      "en": "EPC marine facilities and pipeline infrastructure: 1 loading platform, 2 breasting dolphins, 4 mooring dolphins, plus piping from battery limit to the loading platform."
+    },
+    "image": "/images/project-placeholder.svg",
+    "client": "PT Indonesia Bulk Terminal (IBT)",
+    "year": 2010,
+    "category": "epc",
+    "about": {
+      "id": "Konsorsium Intimarindo Primacon & Duta Firza. Nilai proyek USD 15 Juta.",
+      "en": "Consortium of Intimarindo Primacon & Duta Firza. Contract value USD 15 million."
+    },
+    "scopeOfWork": {
+      "id": "EPC marine facilities: loading platform 15×30 m, breasting dolphins 9×10×2 m, mooring dolphins 7×7×2 m, dan jetty piping.",
+      "en": "EPC marine facilities: loading platform 15×30 m, breasting dolphins 9×10×2 m, mooring dolphins 7×7×2 m, and jetty piping."
+    },
+    "isHighlighted": true,
+    "highlightOrder": 1,
+    "order": 4,
+    "isPublished": true
+  },
+  {
+    "slug": "muara-bakah-pipeline",
+    "title": {
+      "id": "Muara Bakah Refinery & Condensate Pipeline, East Kalimantan",
+      "en": "Muara Bakah Refinery & Condensate Pipeline, East Kalimantan"
+    },
+    "summary": {
+      "id": "Supply dan instalasi flexible piping khusus untuk sistem distribusi condensate di kilang Muara Bakah, Kalimantan Timur.",
+      "en": "Supply and installation of specialized flexible piping for condensate distribution at the Muara Bakah refinery, East Kalimantan."
+    },
+    "image": "/images/project-placeholder.svg",
+    "client": "Ophir – PT Mirah Ganal Energi",
+    "year": 2021,
+    "category": "epc",
+    "about": {
+      "id": "Advanced pipeline distribution untuk fasilitas refinery dan condensate. Nilai proyek USD 25 Juta.",
+      "en": "Advanced pipeline distribution for the refinery and condensate facilities. Contract value USD 25 million."
+    },
+    "scopeOfWork": {
+      "id": "Advanced pipeline distribution: supply dan instalasi flexible piping condensate.",
+      "en": "Advanced pipeline distribution: supply and installation of flexible condensate piping."
+    },
+    "isHighlighted": false,
+    "highlightOrder": 0,
+    "order": 5,
+    "isPublished": true
+  },
+  {
+    "slug": "rdmp-balikpapan",
+    "title": {
+      "id": "RDMP RU-V Balikpapan Piping Shop PKG-2",
+      "en": "RDMP RU-V Balikpapan Piping Shop PKG-2"
+    },
+    "summary": {
+      "id": "Large-scale mechanical & piping infrastructure: piping fabrication, spool fabrication, machine installation, dan steel structure di seluruh kompleks kilang Balikpapan.",
+      "en": "Large-scale mechanical & piping infrastructure: piping fabrication, spool fabrication, machine installation, and steel structure across the Balikpapan refinery complex."
+    },
+    "image": "/images/project-placeholder.svg",
+    "client": "PT Pertamina – RDMP Balikpapan JO (Hyundai Engineering Co., Ltd.)",
+    "year": 2021,
+    "category": "epc",
+    "about": {
+      "id": "Lingkup besar mechanical dan piping termasuk operasi dedicated Piping Workshop. Nilai proyek USD 500 Juta.",
+      "en": "Large-scale mechanical and piping scope including operation of a dedicated Piping Workshop. Contract value USD 500 million."
+    },
+    "scopeOfWork": {
+      "id": "Piping fabrication & installation, piping spool fabrication, machine installation, dan steel structure installation.",
+      "en": "Piping fabrication & installation, piping spool fabrication, machine installation, and steel structure installation."
+    },
+    "isHighlighted": true,
+    "highlightOrder": 0,
+    "order": 6,
+    "isPublished": true
+  },
+  {
+    "slug": "lotte-chemical-line",
+    "title": {
+      "id": "Lotte Chemical Indonesia: LINE Project, Cilegon",
+      "en": "Lotte Chemical Indonesia: LINE Project, Cilegon"
+    },
+    "summary": {
+      "id": "Commissioning, maintenance, dan mechanical construction LINE Project — termasuk piping spool fabrication, machinery installation, dan structural steel erection.",
+      "en": "Commissioning, maintenance, and mechanical construction for the LINE Project — including piping spool fabrication, machinery installation, and structural steel erection."
+    },
+    "image": "/images/project-placeholder.svg",
+    "client": "PT Lotte Chemical Indonesia",
+    "year": 2025,
+    "category": "epc",
+    "about": {
+      "id": "Pre-commissioning, commissioning, dan long-term maintenance untuk LINE Project. Nilai proyek USD 10 Juta.",
+      "en": "Pre-commissioning, commissioning, and long-term maintenance for the LINE Project. Contract value USD 10 million."
+    },
+    "scopeOfWork": {
+      "id": "Pre-commissioning, commissioning, maintenance, piping spool fabrication, machinery installation, dan structural steel erection.",
+      "en": "Pre-commissioning, commissioning, maintenance, piping spool fabrication, machinery installation, and structural steel erection."
+    },
+    "isHighlighted": false,
+    "highlightOrder": 0,
+    "order": 7,
     "isPublished": true
   }
 ]

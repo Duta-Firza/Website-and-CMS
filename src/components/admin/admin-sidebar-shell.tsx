@@ -245,6 +245,30 @@ function GroupSection({
 }) {
   const GroupIcon = group.icon;
   const hasActiveChild = group.items.some((it) => isActive(it.href));
+
+  // Single-item groups (e.g. Home → Landing) render as a direct link instead
+  // of a collapsible header — no caret, no indented child list. The group
+  // title becomes the link label and points at the only item's href.
+  if (group.items.length === 1) {
+    const only = group.items[0];
+    const active = isActive(only.href);
+    return (
+      <Link
+        href={only.href}
+        aria-current={active ? "page" : undefined}
+        className={cn(
+          "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs font-semibold uppercase tracking-wider transition-colors",
+          active
+            ? "bg-brand-accent/10 text-brand-deep dark:text-foreground"
+            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+        )}
+      >
+        <GroupIcon className="h-3.5 w-3.5 shrink-0 opacity-70" />
+        <span className="flex-1 truncate">{t(group.titleKey)}</span>
+      </Link>
+    );
+  }
+
   return (
     <div>
       <button
@@ -268,7 +292,7 @@ function GroupSection({
         />
       </button>
       {open && (
-        <ul className="mb-2 mt-1 space-y-0.5 pl-1">
+        <ul className="mb-2 ml-3 mt-1 space-y-0.5 border-l border-border/60 pl-3">
           {group.items.map((item) => (
             <li key={item.labelKey}>
               <ItemLink
