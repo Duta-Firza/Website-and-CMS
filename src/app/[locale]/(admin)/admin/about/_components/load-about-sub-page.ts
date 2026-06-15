@@ -1,10 +1,9 @@
 import { connectDB } from "@/lib/db";
 import {
-  ABOUT_PAGE_ID,
-  AboutPage,
   AboutSubPage,
   type AboutSubPageSlug,
   type AboutSubPageStatus,
+  type SectionMode,
 } from "@/models";
 import type { AboutSubPageFormValues } from "./about-sub-page-form";
 
@@ -12,6 +11,8 @@ const EMPTY_LOCALIZED = { id: "", en: "" };
 
 const DEFAULT_FORM_VALUES: AboutSubPageFormValues = {
   status: "published",
+  heroMode: "default",
+  bodyMode: "default",
   hero: {
     eyebrow: EMPTY_LOCALIZED,
     title: EMPTY_LOCALIZED,
@@ -23,28 +24,11 @@ const DEFAULT_FORM_VALUES: AboutSubPageFormValues = {
   },
 };
 
-// Map slug → legacy override field on AboutPage. Empty values get filled in
-// from there so existing admin content keeps showing until the editor touches
-// the new AboutSubPage doc.
-const LEGACY_TITLE_FIELD: Record<AboutSubPageSlug, keyof LegacyAboutDoc> = {
-  "who-we-are": "whoWeAreTitle",
-  leadership: "leadershipTitle",
-  history: "historyTitle",
-  business: "businessTitle",
-  credentials: "credentialsTitle",
-};
-
-interface LegacyAboutDoc {
-  whoWeAreTitle?: { id?: string; en?: string };
-  leadershipTitle?: { id?: string; en?: string };
-  historyTitle?: { id?: string; en?: string };
-  businessTitle?: { id?: string; en?: string };
-  credentialsTitle?: { id?: string; en?: string };
-}
-
 interface SubPageDoc {
   _id: string;
   status?: AboutSubPageStatus;
+  heroMode?: SectionMode;
+  bodyMode?: SectionMode;
   hero?: {
     eyebrow?: { id?: string; en?: string };
     title?: { id?: string; en?: string };
@@ -60,38 +44,22 @@ export async function loadAboutSubPageForAdmin(
   slug: AboutSubPageSlug,
 ): Promise<AboutSubPageFormValues> {
   await connectDB();
-  const [subDoc, aboutDoc] = await Promise.all([
-    AboutSubPage.findById(slug).lean<SubPageDoc | null>(),
-    AboutPage.findById(ABOUT_PAGE_ID).lean<LegacyAboutDoc | null>(),
-  ]);
+  const subDoc = await AboutSubPage.findById(slug).lean<SubPageDoc | null>();
 
-  const legacyTitle = aboutDoc?.[LEGACY_TITLE_FIELD[slug]];
-  const heroTitle = subDoc?.hero?.title;
-  const titleHasContent = Boolean(heroTitle?.id?.trim() || heroTitle?.en?.trim());
-
-  if (!subDoc) {
-    return {
-      ...DEFAULT_FORM_VALUES,
-      hero: {
-        ...DEFAULT_FORM_VALUES.hero,
-        title: {
-          id: legacyTitle?.id ?? "",
-          en: legacyTitle?.en ?? "",
-        },
-      },
-    };
-  }
+  if (!subDoc) return DEFAULT_FORM_VALUES;
 
   return {
     status: subDoc.status ?? "published",
+    heroMode: subDoc.heroMode ?? "default",
+    bodyMode: subDoc.bodyMode ?? "default",
     hero: {
       eyebrow: {
         id: subDoc.hero?.eyebrow?.id ?? "",
         en: subDoc.hero?.eyebrow?.en ?? "",
       },
       title: {
-        id: (titleHasContent ? heroTitle?.id : legacyTitle?.id) ?? "",
-        en: (titleHasContent ? heroTitle?.en : legacyTitle?.en) ?? "",
+        id: subDoc.hero?.title?.id ?? "",
+        en: subDoc.hero?.title?.en ?? "",
       },
       subtitle: {
         id: subDoc.hero?.subtitle?.id ?? "",

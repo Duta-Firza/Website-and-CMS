@@ -11,6 +11,7 @@ import {
   HistoryEntry,
   LeadershipMember,
   type LeadershipType,
+  type SectionMode,
 } from "@/models";
 import { type Locale, localize } from "./localize";
 
@@ -30,23 +31,17 @@ export interface AboutPageData {
   vision: string;
   mission: string;
   values: AboutValueItem[];
+  // /about/business sections
   coreBusinessTitle: string;
   coreBusinessDescription: string;
   affiliatedBusinessTitle: string;
   affiliatedBusinessDescription: string;
-  // Title overrides (empty string → caller should fall back to i18n)
-  whoWeAreTitle: string;
-  leadershipTitle: string;
-  historyTitle: string;
-  businessTitle: string;
-  credentialsTitle: string;
-  // Label overrides
   holdingStructureLabel: string;
   holdingGroupLabel: string;
+  holdingDivisions: HoldingDivisionData[];
+  // /about/leadership section labels
   boardOfDirectorsLabel: string;
   boardOfCommissionersLabel: string;
-  // Holding diagram divisions — when non-empty, replaces hardcoded epc/trading/manufacturing
-  holdingDivisions: HoldingDivisionData[];
 }
 
 const EMPTY_ABOUT: AboutPageData = {
@@ -59,16 +54,11 @@ const EMPTY_ABOUT: AboutPageData = {
   coreBusinessDescription: "",
   affiliatedBusinessTitle: "",
   affiliatedBusinessDescription: "",
-  whoWeAreTitle: "",
-  leadershipTitle: "",
-  historyTitle: "",
-  businessTitle: "",
-  credentialsTitle: "",
   holdingStructureLabel: "",
   holdingGroupLabel: "",
+  holdingDivisions: [],
   boardOfDirectorsLabel: "",
   boardOfCommissionersLabel: "",
-  holdingDivisions: [],
 };
 
 const EMPTY_LOCALIZED = { id: "", en: "" };
@@ -100,11 +90,6 @@ export async function getAboutPage(locale: Locale): Promise<AboutPageData> {
         coreBusinessDescription: doc.coreBusinessDescription ?? EMPTY_LOCALIZED,
         affiliatedBusinessTitle: doc.affiliatedBusinessTitle ?? EMPTY_LOCALIZED,
         affiliatedBusinessDescription: doc.affiliatedBusinessDescription ?? EMPTY_LOCALIZED,
-        whoWeAreTitle: doc.whoWeAreTitle ?? EMPTY_LOCALIZED,
-        leadershipTitle: doc.leadershipTitle ?? EMPTY_LOCALIZED,
-        historyTitle: doc.historyTitle ?? EMPTY_LOCALIZED,
-        businessTitle: doc.businessTitle ?? EMPTY_LOCALIZED,
-        credentialsTitle: doc.credentialsTitle ?? EMPTY_LOCALIZED,
         holdingStructureLabel: doc.holdingStructureLabel ?? EMPTY_LOCALIZED,
         holdingGroupLabel: doc.holdingGroupLabel ?? EMPTY_LOCALIZED,
         boardOfDirectorsLabel: doc.boardOfDirectorsLabel ?? EMPTY_LOCALIZED,
@@ -241,9 +226,11 @@ export async function getCredentials(
   );
 }
 
-// ─── About sub-page metadata (status + hero + body) ─────────────────────────
+// ─── About sub-page metadata (status + hero + body + modes) ─────────────────
 export interface AboutSubPageMeta {
   status: AboutSubPageStatus;
+  heroMode: SectionMode;
+  bodyMode: SectionMode;
   hero: {
     eyebrow: string;
     title: string;
@@ -255,19 +242,10 @@ export interface AboutSubPageMeta {
   };
 }
 
-// Slug → legacy AboutPage override field. The override predates the
-// dedicated AboutSubPage doc; we keep reading from it so existing CMS content
-// keeps showing until the editor saves a fresh AboutSubPage.
-const LEGACY_TITLE_FIELD: Record<AboutSubPageSlug, string> = {
-  "who-we-are": "whoWeAreTitle",
-  leadership: "leadershipTitle",
-  history: "historyTitle",
-  business: "businessTitle",
-  credentials: "credentialsTitle",
-};
-
 const EMPTY_META: AboutSubPageMeta = {
   status: "published",
+  heroMode: "default",
+  bodyMode: "default",
   hero: { eyebrow: "", title: "", subtitle: "" },
   body: { heading: "", content: "" },
 };
@@ -277,30 +255,16 @@ export async function getAboutSubPage(
   locale: Locale,
 ): Promise<AboutSubPageMeta> {
   await connectDB();
-  const [subDoc, aboutDoc] = await Promise.all([
-    AboutSubPage.findById(slug).lean<{
-      _id?: string;
-      status?: AboutSubPageStatus;
-      hero?: { eyebrow?: unknown; title?: unknown; subtitle?: unknown };
-      body?: { heading?: unknown; content?: unknown };
-    } | null>(),
-    AboutPage.findById(ABOUT_PAGE_ID)
-      .select(`${LEGACY_TITLE_FIELD[slug]}`)
-      .lean<Record<string, unknown> | null>(),
-  ]);
+  const subDoc = await AboutSubPage.findById(slug).lean<{
+    _id?: string;
+    status?: AboutSubPageStatus;
+    heroMode?: SectionMode;
+    bodyMode?: SectionMode;
+    hero?: { eyebrow?: unknown; title?: unknown; subtitle?: unknown };
+    body?: { heading?: unknown; content?: unknown };
+  } | null>();
 
-  if (!subDoc) {
-    const legacyTitle = aboutDoc?.[LEGACY_TITLE_FIELD[slug]] as
-      | { id?: string; en?: string }
-      | undefined;
-    return {
-      ...EMPTY_META,
-      hero: {
-        ...EMPTY_META.hero,
-        title: localize(legacyTitle ?? { id: "", en: "" }, locale) as string,
-      },
-    };
-  }
+  if (!subDoc) return EMPTY_META;
 
   const localized = localize(
     {
@@ -319,18 +283,15 @@ export async function getAboutSubPage(
     content: string;
   };
 
-  // If the new doc's title is still blank, fall back to the legacy override.
-  let title = localized.title;
-  if (!title.trim()) {
-    const legacyTitle = aboutDoc?.[LEGACY_TITLE_FIELD[slug]] as
-      | { id?: string; en?: string }
-      | undefined;
-    if (legacyTitle) title = localize(legacyTitle, locale) as string;
-  }
-
   return {
     status: subDoc.status ?? "published",
-    hero: { eyebrow: localized.eyebrow, title, subtitle: localized.subtitle },
+    heroMode: subDoc.heroMode ?? "default",
+    bodyMode: subDoc.bodyMode ?? "default",
+    hero: {
+      eyebrow: localized.eyebrow,
+      title: localized.title,
+      subtitle: localized.subtitle,
+    },
     body: { heading: localized.heading, content: localized.content },
   };
 }

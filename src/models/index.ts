@@ -7,6 +7,8 @@ export {
   type AboutSubPageDoc,
   type AboutSubPageSlug,
   type AboutSubPageStatus,
+  SECTION_MODES,
+  type SectionMode,
 } from "./about-sub-page";
 export { AffiliatedBusiness, type AffiliatedBusinessDoc } from "./affiliated-business";
 export {

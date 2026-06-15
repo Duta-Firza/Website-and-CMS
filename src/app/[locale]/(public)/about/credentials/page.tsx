@@ -7,8 +7,9 @@ import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
 import { PageTabs } from "@/components/public/section/page-tabs";
 import { resolveActiveTab } from "@/components/public/section/resolve-active-tab";
-import { getAboutPage, getAboutSubPage, getCredentials } from "@/lib/cms/about";
+import { getAboutSubPage, getCredentials } from "@/lib/cms/about";
 import type { Locale } from "@/lib/cms/localize";
+import { resolveBody, resolveHero } from "@/lib/cms/section-mode";
 
 const TABS = [{ key: "certifications" }, { key: "acknowledgements" }] as const;
 
@@ -30,26 +31,34 @@ export default async function CredentialsPage({ params, searchParams }: Props) {
   const active = resolveActiveTab(TABS, tab, "certifications");
   const type = active === "certifications" ? "certification" : "acknowledgement";
   const safeLocale = toLocale(locale);
-  const [credentials, about, meta] = await Promise.all([
+  const [credentials, meta] = await Promise.all([
     getCredentials(safeLocale, type),
-    getAboutPage(safeLocale),
     getAboutSubPage("credentials", safeLocale),
   ]);
 
   if (meta.status === "hidden") notFound();
 
-  const eyebrow = meta.hero.eyebrow || titles("aboutEyebrow");
-  const title = meta.hero.title || about.credentialsTitle?.trim() || titles("credentialsTitle");
-  const subtitle = meta.hero.subtitle || "";
+  const hero = resolveHero({
+    mode: meta.heroMode,
+    hero: meta.hero,
+    defaults: { eyebrow: titles("aboutEyebrow"), title: titles("credentialsTitle"), subtitle: "" },
+  });
+  const body = resolveBody({
+    mode: meta.bodyMode,
+    body: meta.body,
+    defaults: { heading: "", content: "" },
+  });
 
   if (meta.status === "comingSoon") {
     return (
       <>
-        <PageHeader eyebrow={eyebrow} title={title} description={subtitle} />
+        {hero && (
+          <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />
+        )}
         <ComingSoonPage
-          eyebrow={eyebrow}
-          title={meta.body.heading || undefined}
-          message={meta.body.content || undefined}
+          eyebrow={hero?.eyebrow}
+          title={body?.heading || undefined}
+          message={body?.content || undefined}
         />
       </>
     );
@@ -58,28 +67,30 @@ export default async function CredentialsPage({ params, searchParams }: Props) {
   return (
     <div className="relative">
       <SectionIndex value="05" />
-      <PageHeader
-        eyebrow={eyebrow}
-        title={title}
-        description={subtitle}
-        tabs={
-          <PageTabs
-            tabs={TABS.map((t) => ({ key: t.key, label: tabsT(t.key) }))}
-            defaultKey="certifications"
-          />
-        }
-      />
+      {hero && (
+        <PageHeader
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.subtitle}
+          tabs={
+            <PageTabs
+              tabs={TABS.map((t) => ({ key: t.key, label: tabsT(t.key) }))}
+              defaultKey="certifications"
+            />
+          }
+        />
+      )}
 
-      {(meta.body.heading || meta.body.content) && (
+      {body && (body.heading || body.content) && (
         <ScrollReveal className="mb-12 max-w-3xl space-y-3">
-          {meta.body.heading && (
+          {body.heading && (
             <h2 className="text-2xl font-semibold tracking-tight text-brand-deep dark:text-foreground">
-              {meta.body.heading}
+              {body.heading}
             </h2>
           )}
-          {meta.body.content && (
+          {body.content && (
             <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground">
-              {meta.body.content}
+              {body.content}
             </p>
           )}
         </ScrollReveal>

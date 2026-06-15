@@ -7,6 +7,7 @@ import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
 import { getActivePartners } from "@/lib/cms/home";
 import type { Locale } from "@/lib/cms/localize";
+import { resolveBody, resolveHero } from "@/lib/cms/section-mode";
 import { getSolutionPage } from "@/lib/cms/solutions";
 import { cn } from "@/lib/utils";
 
@@ -21,21 +22,34 @@ export default async function TradingPartnersPublicPage() {
 
   if (page.status === "hidden") notFound();
 
-  const eyebrow = page.hero.eyebrow || t("partners.eyebrow");
-  const title = page.hero.title || t("partners.defaultTitle");
-  const subtitle = page.hero.subtitle || t("partners.defaultSubtitle");
+  const hero = resolveHero({
+    mode: page.heroMode,
+    hero: page.hero,
+    defaults: {
+      eyebrow: t("partners.eyebrow"),
+      title: t("partners.defaultTitle"),
+      subtitle: t("partners.defaultSubtitle"),
+    },
+  });
+  const body = resolveBody({
+    mode: page.bodyMode,
+    body: page.body,
+    defaults: { heading: "", content: "" },
+  });
 
   if (page.status === "comingSoon") {
     return (
       <>
-        <PageHeader
-          eyebrow={eyebrow}
-          title={title}
-          description={tSections("partnersTitle") === title ? undefined : subtitle}
-        />
+        {hero && (
+          <PageHeader
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={tSections("partnersTitle") === hero.title ? undefined : hero.subtitle}
+          />
+        )}
         <ComingSoonPage
-          eyebrow={eyebrow}
-          title={page.body.heading || undefined}
+          eyebrow={hero?.eyebrow}
+          title={body?.heading || undefined}
           message={page.comingSoonMessage || undefined}
         />
       </>
@@ -44,18 +58,18 @@ export default async function TradingPartnersPublicPage() {
 
   return (
     <>
-      <PageHeader eyebrow={eyebrow} title={title} description={subtitle} />
+      {hero && <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />}
 
-      {(page.body.heading || page.body.content) && (
+      {body && (body.heading || body.content) && (
         <ScrollReveal className="mb-10 max-w-3xl space-y-3">
-          {page.body.heading && (
+          {body.heading && (
             <h2 className="text-2xl font-semibold tracking-tight text-brand-deep dark:text-foreground">
-              {page.body.heading}
+              {body.heading}
             </h2>
           )}
-          {page.body.content && (
+          {body.content && (
             <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground">
-              {page.body.content}
+              {body.content}
             </p>
           )}
         </ScrollReveal>

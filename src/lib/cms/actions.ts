@@ -28,6 +28,7 @@ import {
   Product,
   Project,
   ReachPoint,
+  SECTION_MODES,
   SITE_SETTINGS_ID,
   SiteSettings,
   SOLUTION_KEYS,
@@ -359,31 +360,12 @@ const aboutValueItemSchema = z.object({
   description: localizedSchema,
 });
 
-const holdingDivisionSchema = z.object({
-  key: z.string().min(1),
-  label: localizedSchema.default({ id: "", en: "" }),
-});
-
 const aboutPageSchema = z.object({
   intro: localizedSchema,
   videoUrl: z.string().default(""),
   vision: localizedSchema,
   mission: localizedSchema,
   values: z.array(aboutValueItemSchema).default([]),
-  coreBusinessTitle: localizedSchema,
-  coreBusinessDescription: localizedSchema,
-  affiliatedBusinessTitle: localizedSchema,
-  affiliatedBusinessDescription: localizedSchema,
-  whoWeAreTitle: localizedSchema.default({ id: "", en: "" }),
-  leadershipTitle: localizedSchema.default({ id: "", en: "" }),
-  historyTitle: localizedSchema.default({ id: "", en: "" }),
-  businessTitle: localizedSchema.default({ id: "", en: "" }),
-  credentialsTitle: localizedSchema.default({ id: "", en: "" }),
-  holdingStructureLabel: localizedSchema.default({ id: "", en: "" }),
-  holdingGroupLabel: localizedSchema.default({ id: "", en: "" }),
-  boardOfDirectorsLabel: localizedSchema.default({ id: "", en: "" }),
-  boardOfCommissionersLabel: localizedSchema.default({ id: "", en: "" }),
-  holdingDivisions: z.array(holdingDivisionSchema).default([]),
 });
 
 export async function updateAboutPage(
@@ -413,6 +395,100 @@ export async function updateAboutValues(
       { values: parsed },
       { upsert: true, new: true },
     );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── About Page — per-sub-page focused updates ───────────────────────────────
+// These actions touch only the sub-page-specific fields on the AboutPage
+// singleton, so the per-page admin tabs (leadership labels, business sections,
+// holding diagram) can save without round-tripping the whole AboutForm payload.
+
+const leadershipLabelFields = z.enum(["boardOfDirectorsLabel", "boardOfCommissionersLabel"]);
+
+export async function updateLeadershipLabel(
+  field: z.infer<typeof leadershipLabelFields>,
+  value: z.infer<typeof localizedSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsedField = leadershipLabelFields.parse(field);
+    const parsedValue = localizedSchema.parse(value);
+    await connectDB();
+    await AboutPage.findByIdAndUpdate(
+      ABOUT_PAGE_ID,
+      { [parsedField]: parsedValue },
+      { upsert: true, new: true },
+    );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+const coreBusinessSchema = z.object({
+  coreBusinessTitle: localizedSchema,
+  coreBusinessDescription: localizedSchema,
+});
+
+export async function updateCoreBusinessSection(
+  input: z.infer<typeof coreBusinessSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = coreBusinessSchema.parse(input);
+    await connectDB();
+    await AboutPage.findByIdAndUpdate(ABOUT_PAGE_ID, { $set: parsed }, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+const affiliatedHeaderSchema = z.object({
+  affiliatedBusinessTitle: localizedSchema,
+  affiliatedBusinessDescription: localizedSchema,
+});
+
+export async function updateAffiliatedBusinessSection(
+  input: z.infer<typeof affiliatedHeaderSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = affiliatedHeaderSchema.parse(input);
+    await connectDB();
+    await AboutPage.findByIdAndUpdate(ABOUT_PAGE_ID, { $set: parsed }, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+const holdingDivisionSchema = z.object({
+  key: z.string().min(1),
+  label: localizedSchema,
+});
+
+const aboutHoldingSchema = z.object({
+  holdingStructureLabel: localizedSchema,
+  holdingGroupLabel: localizedSchema,
+  holdingDivisions: z.array(holdingDivisionSchema).default([]),
+});
+
+export async function updateAboutHolding(
+  input: z.infer<typeof aboutHoldingSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = aboutHoldingSchema.parse(input);
+    await connectDB();
+    await AboutPage.findByIdAndUpdate(ABOUT_PAGE_ID, { $set: parsed }, { upsert: true, new: true });
     bust();
     return { ok: true };
   } catch (e) {
@@ -829,6 +905,8 @@ const formSettingsSchema = z.object({
 });
 
 const solutionPageContentSchema = z.object({
+  heroMode: z.enum(SECTION_MODES).default("default"),
+  bodyMode: z.enum(SECTION_MODES).default("default"),
   hero: z.object({
     eyebrow: localizedSchema,
     title: localizedSchema,
@@ -888,6 +966,8 @@ export async function setSolutionPageStatus(slug: string, status: string): Promi
 // ─── About Sub-Pages ────────────────────────────────────────────────────────
 const aboutSubPageContentSchema = z.object({
   status: z.enum(ABOUT_SUB_PAGE_STATUSES),
+  heroMode: z.enum(SECTION_MODES).default("default"),
+  bodyMode: z.enum(SECTION_MODES).default("default"),
   hero: z.object({
     eyebrow: localizedSchema,
     title: localizedSchema,

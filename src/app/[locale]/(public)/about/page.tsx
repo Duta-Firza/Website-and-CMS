@@ -7,6 +7,7 @@ import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
 import { getAboutPage, getAboutSubPage } from "@/lib/cms/about";
 import type { Locale } from "@/lib/cms/localize";
+import { resolveBody, resolveHero } from "@/lib/cms/section-mode";
 
 interface PageParams {
   locale: string;
@@ -25,18 +26,27 @@ export default async function Page({ params }: { params: Promise<PageParams> }) 
 
   if (meta.status === "hidden") notFound();
 
-  const eyebrow = meta.hero.eyebrow || t("aboutEyebrow");
-  const title = meta.hero.title || about.whoWeAreTitle?.trim() || t("whoWeAreTitle");
-  const subtitle = meta.hero.subtitle || "";
+  const hero = resolveHero({
+    mode: meta.heroMode,
+    hero: meta.hero,
+    defaults: { eyebrow: t("aboutEyebrow"), title: t("whoWeAreTitle"), subtitle: "" },
+  });
+  const body = resolveBody({
+    mode: meta.bodyMode,
+    body: meta.body,
+    defaults: { heading: "", content: "" },
+  });
 
   if (meta.status === "comingSoon") {
     return (
       <>
-        <PageHeader eyebrow={eyebrow} title={title} description={subtitle} />
+        {hero && (
+          <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />
+        )}
         <ComingSoonPage
-          eyebrow={eyebrow}
-          title={meta.body.heading || undefined}
-          message={meta.body.content || undefined}
+          eyebrow={hero?.eyebrow}
+          title={body?.heading || undefined}
+          message={body?.content || undefined}
         />
       </>
     );
@@ -47,18 +57,18 @@ export default async function Page({ params }: { params: Promise<PageParams> }) 
   return (
     <div className="relative">
       <SectionIndex value="01" />
-      <PageHeader eyebrow={eyebrow} title={title} description={subtitle} />
+      {hero && <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />}
 
-      {(meta.body.heading || meta.body.content) && (
+      {body && (body.heading || body.content) && (
         <ScrollReveal className="mb-12 max-w-3xl space-y-3">
-          {meta.body.heading && (
+          {body.heading && (
             <h2 className="text-2xl font-semibold tracking-tight text-brand-deep dark:text-foreground">
-              {meta.body.heading}
+              {body.heading}
             </h2>
           )}
-          {meta.body.content && (
+          {body.content && (
             <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground">
-              {meta.body.content}
+              {body.content}
             </p>
           )}
         </ScrollReveal>

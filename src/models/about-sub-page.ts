@@ -1,9 +1,9 @@
 import { type InferSchemaType, model, models, Schema } from "mongoose";
 import { localizedStringOptional, stripVersion } from "./_shared";
-import { ABOUT_SUB_PAGE_SLUGS, ABOUT_SUB_PAGE_STATUSES } from "./constants";
+import { ABOUT_SUB_PAGE_SLUGS, ABOUT_SUB_PAGE_STATUSES, SECTION_MODES } from "./constants";
 
-export type { AboutSubPageSlug, AboutSubPageStatus } from "./constants";
-export { ABOUT_SUB_PAGE_SLUGS, ABOUT_SUB_PAGE_STATUSES };
+export type { AboutSubPageSlug, AboutSubPageStatus, SectionMode } from "./constants";
+export { ABOUT_SUB_PAGE_SLUGS, ABOUT_SUB_PAGE_STATUSES, SECTION_MODES };
 
 const heroSchema = new Schema(
   {
@@ -31,6 +31,8 @@ const aboutSubPageSchema = new Schema(
       default: "published",
       index: true,
     },
+    heroMode: { type: String, enum: SECTION_MODES, default: "default" },
+    bodyMode: { type: String, enum: SECTION_MODES, default: "default" },
     hero: { type: heroSchema, default: () => ({}) },
     body: { type: bodySchema, default: () => ({}) },
   },

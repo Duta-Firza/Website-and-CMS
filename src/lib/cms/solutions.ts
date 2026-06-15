@@ -4,6 +4,7 @@ import {
   Partner,
   Product,
   Project,
+  type SectionMode,
   SOLUTION_PAGE_SLUGS,
   SolutionPage,
   type SolutionPageSlug,
@@ -17,6 +18,8 @@ const EMPTY_LOCALIZED = { id: "", en: "" };
 export interface SolutionPageData {
   slug: SolutionPageSlug;
   status: SolutionPageStatus;
+  heroMode: SectionMode;
+  bodyMode: SectionMode;
   hero: {
     eyebrow: string;
     title: string;
@@ -35,6 +38,8 @@ function emptyPage(slug: SolutionPageSlug): SolutionPageData {
   return {
     slug,
     status: "comingSoon",
+    heroMode: "default",
+    bodyMode: "default",
     hero: { eyebrow: "", title: "", subtitle: "", backgroundImage: "" },
     body: { heading: "", content: "" },
     inquiryFormEnabled: true,
@@ -50,6 +55,8 @@ export async function getSolutionPage(
   const doc = await SolutionPage.findById(slug).lean<{
     _id: string;
     status: SolutionPageStatus;
+    heroMode?: SectionMode;
+    bodyMode?: SectionMode;
     hero?: { eyebrow?: unknown; title?: unknown; subtitle?: unknown; backgroundImage?: string };
     body?: { heading?: unknown; content?: unknown };
     inquiryFormEnabled?: boolean;
@@ -78,6 +85,8 @@ export async function getSolutionPage(
   return {
     slug,
     status: doc.status ?? "comingSoon",
+    heroMode: doc.heroMode ?? "default",
+    bodyMode: doc.bodyMode ?? "default",
     hero: {
       ...localized.hero,
       backgroundImage: doc.hero?.backgroundImage ?? "",

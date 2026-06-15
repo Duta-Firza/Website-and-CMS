@@ -4,7 +4,8 @@ import { PreviewLink } from "@/components/admin/preview-link";
 import { UrlTabs } from "@/components/admin/url-tabs";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { connectDB } from "@/lib/db";
-import { LeadershipMember, type LeadershipType } from "@/models";
+import { AboutPage, LeadershipMember, type LeadershipType } from "@/models";
+import { ABOUT_PAGE_ID } from "@/models/about-page";
 import { AboutSubPageForm } from "../_components/about-sub-page-form";
 import { loadAboutSubPageForAdmin } from "../_components/load-about-sub-page";
 import { LeadershipManager } from "./leadership-manager";
@@ -18,6 +19,11 @@ export interface LeadershipRow {
   type: LeadershipType;
   order: number;
   isActive: boolean;
+}
+
+export interface BoardLabels {
+  boardOfDirectorsLabel: { id: string; en: string };
+  boardOfCommissionersLabel: { id: string; en: string };
 }
 
 async function loadMembers(): Promise<LeadershipRow[]> {
@@ -35,10 +41,28 @@ async function loadMembers(): Promise<LeadershipRow[]> {
   }));
 }
 
+async function loadBoardLabels(): Promise<BoardLabels> {
+  await connectDB();
+  const doc = await AboutPage.findById(ABOUT_PAGE_ID)
+    .select("boardOfDirectorsLabel boardOfCommissionersLabel")
+    .lean();
+  return {
+    boardOfDirectorsLabel: {
+      id: doc?.boardOfDirectorsLabel?.id ?? "",
+      en: doc?.boardOfDirectorsLabel?.en ?? "",
+    },
+    boardOfCommissionersLabel: {
+      id: doc?.boardOfCommissionersLabel?.id ?? "",
+      en: doc?.boardOfCommissionersLabel?.en ?? "",
+    },
+  };
+}
+
 export default async function LeadershipAdminPage() {
-  const [members, meta, locale, t, tAbout] = await Promise.all([
+  const [members, meta, boardLabels, locale, t, tAbout] = await Promise.all([
     loadMembers(),
     loadAboutSubPageForAdmin("leadership"),
+    loadBoardLabels(),
     getLocale(),
     getTranslations("Admin"),
     getTranslations("About"),
@@ -65,7 +89,7 @@ export default async function LeadershipAdminPage() {
         <TabsContent value="content" className="mt-6">
           <AboutSubPageForm slug="leadership" initial={meta} />
         </TabsContent>
-        <LeadershipManager initial={members} />
+        <LeadershipManager initial={members} boardLabels={boardLabels} />
       </UrlTabs>
     </div>
   );

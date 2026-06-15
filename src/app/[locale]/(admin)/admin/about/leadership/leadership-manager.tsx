@@ -51,7 +51,8 @@ import {
   upsertLeadershipMember,
 } from "@/lib/cms/actions";
 import { LEADERSHIP_TYPES, type LeadershipType } from "@/models/constants";
-import type { LeadershipRow } from "./page";
+import { BoardLabelCard } from "../_components/board-label-card";
+import type { BoardLabels, LeadershipRow } from "./page";
 
 const schema = z.object({
   id: z.string().optional(),
@@ -76,7 +77,13 @@ const empty: FormValues = {
   isActive: true,
 };
 
-export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
+export function LeadershipManager({
+  initial,
+  boardLabels,
+}: {
+  initial: LeadershipRow[];
+  boardLabels: BoardLabels;
+}) {
   const router = useRouter();
   const t = useTranslations("Admin");
   const locale = useLocale();
@@ -119,7 +126,8 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
 
   return (
     <>
-      <TabsContent value="director" className="mt-6">
+      <TabsContent value="director" className="mt-6 space-y-6">
+        <BoardLabelCard field="boardOfDirectorsLabel" initial={boardLabels.boardOfDirectorsLabel} />
         <MemberTable
           emptyMessage={t("empty.directors")}
           members={directors}
@@ -134,7 +142,11 @@ export function LeadershipManager({ initial }: { initial: LeadershipRow[] }) {
           locale={locale}
         />
       </TabsContent>
-      <TabsContent value="commissioner" className="mt-6">
+      <TabsContent value="commissioner" className="mt-6 space-y-6">
+        <BoardLabelCard
+          field="boardOfCommissionersLabel"
+          initial={boardLabels.boardOfCommissionersLabel}
+        />
         <MemberTable
           emptyMessage={t("empty.commissioners")}
           members={commissioners}

@@ -8,16 +8,60 @@ import { type ReactNode, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { LocalizedField } from "@/components/admin/localized-field";
+import { LocalizedField, LocalizedFieldStatic } from "@/components/admin/localized-field";
+import { SectionModeToggle } from "@/components/admin/section-mode-toggle";
 import { StickyFormBar } from "@/components/admin/sticky-form-bar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateSolutionPage } from "@/lib/cms/actions";
 import { FORM_FIELD_TYPES } from "@/lib/cms/form-fields";
-import type { SolutionPageSlug, SolutionPageStatus } from "@/models/constants";
+import {
+  SECTION_MODES,
+  type SectionMode,
+  type SolutionPageSlug,
+  type SolutionPageStatus,
+} from "@/models/constants";
 import { FormBuilderSection } from "./form-builder-section";
 import { StatusGroup } from "./status-group";
+
+type LocalizedStr = { id: string; en: string };
+const empty: LocalizedStr = { id: "", en: "" };
+
+const HERO_DEFAULTS: Partial<Record<SolutionPageSlug, { eyebrow: LocalizedStr; title: LocalizedStr; subtitle: LocalizedStr }>> = {
+  solutions: {
+    eyebrow: { id: "Solusi", en: "Solutions" },
+    title: { id: "Solusi terintegrasi di rantai nilai energi", en: "Integrated solutions across the energy value chain" },
+    subtitle: empty,
+  },
+  trading: {
+    eyebrow: { id: "Solusi", en: "Solutions" },
+    title: { id: "Trading", en: "Trading" },
+    subtitle: empty,
+  },
+  "trading-partners": {
+    eyebrow: { id: "Trading", en: "Trading" },
+    title: { id: "Partner Kami", en: "Our Partners" },
+    subtitle: { id: "Produsen kelas dunia yang kami wakili di Indonesia.", en: "World-class manufacturers we represent across Indonesia." },
+  },
+  "trading-products": {
+    eyebrow: { id: "Trading", en: "Trading" },
+    title: { id: "Produk Kami", en: "Our Products" },
+    subtitle: { id: "Pilihan produk instrumentasi dan kontrol yang kami suplai.", en: "Selected instrumentation and control products we supply." },
+  },
+  manufacturing: {
+    eyebrow: { id: "Solusi", en: "Solutions" },
+    title: { id: "Manufaktur", en: "Manufacturing" },
+    subtitle: empty,
+  },
+  epc: {
+    eyebrow: { id: "Solusi", en: "Solutions" },
+    title: { id: "EPC & Proyek", en: "EPC & Projects" },
+    subtitle: { id: "Proyek terpilih di sektor minyak, gas, dan energi.", en: "Selected projects across the oil, gas, and energy sectors." },
+  },
+};
+
+const BODY_DEFAULTS = { heading: empty, content: empty };
 
 const localized = z.object({ id: z.string(), en: z.string() });
 
@@ -50,6 +94,8 @@ const formSettingsZod = z.object({
 // parsing; `formSettings.enabled` is the new source of truth.
 const schema = z.object({
   status: z.enum(["published", "comingSoon", "hidden"]),
+  heroMode: z.enum(SECTION_MODES),
+  bodyMode: z.enum(SECTION_MODES),
   hero: z.object({
     eyebrow: localized,
     title: localized,
@@ -144,6 +190,9 @@ export function SolutionPageForm({
   };
 
   const status = watch("status") as SolutionPageStatus;
+  const heroMode = watch("heroMode") as SectionMode;
+  const bodyMode = watch("bodyMode") as SectionMode;
+  const optional = t("optional");
   const totalCols = formTabs.length + additionalTabs.length;
 
   return (
@@ -183,14 +232,47 @@ export function SolutionPageForm({
               <CardTitle className="text-base">{t("groups.pageTitle")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <LocalizedField label={t("fields.heroEyebrow")} name="hero.eyebrow" form={form} />
-              <LocalizedField label={t("fields.heroTitle")} name="hero.title" form={form} />
-              <LocalizedField
-                label={t("fields.heroSubtitle")}
-                name="hero.subtitle"
-                form={form}
-                multiline
+              <SectionModeToggle
+                value={heroMode}
+                onChange={(next) => setValue("heroMode", next, { shouldDirty: true })}
               />
+              {heroMode === "default" && (
+                <div className="space-y-4 border-t pt-4">
+                  <LocalizedFieldStatic
+                    label={`${t("fields.heroEyebrow")} (${optional})`}
+                    value={HERO_DEFAULTS[slug]?.eyebrow ?? empty}
+                  />
+                  <LocalizedFieldStatic
+                    label={`${t("fields.heroTitle")} (${optional})`}
+                    value={HERO_DEFAULTS[slug]?.title ?? empty}
+                  />
+                  <LocalizedFieldStatic
+                    label={`${t("fields.heroSubtitle")} (${optional})`}
+                    value={HERO_DEFAULTS[slug]?.subtitle ?? empty}
+                    multiline
+                  />
+                </div>
+              )}
+              {heroMode === "custom" && (
+                <div className="space-y-4 border-t pt-4">
+                  <LocalizedField
+                    label={`${t("fields.heroEyebrow")} (${optional})`}
+                    name="hero.eyebrow"
+                    form={form}
+                  />
+                  <LocalizedField
+                    label={`${t("fields.heroTitle")} (${optional})`}
+                    name="hero.title"
+                    form={form}
+                  />
+                  <LocalizedField
+                    label={`${t("fields.heroSubtitle")} (${optional})`}
+                    name="hero.subtitle"
+                    form={form}
+                    multiline
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -199,13 +281,38 @@ export function SolutionPageForm({
               <CardTitle className="text-base">{t("groups.pageBody")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <LocalizedField label={t("fields.bodyHeading")} name="body.heading" form={form} />
-              <LocalizedField
-                label={t("fields.bodyContent")}
-                name="body.content"
-                form={form}
-                multiline
+              <SectionModeToggle
+                value={bodyMode}
+                onChange={(next) => setValue("bodyMode", next, { shouldDirty: true })}
               />
+              {bodyMode === "default" && (
+                <div className="space-y-4 border-t pt-4">
+                  <LocalizedFieldStatic
+                    label={`${t("fields.bodyHeading")} (${optional})`}
+                    value={BODY_DEFAULTS.heading}
+                  />
+                  <LocalizedFieldStatic
+                    label={`${t("fields.bodyContent")} (${optional})`}
+                    value={BODY_DEFAULTS.content}
+                    multiline
+                  />
+                </div>
+              )}
+              {bodyMode === "custom" && (
+                <div className="space-y-4 border-t pt-4">
+                  <LocalizedField
+                    label={`${t("fields.bodyHeading")} (${optional})`}
+                    name="body.heading"
+                    form={form}
+                  />
+                  <LocalizedField
+                    label={`${t("fields.bodyContent")} (${optional})`}
+                    name="body.content"
+                    form={form}
+                    multiline
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

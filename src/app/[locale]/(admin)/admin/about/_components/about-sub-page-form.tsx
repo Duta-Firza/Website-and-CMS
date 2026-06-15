@@ -7,7 +7,8 @@ import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { LocalizedField } from "@/components/admin/localized-field";
+import { LocalizedField, LocalizedFieldStatic } from "@/components/admin/localized-field";
+import { SectionModeToggle } from "@/components/admin/section-mode-toggle";
 import { StickyFormBar } from "@/components/admin/sticky-form-bar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,13 +17,50 @@ import {
   ABOUT_SUB_PAGE_STATUSES,
   type AboutSubPageSlug,
   type AboutSubPageStatus,
+  SECTION_MODES,
+  type SectionMode,
 } from "@/models/constants";
 import { StatusGroup } from "../../solutions/_components/status-group";
+
+type LocalizedStr = { id: string; en: string };
+const empty: LocalizedStr = { id: "", en: "" };
+
+const HERO_DEFAULTS: Record<AboutSubPageSlug, { eyebrow: LocalizedStr; title: LocalizedStr; subtitle: LocalizedStr }> = {
+  "who-we-are": {
+    eyebrow: { id: "Tentang Kami", en: "About Us" },
+    title: { id: "Tentang PT Duta Firza", en: "About PT Duta Firza" },
+    subtitle: empty,
+  },
+  leadership: {
+    eyebrow: { id: "Tentang Kami", en: "About Us" },
+    title: { id: "Kepemimpinan", en: "Leadership" },
+    subtitle: empty,
+  },
+  history: {
+    eyebrow: { id: "Tentang Kami", en: "About Us" },
+    title: { id: "Sejarah", en: "History" },
+    subtitle: empty,
+  },
+  business: {
+    eyebrow: { id: "Tentang Kami", en: "About Us" },
+    title: { id: "Bisnis Kami", en: "Our Business" },
+    subtitle: empty,
+  },
+  credentials: {
+    eyebrow: { id: "Tentang Kami", en: "About Us" },
+    title: { id: "Kredensial", en: "Credentials" },
+    subtitle: empty,
+  },
+};
+
+const BODY_DEFAULTS = { heading: empty, content: empty };
 
 const localized = z.object({ id: z.string(), en: z.string() });
 
 const schema = z.object({
   status: z.enum(ABOUT_SUB_PAGE_STATUSES),
+  heroMode: z.enum(SECTION_MODES),
+  bodyMode: z.enum(SECTION_MODES),
   hero: z.object({
     eyebrow: localized,
     title: localized,
@@ -67,6 +105,9 @@ export function AboutSubPageForm({ slug, initial }: Props) {
   };
 
   const status = watch("status") as AboutSubPageStatus;
+  const heroMode = watch("heroMode") as SectionMode;
+  const bodyMode = watch("bodyMode") as SectionMode;
+  const optional = t("optional");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -88,14 +129,47 @@ export function AboutSubPageForm({ slug, initial }: Props) {
             <CardTitle className="text-base">{t("groups.pageTitle")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <LocalizedField label={t("fields.heroEyebrow")} name="hero.eyebrow" form={form} />
-            <LocalizedField label={t("fields.heroTitle")} name="hero.title" form={form} />
-            <LocalizedField
-              label={t("fields.heroSubtitle")}
-              name="hero.subtitle"
-              form={form}
-              multiline
+            <SectionModeToggle
+              value={heroMode}
+              onChange={(next) => setValue("heroMode", next, { shouldDirty: true })}
             />
+            {heroMode === "default" && (
+              <div className="space-y-4 border-t pt-4">
+                <LocalizedFieldStatic
+                  label={`${t("fields.heroEyebrow")} (${optional})`}
+                  value={HERO_DEFAULTS[slug].eyebrow}
+                />
+                <LocalizedFieldStatic
+                  label={`${t("fields.heroTitle")} (${optional})`}
+                  value={HERO_DEFAULTS[slug].title}
+                />
+                <LocalizedFieldStatic
+                  label={`${t("fields.heroSubtitle")} (${optional})`}
+                  value={HERO_DEFAULTS[slug].subtitle}
+                  multiline
+                />
+              </div>
+            )}
+            {heroMode === "custom" && (
+              <div className="space-y-4 border-t pt-4">
+                <LocalizedField
+                  label={`${t("fields.heroEyebrow")} (${optional})`}
+                  name="hero.eyebrow"
+                  form={form}
+                />
+                <LocalizedField
+                  label={`${t("fields.heroTitle")} (${optional})`}
+                  name="hero.title"
+                  form={form}
+                />
+                <LocalizedField
+                  label={`${t("fields.heroSubtitle")} (${optional})`}
+                  name="hero.subtitle"
+                  form={form}
+                  multiline
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -104,13 +178,38 @@ export function AboutSubPageForm({ slug, initial }: Props) {
             <CardTitle className="text-base">{t("groups.pageBody")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <LocalizedField label={t("fields.bodyHeading")} name="body.heading" form={form} />
-            <LocalizedField
-              label={t("fields.bodyContent")}
-              name="body.content"
-              form={form}
-              multiline
+            <SectionModeToggle
+              value={bodyMode}
+              onChange={(next) => setValue("bodyMode", next, { shouldDirty: true })}
             />
+            {bodyMode === "default" && (
+              <div className="space-y-4 border-t pt-4">
+                <LocalizedFieldStatic
+                  label={`${t("fields.bodyHeading")} (${optional})`}
+                  value={BODY_DEFAULTS.heading}
+                />
+                <LocalizedFieldStatic
+                  label={`${t("fields.bodyContent")} (${optional})`}
+                  value={BODY_DEFAULTS.content}
+                  multiline
+                />
+              </div>
+            )}
+            {bodyMode === "custom" && (
+              <div className="space-y-4 border-t pt-4">
+                <LocalizedField
+                  label={`${t("fields.bodyHeading")} (${optional})`}
+                  name="body.heading"
+                  form={form}
+                />
+                <LocalizedField
+                  label={`${t("fields.bodyContent")} (${optional})`}
+                  name="body.content"
+                  form={form}
+                  multiline
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

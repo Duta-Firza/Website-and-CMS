@@ -7,8 +7,8 @@
  *
  * Available targets: user, siteSettings, homeHero, stats, solutions,
  *                    solutionPages, partners, products, customers,
- *                    projects, reachPoints, aboutPage, leadership,
- *                    history, affiliatedBusinesses, credentials.
+ *                    projects, reachPoints, aboutPage, aboutSubPages,
+ *                    leadership, history, affiliatedBusinesses, credentials.
  *
  * - Upserts singleton documents (SiteSettings, HomeHero) by their fixed _id.
  * - For collections without a natural unique field, clears and re-inserts.
@@ -35,6 +35,7 @@ loadEnv({ path: ".env" });
 import {
   ABOUT_PAGE_ID,
   AboutPage,
+  AboutSubPage,
   AffiliatedBusiness,
   Credential,
   Customer,
@@ -185,6 +186,17 @@ async function seedSolutionPages() {
   return items.length;
 }
 
+async function seedAboutSubPages() {
+  // Each entry has its own `_id` (slug). Upsert by id so CMS edits already in
+  // the DB aren't wiped — only the seeded default fields are applied.
+  const items = readJson<Array<Record<string, unknown> & { _id: string }>>("about-sub-pages.json");
+  for (const item of items) {
+    const { _id, ...data } = item;
+    await AboutSubPage.findByIdAndUpdate(_id, data, { upsert: true, new: true });
+  }
+  return items.length;
+}
+
 interface ProductFixture {
   _principleNames: string[];
   origin: string;
@@ -249,6 +261,7 @@ const SEEDERS = {
   projects: seedProjects,
   reachPoints: seedReachPoints,
   aboutPage: seedAboutPage,
+  aboutSubPages: seedAboutSubPages,
   leadership: seedLeadership,
   history: seedHistory,
   affiliatedBusinesses: seedAffiliatedBusinesses,

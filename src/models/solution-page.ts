@@ -1,7 +1,7 @@
 import { type InferSchemaType, model, models, Schema } from "mongoose";
 import { FORM_FIELD_TYPES } from "@/lib/cms/form-fields";
 import { localizedStringOptional, stripVersion } from "./_shared";
-import { SOLUTION_PAGE_SLUGS, SOLUTION_PAGE_STATUSES } from "./constants";
+import { SECTION_MODES, SOLUTION_PAGE_SLUGS, SOLUTION_PAGE_STATUSES } from "./constants";
 
 export type { SolutionPageSlug, SolutionPageStatus } from "./constants";
 export { SOLUTION_PAGE_SLUGS, SOLUTION_PAGE_STATUSES };
@@ -64,6 +64,8 @@ const solutionPageSchema = new Schema(
       default: "comingSoon",
       index: true,
     },
+    heroMode: { type: String, enum: SECTION_MODES, default: "default" },
+    bodyMode: { type: String, enum: SECTION_MODES, default: "default" },
     hero: { type: heroSchema, default: () => ({}) },
     body: { type: bodySchema, default: () => ({}) },
     // Legacy flag kept for backward compat on existing docs; `formSettings.enabled`

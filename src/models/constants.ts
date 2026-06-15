@@ -72,6 +72,18 @@ export const ABOUT_SUB_PAGE_STATUSES = ["published", "comingSoon", "hidden"] as 
 export type AboutSubPageStatus = (typeof ABOUT_SUB_PAGE_STATUSES)[number];
 
 /**
+ * Section render mode used by Page Title + Page Body on every CMS-driven
+ * public page (About sub-pages + Solution sub-pages). Stored per section on
+ * AboutSubPage + SolutionPage docs.
+ *
+ * - disabled → public skips the section entirely
+ * - default  → public renders i18n defaults (SectionTitles + eyebrow)
+ * - custom   → public renders the localized fields the editor saved
+ */
+export const SECTION_MODES = ["disabled", "default", "custom"] as const;
+export type SectionMode = (typeof SECTION_MODES)[number];
+
+/**
  * Whitelist of lucide-react icon names available to the Solution card editor
  * on /admin/landing. Reuses several stat icons plus the two trade-specific
  * ones (Handshake/HardHat) already used as defaults.

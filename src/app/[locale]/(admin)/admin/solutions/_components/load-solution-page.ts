@@ -1,12 +1,19 @@
 import { DEFAULT_FORM_SETTINGS, type FormField, type FormSettings } from "@/lib/cms/form-fields";
 import { connectDB } from "@/lib/db";
-import { SolutionPage, type SolutionPageSlug, type SolutionPageStatus } from "@/models";
+import {
+  type SectionMode,
+  SolutionPage,
+  type SolutionPageSlug,
+  type SolutionPageStatus,
+} from "@/models";
 import type { SolutionPageFormValues } from "./solution-page-form";
 
 const EMPTY_LOCALIZED = { id: "", en: "" };
 
 const DEFAULT_FORM_VALUES: SolutionPageFormValues = {
   status: "comingSoon",
+  heroMode: "default",
+  bodyMode: "default",
   hero: {
     eyebrow: EMPTY_LOCALIZED,
     title: EMPTY_LOCALIZED,
@@ -61,6 +68,8 @@ export async function loadSolutionPageForAdmin(
   const doc = await SolutionPage.findById(slug).lean<{
     _id: string;
     status?: SolutionPageStatus;
+    heroMode?: SectionMode;
+    bodyMode?: SectionMode;
     hero?: {
       eyebrow?: { id?: string; en?: string };
       title?: { id?: string; en?: string };
@@ -81,6 +90,8 @@ export async function loadSolutionPageForAdmin(
   const formSettings = normalizeFormSettings(doc.formSettings, legacyEnabled);
   return {
     status: doc.status ?? "comingSoon",
+    heroMode: doc.heroMode ?? "default",
+    bodyMode: doc.bodyMode ?? "default",
     hero: {
       eyebrow: {
         id: doc.hero?.eyebrow?.id ?? "",

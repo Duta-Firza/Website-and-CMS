@@ -6,6 +6,7 @@ import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
 import { Badge } from "@/components/ui/badge";
 import type { Locale } from "@/lib/cms/localize";
+import { resolveBody, resolveHero } from "@/lib/cms/section-mode";
 import { getPublishedProducts, getSolutionPage } from "@/lib/cms/solutions";
 
 export default async function TradingProductsPublicPage() {
@@ -18,17 +19,30 @@ export default async function TradingProductsPublicPage() {
 
   if (page.status === "hidden") notFound();
 
-  const eyebrow = page.hero.eyebrow || t("products.eyebrow");
-  const title = page.hero.title || t("products.defaultTitle");
-  const subtitle = page.hero.subtitle || t("products.defaultSubtitle");
+  const hero = resolveHero({
+    mode: page.heroMode,
+    hero: page.hero,
+    defaults: {
+      eyebrow: t("products.eyebrow"),
+      title: t("products.defaultTitle"),
+      subtitle: t("products.defaultSubtitle"),
+    },
+  });
+  const body = resolveBody({
+    mode: page.bodyMode,
+    body: page.body,
+    defaults: { heading: "", content: "" },
+  });
 
   if (page.status === "comingSoon") {
     return (
       <>
-        <PageHeader eyebrow={eyebrow} title={title} description={subtitle} />
+        {hero && (
+          <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />
+        )}
         <ComingSoonPage
-          eyebrow={eyebrow}
-          title={page.body.heading || undefined}
+          eyebrow={hero?.eyebrow}
+          title={body?.heading || undefined}
           message={page.comingSoonMessage || undefined}
         />
       </>
@@ -37,18 +51,18 @@ export default async function TradingProductsPublicPage() {
 
   return (
     <>
-      <PageHeader eyebrow={eyebrow} title={title} description={subtitle} />
+      {hero && <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />}
 
-      {(page.body.heading || page.body.content) && (
+      {body && (body.heading || body.content) && (
         <ScrollReveal className="mb-10 max-w-3xl space-y-3">
-          {page.body.heading && (
+          {body.heading && (
             <h2 className="text-2xl font-semibold tracking-tight text-brand-deep dark:text-foreground">
-              {page.body.heading}
+              {body.heading}
             </h2>
           )}
-          {page.body.content && (
+          {body.content && (
             <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground">
-              {page.body.content}
+              {body.content}
             </p>
           )}
         </ScrollReveal>
