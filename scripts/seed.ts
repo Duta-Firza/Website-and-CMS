@@ -8,7 +8,8 @@
  * Available targets: user, siteSettings, homeHero, stats, solutions,
  *                    solutionPages, partners, products, customers,
  *                    projects, reachPoints, aboutPage, aboutSubPages,
- *                    leadership, history, affiliatedBusinesses, credentials.
+ *                    irSubPages, leadership, history, affiliatedBusinesses,
+ *                    credentials.
  *
  * - Upserts singleton documents (SiteSettings, HomeHero) by their fixed _id.
  * - For collections without a natural unique field, clears and re-inserts.
@@ -42,6 +43,7 @@ import {
   HistoryEntry,
   HOME_HERO_ID,
   HomeHero,
+  IrSubPage,
   LeadershipMember,
   Partner,
   Product,
@@ -197,6 +199,15 @@ async function seedAboutSubPages() {
   return items.length;
 }
 
+async function seedIrSubPages() {
+  const items = readJson<Array<Record<string, unknown> & { _id: string }>>("ir-sub-pages.json");
+  for (const item of items) {
+    const { _id, ...data } = item;
+    await IrSubPage.findByIdAndUpdate(_id, data, { upsert: true, new: true });
+  }
+  return items.length;
+}
+
 interface ProductFixture {
   _principleNames: string[];
   origin: string;
@@ -262,6 +273,7 @@ const SEEDERS = {
   reachPoints: seedReachPoints,
   aboutPage: seedAboutPage,
   aboutSubPages: seedAboutSubPages,
+  irSubPages: seedIrSubPages,
   leadership: seedLeadership,
   history: seedHistory,
   affiliatedBusinesses: seedAffiliatedBusinesses,

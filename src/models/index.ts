@@ -21,6 +21,16 @@ export { Customer, type CustomerDoc } from "./customer";
 export { HistoryEntry, type HistoryEntryDoc } from "./history-entry";
 export { HOME_HERO_ID, HomeHero, type HomeHeroDoc } from "./home-hero";
 export {
+  IR_SUB_PAGE_SLUGS,
+  IR_SUB_PAGE_STATUSES,
+  IrSubPage,
+  type IrSubPageDoc,
+  type IrSubPageSlug,
+  type IrSubPageStatus,
+} from "./ir-sub-page";
+export { Publication, type PublicationCategory, type PublicationDoc } from "./publication";
+export { Report, type ReportDoc, type ReportType } from "./report";
+export {
   INQUIRY_SOURCES,
   INQUIRY_STATUSES,
   Inquiry,

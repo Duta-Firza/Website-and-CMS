@@ -347,7 +347,33 @@
       "inquiries": {
         "title": "Inquiry Inbox",
         "description": "Submissions from the Trading, Manufacturing, EPC, and Contact forms."
-      }
+      },
+      "irStocks": {
+        "title": "Stocks",
+        "description": "Page content for /investor-relations/stocks."
+      },
+      "irPublications": {
+        "title": "Publications",
+        "description": "Page content for /investor-relations/publications."
+      },
+      "irReports": {
+        "title": "Reports",
+        "description": "Annual and financial reports for /investor-relations/reports."
+      },
+      "irNewsroom": {
+        "title": "Newsroom",
+        "description": "News articles for /investor-relations/publications/newsroom."
+      },
+      "irPressRelease": {
+        "title": "Press Release",
+        "description": "Press releases for /investor-relations/publications/press-release."
+      },
+      "irCompanyProfile": {
+        "title": "Company Profile",
+        "description": "Company profile PDF for /investor-relations/publications/company-profile."
+      },
+      "newArticle": "New Article",
+      "editArticle": "Edit Article"
     },
     "tabs": {
       "content": "Content",
@@ -369,7 +395,10 @@
       "inquiriesAll": "All",
       "inquiriesNew": "New",
       "inquiriesRead": "Read",
-      "inquiriesArchived": "Archived"
+      "inquiriesArchived": "Archived",
+      "items": "Items",
+      "annual": "Annual",
+      "financial": "Financial"
     },
     "nouns": {
       "stat": "Stat",
@@ -404,7 +433,9 @@
       "values": "No values yet. Add one to display on the Who We Are page.",
       "divisions": "No custom divisions. Defaults to EPC, Trading, Manufacturing.",
       "products": "No products yet.",
-      "inquiries": "No inquiries yet."
+      "inquiries": "No inquiries yet.",
+      "reports": "No reports yet. Click Add to upload the first report.",
+      "publications": "No articles yet."
     },
     "buttons": {
       "addValue": "Add value",
@@ -472,7 +503,12 @@
       "projectImage": "Recommended 1600×900 (16:9), JPG. Used for the card thumbnail and project page hero.",
       "leadershipPhoto": "Portrait 4:5 (min 400×500), JPG. Face centered in the upper-middle for the best crop.",
       "credentialImage": "Portrait 3:4 document scan (min 600×800), JPG/PNG. Crop the whole document, avoid excessive background.",
-      "aboutVideo": "MP4 H.264 720p+ (16:9 landscape). Compressed to 1080p/H.264; raw size up to 200MB."
+      "aboutVideo": "MP4 H.264 720p+ (16:9 landscape). Compressed to 1080p/H.264; raw size up to 200MB.",
+      "fileUrlHint": "Paste the GCS/CDN URL of the PDF file.",
+      "bodyRichHint": "Use the editor to format the article content.",
+      "slugHint": "Auto-generated from English title. Edit to override.",
+      "companyProfileUrlHint": "Upload the Company Profile PDF document.",
+      "originalUrlHint": "Link to the original external article or source (optional)."
     },
     "status": {
       "toggleSaved": "Status updated",
@@ -616,7 +652,16 @@
       "inquiryMessage": "Message",
       "inquiryWebsiteUrl": "Website",
       "inquirySource": "Source",
-      "inquiryReceivedAt": "Received"
+      "inquiryReceivedAt": "Received",
+      "reportType": "Type",
+      "reportYear": "Year",
+      "fileUrl": "File URL (PDF)",
+      "publishedAt": "Published Date",
+      "originalUrl": "Original URL",
+      "companyProfileUrl": "Company Profile PDF URL",
+      "bodyRich": "Article Body",
+      "slug": "Slug",
+      "summary": "Summary"
     },
     "groups": {
       "contact": "Contact",
@@ -639,7 +684,9 @@
       "principleSource": "Principle source",
       "productDetails": "Product details",
       "inquiryDetails": "Inquiry details",
-      "inquiryMeta": "Submission info"
+      "inquiryMeta": "Submission info",
+      "reportItem": "Report",
+      "publicationItem": "Article"
     },
     "credentials": {
       "valueIndex": "Value #{index}",
@@ -675,6 +722,7 @@
     "epc": "EPC",
     "stocks": "Stocks",
     "reports": "Reports",
+    "publications": "Publications",
     "pressRelease": "Press Release",
     "newsroom": "Newsroom",
     "companyProfile": "Company Profile",
@@ -690,5 +738,27 @@
     "comingSoon": "Soon",
     "expand": "Expand sidebar",
     "collapse": "Collapse sidebar"
+  },
+  "IR": {
+    "contactHeading": "Investor Relations Contact",
+    "downloadProfile": "Download Company Profile",
+    "previewProfile": "Preview",
+    "noProfileYet": "Company profile document is being prepared.",
+    "noReportsYet": "No reports available yet.",
+    "readMore": "Read more",
+    "viewReport": "View",
+    "downloadReport": "Download",
+    "previewReport": "Preview PDF",
+    "allReports": "All Reports",
+    "pressReleasesEmpty": "No press releases available yet.",
+    "newsroomEmpty": "No articles yet.",
+    "publishedDate": "Published",
+    "backToNewsroom": "Back to Newsroom",
+    "irContact": "IR Contact"
+  },
+  "Pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {current} of {total}"
   }
 }

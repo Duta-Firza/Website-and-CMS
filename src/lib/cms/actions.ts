@@ -18,6 +18,9 @@ import {
   HistoryEntry,
   HOME_HERO_ID,
   HomeHero,
+  IR_SUB_PAGE_SLUGS,
+  IR_SUB_PAGE_STATUSES,
+  IrSubPage,
   INQUIRY_SOURCES,
   INQUIRY_STATUSES,
   Inquiry,
@@ -27,7 +30,9 @@ import {
   PROJECT_CATEGORIES,
   Product,
   Project,
+  Publication,
   ReachPoint,
+  Report,
   SECTION_MODES,
   SITE_SETTINGS_ID,
   SiteSettings,
@@ -1178,6 +1183,179 @@ export async function deleteInquiry(id: string): Promise<ActionResult> {
     await requireAdmin();
     await connectDB();
     await Inquiry.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Investor Relations Sub-Pages ─────────────────────────────────────────────
+const irSubPageContentSchema = z.object({
+  status: z.enum(IR_SUB_PAGE_STATUSES),
+  heroMode: z.enum(SECTION_MODES).default("default"),
+  bodyMode: z.enum(SECTION_MODES).default("disabled"),
+  hero: z.object({
+    eyebrow: localizedSchema,
+    title: localizedSchema,
+    subtitle: localizedSchema,
+  }),
+  body: z.object({
+    heading: localizedSchema,
+    content: localizedSchema,
+  }),
+});
+
+export async function updateIrSubPage(
+  slug: string,
+  input: z.infer<typeof irSubPageContentSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsedSlug = z.enum(IR_SUB_PAGE_SLUGS).parse(slug);
+    const parsed = irSubPageContentSchema.parse(input);
+    await connectDB();
+    await IrSubPage.findByIdAndUpdate(parsedSlug, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Publications ─────────────────────────────────────────────────────────────
+const publicationSchema = z.object({
+  id: z.string().optional(),
+  slug: z.string().optional(),
+  category: z.enum(["newsroom", "press-release"]),
+  title: localizedSchema,
+  summary: localizedSchema,
+  body: localizedSchema,
+  imageUrl: z.string().default(""),
+  originalUrl: z.string().default(""),
+  publishedAt: z.coerce.date(),
+  isPublished: z.boolean().default(false),
+  order: z.number().int().default(0),
+});
+
+function generateSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 80);
+}
+
+export async function upsertPublication(
+  input: z.infer<typeof publicationSchema>,
+): Promise<ActionResult<{ id: string; slug: string }>> {
+  try {
+    await requireAdmin();
+    const { id, slug, ...data } = publicationSchema.parse(input);
+    await connectDB();
+    const finalSlug = slug?.trim() || generateSlug(data.title.en || data.title.id);
+    if (id) {
+      await Publication.findByIdAndUpdate(id, { ...data, slug: finalSlug });
+      bust();
+      return { ok: true, data: { id, slug: finalSlug } };
+    } else {
+      const doc = await Publication.create({ ...data, slug: finalSlug });
+      bust();
+      return { ok: true, data: { id: String(doc._id), slug: finalSlug } };
+    }
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deletePublication(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Publication.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderPublications(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Promise.all(ids.map((id, i) => Publication.findByIdAndUpdate(id, { order: i })));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Reports ──────────────────────────────────────────────────────────────────
+const reportSchema = z.object({
+  id: z.string().optional(),
+  title: localizedSchema,
+  type: z.enum(["annual", "financial"]),
+  year: z.number().int().min(2000).max(2100),
+  description: localizedSchema,
+  fileUrl: z.string().min(1),
+  publishedAt: z.coerce.date(),
+  isPublished: z.boolean().default(true),
+  order: z.number().int().default(0),
+});
+
+export async function upsertReport(input: z.infer<typeof reportSchema>): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { id, ...data } = reportSchema.parse(input);
+    await connectDB();
+    if (id) await Report.findByIdAndUpdate(id, data);
+    else await Report.create(data);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteReport(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Report.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderReports(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Promise.all(ids.map((id, i) => Report.findByIdAndUpdate(id, { order: i })));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Company Profile URL ──────────────────────────────────────────────────────
+export async function updateCompanyProfileUrl(url: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = z.string().parse(url);
+    await connectDB();
+    await SiteSettings.findByIdAndUpdate(
+      SITE_SETTINGS_ID,
+      { companyProfileUrl: parsed },
+      { upsert: true },
+    );
     bust();
     return { ok: true };
   } catch (e) {

@@ -83,6 +83,19 @@ export type AboutSubPageStatus = (typeof ABOUT_SUB_PAGE_STATUSES)[number];
 export const SECTION_MODES = ["disabled", "default", "custom"] as const;
 export type SectionMode = (typeof SECTION_MODES)[number];
 
+export const IR_SUB_PAGE_SLUGS = [
+  "stocks",
+  "reports",
+  "publications",
+  "press-release",
+  "newsroom",
+  "company-profile",
+] as const;
+export type IrSubPageSlug = (typeof IR_SUB_PAGE_SLUGS)[number];
+
+export const IR_SUB_PAGE_STATUSES = ["published", "comingSoon", "hidden"] as const;
+export type IrSubPageStatus = (typeof IR_SUB_PAGE_STATUSES)[number];
+
 /**
  * Whitelist of lucide-react icon names available to the Solution card editor
  * on /admin/landing. Reuses several stat icons plus the two trade-specific

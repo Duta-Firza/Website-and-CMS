@@ -347,7 +347,33 @@
       "inquiries": {
         "title": "Inbox Inquiry",
         "description": "Submission dari form Trading, Manufaktur, EPC, dan Kontak."
-      }
+      },
+      "irStocks": {
+        "title": "Saham",
+        "description": "Konten halaman /investor-relations/stocks."
+      },
+      "irPublications": {
+        "title": "Publikasi",
+        "description": "Konten halaman /investor-relations/publications."
+      },
+      "irReports": {
+        "title": "Laporan",
+        "description": "Laporan tahunan dan keuangan untuk /investor-relations/reports."
+      },
+      "irNewsroom": {
+        "title": "Newsroom",
+        "description": "Artikel berita untuk /investor-relations/publications/newsroom."
+      },
+      "irPressRelease": {
+        "title": "Siaran Pers",
+        "description": "Siaran pers untuk /investor-relations/publications/press-release."
+      },
+      "irCompanyProfile": {
+        "title": "Profil Perusahaan",
+        "description": "PDF profil perusahaan untuk /investor-relations/publications/company-profile."
+      },
+      "newArticle": "Artikel Baru",
+      "editArticle": "Edit Artikel"
     },
     "tabs": {
       "content": "Konten",
@@ -369,7 +395,10 @@
       "inquiriesAll": "Semua",
       "inquiriesNew": "Baru",
       "inquiriesRead": "Dibaca",
-      "inquiriesArchived": "Diarsipkan"
+      "inquiriesArchived": "Diarsipkan",
+      "items": "Item",
+      "annual": "Tahunan",
+      "financial": "Keuangan"
     },
     "nouns": {
       "stat": "Statistik",
@@ -404,7 +433,9 @@
       "values": "Belum ada nilai. Tambah satu untuk tampil di Who We Are.",
       "divisions": "Belum ada divisi. Default ke EPC, Trading, Manufaktur.",
       "products": "Belum ada produk.",
-      "inquiries": "Belum ada inquiry."
+      "inquiries": "Belum ada inquiry.",
+      "reports": "Belum ada laporan. Klik Tambah untuk mengunggah laporan pertama.",
+      "publications": "Belum ada artikel."
     },
     "buttons": {
       "addValue": "Tambah nilai",
@@ -472,7 +503,12 @@
       "projectImage": "Disarankan 1600×900 (16:9), JPG. Dipakai untuk thumbnail card dan hero halaman proyek.",
       "leadershipPhoto": "Portrait 4:5 (min 400×500), JPG. Wajah usahakan di tengah-atas frame untuk hasil crop optimal.",
       "credentialImage": "Scan dokumen portrait 3:4 (min 600×800), JPG/PNG. Crop seluruh dokumen, hindari background berlebih.",
-      "aboutVideo": "MP4 H.264 720p+ (16:9 landscape). Akan dikompres ke 1080p/H.264; ukuran asli max 200MB."
+      "aboutVideo": "MP4 H.264 720p+ (16:9 landscape). Akan dikompres ke 1080p/H.264; ukuran asli max 200MB.",
+      "fileUrlHint": "Tempel URL GCS/CDN dari file PDF.",
+      "bodyRichHint": "Gunakan editor untuk memformat isi artikel.",
+      "slugHint": "Otomatis dari judul bahasa Inggris. Edit untuk mengubah manual.",
+      "companyProfileUrlHint": "Upload dokumen PDF Profil Perusahaan.",
+      "originalUrlHint": "Tautan ke artikel atau sumber asli (opsional)."
     },
     "status": {
       "toggleSaved": "Status diperbarui",
@@ -616,7 +652,16 @@
       "inquiryMessage": "Pesan",
       "inquiryWebsiteUrl": "Website",
       "inquirySource": "Sumber",
-      "inquiryReceivedAt": "Diterima"
+      "inquiryReceivedAt": "Diterima",
+      "reportType": "Tipe",
+      "reportYear": "Tahun",
+      "fileUrl": "URL File (PDF)",
+      "publishedAt": "Tanggal Terbit",
+      "originalUrl": "URL Asli",
+      "companyProfileUrl": "URL PDF Profil Perusahaan",
+      "bodyRich": "Isi Artikel",
+      "slug": "Slug",
+      "summary": "Ringkasan"
     },
     "groups": {
       "contact": "Kontak",
@@ -639,7 +684,9 @@
       "principleSource": "Sumber principle",
       "productDetails": "Detail produk",
       "inquiryDetails": "Detail inquiry",
-      "inquiryMeta": "Info submission"
+      "inquiryMeta": "Info submission",
+      "reportItem": "Laporan",
+      "publicationItem": "Artikel"
     },
     "credentials": {
       "valueIndex": "Nilai #{index}",
@@ -675,6 +722,7 @@
     "epc": "EPC",
     "stocks": "Saham",
     "reports": "Laporan",
+    "publications": "Publikasi",
     "pressRelease": "Siaran Pers",
     "newsroom": "Newsroom",
     "companyProfile": "Profil Perusahaan",
@@ -690,5 +738,27 @@
     "comingSoon": "Segera",
     "expand": "Perluas sidebar",
     "collapse": "Ringkas sidebar"
+  },
+  "IR": {
+    "contactHeading": "Kontak Hubungan Investor",
+    "downloadProfile": "Unduh Profil Perusahaan",
+    "previewProfile": "Pratinjau",
+    "noProfileYet": "Dokumen profil perusahaan sedang disiapkan.",
+    "noReportsYet": "Belum ada laporan tersedia.",
+    "readMore": "Selengkapnya",
+    "viewReport": "Lihat",
+    "downloadReport": "Unduh",
+    "previewReport": "Pratinjau PDF",
+    "allReports": "Semua Laporan",
+    "pressReleasesEmpty": "Belum ada siaran pers tersedia.",
+    "newsroomEmpty": "Belum ada artikel.",
+    "publishedDate": "Diterbitkan",
+    "backToNewsroom": "Kembali ke Newsroom",
+    "irContact": "Kontak IR"
+  },
+  "Pagination": {
+    "previous": "Sebelumnya",
+    "next": "Berikutnya",
+    "pageOf": "Halaman {current} dari {total}"
   }
 }
