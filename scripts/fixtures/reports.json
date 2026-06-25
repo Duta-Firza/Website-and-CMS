@@ -1,0 +1,67 @@
+[
+  {
+    "title": { "id": "Laporan Tahunan 2024", "en": "Annual Report 2024" },
+    "type": "annual",
+    "year": 2024,
+    "description": {
+      "id": "Laporan tahunan PT Duta Firza Tbk untuk tahun buku 2024, mencakup kinerja keuangan, operasional, dan tata kelola perusahaan.",
+      "en": "PT Duta Firza Tbk annual report for fiscal year 2024, covering financial performance, operations, and corporate governance."
+    },
+    "fileUrl": "https://storage.googleapis.com/duta-firza-public/reports/annual-report-2024.pdf",
+    "publishedAt": "2025-04-30T00:00:00.000Z",
+    "isPublished": true,
+    "order": 0
+  },
+  {
+    "title": { "id": "Laporan Tahunan 2023", "en": "Annual Report 2023" },
+    "type": "annual",
+    "year": 2023,
+    "description": {
+      "id": "Laporan tahunan PT Duta Firza Tbk untuk tahun buku 2023.",
+      "en": "PT Duta Firza Tbk annual report for fiscal year 2023."
+    },
+    "fileUrl": "https://storage.googleapis.com/duta-firza-public/reports/annual-report-2023.pdf",
+    "publishedAt": "2024-04-30T00:00:00.000Z",
+    "isPublished": true,
+    "order": 1
+  },
+  {
+    "title": { "id": "Laporan Keuangan Q4 2024", "en": "Financial Report Q4 2024" },
+    "type": "financial",
+    "year": 2024,
+    "description": {
+      "id": "Laporan keuangan triwulan keempat tahun 2024 (Oktober–Desember).",
+      "en": "Financial report for the fourth quarter of 2024 (October–December)."
+    },
+    "fileUrl": "https://storage.googleapis.com/duta-firza-public/reports/financial-q4-2024.pdf",
+    "publishedAt": "2025-02-28T00:00:00.000Z",
+    "isPublished": true,
+    "order": 0
+  },
+  {
+    "title": { "id": "Laporan Keuangan Q3 2024", "en": "Financial Report Q3 2024" },
+    "type": "financial",
+    "year": 2024,
+    "description": {
+      "id": "Laporan keuangan triwulan ketiga tahun 2024 (Juli–September).",
+      "en": "Financial report for the third quarter of 2024 (July–September)."
+    },
+    "fileUrl": "https://storage.googleapis.com/duta-firza-public/reports/financial-q3-2024.pdf",
+    "publishedAt": "2024-11-30T00:00:00.000Z",
+    "isPublished": true,
+    "order": 1
+  },
+  {
+    "title": { "id": "Laporan Keuangan Q2 2024", "en": "Financial Report Q2 2024" },
+    "type": "financial",
+    "year": 2024,
+    "description": {
+      "id": "Laporan keuangan triwulan kedua tahun 2024 (April–Juni).",
+      "en": "Financial report for the second quarter of 2024 (April–June)."
+    },
+    "fileUrl": "https://storage.googleapis.com/duta-firza-public/reports/financial-q2-2024.pdf",
+    "publishedAt": "2024-08-31T00:00:00.000Z",
+    "isPublished": true,
+    "order": 2
+  }
+]

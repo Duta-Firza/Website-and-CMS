@@ -8,8 +8,8 @@
  * Available targets: user, siteSettings, homeHero, stats, solutions,
  *                    solutionPages, partners, products, customers,
  *                    projects, reachPoints, aboutPage, aboutSubPages,
- *                    irSubPages, leadership, history, affiliatedBusinesses,
- *                    credentials.
+ *                    irSubPages, reports, newsroom, pressRelease,
+ *                    leadership, history, affiliatedBusinesses, credentials.
  *
  * - Upserts singleton documents (SiteSettings, HomeHero) by their fixed _id.
  * - For collections without a natural unique field, clears and re-inserts.
@@ -48,7 +48,9 @@ import {
   Partner,
   Product,
   Project,
+  Publication,
   ReachPoint,
+  Report,
   SITE_SETTINGS_ID,
   SiteSettings,
   Solution,
@@ -208,6 +210,35 @@ async function seedIrSubPages() {
   return items.length;
 }
 
+async function seedReports() {
+  const items = readJson<Array<Record<string, unknown>>>("reports.json");
+  await Report.deleteMany({});
+  await Report.insertMany(items);
+  return items.length;
+}
+
+async function seedNewsroom() {
+  const items = readJson<Array<Record<string, unknown> & { slug: string }>>(
+    "publications-newsroom.json",
+  );
+  for (const item of items) {
+    const { slug, ...data } = item;
+    await Publication.findOneAndUpdate({ slug }, { slug, ...data }, { upsert: true });
+  }
+  return items.length;
+}
+
+async function seedPressRelease() {
+  const items = readJson<Array<Record<string, unknown> & { slug: string }>>(
+    "publications-press-release.json",
+  );
+  for (const item of items) {
+    const { slug, ...data } = item;
+    await Publication.findOneAndUpdate({ slug }, { slug, ...data }, { upsert: true });
+  }
+  return items.length;
+}
+
 interface ProductFixture {
   _principleNames: string[];
   origin: string;
@@ -274,6 +305,9 @@ const SEEDERS = {
   aboutPage: seedAboutPage,
   aboutSubPages: seedAboutSubPages,
   irSubPages: seedIrSubPages,
+  reports: seedReports,
+  newsroom: seedNewsroom,
+  pressRelease: seedPressRelease,
   leadership: seedLeadership,
   history: seedHistory,
   affiliatedBusinesses: seedAffiliatedBusinesses,
