@@ -9,8 +9,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import type { CustomerData } from "@/lib/cms/home";
 import { cn } from "@/lib/utils";
-import { SectionIndex } from "./section-index";
-import { SectionPattern } from "./section-pattern";
+// import { SectionIndex } from "./section-index";
+// import { SectionPattern } from "./section-pattern";
 
 interface Props {
   customers: CustomerData[];
@@ -87,7 +87,7 @@ export function CustomersCarousel({ customers, titleOverride }: Props) {
 
   return (
     <section className="group/strip relative py-16 md:py-20">
-      <SectionPattern />
+      {/* <SectionPattern /> */}
       {/* <SectionIndex value="05" /> */}
       <ScrollReveal className="container relative mx-auto mb-10 px-4">
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">

@@ -10,10 +10,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { connectDB } from "@/lib/db";
 import { Customer, HOME_HERO_ID, HomeHero, ReachPoint, Solution, Stat } from "@/models";
-import { SOLUTION_KEYS, type SolutionKey, STAT_ICONS, type StatIcon } from "@/models/constants";
+import { STAT_ICONS, type StatIcon } from "@/models/constants";
 import { HeroForm } from "./hero-form";
 import { ReachManager } from "./reach-manager";
-import { SolutionForm } from "./solution-card-form";
+import { SolutionsManager } from "./solutions-manager";
 import { StatsManager } from "./stats-manager";
 
 async function loadAll() {
@@ -36,6 +36,7 @@ async function loadAll() {
     secondaryCtaLabel: empty,
     secondaryCtaHref: "",
     backgroundImage: "/images/landing/hero-placeholder.jpg",
+    solutionsColumnsPerRow: 3,
   };
   const pickLocalized = (field: unknown): { id: string; en: string } => {
     if (field && typeof field === "object") {
@@ -48,22 +49,16 @@ async function loadAll() {
     return empty;
   };
 
-  // Ensure all 3 Solution keys are present (with defaults) so admin can edit
-  // before the seed has run.
-  const byKey = new Map<SolutionKey, (typeof solutionDocs)[number]>();
-  for (const d of solutionDocs) byKey.set(d.key as SolutionKey, d);
-  const solutions = SOLUTION_KEYS.map((key, idx) => {
-    const doc = byKey.get(key);
-    return {
-      id: doc ? String(doc._id) : undefined,
-      key,
-      title: doc?.title ?? empty,
-      description: doc?.description ?? empty,
-      iconName: doc?.iconName ?? defaultIcon(key),
-      href: doc?.href ?? `/id/solutions/${key}`,
-      order: doc?.order ?? idx,
-    };
-  });
+  const solutions = solutionDocs.map((doc, idx) => ({
+    id: String(doc._id),
+    key: doc.key,
+    title: pickLocalized(doc.title),
+    description: pickLocalized(doc.description),
+    iconName: doc.iconName ?? "Box",
+    href: doc.href ?? `/solutions/${doc.key}`,
+    order: doc.order ?? idx,
+    isActive: doc.isActive ?? true,
+  }));
 
   return {
     hero: {
@@ -80,7 +75,11 @@ async function loadAll() {
         en: hero.secondaryCtaLabel?.en ?? "",
       },
       secondaryCtaHref: hero.secondaryCtaHref ?? "",
-      backgroundImage: hero.backgroundImage,
+      backgroundImage:
+        hero.backgroundImage && hero.backgroundImage.startsWith("http")
+          ? hero.backgroundImage
+          : "",
+      heroDecorations: heroDoc?.heroDecorations ?? true,
       partnersTitle: pickLocalized(heroDoc?.partnersTitle),
       partnersSubtitle: pickLocalized(heroDoc?.partnersSubtitle),
       solutionsTitle: pickLocalized(heroDoc?.solutionsTitle),
@@ -110,6 +109,7 @@ async function loadAll() {
       longitude: r.longitude,
       order: r.order ?? 0,
     })),
+    solutionsColumnsPerRow: heroDoc?.solutionsColumnsPerRow ?? 3,
     solutions,
     customers: customerDocs.map(
       (c): CustomerRow => ({
@@ -122,12 +122,6 @@ async function loadAll() {
       }),
     ),
   };
-}
-
-function defaultIcon(key: SolutionKey): string {
-  if (key === "trading") return "Handshake";
-  if (key === "manufacturing") return "Factory";
-  return "HardHat";
 }
 
 // Tab order mirrors the public homepage section order: Hero → Stats →
@@ -181,11 +175,7 @@ export default async function LandingAdminPage() {
           </Card>
         </TabsContent>
         <TabsContent value="solutions" className="mt-6">
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            {data.solutions.map((s) => (
-              <SolutionForm key={s.key} initial={s} />
-            ))}
-          </div>
+          <SolutionsManager initial={data.solutions} initialColumns={data.solutionsColumnsPerRow} />
         </TabsContent>
         <TabsContent value="reach" className="mt-6">
           <ReachManager initial={data.reach} />

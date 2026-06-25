@@ -496,7 +496,8 @@
       "uploadOriginal": "Upload original"
     },
     "hints": {
-      "heroBg": "Recommended 1920×1080 (16:9 landscape), JPG/WebP. Rendered full-width as hero backdrop.",
+      "heroBg": "Recommended 1920×1080 (16:9 landscape), JPG/WebP. Rendered full-width as hero backdrop. Leave empty to use the default gradient.",
+      "heroDecorations": "On: dark overlay + pattern + bottom gradient. Off: image is shown as-is without any overlay.",
       "partnerLogo": "Landscape logo, PNG transparent (min 400×133). Public display ~48px tall, width auto.",
       "customerLogo": "Landscape logo, PNG transparent (min 280×93). Public display ~40px tall on the marquee.",
       "businessLogo": "Landscape logo, PNG transparent (min 400×100). Left-aligned inside the affiliated card, ~64px tall.",
@@ -564,6 +565,8 @@
       "heroCtaLabel": "Primary CTA label",
       "heroCtaHref": "Primary CTA link",
       "heroBgImage": "Background image",
+      "heroDecorations": "Overlay & hero decorations",
+      "solutionsColumnsPerRow": "Columns per row (Our Solutions)",
       "heroSecondaryCta": "Secondary CTA label (optional)",
       "heroSecondaryCtaHref": "Secondary CTA link (optional)",
       "videoProfile": "Video profile",

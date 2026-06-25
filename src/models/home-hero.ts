@@ -18,11 +18,9 @@ const homeHeroSchema = new Schema(
       default: () => ({ id: "", en: "" }),
     },
     secondaryCtaHref: { type: String, default: "" },
-    backgroundImage: {
-      type: String,
-      required: true,
-      default: "/images/landing/hero-placeholder.jpg",
-    },
+    backgroundImage: { type: String, default: "" },
+    heroDecorations: { type: Boolean, default: true },
+    solutionsColumnsPerRow: { type: Number, default: 3 },
     // Section heading overrides — when non-empty, render in place of the i18n default
     partnersTitle: optionalLocalized,
     partnersSubtitle: optionalLocalized,

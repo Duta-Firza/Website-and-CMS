@@ -38,15 +38,16 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <HeroSection hero={hero} />
       </div>
       <QuickStats stats={stats} />
-      <PartnersCarousel
-        partners={partners}
-        titleOverride={hero.partnersTitle}
-        subtitleOverride={hero.partnersSubtitle}
-      />
       <SolutionsSpotlight
         solutions={solutions}
         titleOverride={hero.solutionsTitle}
         subtitleOverride={hero.solutionsSubtitle}
+        columnsPerRow={hero.solutionsColumnsPerRow}
+      />
+      <PartnersCarousel
+        partners={partners}
+        titleOverride={hero.partnersTitle}
+        subtitleOverride={hero.partnersSubtitle}
       />
       <ProjectHighlights
         projects={projects}

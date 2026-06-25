@@ -8,7 +8,8 @@
     },
     "iconName": "Handshake",
     "href": "/solutions/trading",
-    "order": 0
+    "order": 0,
+    "isActive": true
   },
   {
     "key": "manufacturing",
@@ -19,7 +20,8 @@
     },
     "iconName": "Factory",
     "href": "/solutions/manufacturing",
-    "order": 1
+    "order": 1,
+    "isActive": true
   },
   {
     "key": "epc",
@@ -30,6 +32,19 @@
     },
     "iconName": "HardHat",
     "href": "/solutions/epc",
-    "order": 2
+    "order": 2,
+    "isActive": true
+  },
+  {
+    "key": "technology",
+    "title": { "id": "Teknologi", "en": "Technology" },
+    "description": {
+      "id": "Solusi teknologi informasi dan komunikasi untuk mendukung operasional industri energi.",
+      "en": "Information and communication technology solutions to support energy industry operations."
+    },
+    "iconName": "Cpu",
+    "href": "/solutions/technology",
+    "order": 3,
+    "isActive": true
   }
 ]

@@ -496,7 +496,8 @@
       "uploadOriginal": "Unggah gambar utuh"
     },
     "hints": {
-      "heroBg": "Disarankan 1920×1080 (16:9 landscape), JPG/WebP. Akan ditampilkan full-width sebagai backdrop hero.",
+      "heroBg": "Disarankan 1920×1080 (16:9 landscape), JPG/WebP. Akan ditampilkan full-width sebagai backdrop hero. Kosongkan untuk menggunakan gradasi default.",
+      "heroDecorations": "Aktif: overlay gelap + pola + gradasi bawah. Nonaktif: gambar ditampilkan utuh tanpa dekorasi.",
       "partnerLogo": "Logo landscape, PNG transparent (min 400×133). Tinggi tampilan ~48px di public, lebar otomatis.",
       "customerLogo": "Logo landscape, PNG transparent (min 280×93). Tinggi tampilan ~40px di marquee public.",
       "businessLogo": "Logo landscape, PNG transparent (min 400×100). Tampil rata kiri di card afiliasi, tinggi ~64px.",
@@ -564,6 +565,8 @@
       "heroCtaLabel": "Label CTA utama",
       "heroCtaHref": "Link CTA utama",
       "heroBgImage": "Gambar background",
+      "heroDecorations": "Overlay & dekorasi hero",
+      "solutionsColumnsPerRow": "Kolom per baris (Our Solutions)",
       "heroSecondaryCta": "Label CTA sekunder (opsional)",
       "heroSecondaryCtaHref": "Link CTA sekunder (opsional)",
       "videoProfile": "Video profil",

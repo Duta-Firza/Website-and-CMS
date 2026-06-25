@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { updateHomeHero } from "@/lib/cms/actions";
 
 const localizedOptional = z.object({ id: z.string(), en: z.string() });
@@ -26,7 +27,8 @@ const schema = z.object({
   ctaHref: z.string().min(1),
   secondaryCtaLabel: localizedOptional,
   secondaryCtaHref: z.string(),
-  backgroundImage: z.string().min(1),
+  backgroundImage: z.string(),
+  heroDecorations: z.boolean(),
   partnersTitle: localizedOptional,
   partnersSubtitle: localizedOptional,
   solutionsTitle: localizedOptional,
@@ -60,6 +62,9 @@ export function HeroForm({ initial }: { initial: FormValues }) {
     else toast.error(result.error);
   };
 
+  const bgImage = watch("backgroundImage");
+  const heroDecorations = watch("heroDecorations");
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <Card>
@@ -80,7 +85,7 @@ export function HeroForm({ initial }: { initial: FormValues }) {
           <div className="space-y-2">
             <Label>{t("fields.heroBgImage")}</Label>
             <MediaUpload
-              value={watch("backgroundImage")}
+              value={bgImage}
               onChange={(url) => setValue("backgroundImage", url, { shouldDirty: true })}
               accept="image"
               folder="landing"
@@ -88,6 +93,36 @@ export function HeroForm({ initial }: { initial: FormValues }) {
               hint={t("hints.heroBg")}
             />
           </div>
+
+          {/* Decorations toggle — only relevant when a background image is set */}
+          <div
+            className={
+              bgImage
+                ? "flex items-center justify-between gap-4 rounded-lg border bg-muted/30 px-4 py-3"
+                : "flex items-center justify-between gap-4 rounded-lg border bg-muted/30 px-4 py-3 opacity-40"
+            }
+          >
+            <div className="space-y-0.5">
+              <Label
+                htmlFor="hero-decorations"
+                className="cursor-pointer text-sm font-medium"
+              >
+                {t("fields.heroDecorations")}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {t("hints.heroDecorations")}
+              </p>
+            </div>
+            <Switch
+              id="hero-decorations"
+              checked={heroDecorations}
+              disabled={!bgImage}
+              onCheckedChange={(checked) =>
+                setValue("heroDecorations", checked, { shouldDirty: true })
+              }
+            />
+          </div>
+
           <LocalizedField
             label={t("fields.heroSecondaryCta")}
             name="secondaryCtaLabel"

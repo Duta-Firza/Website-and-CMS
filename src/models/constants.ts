@@ -7,7 +7,7 @@
 export const PROJECT_CATEGORIES = ["trading", "manufacturing", "epc"] as const;
 export type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
 
-export const SOLUTION_KEYS = ["trading", "manufacturing", "epc"] as const;
+export const SOLUTION_KEYS = ["trading", "manufacturing", "epc", "technology"] as const;
 export type SolutionKey = (typeof SOLUTION_KEYS)[number];
 
 export const USER_ROLES = ["super-admin", "editor", "viewer"] as const;
@@ -110,5 +110,6 @@ export const SOLUTION_ICONS = [
   "Briefcase",
   "Globe",
   "TrendingUp",
+  "Cpu",
 ] as const;
 export type SolutionIcon = (typeof SOLUTION_ICONS)[number];

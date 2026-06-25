@@ -6,12 +6,13 @@ export { SOLUTION_KEYS, type SolutionKey };
 
 const solutionSchema = new Schema(
   {
-    key: { type: String, enum: SOLUTION_KEYS, required: true, unique: true },
+    key: { type: String, required: true, unique: true },
     title: localizedStringRequired,
     description: localizedStringRequired,
     iconName: { type: String, required: true, default: "Box" },
     href: { type: String, required: true },
     order: { type: Number, default: 0, index: true },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true, ...stripVersion },
 );

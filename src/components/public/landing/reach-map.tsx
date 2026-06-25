@@ -7,6 +7,7 @@ import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import type { ReachPointData } from "@/lib/cms/home";
 import { SectionIndex } from "./section-index";
+import { SectionPattern } from "./section-pattern";
 
 // Leaflet touches `window` at module evaluation; lazy-load with SSR off.
 const LeafletMap = dynamic(() => import("./reach-map-leaflet").then((m) => m.LeafletMap), {
@@ -33,6 +34,7 @@ export function ReachMap({ reachPoints, titleOverride, subtitleOverride }: Props
 
   return (
     <section className="relative bg-background">
+      <SectionPattern />
       {/* <SectionIndex value="04" /> */}
       <div className="container mx-auto px-4 py-20 md:py-24">
         <ScrollReveal className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-3 text-center">

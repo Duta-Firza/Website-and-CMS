@@ -11,25 +11,37 @@ export function HeroSection({ hero }: { hero: HeroData }) {
   const hasSecondary =
     hero.secondaryCtaLabel.trim().length > 0 && hero.secondaryCtaHref.trim().length > 0;
 
+  // Show decorations (overlay, pattern, gradient fade) when there's no image
+  // (they define the brand identity), or when the admin opts in with heroDecorations.
+  const showDecorations = !hero.backgroundImage || hero.heroDecorations;
+
   return (
     <section
       className={cn(
         "relative isolate flex min-h-[85vh] items-center overflow-hidden",
-        // Fallback gradient so the hero still has identity even with no/plain image.
         "bg-[linear-gradient(135deg,#1d1a57_0%,#0e0a2f_55%,#3c526d_100%)]",
       )}
     >
-      <Image
-        src={hero.backgroundImage}
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="-z-20 object-cover"
-      />
-      {/* Dark gradient overlay for text legibility */}
-      <div className="absolute inset-0 -z-10 bg-linear-to-r from-brand-deep/90 via-brand-deep/70 to-brand-deep/30" />
-      <HeroPattern />
+      {hero.backgroundImage && (
+        <Image
+          src={hero.backgroundImage}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="-z-20 object-cover"
+        />
+      )}
+
+      {showDecorations && (
+        <>
+          {/* Dark gradient overlay for text legibility over the photo */}
+          <div className="absolute inset-0 -z-10 bg-linear-to-r from-brand-deep/90 via-brand-deep/70 to-brand-deep/30" />
+          <HeroPattern />
+          {/* Bottom gradient that melts the hero into the page background */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-linear-to-b from-transparent to-background" />
+        </>
+      )}
 
       <div className="container mx-auto px-4 pt-32 pb-32 md:pt-40 md:pb-40">
         <div className="max-w-3xl space-y-7 text-white">

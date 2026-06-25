@@ -20,6 +20,8 @@ export interface HeroData {
   secondaryCtaLabel: string;
   secondaryCtaHref: string;
   backgroundImage: string;
+  heroDecorations: boolean;
+  solutionsColumnsPerRow: number;
   partnersTitle: string;
   partnersSubtitle: string;
   solutionsTitle: string;
@@ -33,6 +35,13 @@ export interface HeroData {
 
 const EMPTY_LOCALIZED = { id: "", en: "" };
 
+// Treat local placeholder paths (not GCS URLs) as "no image" so the hero renders
+// cleanly with the gradient fallback instead of a broken <img> element.
+function normalizeHeroImage(url: string | undefined | null): string {
+  if (!url || !url.startsWith("http")) return "";
+  return url;
+}
+
 export async function getHomeHero(locale: Locale): Promise<HeroData> {
   await connectDB();
   const doc = await HomeHero.findById(HOME_HERO_ID).lean();
@@ -45,7 +54,9 @@ export async function getHomeHero(locale: Locale): Promise<HeroData> {
       ctaHref: "/contact",
       secondaryCtaLabel: "",
       secondaryCtaHref: "",
-      backgroundImage: "/images/landing/hero-placeholder.jpg",
+      backgroundImage: "",
+      heroDecorations: true,
+      solutionsColumnsPerRow: 3,
       partnersTitle: "",
       partnersSubtitle: "",
       solutionsTitle: "",
@@ -66,7 +77,9 @@ export async function getHomeHero(locale: Locale): Promise<HeroData> {
       ctaHref: doc.ctaHref,
       secondaryCtaLabel: doc.secondaryCtaLabel ?? EMPTY_LOCALIZED,
       secondaryCtaHref: doc.secondaryCtaHref ?? "",
-      backgroundImage: doc.backgroundImage,
+      backgroundImage: normalizeHeroImage(doc.backgroundImage),
+      heroDecorations: doc.heroDecorations ?? true,
+      solutionsColumnsPerRow: doc.solutionsColumnsPerRow ?? 3,
       partnersTitle: doc.partnersTitle ?? EMPTY_LOCALIZED,
       partnersSubtitle: doc.partnersSubtitle ?? EMPTY_LOCALIZED,
       solutionsTitle: doc.solutionsTitle ?? EMPTY_LOCALIZED,
@@ -149,7 +162,7 @@ export interface SolutionData {
 
 export async function getSolutions(locale: Locale): Promise<SolutionData[]> {
   await connectDB();
-  const docs = await Solution.find().sort({ order: 1 }).lean();
+  const docs = await Solution.find({ isActive: { $ne: false } }).sort({ order: 1 }).lean();
   return docs.map((d) =>
     localize(
       {

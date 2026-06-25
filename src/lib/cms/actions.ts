@@ -36,7 +36,6 @@ import {
   SECTION_MODES,
   SITE_SETTINGS_ID,
   SiteSettings,
-  SOLUTION_KEYS,
   SOLUTION_PAGE_SLUGS,
   SOLUTION_PAGE_STATUSES,
   Solution,
@@ -74,7 +73,8 @@ const heroSchema = z.object({
   ctaHref: z.string().min(1),
   secondaryCtaLabel: localizedSchema,
   secondaryCtaHref: z.string().default(""),
-  backgroundImage: z.string().min(1),
+  backgroundImage: z.string().default(""),
+  heroDecorations: z.boolean().default(true),
   partnersTitle: localizedSchema.default({ id: "", en: "" }),
   partnersSubtitle: localizedSchema.default({ id: "", en: "" }),
   solutionsTitle: localizedSchema.default({ id: "", en: "" }),
@@ -91,7 +91,7 @@ export async function updateHomeHero(input: z.infer<typeof heroSchema>): Promise
     await requireAdmin();
     const parsed = heroSchema.parse(input);
     await connectDB();
-    await HomeHero.findByIdAndUpdate(HOME_HERO_ID, parsed, { upsert: true, new: true });
+    await HomeHero.findByIdAndUpdate(HOME_HERO_ID, { $set: parsed }, { upsert: true, new: true, strict: false });
     bust();
     return { ok: true };
   } catch (e) {
@@ -177,12 +177,13 @@ export async function deletePartner(id: string): Promise<ActionResult> {
 // ─── Solutions ───────────────────────────────────────────────────────────────
 const solutionSchema = z.object({
   id: z.string().optional(),
-  key: z.enum(SOLUTION_KEYS),
+  key: z.string().min(1),
   title: localizedSchema,
   description: localizedSchema,
   iconName: z.string().min(1),
   href: z.string().min(1),
   order: z.number().int().default(0),
+  isActive: z.boolean().default(true),
 });
 
 export async function upsertSolution(input: z.infer<typeof solutionSchema>): Promise<ActionResult> {
@@ -190,8 +191,42 @@ export async function upsertSolution(input: z.infer<typeof solutionSchema>): Pro
     await requireAdmin();
     const { id, ...data } = solutionSchema.parse(input);
     await connectDB();
-    if (id) await Solution.findByIdAndUpdate(id, data);
-    else await Solution.findOneAndUpdate({ key: data.key }, data, { upsert: true });
+    const opts = { strict: false } as const;
+    if (id) await Solution.findByIdAndUpdate(id, { $set: data }, opts);
+    else await Solution.findOneAndUpdate({ key: data.key }, { $set: data }, { ...opts, upsert: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteSolution(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Solution.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function updateSolutionsLayout(input: {
+  columnsPerRow: number;
+}): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const columnsPerRow = Math.max(1, Math.min(6, Math.round(input.columnsPerRow)));
+    await connectDB();
+    // strict: false bypasses Mongoose schema cache so the field isn't stripped
+    // if the model was compiled before solutionsColumnsPerRow was added to the schema.
+    await HomeHero.updateOne(
+      { _id: HOME_HERO_ID },
+      { $set: { solutionsColumnsPerRow: columnsPerRow } },
+      { upsert: true, strict: false },
+    );
     bust();
     return { ok: true };
   } catch (e) {
