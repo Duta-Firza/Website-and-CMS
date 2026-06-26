@@ -18,7 +18,7 @@ export function HeroSection({ hero }: { hero: HeroData }) {
   return (
     <section
       className={cn(
-        "relative isolate flex min-h-[85vh] items-center overflow-hidden",
+        "relative isolate flex min-h-screen items-center overflow-hidden",
         "bg-[linear-gradient(135deg,#1d1a57_0%,#0e0a2f_55%,#3c526d_100%)]",
       )}
     >
@@ -38,8 +38,9 @@ export function HeroSection({ hero }: { hero: HeroData }) {
           {/* Dark gradient overlay for text legibility over the photo */}
           <div className="absolute inset-0 -z-10 bg-linear-to-r from-brand-deep/90 via-brand-deep/70 to-brand-deep/30" />
           <HeroPattern />
-          {/* Bottom gradient that melts the hero into the page background */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-linear-to-b from-transparent to-background" />
+          {/* Bottom gradient that melts the hero into the page background so the
+              dark hero dissolves into the lighter content below it. */}
+          {/* <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-32 bg-linear-to-b from-transparent to-background" /> */}
         </>
       )}
 

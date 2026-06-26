@@ -6,8 +6,7 @@ import { useTranslations } from "next-intl";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import type { ReachPointData } from "@/lib/cms/home";
-import { SectionIndex } from "./section-index";
-import { SectionPattern } from "./section-pattern";
+import { SectionAccent } from "./section-accent";
 
 // Leaflet touches `window` at module evaluation; lazy-load with SSR off.
 const LeafletMap = dynamic(() => import("./reach-map-leaflet").then((m) => m.LeafletMap), {
@@ -33,9 +32,8 @@ export function ReachMap({ reachPoints, titleOverride, subtitleOverride }: Props
   const subtitle = subtitleOverride?.trim() || t("ourReachSubtitle");
 
   return (
-    <section className="relative bg-background">
-      <SectionPattern />
-      {/* <SectionIndex value="04" /> */}
+    <section className="relative isolate overflow-hidden">
+      <SectionAccent variant="radar" />
       <div className="container mx-auto px-4 py-20 md:py-24">
         <ScrollReveal className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-3 text-center">
           <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />

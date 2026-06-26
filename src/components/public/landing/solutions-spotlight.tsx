@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { cn } from "@/lib/utils";
 import type { SolutionData } from "@/lib/cms/home";
+import { SectionAccent } from "./section-accent";
 import { SolutionCard } from "./solution-card";
 
 const GRID_COLS: Record<number, string> = {
@@ -32,7 +33,8 @@ export async function SolutionsSpotlight({
   const colClass = GRID_COLS[columnsPerRow] ?? "md:grid-cols-3";
 
   return (
-    <section className="relative bg-background">
+    <section className="relative isolate overflow-hidden">
+      <SectionAccent variant="orbit" />
       <div className="container mx-auto px-4 py-20 md:py-24">
         <ScrollReveal className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-3 text-center">
           <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />

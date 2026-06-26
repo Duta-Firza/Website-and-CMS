@@ -11,8 +11,7 @@ import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { buttonVariants } from "@/components/ui/button";
 import type { PartnerData } from "@/lib/cms/home";
 import { cn } from "@/lib/utils";
-import { SectionIndex } from "./section-index";
-import { SectionPattern } from "./section-pattern";
+import { SectionAccent } from "./section-accent";
 
 interface Props {
   partners: PartnerData[];
@@ -84,9 +83,8 @@ export function PartnersCarousel({ partners, titleOverride, subtitleOverride }: 
   if (partners.length === 0) return null;
 
   return (
-    <section className="group/strip relative py-16 md:py-20">
-      <SectionPattern />
-      {/* <SectionIndex value="01" /> */}
+    <section className="group/strip relative isolate overflow-hidden py-16 md:py-20">
+      <SectionAccent variant="ticks" />
       <ScrollReveal className="container relative mx-auto mb-10 px-4">
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
           <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />
