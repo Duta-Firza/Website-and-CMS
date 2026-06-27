@@ -582,6 +582,7 @@ const historyEntrySchema = z.object({
   year: z.string().min(1),
   title: z.object({ id: z.string().min(1), en: z.string().min(1) }),
   description: localizedSchema,
+  imageUrl: z.string().default(""),
   order: z.number().int().default(0),
 });
 

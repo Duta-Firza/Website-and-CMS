@@ -533,6 +533,7 @@
       "projectImage": "Disarankan 1600×900 (16:9), JPG. Dipakai untuk thumbnail card dan hero halaman proyek.",
       "leadershipPhoto": "Portrait 4:5 (min 400×500), JPG. Wajah usahakan di tengah-atas frame untuk hasil crop optimal.",
       "credentialImage": "Scan dokumen portrait 3:4 (min 600×800), JPG/PNG. Crop seluruh dokumen, hindari background berlebih.",
+      "historyImage": "Opsional, landscape 16:9 (min 1280×720), JPG/WebP. Tampil di seberang card milestone pada timeline.",
       "aboutVideo": "MP4 H.264 720p+ (16:9 landscape). Akan dikompres ke 1080p/H.264; ukuran asli max 200MB.",
       "fileUrlHint": "Tempel URL GCS/CDN dari file PDF.",
       "bodyRichHint": "Gunakan editor untuk memformat isi artikel.",

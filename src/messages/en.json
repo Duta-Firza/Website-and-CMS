@@ -533,6 +533,7 @@
       "projectImage": "Recommended 1600×900 (16:9), JPG. Used for the card thumbnail and project page hero.",
       "leadershipPhoto": "Portrait 4:5 (min 400×500), JPG. Face centered in the upper-middle for the best crop.",
       "credentialImage": "Portrait 3:4 document scan (min 600×800), JPG/PNG. Crop the whole document, avoid excessive background.",
+      "historyImage": "Optional landscape 16:9 (min 1280×720), JPG/WebP. Shown opposite the milestone card on the timeline.",
       "aboutVideo": "MP4 H.264 720p+ (16:9 landscape). Compressed to 1080p/H.264; raw size up to 200MB.",
       "fileUrlHint": "Paste the GCS/CDN URL of the PDF file.",
       "bodyRichHint": "Use the editor to format the article content.",

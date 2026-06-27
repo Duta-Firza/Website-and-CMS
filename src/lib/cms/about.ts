@@ -143,6 +143,7 @@ export interface HistoryEntryData {
   year: string;
   title: string;
   description: string;
+  imageUrl: string;
   order: number;
 }
 
@@ -156,6 +157,7 @@ export async function getHistory(locale: Locale): Promise<HistoryEntryData[]> {
         year: d.year,
         title: d.title,
         description: d.description ?? { id: "", en: "" },
+        imageUrl: d.imageUrl ?? "",
         order: d.order ?? 0,
       },
       locale,

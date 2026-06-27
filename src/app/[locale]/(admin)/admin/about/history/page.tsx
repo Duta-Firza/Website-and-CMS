@@ -13,6 +13,7 @@ export interface HistoryRow {
   year: string;
   title: { id: string; en: string };
   description: { id: string; en: string };
+  imageUrl: string;
   order: number;
 }
 
@@ -24,6 +25,7 @@ async function loadEntries(): Promise<HistoryRow[]> {
     year: d.year,
     title: { id: d.title.id, en: d.title.en },
     description: { id: d.description?.id ?? "", en: d.description?.en ?? "" },
+    imageUrl: d.imageUrl ?? "",
     order: d.order ?? 0,
   }));
 }
