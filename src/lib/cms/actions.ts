@@ -1019,6 +1019,31 @@ export async function setSolutionPageStatus(slug: string, status: string): Promi
   }
 }
 
+// ─── Trading Products WhatsApp config ────────────────────────────────────────
+const tradingWhatsappSchema = z.object({
+  number: z.string().default(""),
+  template: localizedSchema,
+});
+
+export async function updateTradingWhatsapp(
+  input: z.infer<typeof tradingWhatsappSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { number, template } = tradingWhatsappSchema.parse(input);
+    await connectDB();
+    await SolutionPage.findByIdAndUpdate(
+      "trading-products",
+      { whatsappNumber: number, whatsappTemplate: template },
+      { upsert: true, new: true },
+    );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
 // ─── About Sub-Pages ────────────────────────────────────────────────────────
 const aboutSubPageContentSchema = z.object({
   status: z.enum(ABOUT_SUB_PAGE_STATUSES),
@@ -1071,6 +1096,7 @@ const productSchema = z.object({
   productType: localizedSchema,
   skuCount: z.number().int().nonnegative().default(0),
   partnershipStart: z.number().int().nullable().default(null),
+  whatsappTemplate: localizedSchema,
   items: z.array(productItemZod).default([]),
   order: z.number().int().default(0),
   isActive: z.boolean().default(true),

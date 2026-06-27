@@ -1,3 +1,4 @@
+import { MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -5,9 +6,11 @@ import { ComingSoonPage } from "@/components/public/coming-soon-page";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import type { Locale } from "@/lib/cms/localize";
 import { resolveBody, resolveHero } from "@/lib/cms/section-mode";
 import { getPublishedProducts, getSolutionPage } from "@/lib/cms/solutions";
+import { buildWaLink, fillTemplate } from "@/lib/whatsapp";
 
 export default async function TradingProductsPublicPage() {
   const locale = (await getLocale()) as Locale;
@@ -76,6 +79,16 @@ export default async function TradingProductsPublicPage() {
         <div className="space-y-4">
           {products.map((p, idx) => {
             const fallbackName = p.principles[0]?.name ?? "—";
+            const productName =
+              p.principles
+                .map((pr) => pr.name)
+                .filter(Boolean)
+                .join(" · ") ||
+              p.productType ||
+              fallbackName;
+            const waTemplate =
+              p.whatsappTemplate || page.whatsapp.template || t("products.whatsappDefaultTemplate");
+            const waLink = buildWaLink(page.whatsapp.number, fillTemplate(waTemplate, productName));
             return (
               <ScrollReveal key={p.id} delay={idx * 60}>
                 <article className="grid grid-cols-1 gap-5 rounded-2xl border bg-card p-5 md:grid-cols-[180px_1fr] md:gap-6 md:p-6">
@@ -170,6 +183,28 @@ export default async function TradingProductsPublicPage() {
                         ))}
                       </ul>
                     )}
+                    <div className="pt-1">
+                      {waLink ? (
+                        <a
+                          href={waLink}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          className={buttonVariants({ variant: "brand", size: "sm" })}
+                        >
+                          <MessageCircle aria-hidden="true" />
+                          {t("products.whatsappCta")}
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled
+                          className={buttonVariants({ variant: "brand", size: "sm" })}
+                        >
+                          <MessageCircle aria-hidden="true" />
+                          {t("products.whatsappCta")}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </article>
               </ScrollReveal>

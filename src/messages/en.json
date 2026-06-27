@@ -185,7 +185,9 @@
       "skuLabel": "{count} SKU",
       "originLabel": "Origin",
       "partnershipLabel": "Partnership since {year}",
-      "empty": "Product catalogue is being prepared."
+      "empty": "Product catalogue is being prepared.",
+      "whatsappCta": "Chat via WhatsApp",
+      "whatsappDefaultTemplate": "Hello, I am interested in the product '{product}'. Could you share more details?"
     },
     "manufacturing": {
       "quoteTitle": "Request a Quote",
@@ -539,7 +541,9 @@
       "bodyRichHint": "Use the editor to format the article content.",
       "slugHint": "Auto-generated from English title. Edit to override.",
       "companyProfileUrlHint": "Upload the Company Profile PDF document.",
-      "originalUrlHint": "Link to the original external article or source (optional)."
+      "originalUrlHint": "Link to the original external article or source (optional).",
+      "whatsappNumber": "International format, digits only (e.g. 628123456789). Leave empty to disable the WhatsApp button on the public page.",
+      "whatsappTemplate": "Use '{product}' as a placeholder for the product name."
     },
     "status": {
       "toggleSaved": "Status updated",
@@ -674,6 +678,9 @@
       "productType": "Product type",
       "skuCount": "SKU count",
       "partnershipStart": "Partnership start year",
+      "whatsappNumber": "WhatsApp number",
+      "whatsappTemplate": "WhatsApp message template",
+      "whatsappTemplateOverride": "WhatsApp template (optional override)",
       "productPhotos": "Product photos",
       "productItems": "Product items",
       "addPhoto": "Add photo",
@@ -721,6 +728,7 @@
       "websiteLink": "Website link",
       "principleSource": "Principle source",
       "productDetails": "Product details",
+      "whatsappChat": "WhatsApp chat",
       "inquiryDetails": "Inquiry details",
       "inquiryMeta": "Submission info",
       "updateStatus": "Update status",

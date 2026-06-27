@@ -185,7 +185,9 @@
       "skuLabel": "{count} SKU",
       "originLabel": "Asal",
       "partnershipLabel": "Partnership sejak {year}",
-      "empty": "Katalog produk sedang disiapkan."
+      "empty": "Katalog produk sedang disiapkan.",
+      "whatsappCta": "Chat via WhatsApp",
+      "whatsappDefaultTemplate": "Halo, saya tertarik dengan produk '{product}'. Mohon informasi lebih lanjut."
     },
     "manufacturing": {
       "quoteTitle": "Minta Penawaran",
@@ -539,7 +541,9 @@
       "bodyRichHint": "Gunakan editor untuk memformat isi artikel.",
       "slugHint": "Otomatis dari judul bahasa Inggris. Edit untuk mengubah manual.",
       "companyProfileUrlHint": "Upload dokumen PDF Profil Perusahaan.",
-      "originalUrlHint": "Tautan ke artikel atau sumber asli (opsional)."
+      "originalUrlHint": "Tautan ke artikel atau sumber asli (opsional).",
+      "whatsappNumber": "Format internasional, hanya angka (mis. 628123456789). Kosongkan untuk menonaktifkan tombol WhatsApp di halaman publik.",
+      "whatsappTemplate": "Gunakan '{product}' sebagai placeholder nama produk."
     },
     "status": {
       "toggleSaved": "Status diperbarui",
@@ -674,6 +678,9 @@
       "productType": "Tipe produk",
       "skuCount": "Jumlah SKU",
       "partnershipStart": "Tahun mulai partnership",
+      "whatsappNumber": "Nomor WhatsApp",
+      "whatsappTemplate": "Template pesan WhatsApp",
+      "whatsappTemplateOverride": "Template WhatsApp (override opsional)",
       "productPhotos": "Foto produk",
       "productItems": "Daftar produk",
       "addPhoto": "Tambah foto",
@@ -721,6 +728,7 @@
       "websiteLink": "Tautan website",
       "principleSource": "Sumber principle",
       "productDetails": "Detail produk",
+      "whatsappChat": "Chat WhatsApp",
       "inquiryDetails": "Detail inquiry",
       "inquiryMeta": "Info submission",
       "updateStatus": "Ubah status",

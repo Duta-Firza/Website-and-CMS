@@ -52,10 +52,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 import {
   deleteProduct,
   reorderProducts,
   toggleProductActive,
+  updateTradingWhatsapp,
   upsertProduct,
 } from "@/lib/cms/actions";
 import type { PartnerOption, ProductItemRow, ProductRow } from "./page";
@@ -78,6 +80,7 @@ const schema = z.object({
   productType: z.object({ id: z.string(), en: z.string() }),
   skuCount: z.number().int().nonnegative(),
   partnershipStart: z.number().int().nullable(),
+  whatsappTemplate: z.object({ id: z.string(), en: z.string() }),
   items: z.array(itemZod),
   order: z.number().int(),
   isActive: z.boolean(),
@@ -91,6 +94,7 @@ const empty: FormValues = {
   productType: { id: "", en: "" },
   skuCount: 0,
   partnershipStart: null,
+  whatsappTemplate: { id: "", en: "" },
   items: [],
   order: 0,
   isActive: true,
@@ -99,9 +103,11 @@ const empty: FormValues = {
 interface Props {
   initial: ProductRow[];
   partners: PartnerOption[];
+  whatsappNumber: string;
+  whatsappTemplate: { id: string; en: string };
 }
 
-export function ProductsManager({ initial, partners }: Props) {
+export function ProductsManager({ initial, partners, whatsappNumber, whatsappTemplate }: Props) {
   const router = useRouter();
   const t = useTranslations("Admin");
   const locale = useLocale();
@@ -109,10 +115,23 @@ export function ProductsManager({ initial, partners }: Props) {
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [viewing, setViewing] = useState<ProductRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [waNumber, setWaNumber] = useState(whatsappNumber);
+  const [waTemplate, setWaTemplate] = useState(whatsappTemplate);
+  const [savingWa, setSavingWa] = useState(false);
 
   useEffect(() => {
     setItems(initial);
   }, [initial]);
+
+  const saveWhatsapp = async () => {
+    setSavingWa(true);
+    const result = await updateTradingWhatsapp({ number: waNumber, template: waTemplate });
+    setSavingWa(false);
+    if (result.ok) {
+      toast.success(t("saved"));
+      router.refresh();
+    } else toast.error(result.error);
+  };
 
   const handleReorder = async (newIds: string[]) => {
     const next = newIds
@@ -132,6 +151,53 @@ export function ProductsManager({ initial, partners }: Props) {
 
   return (
     <section className="space-y-3">
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("groups.whatsappChat")}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="wa-number">{t("fields.whatsappNumber")}</Label>
+            <Input
+              id="wa-number"
+              value={waNumber}
+              onChange={(e) => setWaNumber(e.target.value)}
+              placeholder="628123456789"
+              inputMode="numeric"
+            />
+            <p className="text-xs text-muted-foreground">{t("hints.whatsappNumber")}</p>
+          </div>
+          <div className="space-y-2">
+            <Label>{t("fields.whatsappTemplate")}</Label>
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+              <div className="space-y-1">
+                <Textarea
+                  value={waTemplate.id}
+                  onChange={(e) => setWaTemplate((prev) => ({ ...prev, id: e.target.value }))}
+                  placeholder="Bahasa Indonesia"
+                />
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">ID</p>
+              </div>
+              <div className="space-y-1">
+                <Textarea
+                  value={waTemplate.en}
+                  onChange={(e) => setWaTemplate((prev) => ({ ...prev, en: e.target.value }))}
+                  placeholder="English"
+                />
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">EN</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">{t("hints.whatsappTemplate")}</p>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={saveWhatsapp} disabled={savingWa}>
+              {savingWa && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t("save")}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle>
@@ -496,6 +562,16 @@ function ProductDialog({
             form={form}
             multiline
           />
+
+          <div className="space-y-2">
+            <LocalizedField
+              label={t("fields.whatsappTemplateOverride")}
+              name="whatsappTemplate"
+              form={form}
+              multiline
+            />
+            <p className="text-xs text-muted-foreground">{t("hints.whatsappTemplate")}</p>
+          </div>
 
           {/* Items array — sub-products (Pressure Gauge / Pressure Switch / …) */}
           <div className="space-y-3 rounded-md border bg-muted/30 p-3">

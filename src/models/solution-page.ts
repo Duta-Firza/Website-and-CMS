@@ -88,6 +88,12 @@ const solutionPageSchema = new Schema(
     formSettings: { type: formSettingsSchema, default: () => ({}) },
     comingSoonMessage: localizedStringOptional,
     websiteLink: { type: websiteLinkSchema, default: () => ({}) },
+    // WhatsApp chat config (used by the trading-products page). `whatsappNumber`
+    // is the destination in international digits-only format; an empty value
+    // disables the public chat button. `whatsappTemplate` is the global default
+    // message, with `{product}` as a placeholder for the product name.
+    whatsappNumber: { type: String, default: "" },
+    whatsappTemplate: localizedStringOptional,
   },
   { timestamps: true, ...stripVersion },
 );

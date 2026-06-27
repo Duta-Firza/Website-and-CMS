@@ -2,7 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
 import { connectDB } from "@/lib/db";
-import { Partner, Product } from "@/models";
+import { Partner, Product, SolutionPage } from "@/models";
 import { loadSolutionPageForAdmin } from "../../_components/load-solution-page";
 import { SolutionPageForm } from "../../_components/solution-page-form";
 import { ProductsManager } from "./products-manager";
@@ -25,9 +25,15 @@ export interface ProductRow {
   productType: { id: string; en: string };
   skuCount: number;
   partnershipStart: number | null;
+  whatsappTemplate: { id: string; en: string };
   items: ProductItemRow[];
   order: number;
   isActive: boolean;
+}
+
+export interface TradingWhatsapp {
+  number: string;
+  template: { id: string; en: string };
 }
 
 export interface PartnerOption {
@@ -49,6 +55,7 @@ interface RawProductDoc {
   productType?: { id?: string; en?: string };
   skuCount?: number;
   partnershipStart?: number | null;
+  whatsappTemplate?: { id?: string; en?: string };
   order?: number;
   isActive?: boolean;
 }
@@ -96,11 +103,29 @@ async function loadProducts(): Promise<ProductRow[]> {
       },
       skuCount: d.skuCount ?? 0,
       partnershipStart: d.partnershipStart ?? null,
+      whatsappTemplate: {
+        id: d.whatsappTemplate?.id ?? "",
+        en: d.whatsappTemplate?.en ?? "",
+      },
       items,
       order: d.order ?? 0,
       isActive: d.isActive ?? true,
     };
   });
+}
+
+async function loadTradingWhatsapp(): Promise<TradingWhatsapp> {
+  await connectDB();
+  const doc = await SolutionPage.findById("trading-products")
+    .select("whatsappNumber whatsappTemplate")
+    .lean<{ whatsappNumber?: string; whatsappTemplate?: { id?: string; en?: string } } | null>();
+  return {
+    number: doc?.whatsappNumber ?? "",
+    template: {
+      id: doc?.whatsappTemplate?.id ?? "",
+      en: doc?.whatsappTemplate?.en ?? "",
+    },
+  };
 }
 
 async function loadPartnerOptions(): Promise<PartnerOption[]> {
@@ -114,10 +139,11 @@ async function loadPartnerOptions(): Promise<PartnerOption[]> {
 }
 
 export default async function TradingProductsAdminPage() {
-  const [page, products, partners, locale, t] = await Promise.all([
+  const [page, products, partners, whatsapp, locale, t] = await Promise.all([
     loadSolutionPageForAdmin("trading-products"),
     loadProducts(),
     loadPartnerOptions(),
+    loadTradingWhatsapp(),
     getLocale(),
     getTranslations("Admin"),
   ]);
@@ -140,7 +166,14 @@ export default async function TradingProductsAdminPage() {
           {
             value: "products",
             label: t("nouns.product"),
-            content: <ProductsManager initial={products} partners={partners} />,
+            content: (
+              <ProductsManager
+                initial={products}
+                partners={partners}
+                whatsappNumber={whatsapp.number}
+                whatsappTemplate={whatsapp.template}
+              />
+            ),
           },
         ]}
       />
