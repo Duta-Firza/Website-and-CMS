@@ -26,6 +26,7 @@
     "trading": "Trading",
     "manufacturing": "Manufaktur",
     "epc": "EPC & Proyek",
+    "technology": "Teknologi",
     "partners": "Mitra",
     "products": "Produk",
     "investorRelations": "Hubungan Investor",
@@ -53,6 +54,7 @@
     "tradingTitle": "Trading",
     "manufacturingTitle": "Manufaktur",
     "epcTitle": "EPC & Proyek",
+    "technologyTitle": "Teknologi",
     "partnersTitle": "Mitra",
     "productsTitle": "Produk",
     "stocksTitle": "Saham",
@@ -197,6 +199,13 @@
       "viewDetail": "Lihat detail",
       "empty": "Studi kasus proyek sedang disiapkan."
     },
+    "technology": {
+      "inquiryTitle": "Kirim Inquiry",
+      "inquirySubtitle": "Sampaikan kebutuhan teknologi Anda dan tim kami akan segera merespons.",
+      "websiteTitle": "Kunjungi Duta Firza Technologies",
+      "websiteSubtitle": "Jelajahi situs khusus untuk lini teknologi informasi dan komunikasi kami.",
+      "websiteCta": "Buka website"
+    },
     "comingSoon": {
       "title": "Segera Hadir",
       "subtitle": "Halaman ini sedang dipersiapkan. Silakan kembali lagi nanti.",
@@ -220,6 +229,8 @@
     "submitContact": "Kirim Pesan",
     "submitting": "Mengirim…",
     "successToast": "Terima kasih — pesan Anda sudah kami terima.",
+    "successTitle": "Pesan terkirim",
+    "ok": "OK",
     "errorToast": "Terjadi kesalahan. Silakan coba lagi."
   },
   "Admin": {
@@ -273,7 +284,14 @@
       "address": "Alamat",
       "yes": "Ya",
       "no": "Tidak",
-      "view": "Lihat detail"
+      "view": "Lihat detail",
+      "search": "Cari",
+      "searchInquiries": "Cari perusahaan, nama, email…",
+      "showing": "Menampilkan {from}–{to} dari {total}",
+      "page": "Halaman {n}",
+      "perPage": "{count} / halaman",
+      "prevPage": "Halaman sebelumnya",
+      "nextPage": "Halaman berikutnya"
     },
     "pages": {
       "landing": {
@@ -344,9 +362,13 @@
         "title": "Halaman EPC",
         "description": "Hero dan intro untuk /solutions/epc. Item proyek dikelola di Master · Proyek."
       },
+      "technology": {
+        "title": "Halaman Teknologi",
+        "description": "Konten untuk /solutions/technology beserta form inquiry dan tautan website eksternal."
+      },
       "inquiries": {
         "title": "Inbox Inquiry",
-        "description": "Submission dari form Trading, Manufaktur, EPC, dan Kontak."
+        "description": "Submission dari form Trading, Manufaktur, EPC, Teknologi, dan Kontak."
       },
       "irStocks": {
         "title": "Saham",
@@ -393,8 +415,11 @@
       "certifications": "Sertifikasi",
       "acknowledgements": "Penghargaan",
       "inquiriesAll": "Semua",
+      "inquiriesUnread": "Belum dibaca",
       "inquiriesNew": "Baru",
       "inquiriesRead": "Dibaca",
+      "inquiriesInProgress": "Diproses",
+      "inquiriesResolved": "Selesai",
       "inquiriesArchived": "Diarsipkan",
       "items": "Item",
       "annual": "Tahunan",
@@ -434,6 +459,7 @@
       "divisions": "Belum ada divisi. Default ke EPC, Trading, Manufaktur.",
       "products": "Belum ada produk.",
       "inquiries": "Belum ada inquiry.",
+      "selectInquiry": "Pilih submission untuk melihat detailnya.",
       "reports": "Belum ada laporan. Klik Tambah untuk mengunggah laporan pertama.",
       "publications": "Belum ada artikel."
     },
@@ -452,6 +478,8 @@
       "manageInPartners": "Kelola di Mitra",
       "manageInProjects": "Kelola di Proyek",
       "markRead": "Tandai dibaca",
+      "markUnread": "Tandai belum dibaca",
+      "refresh": "Muat ulang",
       "markNew": "Tandai baru",
       "archive": "Arsipkan",
       "viewDetail": "Lihat detail",
@@ -471,6 +499,7 @@
       "overrideLabelsIntro": "Override label section.",
       "solutionsOverviewIntro": "Atur status tiap halaman Solusi: tayang, segera hadir, atau disembunyikan. Perubahan langsung berlaku.",
       "solutionsPageStatusHint": "Pilih perilaku halaman ini di site publik. Status disembunyikan juga membuat halaman hilang dari navigasi.",
+      "websiteLinkHint": "Opsional. Ditampilkan sebagai tombol call-to-action yang menautkan ke website eksternal Duta Firza Technologies.",
       "solutionsPartnersDelegated": "Item logo yang tampil di halaman ini diambil dari Master · Mitra. Edit hero dan intro di sini.",
       "solutionsEpcDelegated": "Tab proyek yang tampil di halaman ini diambil dari Master · Proyek (kategori EPC). Edit hero dan intro di sini.",
       "landingPartnersDelegated": "Logo mitra yang tampil di homepage diatur di Solutions · Trading · Partners.",
@@ -610,6 +639,10 @@
       "longitude": "Longitude",
       "websiteUrl": "URL Website",
       "websiteUrlOptional": "URL Website (opsional)",
+      "websiteLinkEnabled": "Tampilkan tautan website",
+      "websiteTitle": "Judul tautan website",
+      "websiteDescription": "Deskripsi tautan website",
+      "websiteCta": "Label tombol website",
       "scopeOfWork": "Ruang lingkup pekerjaan",
       "aboutProject": "Tentang proyek",
       "highlightOrder": "Urutan unggulan",
@@ -684,10 +717,12 @@
       "pageBody": "Body halaman",
       "comingSoonContent": "Konten Coming Soon",
       "formSettings": "Pengaturan form",
+      "websiteLink": "Tautan website",
       "principleSource": "Sumber principle",
       "productDetails": "Detail produk",
       "inquiryDetails": "Detail inquiry",
       "inquiryMeta": "Info submission",
+      "updateStatus": "Ubah status",
       "reportItem": "Laporan",
       "publicationItem": "Artikel"
     },
@@ -699,6 +734,10 @@
   },
   "AdminNav": {
     "dashboard": "Dasbor",
+    "sectionAnalytics": "Analitik",
+    "sectionContent": "Konten",
+    "sectionInbox": "Inbox",
+    "sectionSystem": "Sistem",
     "groupHome": "Beranda",
     "groupAbout": "Tentang Kami",
     "groupSolutions": "Solusi",
@@ -723,6 +762,7 @@
     "tradingProducts": "Trading · Produk",
     "manufacturing": "Manufaktur",
     "epc": "EPC",
+    "technology": "Teknologi",
     "stocks": "Saham",
     "reports": "Laporan",
     "publications": "Publikasi",

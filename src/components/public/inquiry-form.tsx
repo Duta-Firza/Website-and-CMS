@@ -1,13 +1,21 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -42,6 +50,7 @@ function buildSchema(fields: LocalizedFormField[]) {
 
 export function InquiryForm({ source, fields, submitLabel, successMessage }: Props) {
   const t = useTranslations("InquiryForm");
+  const [successOpen, setSuccessOpen] = useState(false);
 
   const schema = useMemo(() => buildSchema(fields), [fields]);
   const defaultValues = useMemo(() => {
@@ -69,8 +78,10 @@ export function InquiryForm({ source, fields, submitLabel, successMessage }: Pro
       toast.error(result.error || t("errorToast"));
       return;
     }
-    toast.success(successMessage || t("successToast"));
     reset();
+    // Success confirmation is shown as a centered modal (rather than a toast)
+    // so users clearly notice the submission went through.
+    setSuccessOpen(true);
   };
 
   return (
@@ -119,6 +130,31 @@ export function InquiryForm({ source, fields, submitLabel, successMessage }: Pro
         {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {isSubmitting ? t("submitting") : submitLabel}
       </Button>
+
+      <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
+        <DialogContent showCloseButton={false} className="sm:max-w-md">
+          <DialogHeader className="items-center gap-3 text-center">
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
+              <CheckCircle2 className="h-7 w-7" />
+            </span>
+            <DialogTitle className="text-lg">{t("successTitle")}</DialogTitle>
+            <DialogDescription className="text-center text-balance">
+              {successMessage || t("successToast")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button
+              type="button"
+              variant="brand"
+              size="lg"
+              className="w-full sm:w-auto sm:min-w-32"
+              onClick={() => setSuccessOpen(false)}
+            >
+              {t("ok")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }

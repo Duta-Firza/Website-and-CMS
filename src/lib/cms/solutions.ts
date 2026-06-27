@@ -32,6 +32,14 @@ export interface SolutionPageData {
   };
   inquiryFormEnabled: boolean;
   comingSoonMessage: string;
+  /** Optional external website link rendered as a CTA (used by the technology page). */
+  websiteLink: {
+    enabled: boolean;
+    url: string;
+    title: string;
+    description: string;
+    ctaLabel: string;
+  };
 }
 
 function emptyPage(slug: SolutionPageSlug): SolutionPageData {
@@ -44,6 +52,7 @@ function emptyPage(slug: SolutionPageSlug): SolutionPageData {
     body: { heading: "", content: "" },
     inquiryFormEnabled: true,
     comingSoonMessage: "",
+    websiteLink: { enabled: false, url: "", title: "", description: "", ctaLabel: "" },
   };
 }
 
@@ -61,6 +70,13 @@ export async function getSolutionPage(
     body?: { heading?: unknown; content?: unknown };
     inquiryFormEnabled?: boolean;
     comingSoonMessage?: unknown;
+    websiteLink?: {
+      enabled?: boolean;
+      url?: string;
+      title?: unknown;
+      description?: unknown;
+      ctaLabel?: unknown;
+    };
   } | null>();
   if (!doc) return emptyPage(slug);
   const localized = localize(
@@ -75,12 +91,18 @@ export async function getSolutionPage(
         content: doc.body?.content ?? EMPTY_LOCALIZED,
       },
       comingSoonMessage: doc.comingSoonMessage ?? EMPTY_LOCALIZED,
+      websiteLink: {
+        title: doc.websiteLink?.title ?? EMPTY_LOCALIZED,
+        description: doc.websiteLink?.description ?? EMPTY_LOCALIZED,
+        ctaLabel: doc.websiteLink?.ctaLabel ?? EMPTY_LOCALIZED,
+      },
     },
     locale,
   ) as unknown as {
     hero: { eyebrow: string; title: string; subtitle: string };
     body: { heading: string; content: string };
     comingSoonMessage: string;
+    websiteLink: { title: string; description: string; ctaLabel: string };
   };
   return {
     slug,
@@ -94,6 +116,13 @@ export async function getSolutionPage(
     body: localized.body,
     inquiryFormEnabled: doc.inquiryFormEnabled ?? true,
     comingSoonMessage: localized.comingSoonMessage,
+    websiteLink: {
+      enabled: doc.websiteLink?.enabled ?? false,
+      url: doc.websiteLink?.url ?? "",
+      title: localized.websiteLink.title,
+      description: localized.websiteLink.description,
+      ctaLabel: localized.websiteLink.ctaLabel,
+    },
   };
 }
 

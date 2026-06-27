@@ -26,6 +26,7 @@
     "trading": "Trading",
     "manufacturing": "Manufacturing",
     "epc": "EPC & Projects",
+    "technology": "Technology",
     "partners": "Partners",
     "products": "Products",
     "investorRelations": "Investor Relations",
@@ -53,6 +54,7 @@
     "tradingTitle": "Trading",
     "manufacturingTitle": "Manufacturing",
     "epcTitle": "EPC & Projects",
+    "technologyTitle": "Technology",
     "partnersTitle": "Partners",
     "productsTitle": "Products",
     "stocksTitle": "Stocks",
@@ -197,6 +199,13 @@
       "viewDetail": "View detail",
       "empty": "Project case studies are being prepared."
     },
+    "technology": {
+      "inquiryTitle": "Submit an Inquiry",
+      "inquirySubtitle": "Tell us about your technology needs and our team will respond shortly.",
+      "websiteTitle": "Visit Duta Firza Technologies",
+      "websiteSubtitle": "Explore the dedicated site for our information and communication technology arm.",
+      "websiteCta": "Open website"
+    },
     "comingSoon": {
       "title": "Coming soon",
       "subtitle": "This page is being prepared. Please check back shortly.",
@@ -220,6 +229,8 @@
     "submitContact": "Send Message",
     "submitting": "Sending…",
     "successToast": "Thanks — we've received your message.",
+    "successTitle": "Message sent",
+    "ok": "OK",
     "errorToast": "Something went wrong. Please try again."
   },
   "Admin": {
@@ -273,7 +284,14 @@
       "address": "Address",
       "yes": "Yes",
       "no": "No",
-      "view": "View details"
+      "view": "View details",
+      "search": "Search",
+      "searchInquiries": "Search company, name, email…",
+      "showing": "Showing {from}–{to} of {total}",
+      "page": "Page {n}",
+      "perPage": "{count} / page",
+      "prevPage": "Previous page",
+      "nextPage": "Next page"
     },
     "pages": {
       "landing": {
@@ -344,9 +362,13 @@
         "title": "EPC page",
         "description": "Hero and intro for /solutions/epc. Project items are managed in Master · Projects."
       },
+      "technology": {
+        "title": "Technology page",
+        "description": "Content for /solutions/technology plus the inquiry form and external website link."
+      },
       "inquiries": {
         "title": "Inquiry Inbox",
-        "description": "Submissions from the Trading, Manufacturing, EPC, and Contact forms."
+        "description": "Submissions from the Trading, Manufacturing, EPC, Technology, and Contact forms."
       },
       "irStocks": {
         "title": "Stocks",
@@ -393,8 +415,11 @@
       "certifications": "Certifications",
       "acknowledgements": "Acknowledgements",
       "inquiriesAll": "All",
+      "inquiriesUnread": "Unread",
       "inquiriesNew": "New",
       "inquiriesRead": "Read",
+      "inquiriesInProgress": "In Progress",
+      "inquiriesResolved": "Resolved",
       "inquiriesArchived": "Archived",
       "items": "Items",
       "annual": "Annual",
@@ -434,6 +459,7 @@
       "divisions": "No custom divisions. Defaults to EPC, Trading, Manufacturing.",
       "products": "No products yet.",
       "inquiries": "No inquiries yet.",
+      "selectInquiry": "Select a submission to view its details.",
       "reports": "No reports yet. Click Add to upload the first report.",
       "publications": "No articles yet."
     },
@@ -452,6 +478,8 @@
       "manageInPartners": "Manage in Partners",
       "manageInProjects": "Manage in Projects",
       "markRead": "Mark read",
+      "markUnread": "Mark unread",
+      "refresh": "Refresh",
       "markNew": "Mark new",
       "archive": "Archive",
       "viewDetail": "View detail",
@@ -471,6 +499,7 @@
       "overrideLabelsIntro": "Section label overrides.",
       "solutionsOverviewIntro": "Set each Solutions page to published, coming-soon, or hidden. Status changes apply immediately.",
       "solutionsPageStatusHint": "Choose how this page behaves on the public site. Hidden pages also drop from the navigation.",
+      "websiteLinkHint": "Optional. Shown as a call-to-action button linking to the external Duta Firza Technologies website.",
       "solutionsPartnersDelegated": "Logo items rendered on this page come from Master · Partners. Edit hero and intro here.",
       "solutionsEpcDelegated": "Project tabs rendered on this page come from Master · Projects (category EPC). Edit hero and intro here.",
       "landingPartnersDelegated": "Partner logos shown on the homepage are managed under Solutions · Trading · Partners.",
@@ -610,6 +639,10 @@
       "longitude": "Longitude",
       "websiteUrl": "Website URL",
       "websiteUrlOptional": "Website URL (optional)",
+      "websiteLinkEnabled": "Show website link",
+      "websiteTitle": "Website link title",
+      "websiteDescription": "Website link description",
+      "websiteCta": "Website CTA label",
       "scopeOfWork": "Scope of work",
       "aboutProject": "About the project",
       "highlightOrder": "Featured order",
@@ -684,10 +717,12 @@
       "pageBody": "Page body",
       "comingSoonContent": "Coming-soon content",
       "formSettings": "Form settings",
+      "websiteLink": "Website link",
       "principleSource": "Principle source",
       "productDetails": "Product details",
       "inquiryDetails": "Inquiry details",
       "inquiryMeta": "Submission info",
+      "updateStatus": "Update status",
       "reportItem": "Report",
       "publicationItem": "Article"
     },
@@ -699,6 +734,10 @@
   },
   "AdminNav": {
     "dashboard": "Dashboard",
+    "sectionAnalytics": "Analytics",
+    "sectionContent": "Content",
+    "sectionInbox": "Inbox",
+    "sectionSystem": "System",
     "groupHome": "Home",
     "groupAbout": "About",
     "groupSolutions": "Solutions",
@@ -723,6 +762,7 @@
     "tradingProducts": "Trading · Products",
     "manufacturing": "Manufacturing",
     "epc": "EPC",
+    "technology": "Technology",
     "stocks": "Stocks",
     "reports": "Reports",
     "publications": "Publications",

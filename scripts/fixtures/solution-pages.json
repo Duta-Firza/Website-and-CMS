@@ -163,5 +163,33 @@
     },
     "inquiryFormEnabled": false,
     "comingSoonMessage": { "id": "", "en": "" }
+  },
+  {
+    "_id": "technology",
+    "status": "comingSoon",
+    "heroMode": "default",
+    "bodyMode": "default",
+    "hero": {
+      "eyebrow": { "id": "Solusi", "en": "Solutions" },
+      "title": { "id": "Teknologi", "en": "Technology" },
+      "subtitle": { "id": "", "en": "" },
+      "backgroundImage": ""
+    },
+    "body": {
+      "heading": { "id": "", "en": "" },
+      "content": { "id": "", "en": "" }
+    },
+    "inquiryFormEnabled": true,
+    "comingSoonMessage": {
+      "id": "Halaman PT Duta Firza Technologies sedang disiapkan. Silakan kembali lagi nanti.",
+      "en": "The PT Duta Firza Technologies page is being prepared. Please check back shortly."
+    },
+    "websiteLink": {
+      "enabled": false,
+      "url": "",
+      "title": { "id": "", "en": "" },
+      "description": { "id": "", "en": "" },
+      "ctaLabel": { "id": "", "en": "" }
+    }
   }
 ]

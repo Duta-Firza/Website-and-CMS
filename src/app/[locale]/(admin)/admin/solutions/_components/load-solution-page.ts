@@ -27,6 +27,13 @@ const DEFAULT_FORM_VALUES: SolutionPageFormValues = {
   inquiryFormEnabled: true,
   formSettings: DEFAULT_FORM_SETTINGS,
   comingSoonMessage: EMPTY_LOCALIZED,
+  websiteLink: {
+    enabled: false,
+    url: "",
+    title: EMPTY_LOCALIZED,
+    description: EMPTY_LOCALIZED,
+    ctaLabel: EMPTY_LOCALIZED,
+  },
 };
 
 function normalizeFormSettings(raw: unknown, legacyEnabled?: boolean): FormSettings {
@@ -83,6 +90,13 @@ export async function loadSolutionPageForAdmin(
     inquiryFormEnabled?: boolean;
     formSettings?: unknown;
     comingSoonMessage?: { id?: string; en?: string };
+    websiteLink?: {
+      enabled?: boolean;
+      url?: string;
+      title?: { id?: string; en?: string };
+      description?: { id?: string; en?: string };
+      ctaLabel?: { id?: string; en?: string };
+    };
     updatedAt?: Date;
   } | null>();
   if (!doc) return DEFAULT_FORM_VALUES;
@@ -122,6 +136,22 @@ export async function loadSolutionPageForAdmin(
     comingSoonMessage: {
       id: doc.comingSoonMessage?.id ?? "",
       en: doc.comingSoonMessage?.en ?? "",
+    },
+    websiteLink: {
+      enabled: doc.websiteLink?.enabled ?? false,
+      url: doc.websiteLink?.url ?? "",
+      title: {
+        id: doc.websiteLink?.title?.id ?? "",
+        en: doc.websiteLink?.title?.en ?? "",
+      },
+      description: {
+        id: doc.websiteLink?.description?.id ?? "",
+        en: doc.websiteLink?.description?.en ?? "",
+      },
+      ctaLabel: {
+        id: doc.websiteLink?.ctaLabel?.id ?? "",
+        en: doc.websiteLink?.ctaLabel?.en ?? "",
+      },
     },
   };
 }

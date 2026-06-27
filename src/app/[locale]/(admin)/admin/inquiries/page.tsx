@@ -16,8 +16,17 @@ export interface InquiryRow {
   country: string;
   message: string;
   status: InquiryStatus;
+  read: boolean;
   notes: string;
   createdAt: string;
+}
+
+// Legacy docs used a combined status enum (new/read/archived) with no `read`
+// field. Map the old "read" status to read=true + workflow status "new", and
+// derive read from status for archived docs that predate the `read` field.
+function coerceStatus(raw: string | undefined): InquiryStatus {
+  if (raw === "inProgress" || raw === "resolved" || raw === "archived") return raw;
+  return "new";
 }
 
 async function loadInquiries(): Promise<InquiryRow[]> {
@@ -34,7 +43,8 @@ async function loadInquiries(): Promise<InquiryRow[]> {
       websiteUrl?: string;
       country?: string;
       message: string;
-      status: InquiryStatus;
+      status?: string;
+      read?: boolean;
       notes?: string;
       createdAt: Date;
     }[]
@@ -50,7 +60,8 @@ async function loadInquiries(): Promise<InquiryRow[]> {
     websiteUrl: d.websiteUrl ?? "",
     country: d.country ?? "",
     message: d.message,
-    status: d.status,
+    status: coerceStatus(d.status),
+    read: d.read ?? (d.status === "read" || d.status === "archived"),
     notes: d.notes ?? "",
     createdAt: d.createdAt.toISOString(),
   }));

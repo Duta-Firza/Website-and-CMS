@@ -26,16 +26,25 @@ export const SOLUTION_PAGE_SLUGS = [
   "trading-products",
   "manufacturing",
   "epc",
+  "technology",
 ] as const;
 export type SolutionPageSlug = (typeof SOLUTION_PAGE_SLUGS)[number];
 
 export const SOLUTION_PAGE_STATUSES = ["published", "comingSoon", "hidden"] as const;
 export type SolutionPageStatus = (typeof SOLUTION_PAGE_STATUSES)[number];
 
-export const INQUIRY_SOURCES = ["trading", "manufacturing", "epc", "contact"] as const;
+export const INQUIRY_SOURCES = [
+  "trading",
+  "manufacturing",
+  "epc",
+  "technology",
+  "contact",
+] as const;
 export type InquirySource = (typeof INQUIRY_SOURCES)[number];
 
-export const INQUIRY_STATUSES = ["new", "read", "archived"] as const;
+// Follow-up workflow status for an inquiry. Read/unread is tracked separately
+// via the Inquiry `read` boolean, so these values are purely about triage.
+export const INQUIRY_STATUSES = ["new", "inProgress", "resolved", "archived"] as const;
 export type InquiryStatus = (typeof INQUIRY_STATUSES)[number];
 
 /**

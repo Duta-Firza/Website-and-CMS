@@ -965,6 +965,21 @@ const solutionPageContentSchema = z.object({
     fields: [],
   }),
   comingSoonMessage: localizedSchema,
+  websiteLink: z
+    .object({
+      enabled: z.boolean().default(false),
+      url: z.string().default(""),
+      title: localizedSchema,
+      description: localizedSchema,
+      ctaLabel: localizedSchema,
+    })
+    .default({
+      enabled: false,
+      url: "",
+      title: { id: "", en: "" },
+      description: { id: "", en: "" },
+      ctaLabel: { id: "", en: "" },
+    }),
   status: z.enum(SOLUTION_PAGE_STATUSES),
 });
 
@@ -1218,6 +1233,20 @@ export async function deleteInquiry(id: string): Promise<ActionResult> {
     await requireAdmin();
     await connectDB();
     await Inquiry.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+/** Toggle an inquiry's read/unread flag (drives the sidebar unread badge). */
+export async function setInquiryRead(id: string, read: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = z.object({ id: z.string().min(1), read: z.boolean() }).parse({ id, read });
+    await connectDB();
+    await Inquiry.findByIdAndUpdate(parsed.id, { read: parsed.read });
     bust();
     return { ok: true };
   } catch (e) {

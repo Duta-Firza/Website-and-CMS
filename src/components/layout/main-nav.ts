@@ -135,6 +135,7 @@ export function buildNav(locale: string): NavTop[] {
         },
         { labelKey: "manufacturing", href: `${base}/solutions/manufacturing` },
         { labelKey: "epc", href: `${base}/solutions/epc` },
+        { labelKey: "technology", href: `${base}/solutions/technology` },
       ],
     },
     {
