@@ -87,7 +87,7 @@ export default async function Page({ params }: { params: Promise<PageParams> }) 
           <p className="mb-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
             {tAbout("videoProfile")}
           </p>
-          <VideoPlayer src={about.videoUrl} />
+          <VideoPlayer src={about.videoUrl} autoplay={about.videoAutoplay} />
         </ScrollReveal>
       )}
 

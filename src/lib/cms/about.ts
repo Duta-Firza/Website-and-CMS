@@ -28,6 +28,7 @@ export interface HoldingDivisionData {
 export interface AboutPageData {
   intro: string;
   videoUrl: string;
+  videoAutoplay: boolean;
   vision: string;
   mission: string;
   values: AboutValueItem[];
@@ -47,6 +48,7 @@ export interface AboutPageData {
 const EMPTY_ABOUT: AboutPageData = {
   intro: "",
   videoUrl: "",
+  videoAutoplay: false,
   vision: "",
   mission: "",
   values: [],
@@ -78,6 +80,7 @@ export async function getAboutPage(locale: Locale): Promise<AboutPageData> {
       {
         intro: doc.intro ?? EMPTY_LOCALIZED,
         videoUrl: doc.videoUrl ?? "",
+        videoAutoplay: doc.videoAutoplay ?? false,
         vision: doc.vision ?? EMPTY_LOCALIZED,
         mission: doc.mission ?? EMPTY_LOCALIZED,
         values: Array.isArray(doc.values)

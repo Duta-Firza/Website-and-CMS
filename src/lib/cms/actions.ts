@@ -403,6 +403,7 @@ const aboutValueItemSchema = z.object({
 const aboutPageSchema = z.object({
   intro: localizedSchema,
   videoUrl: z.string().default(""),
+  videoAutoplay: z.boolean().default(false),
   vision: localizedSchema,
   mission: localizedSchema,
   values: z.array(aboutValueItemSchema).default([]),
