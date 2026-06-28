@@ -18,12 +18,12 @@ import {
   HistoryEntry,
   HOME_HERO_ID,
   HomeHero,
-  IR_SUB_PAGE_SLUGS,
-  IR_SUB_PAGE_STATUSES,
-  IrSubPage,
   INQUIRY_SOURCES,
   INQUIRY_STATUSES,
   Inquiry,
+  IR_SUB_PAGE_SLUGS,
+  IR_SUB_PAGE_STATUSES,
+  IrSubPage,
   LEADERSHIP_TYPES,
   LeadershipMember,
   Partner,
@@ -31,8 +31,10 @@ import {
   Product,
   Project,
   Publication,
+  REPORT_DOWNLOAD_ACTIONS,
   ReachPoint,
   Report,
+  ReportDownload,
   SECTION_MODES,
   SITE_SETTINGS_ID,
   SiteSettings,
@@ -91,7 +93,11 @@ export async function updateHomeHero(input: z.infer<typeof heroSchema>): Promise
     await requireAdmin();
     const parsed = heroSchema.parse(input);
     await connectDB();
-    await HomeHero.findByIdAndUpdate(HOME_HERO_ID, { $set: parsed }, { upsert: true, new: true, strict: false });
+    await HomeHero.findByIdAndUpdate(
+      HOME_HERO_ID,
+      { $set: parsed },
+      { upsert: true, new: true, strict: false },
+    );
     bust();
     return { ok: true };
   } catch (e) {
@@ -193,7 +199,8 @@ export async function upsertSolution(input: z.infer<typeof solutionSchema>): Pro
     await connectDB();
     const opts = { strict: false } as const;
     if (id) await Solution.findByIdAndUpdate(id, { $set: data }, opts);
-    else await Solution.findOneAndUpdate({ key: data.key }, { $set: data }, { ...opts, upsert: true });
+    else
+      await Solution.findOneAndUpdate({ key: data.key }, { $set: data }, { ...opts, upsert: true });
     bust();
     return { ok: true };
   } catch (e) {
@@ -1307,7 +1314,92 @@ export async function updateIrSubPage(
     const parsedSlug = z.enum(IR_SUB_PAGE_SLUGS).parse(slug);
     const parsed = irSubPageContentSchema.parse(input);
     await connectDB();
+    // `findByIdAndUpdate` with a partial object $set-s only these fields, so the
+    // sibling `formSettings` saved by updateReportDownloadFormSettings survives.
     await IrSubPage.findByIdAndUpdate(parsedSlug, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Report Download Gate (form settings + leads) ─────────────────────────────
+/** Persist the report download/view gate form config onto the `reports` IR doc. */
+export async function updateReportDownloadFormSettings(
+  input: z.infer<typeof formSettingsSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = formSettingsSchema.parse(input);
+    await connectDB();
+    await IrSubPage.findByIdAndUpdate(
+      "reports",
+      { formSettings: parsed },
+      { upsert: true, new: true },
+    );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+const reportLeadSchema = z.object({
+  reportId: z.string().min(1),
+  action: z.enum(REPORT_DOWNLOAD_ACTIONS),
+  values: z.record(z.string(), z.string()),
+});
+
+/** Public: record a captured lead when a visitor views/downloads a report PDF. */
+export async function submitReportLead(
+  input: z.infer<typeof reportLeadSchema>,
+): Promise<ActionResult> {
+  try {
+    const parsed = reportLeadSchema.parse(input);
+    const { splitReportDownloadPayload } = await import("./report-download-form");
+    const { system, custom } = splitReportDownloadPayload(parsed.values);
+    await connectDB();
+    const report = await Report.findById(parsed.reportId)
+      .select("title type year")
+      .lean<{ title?: { id?: string; en?: string }; type?: string; year?: number } | null>();
+    await ReportDownload.create({
+      reportId: parsed.reportId,
+      reportTitle: { id: report?.title?.id ?? "", en: report?.title?.en ?? "" },
+      reportType: report?.type,
+      reportYear: report?.year,
+      action: parsed.action,
+      fullName: (system.fullName ?? "").trim(),
+      email: (system.email ?? "").trim(),
+      phone: (system.phone ?? "").trim(),
+      company: (system.company ?? "").trim(),
+      customFieldValues: custom,
+    });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+/** Toggle a report lead's read/unread flag. */
+export async function setReportLeadRead(id: string, read: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = z.object({ id: z.string().min(1), read: z.boolean() }).parse({ id, read });
+    await connectDB();
+    await ReportDownload.findByIdAndUpdate(parsed.id, { read: parsed.read });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteReportLead(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await ReportDownload.findByIdAndDelete(id);
     bust();
     return { ok: true };
   } catch (e) {

@@ -47,6 +47,12 @@ export type InquirySource = (typeof INQUIRY_SOURCES)[number];
 export const INQUIRY_STATUSES = ["new", "inProgress", "resolved", "archived"] as const;
 export type InquiryStatus = (typeof INQUIRY_STATUSES)[number];
 
+// Whether a report lead came from a "view" (opened the in-browser preview) or a
+// "download" of the PDF. Stored on the ReportDownload model so admins can tell
+// the two intents apart in the Download Reports inbox.
+export const REPORT_DOWNLOAD_ACTIONS = ["view", "download"] as const;
+export type ReportDownloadAction = (typeof REPORT_DOWNLOAD_ACTIONS)[number];
+
 /**
  * Whitelist of lucide-react icon names that the Quick Stats card can render.
  * Both the admin Select dropdown and the public component pick from this list,

@@ -6,7 +6,8 @@ import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import type { z } from "zod";
+import { buildFieldsSchema, FieldRow } from "@/components/public/dynamic-form-fields";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,15 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { submitInquiry } from "@/lib/cms/actions";
 import type { LocalizedFormField } from "@/lib/cms/solutions";
@@ -37,22 +30,11 @@ interface Props {
   successMessage: string;
 }
 
-function buildSchema(fields: LocalizedFormField[]) {
-  const shape: Record<string, z.ZodTypeAny> = {};
-  for (const f of fields) {
-    let s: z.ZodString = z.string();
-    if (f.type === "email") s = s.email();
-    s = s.max(f.type === "textarea" ? 4000 : 200);
-    shape[f.key] = f.required ? s.min(1) : s.optional().default("");
-  }
-  return z.object(shape) as z.ZodType<Record<string, string>>;
-}
-
 export function InquiryForm({ source, fields, submitLabel, successMessage }: Props) {
   const t = useTranslations("InquiryForm");
   const [successOpen, setSuccessOpen] = useState(false);
 
-  const schema = useMemo(() => buildSchema(fields), [fields]);
+  const schema = useMemo(() => buildFieldsSchema(fields), [fields]);
   const defaultValues = useMemo(() => {
     return Object.fromEntries(fields.map((f) => [f.key, ""]));
   }, [fields]);
@@ -156,66 +138,5 @@ export function InquiryForm({ source, fields, submitLabel, successMessage }: Pro
         </DialogContent>
       </Dialog>
     </form>
-  );
-}
-
-function FieldRow({
-  field,
-  register,
-  setValue,
-  watch,
-  error,
-}: {
-  field: LocalizedFormField;
-  register: ReturnType<typeof useForm<Record<string, string>>>["register"];
-  setValue: ReturnType<typeof useForm<Record<string, string>>>["setValue"];
-  watch: ReturnType<typeof useForm<Record<string, string>>>["watch"];
-  error?: string;
-}) {
-  const id = `iq-${field.key}`;
-  if (field.type === "select") {
-    const current = watch(field.key) ?? "";
-    return (
-      <div className="space-y-1.5">
-        <Label htmlFor={id}>
-          {field.label}
-          {field.required && <span className="ml-0.5 text-destructive">*</span>}
-        </Label>
-        <Select
-          value={current}
-          onValueChange={(v) => setValue(field.key, v ?? "", { shouldValidate: true })}
-        >
-          <SelectTrigger id={id} aria-invalid={Boolean(error)}>
-            <SelectValue placeholder={field.placeholder}>
-              {field.options.find((o) => o.value === current)?.label ?? field.placeholder}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {field.options.map((o) => (
-              <SelectItem key={o.value} value={o.value}>
-                {o.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {error && <p className="text-xs text-destructive">{error}</p>}
-      </div>
-    );
-  }
-  return (
-    <div className="space-y-1.5">
-      <Label htmlFor={id}>
-        {field.label}
-        {field.required && <span className="ml-0.5 text-destructive">*</span>}
-      </Label>
-      <Input
-        id={id}
-        type={field.type === "number" ? "number" : field.type === "tel" ? "tel" : field.type === "email" ? "email" : "text"}
-        placeholder={field.placeholder}
-        aria-invalid={Boolean(error)}
-        {...register(field.key)}
-      />
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
   );
 }

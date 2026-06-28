@@ -253,6 +253,13 @@
     "ok": "OK",
     "errorToast": "Terjadi kesalahan. Silakan coba lagi."
   },
+  "ReportGate": {
+    "title": "Dapatkan laporan",
+    "description": "Mohon isi beberapa data untuk melanjutkan.",
+    "submitting": "Mohon tunggu…",
+    "ok": "OK",
+    "errorToast": "Terjadi kesalahan. Silakan coba lagi."
+  },
   "Admin": {
     "dashboard": "Dasbor",
     "login": "Masuk",
@@ -413,6 +420,10 @@
         "title": "Inbox Inquiry",
         "description": "Submission dari form Trading, Manufaktur, EPC, Teknologi, dan Kontak."
       },
+      "reportDownloads": {
+        "title": "Download Laporan",
+        "description": "Lead yang tertangkap saat pengunjung melihat atau mengunduh PDF laporan hubungan investor."
+      },
       "irStocks": {
         "title": "Saham",
         "description": "Konten halaman /investor-relations/stocks."
@@ -466,7 +477,8 @@
       "inquiriesArchived": "Diarsipkan",
       "items": "Item",
       "annual": "Tahunan",
-      "financial": "Keuangan"
+      "financial": "Keuangan",
+      "downloadForm": "Form Download"
     },
     "nouns": {
       "stat": "Statistik",
@@ -632,7 +644,22 @@
       "options": "Opsi",
       "addOption": "Tambah opsi",
       "noOptions": "Belum ada opsi.",
-      "moveUp": "Pindah ke atas"
+      "moveUp": "Pindah ke atas",
+      "enabled": "Aktifkan form"
+    },
+    "reportLeads": {
+      "settingsTitle": "Form gate download / lihat",
+      "settingsHint": "Wajibkan pengunjung mengisi data sebelum melihat atau mengunduh PDF laporan. Empat field inti selalu dikumpulkan; tambah atau hapus field lain dan aktif/nonaktifkan gate.",
+      "viewLeads": "Lihat lead tertangkap",
+      "formSettings": "Pengaturan form",
+      "filterAll": "Semua",
+      "action_view": "Lihat",
+      "action_download": "Download",
+      "searchPlaceholder": "Cari nama, perusahaan, email, laporan…",
+      "empty": "Belum ada lead tertangkap.",
+      "selectLead": "Pilih lead untuk melihat detailnya.",
+      "report": "Laporan",
+      "company": "Perusahaan"
     },
     "fields": {
       "heroEyebrow": "Eyebrow",
@@ -830,6 +857,7 @@
     "settings": "Pengaturan",
     "users": "Pengguna",
     "inquiries": "Inquiry",
+    "reportDownloads": "Download Laporan",
     "comingSoon": "Segera",
     "expand": "Perluas sidebar",
     "collapse": "Ringkas sidebar"

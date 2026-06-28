@@ -253,6 +253,13 @@
     "ok": "OK",
     "errorToast": "Something went wrong. Please try again."
   },
+  "ReportGate": {
+    "title": "Get the report",
+    "description": "Please share a few details to continue.",
+    "submitting": "Please wait…",
+    "ok": "OK",
+    "errorToast": "Something went wrong. Please try again."
+  },
   "Admin": {
     "dashboard": "Dashboard",
     "login": "Sign In",
@@ -413,6 +420,10 @@
         "title": "Inquiry Inbox",
         "description": "Submissions from the Trading, Manufacturing, EPC, Technology, and Contact forms."
       },
+      "reportDownloads": {
+        "title": "Download Reports",
+        "description": "Leads captured when visitors view or download investor-relations report PDFs."
+      },
       "irStocks": {
         "title": "Stocks",
         "description": "Page content for /investor-relations/stocks."
@@ -466,7 +477,8 @@
       "inquiriesArchived": "Archived",
       "items": "Items",
       "annual": "Annual",
-      "financial": "Financial"
+      "financial": "Financial",
+      "downloadForm": "Download Form"
     },
     "nouns": {
       "stat": "Stat",
@@ -632,7 +644,22 @@
       "options": "Options",
       "addOption": "Add option",
       "noOptions": "No options yet.",
-      "moveUp": "Move up"
+      "moveUp": "Move up",
+      "enabled": "Enable form"
+    },
+    "reportLeads": {
+      "settingsTitle": "Download / view gate form",
+      "settingsHint": "Require visitors to share their details before viewing or downloading report PDFs. The four core fields are always collected; add or remove extra fields and toggle the gate on or off.",
+      "viewLeads": "View captured leads",
+      "formSettings": "Form settings",
+      "filterAll": "All",
+      "action_view": "View",
+      "action_download": "Download",
+      "searchPlaceholder": "Search name, company, email, report…",
+      "empty": "No leads captured yet.",
+      "selectLead": "Select a lead to view its details.",
+      "report": "Report",
+      "company": "Company"
     },
     "fields": {
       "heroEyebrow": "Eyebrow",
@@ -830,6 +857,7 @@
     "settings": "Settings",
     "users": "Users",
     "inquiries": "Inquiries",
+    "reportDownloads": "Download Reports",
     "comingSoon": "Soon",
     "expand": "Expand sidebar",
     "collapse": "Collapse sidebar"

@@ -1,13 +1,17 @@
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
-import { ScrollReveal } from "@/components/public/scroll-reveal";
+import { getTranslations } from "next-intl/server";
 import { ComingSoonPage } from "@/components/public/coming-soon-page";
-import { ReportActions } from "@/components/public/ir/report-preview-dialog";
+import { ReportDownloadActions } from "@/components/public/ir/report-download-actions";
+import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
 import { PageTabs } from "@/components/public/section/page-tabs";
 import { resolveActiveTab } from "@/components/public/section/resolve-active-tab";
 import { PaginationNav } from "@/components/ui/pagination-nav";
-import { getIrSubPage, getReports } from "@/lib/cms/investor-relations";
+import {
+  getIrSubPage,
+  getReportDownloadFormSettings,
+  getReports,
+} from "@/lib/cms/investor-relations";
 import { resolveBody, resolveHero } from "@/lib/cms/section-mode";
 
 function toLocale(l: string): "id" | "en" {
@@ -39,8 +43,7 @@ export default async function ReportsPage({
   const activeTab = resolveActiveTab(TABS, sp.tab, "annual");
   const currentPage = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
 
-  const [tSec, tTabsRaw, tIR, meta, { items: reports, totalPages }] = await Promise.all([
-    getTranslations("SectionTitles"),
+  const [tSec, tIR, meta, { items: reports, totalPages }, formSettings] = await Promise.all([
     getTranslations("SectionTitles"),
     getTranslations("IR"),
     getIrSubPage("reports", safeLocale),
@@ -48,6 +51,7 @@ export default async function ReportsPage({
       page: currentPage,
       limit: PAGE_SIZE,
     }),
+    getReportDownloadFormSettings(safeLocale),
   ]);
 
   if (meta.status === "hidden") notFound();
@@ -142,11 +146,13 @@ export default async function ReportsPage({
                       )}
                     </div>
                   </div>
-                  <ReportActions
+                  <ReportDownloadActions
+                    reportId={report.id}
                     fileUrl={report.fileUrl}
                     title={report.title}
                     viewLabel={tIR("viewReport")}
                     downloadLabel={tIR("downloadReport")}
+                    formSettings={formSettings}
                   />
                 </div>
               </ScrollReveal>

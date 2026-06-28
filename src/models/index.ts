@@ -21,16 +21,6 @@ export { Customer, type CustomerDoc } from "./customer";
 export { HistoryEntry, type HistoryEntryDoc } from "./history-entry";
 export { HOME_HERO_ID, HomeHero, type HomeHeroDoc } from "./home-hero";
 export {
-  IR_SUB_PAGE_SLUGS,
-  IR_SUB_PAGE_STATUSES,
-  IrSubPage,
-  type IrSubPageDoc,
-  type IrSubPageSlug,
-  type IrSubPageStatus,
-} from "./ir-sub-page";
-export { Publication, type PublicationCategory, type PublicationDoc } from "./publication";
-export { Report, type ReportDoc, type ReportType } from "./report";
-export {
   INQUIRY_SOURCES,
   INQUIRY_STATUSES,
   Inquiry,
@@ -38,6 +28,14 @@ export {
   type InquirySource,
   type InquiryStatus,
 } from "./inquiry";
+export {
+  IR_SUB_PAGE_SLUGS,
+  IR_SUB_PAGE_STATUSES,
+  IrSubPage,
+  type IrSubPageDoc,
+  type IrSubPageSlug,
+  type IrSubPageStatus,
+} from "./ir-sub-page";
 export {
   LEADERSHIP_TYPES,
   LeadershipMember,
@@ -47,7 +45,15 @@ export {
 export { Partner, type PartnerDoc } from "./partner";
 export { Product, type ProductDoc } from "./product";
 export { PROJECT_CATEGORIES, Project, type ProjectCategory, type ProjectDoc } from "./project";
+export { Publication, type PublicationCategory, type PublicationDoc } from "./publication";
 export { ReachPoint, type ReachPointDoc } from "./reach-point";
+export { Report, type ReportDoc, type ReportType } from "./report";
+export {
+  REPORT_DOWNLOAD_ACTIONS,
+  ReportDownload,
+  type ReportDownloadAction,
+  type ReportDownloadDoc,
+} from "./report-download";
 export { SITE_SETTINGS_ID, SiteSettings, type SiteSettingsDoc } from "./site-settings";
 export { SOLUTION_KEYS, Solution, type SolutionDoc, type SolutionKey } from "./solution";
 export {

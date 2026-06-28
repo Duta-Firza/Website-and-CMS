@@ -1,4 +1,5 @@
 import { type InferSchemaType, model, models, Schema } from "mongoose";
+import { FORM_FIELD_TYPES } from "@/lib/cms/form-fields";
 import { localizedStringOptional, stripVersion } from "./_shared";
 import { IR_SUB_PAGE_SLUGS, IR_SUB_PAGE_STATUSES, SECTION_MODES } from "./constants";
 
@@ -22,6 +23,39 @@ const bodySchema = new Schema(
   { _id: false },
 );
 
+// Lead-capture gate form (currently used by the `reports` sub-page only). Same
+// shape as SolutionPage.formSettings so the admin form-builder UI is reusable.
+const formFieldOptionSchema = new Schema(
+  {
+    value: { type: String, required: true },
+    label: localizedStringOptional,
+  },
+  { _id: false },
+);
+
+const formFieldSchema = new Schema(
+  {
+    key: { type: String, required: true },
+    label: localizedStringOptional,
+    placeholder: localizedStringOptional,
+    type: { type: String, enum: FORM_FIELD_TYPES, default: "text" },
+    required: { type: Boolean, default: false },
+    order: { type: Number, default: 0 },
+    options: { type: [formFieldOptionSchema], default: [] },
+  },
+  { _id: false },
+);
+
+const formSettingsSchema = new Schema(
+  {
+    enabled: { type: Boolean, default: true },
+    submitLabel: localizedStringOptional,
+    successMessage: localizedStringOptional,
+    fields: { type: [formFieldSchema], default: [] },
+  },
+  { _id: false },
+);
+
 const irSubPageSchema = new Schema(
   {
     _id: { type: String, enum: IR_SUB_PAGE_SLUGS, required: true },
@@ -35,6 +69,7 @@ const irSubPageSchema = new Schema(
     bodyMode: { type: String, enum: SECTION_MODES, default: "disabled" },
     hero: { type: heroSchema, default: () => ({}) },
     body: { type: bodySchema, default: () => ({}) },
+    formSettings: { type: formSettingsSchema, default: () => ({}) },
   },
   { timestamps: true, ...stripVersion },
 );
