@@ -47,7 +47,13 @@ export { Product, type ProductDoc } from "./product";
 export { PROJECT_CATEGORIES, Project, type ProjectCategory, type ProjectDoc } from "./project";
 export { Publication, type PublicationCategory, type PublicationDoc } from "./publication";
 export { ReachPoint, type ReachPointDoc } from "./reach-point";
-export { Report, type ReportDoc, type ReportType } from "./report";
+export {
+  REPORT_THUMBNAIL_MODES,
+  Report,
+  type ReportDoc,
+  type ReportThumbnailMode,
+  type ReportType,
+} from "./report";
 export {
   REPORT_DOWNLOAD_ACTIONS,
   ReportDownload,

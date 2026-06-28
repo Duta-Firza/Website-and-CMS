@@ -635,7 +635,7 @@ function InquiryPagination({
       </div>
       <div className="flex flex-1 items-center justify-between gap-2 text-right ">
         <label htmlFor="inq-page-size" className="text-xs text-muted-foreground">
-          Items per page:
+          {t("reportLeads.itemsPerPage")}
         </label>
         <Select value={String(pageSize)} onValueChange={(v) => onPageSize(Number(v))}>
           <SelectTrigger className="h-8 w-28">

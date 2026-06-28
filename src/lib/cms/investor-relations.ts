@@ -180,6 +180,7 @@ export interface ReportData {
   year: number;
   description: string;
   fileUrl: string;
+  thumbnailUrl: string;
   publishedAt: Date;
   isPublished: boolean;
   order: number;
@@ -231,6 +232,7 @@ export async function getReports(
       year: d.year,
       description: loc.description,
       fileUrl: d.fileUrl,
+      thumbnailUrl: d.thumbnailUrl ?? "",
       publishedAt: d.publishedAt,
       isPublished: d.isPublished ?? true,
       order: d.order ?? 0,

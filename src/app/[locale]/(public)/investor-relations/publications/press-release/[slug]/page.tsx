@@ -16,7 +16,7 @@ interface PageParams {
   slug: string;
 }
 
-export default async function NewsroomArticlePage({ params }: { params: Promise<PageParams> }) {
+export default async function PressReleaseArticlePage({ params }: { params: Promise<PageParams> }) {
   const { locale, slug } = await params;
   const safeLocale = toLocale(locale);
   const [tIR, article] = await Promise.all([
@@ -24,16 +24,16 @@ export default async function NewsroomArticlePage({ params }: { params: Promise<
     getPublication(slug, safeLocale),
   ]);
 
-  if (article?.category !== "newsroom") notFound();
+  if (article?.category !== "press-release") notFound();
 
   return (
     <article className="w-full">
       <ScrollReveal className="mb-8">
         <Link
-          href={`/${locale}/investor-relations/publications/newsroom`}
+          href={`/${locale}/investor-relations/publications/press-release`}
           className={buttonVariants({ variant: "ghost", size: "sm" })}
         >
-          ← {tIR("backToNewsroom")}
+          ← {tIR("backToPressRelease")}
         </Link>
       </ScrollReveal>
 

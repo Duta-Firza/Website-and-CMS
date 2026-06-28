@@ -32,6 +32,7 @@ import {
   Project,
   Publication,
   REPORT_DOWNLOAD_ACTIONS,
+  REPORT_THUMBNAIL_MODES,
   ReachPoint,
   Report,
   ReportDownload,
@@ -1486,6 +1487,8 @@ const reportSchema = z.object({
   year: z.number().int().min(2000).max(2100),
   description: localizedSchema,
   fileUrl: z.string().min(1),
+  thumbnailMode: z.enum(REPORT_THUMBNAIL_MODES).default("default"),
+  thumbnailUrl: z.string().default(""),
   publishedAt: z.coerce.date(),
   isPublished: z.boolean().default(true),
   order: z.number().int().default(0),
@@ -1495,11 +1498,44 @@ export async function upsertReport(input: z.infer<typeof reportSchema>): Promise
   try {
     await requireAdmin();
     const { id, ...data } = reportSchema.parse(input);
+    // "default" mode never carries an image — clear any stale URL so the public
+    // page falls back to the placeholder.
+    if (data.thumbnailMode === "default") data.thumbnailUrl = "";
     await connectDB();
     if (id) await Report.findByIdAndUpdate(id, data);
     else await Report.create(data);
     bust();
     return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+/**
+ * Generate a thumbnail from the first page of a report PDF and upload it to GCS.
+ * Returns the uploaded image URL, or an error when ghostscript is unavailable.
+ */
+export async function generateReportThumbnail(
+  fileUrl: string,
+): Promise<ActionResult<{ url: string }>> {
+  try {
+    await requireAdmin();
+    const parsed = z.string().url().parse(fileUrl);
+    const res = await fetch(parsed);
+    if (!res.ok) return { ok: false, error: `Failed to fetch PDF (${res.status})` };
+    const pdfBuffer = Buffer.from(await res.arrayBuffer());
+    const { renderPdfFirstPage } = await import("@/lib/storage/pdf-thumbnail");
+    const thumb = await renderPdfFirstPage(pdfBuffer);
+    if (!thumb) {
+      return { ok: false, error: "Could not render PDF (ghostscript unavailable)" };
+    }
+    const { uploadBuffer } = await import("@/lib/storage/gcs");
+    const { url } = await uploadBuffer(thumb, {
+      folder: "reports/thumbnails",
+      mime: "image/jpeg",
+      filename: "report-thumbnail.jpg",
+    });
+    return { ok: true, data: { url } };
   } catch (e) {
     return { ok: false, error: errorMessage(e) };
   }

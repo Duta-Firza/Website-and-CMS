@@ -151,7 +151,7 @@ export function ReportDownloadActions({
 
       {/* PDF preview */}
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="h-[90vh] max-w-5xl p-0">
+        <DialogContent className="h-[90vh] p-0 sm:max-w-[90vw]">
           <iframe src={`${fileUrl}#toolbar=0`} className="h-full w-full rounded-lg" title={title} />
         </DialogContent>
       </Dialog>

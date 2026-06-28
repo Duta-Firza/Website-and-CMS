@@ -5,7 +5,7 @@ import { UrlTabs } from "@/components/admin/url-tabs";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { connectDB } from "@/lib/db";
 import { Report } from "@/models";
-import type { ReportType } from "@/models/report";
+import type { ReportThumbnailMode, ReportType } from "@/models/report";
 import { IrSubPageForm } from "../_components/ir-sub-page-form";
 import { loadIrSubPageForAdmin } from "../_components/load-ir-sub-page";
 import { loadReportDownloadFormSettings } from "../_components/load-report-download-form";
@@ -19,6 +19,8 @@ export interface ReportRow {
   year: number;
   description: { id: string; en: string };
   fileUrl: string;
+  thumbnailMode: ReportThumbnailMode;
+  thumbnailUrl: string;
   publishedAt: Date;
   isPublished: boolean;
   order: number;
@@ -34,6 +36,8 @@ async function loadReports(): Promise<ReportRow[]> {
     year: d.year,
     description: { id: d.description?.id ?? "", en: d.description?.en ?? "" },
     fileUrl: d.fileUrl,
+    thumbnailMode: (d.thumbnailMode ?? "default") as ReportThumbnailMode,
+    thumbnailUrl: d.thumbnailUrl ?? "",
     publishedAt: d.publishedAt,
     isPublished: d.isPublished ?? true,
     order: d.order ?? 0,

@@ -1,7 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExternalLink, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { ExternalLink, FileText, ImageIcon, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -31,6 +32,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -40,7 +48,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteReport, upsertReport } from "@/lib/cms/actions";
+import { deleteReport, generateReportThumbnail, upsertReport } from "@/lib/cms/actions";
+import { REPORT_THUMBNAIL_MODES, type ReportThumbnailMode } from "@/models/constants";
 import type { ReportType } from "@/models/report";
 import type { ReportRow } from "./page";
 
@@ -53,6 +62,8 @@ const schema = z.object({
   year: z.number().int().min(2000).max(2100),
   description: localized,
   fileUrl: z.string().min(1, "PDF file is required"),
+  thumbnailMode: z.enum(REPORT_THUMBNAIL_MODES),
+  thumbnailUrl: z.string(),
   publishedAt: z.string().min(1, "Published date is required"),
   isPublished: z.boolean(),
   order: z.number().int(),
@@ -67,6 +78,8 @@ function makeEmptyReport(type: ReportType): FormValues {
     year: new Date().getFullYear(),
     description: { id: "", en: "" },
     fileUrl: "",
+    thumbnailMode: "default",
+    thumbnailUrl: "",
     publishedAt: new Date().toISOString().split("T")[0],
     isPublished: true,
     order: 0,
@@ -81,6 +94,8 @@ function toFormValues(r: ReportRow): FormValues {
     year: r.year,
     description: r.description,
     fileUrl: r.fileUrl,
+    thumbnailMode: r.thumbnailMode,
+    thumbnailUrl: r.thumbnailUrl,
     publishedAt: r.publishedAt.toISOString().split("T")[0],
     isPublished: r.isPublished,
     order: r.order,
@@ -97,12 +112,8 @@ interface ReportPreviewDialogProps {
 function ReportPreviewDialog({ fileUrl, title, open, onClose }: ReportPreviewDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="h-[90vh] max-w-5xl p-0">
-        <iframe
-          src={`${fileUrl}#toolbar=0`}
-          className="h-full w-full rounded-lg"
-          title={title}
-        />
+      <DialogContent className="h-[90vh] p-0 sm:max-w-[90vw]">
+        <iframe src={`${fileUrl}#toolbar=0`} className="h-full w-full rounded-lg" title={title} />
       </DialogContent>
     </Dialog>
   );
@@ -132,8 +143,34 @@ function ReportFormDialog({
 
   const yearValue = watch("year");
   const isPublished = watch("isPublished");
+  const thumbnailMode = watch("thumbnailMode");
+  const thumbnailUrl = watch("thumbnailUrl");
+  const fileUrl = watch("fileUrl");
+  const [generating, setGenerating] = useState(false);
 
   const { field: fileUrlField } = useController({ control, name: "fileUrl" });
+  const { field: thumbnailUrlField } = useController({ control, name: "thumbnailUrl" });
+
+  const changeThumbnailMode = (mode: ReportThumbnailMode) => {
+    setValue("thumbnailMode", mode);
+    // Switching to "default" clears any previously chosen image.
+    if (mode === "default") setValue("thumbnailUrl", "");
+  };
+
+  const onGenerateThumbnail = async () => {
+    if (!fileUrl) return;
+    setGenerating(true);
+    const result = await generateReportThumbnail(fileUrl);
+    setGenerating(false);
+    if (result.ok && result.data) {
+      setValue("thumbnailUrl", result.data.url);
+      toast.success(t("saved"));
+    } else {
+      toast.error(result.ok ? t("reportThumbnail.generateFailed") : result.error);
+    }
+  };
+
+  const previewSrc = thumbnailMode !== "default" && thumbnailUrl ? thumbnailUrl : "";
 
   const onSubmit = async (values: FormValues) => {
     const result = await upsertReport({
@@ -150,7 +187,7 @@ function ReportFormDialog({
 
   return (
     <Dialog open onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto overflow-x-hidden sm:max-w-5xl">
         <DialogHeader>
           <DialogTitle>
             {initial.id ? t("edit") : t("add")} {t("groups.reportItem")} — {typeLabel}
@@ -183,10 +220,86 @@ function ReportFormDialog({
               value={fileUrlField.value}
               onChange={fileUrlField.onChange}
             />
-            {errors.fileUrl && (
-              <p className="text-xs text-destructive">{errors.fileUrl.message}</p>
-            )}
+            {errors.fileUrl && <p className="text-xs text-destructive">{errors.fileUrl.message}</p>}
           </div>
+
+          {/* Thumbnail */}
+          <div className="space-y-3 rounded-md border bg-muted/20 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Label>{t("reportThumbnail.label")}</Label>
+              <Select
+                value={thumbnailMode}
+                onValueChange={(v) => changeThumbnailMode(v as ReportThumbnailMode)}
+              >
+                <SelectTrigger className="h-9 w-56">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {REPORT_THUMBNAIL_MODES.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {t(`reportThumbnail.mode_${m}` as never)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+              <div className="relative aspect-video w-40 shrink-0 overflow-hidden rounded-md border bg-muted">
+                {previewSrc ? (
+                  <Image
+                    src={previewSrc}
+                    alt={t("reportThumbnail.label")}
+                    fill
+                    sizes="160px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-muted/40 text-muted-foreground/40">
+                    <FileText className="h-8 w-8" />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 space-y-2">
+                {thumbnailMode === "upload" && (
+                  <MediaUpload
+                    accept="image"
+                    folder="reports/thumbnails"
+                    value={thumbnailUrlField.value}
+                    onChange={thumbnailUrlField.onChange}
+                    aspectRatio={16 / 9}
+                  />
+                )}
+                {thumbnailMode === "pdfFirstPage" && (
+                  <div className="space-y-1.5">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={!fileUrl || generating}
+                      onClick={onGenerateThumbnail}
+                    >
+                      {generating ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <ImageIcon className="mr-2 h-4 w-4" />
+                      )}
+                      {t("reportThumbnail.generate")}
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      {fileUrl ? t("reportThumbnail.generateHint") : t("reportThumbnail.needPdf")}
+                    </p>
+                  </div>
+                )}
+                {thumbnailMode === "default" && (
+                  <p className="text-xs text-muted-foreground">
+                    {t("reportThumbnail.defaultHint")}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
           <LocalizedField
             label={`${t("common.description")} (${t("optional")})`}
             name="description"
@@ -302,13 +415,7 @@ function ReportTable({
   );
 }
 
-export function ReportsManager({
-  type,
-  initial,
-}: {
-  type: ReportType;
-  initial: ReportRow[];
-}) {
+export function ReportsManager({ type, initial }: { type: ReportType; initial: ReportRow[] }) {
   const t = useTranslations("Admin");
   const router = useRouter();
   const [editing, setEditing] = useState<FormValues | null>(null);

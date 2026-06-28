@@ -1,9 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
-import { ScrollReveal } from "@/components/public/scroll-reveal";
+import { getTranslations } from "next-intl/server";
 import { ComingSoonPage } from "@/components/public/coming-soon-page";
+import { IrThumbnail } from "@/components/public/ir/ir-thumbnail";
+import { ListToolbar } from "@/components/public/list-toolbar";
+import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
 import { PaginationNav } from "@/components/ui/pagination-nav";
 import { getIrSubPage, getPublications } from "@/lib/cms/investor-relations";
@@ -15,8 +16,15 @@ function toLocale(l: string): "id" | "en" {
 
 const PAGE_SIZE = 9;
 
-interface PageParams { locale: string }
-interface SearchParams { page?: string }
+interface PageParams {
+  locale: string;
+}
+interface SearchParams {
+  q?: string;
+  sort?: string;
+  filter?: string;
+  page?: string;
+}
 
 export default async function NewsroomPage({
   params,
@@ -28,13 +36,12 @@ export default async function NewsroomPage({
   const { locale } = await params;
   const sp = await searchParams;
   const safeLocale = toLocale(locale);
-  const currentPage = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
 
-  const [tSec, tIR, meta, { items: articles, totalPages }] = await Promise.all([
+  const [tSec, tIR, meta, { items: articles }] = await Promise.all([
     getTranslations("SectionTitles"),
     getTranslations("IR"),
     getIrSubPage("newsroom", safeLocale),
-    getPublications(safeLocale, "newsroom", true, { page: currentPage, limit: PAGE_SIZE }),
+    getPublications(safeLocale, "newsroom", true),
   ]);
 
   if (meta.status === "hidden") notFound();
@@ -70,12 +77,51 @@ export default async function NewsroomPage({
   }
 
   const baseUrl = `/${locale}/investor-relations/publications/newsroom`;
+  const dateFmt = (d: Date) =>
+    new Date(d).toLocaleDateString(safeLocale === "id" ? "id-ID" : "en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+  const years = [...new Set(articles.map((a) => new Date(a.publishedAt).getFullYear()))].sort(
+    (a, b) => b - a,
+  );
+  const q = (sp.q ?? "").trim().toLowerCase();
+  const sort = sp.sort ?? "newest";
+  const activeYear =
+    sp.filter && years.includes(Number(sp.filter)) ? String(Number(sp.filter)) : "all";
+
+  let visible = articles.filter((a) => {
+    if (activeYear !== "all" && String(new Date(a.publishedAt).getFullYear()) !== activeYear)
+      return false;
+    if (!q) return true;
+    return `${a.title} ${a.summary}`.toLowerCase().includes(q);
+  });
+  if (sort === "oldest") {
+    visible = [...visible].sort(
+      (a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime(),
+    );
+  } else if (sort === "title") {
+    visible = [...visible].sort((a, b) => a.title.localeCompare(b.title, safeLocale));
+  } else {
+    visible = [...visible].sort(
+      (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    );
+  }
+
+  const totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+  const currentPage = Math.min(Math.max(1, parseInt(sp.page ?? "1", 10) || 1), totalPages);
+  const paged = visible.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  const extraParams: Record<string, string> = {};
+  if (q) extraParams.q = q;
+  if (sort !== "newest") extraParams.sort = sort;
+  if (activeYear !== "all") extraParams.filter = activeYear;
 
   return (
     <>
-      {hero && (
-        <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />
-      )}
+      {hero && <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />}
       {body && (body.heading || body.content) && (
         <ScrollReveal className="mb-10 max-w-3xl space-y-3">
           {body.heading && (
@@ -91,56 +137,69 @@ export default async function NewsroomPage({
         </ScrollReveal>
       )}
 
-      <ScrollReveal>
-        {articles.length === 0 ? (
-          <p className="py-10 text-center text-sm text-muted-foreground">{tIR("newsroomEmpty")}</p>
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {articles.map((article, idx) => (
-              <ScrollReveal key={article.id} delay={idx * 60}>
-                <Link
-                  href={`${baseUrl}/${article.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md"
-                >
-                  {article.imageUrl ? (
-                    <div className="relative aspect-video overflow-hidden bg-muted">
-                      <Image
-                        src={article.imageUrl}
-                        alt={article.title}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                      />
-                    </div>
-                  ) : (
-                    <div className="aspect-video bg-muted/40" />
-                  )}
-                  <div className="flex flex-1 flex-col p-5">
-                    <p className="mb-2 text-xs text-muted-foreground">
-                      {new Date(article.publishedAt).toLocaleDateString(
-                        locale === "id" ? "id-ID" : "en-US",
-                        { year: "numeric", month: "long", day: "numeric" },
-                      )}
-                    </p>
-                    <h3 className="mb-2 line-clamp-2 text-base font-semibold leading-snug text-brand-deep transition-colors group-hover:text-brand-accent dark:text-foreground">
-                      {article.title}
-                    </h3>
-                    {article.summary && (
-                      <p className="line-clamp-3 flex-1 text-sm text-muted-foreground">
-                        {article.summary}
+      {articles.length === 0 ? (
+        <p className="py-10 text-center text-sm text-muted-foreground">{tIR("newsroomEmpty")}</p>
+      ) : (
+        <>
+          <ListToolbar
+            searchPlaceholder={tIR("searchArticles")}
+            searchAriaLabel={tIR("searchArticles")}
+            sortLabel={tIR("sortLabel")}
+            sortOptions={[
+              { value: "newest", label: tIR("sortNewest") },
+              { value: "oldest", label: tIR("sortOldest") },
+              { value: "title", label: tIR("sortTitle") },
+            ]}
+            filterLabel={tIR("filterYear")}
+            filterOptions={[
+              { value: "all", label: tIR("allYears") },
+              ...years.map((y) => ({ value: String(y), label: String(y) })),
+            ]}
+          />
+
+          {paged.length === 0 ? (
+            <p className="rounded-md border border-dashed bg-muted/30 p-6 text-center text-sm text-muted-foreground">
+              {tIR("noResults")}
+            </p>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {paged.map((article, idx) => (
+                <ScrollReveal key={article.id} delay={Math.min(idx, 5) * 60}>
+                  <Link
+                    href={`${baseUrl}/${article.slug}`}
+                    className="group flex h-full flex-col overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md"
+                  >
+                    <IrThumbnail src={article.imageUrl || undefined} alt={article.title} />
+                    <div className="flex flex-1 flex-col p-5">
+                      <p className="mb-2 text-xs text-muted-foreground">
+                        {dateFmt(article.publishedAt)}
                       </p>
-                    )}
-                    <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-brand-accent">
-                      {tIR("readMore")} →
-                    </p>
-                  </div>
-                </Link>
-              </ScrollReveal>
-            ))}
-          </div>
-        )}
-        <PaginationNav currentPage={currentPage} totalPages={totalPages} baseUrl={baseUrl} />
-      </ScrollReveal>
+                      <h3 className="mb-2 line-clamp-2 text-base font-semibold leading-snug text-brand-deep transition-colors group-hover:text-brand-accent dark:text-foreground">
+                        {article.title}
+                      </h3>
+                      {article.summary && (
+                        <p className="line-clamp-3 flex-1 text-sm text-muted-foreground">
+                          {article.summary}
+                        </p>
+                      )}
+                      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-brand-accent">
+                        {tIR("readMore")} →
+                      </p>
+                    </div>
+                  </Link>
+                </ScrollReveal>
+              ))}
+            </div>
+          )}
+
+          <PaginationNav
+            currentPage={currentPage}
+            totalPages={totalPages}
+            baseUrl={baseUrl}
+            extraParams={Object.keys(extraParams).length > 0 ? extraParams : undefined}
+          />
+        </>
+      )}
     </>
   );
 }

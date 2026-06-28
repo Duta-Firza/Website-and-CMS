@@ -53,6 +53,13 @@ export type InquiryStatus = (typeof INQUIRY_STATUSES)[number];
 export const REPORT_DOWNLOAD_ACTIONS = ["view", "download"] as const;
 export type ReportDownloadAction = (typeof REPORT_DOWNLOAD_ACTIONS)[number];
 
+// How a report's public thumbnail is sourced:
+// - upload       → admin uploaded a custom image (thumbnailUrl)
+// - pdfFirstPage → generated from the first page of the report PDF (thumbnailUrl)
+// - default      → no image; the public page falls back to a placeholder
+export const REPORT_THUMBNAIL_MODES = ["upload", "pdfFirstPage", "default"] as const;
+export type ReportThumbnailMode = (typeof REPORT_THUMBNAIL_MODES)[number];
+
 /**
  * Whitelist of lucide-react icon names that the Quick Stats card can render.
  * Both the admin Select dropdown and the public component pick from this list,

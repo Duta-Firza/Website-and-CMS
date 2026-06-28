@@ -655,11 +655,26 @@
       "filterAll": "Semua",
       "action_view": "Lihat",
       "action_download": "Download",
+      "allTypes": "Semua laporan",
+      "type_annual": "Laporan tahunan",
+      "type_financial": "Laporan keuangan",
       "searchPlaceholder": "Cari nama, perusahaan, email, laporan…",
+      "itemsPerPage": "Item per halaman:",
       "empty": "Belum ada lead tertangkap.",
       "selectLead": "Pilih lead untuk melihat detailnya.",
       "report": "Laporan",
       "company": "Perusahaan"
+    },
+    "reportThumbnail": {
+      "label": "Thumbnail",
+      "mode_upload": "Upload thumbnail",
+      "mode_pdfFirstPage": "Gunakan halaman pertama PDF",
+      "mode_default": "Gunakan default",
+      "generate": "Generate dari PDF",
+      "generateHint": "Render halaman pertama PDF yang diupload sebagai thumbnail.",
+      "generateFailed": "Gagal membuat thumbnail.",
+      "needPdf": "Upload PDF dulu untuk membuat thumbnail.",
+      "defaultHint": "Placeholder netral akan ditampilkan di halaman publik."
     },
     "fields": {
       "heroEyebrow": "Eyebrow",
@@ -877,7 +892,18 @@
     "newsroomEmpty": "Belum ada artikel.",
     "publishedDate": "Diterbitkan",
     "backToNewsroom": "Kembali ke Newsroom",
-    "irContact": "Kontak IR"
+    "backToPressRelease": "Kembali ke Siaran Pers",
+    "irContact": "Kontak IR",
+    "searchReports": "Cari laporan…",
+    "searchArticles": "Cari artikel…",
+    "searchReleases": "Cari siaran pers…",
+    "sortLabel": "Urutkan",
+    "sortNewest": "Terbaru",
+    "sortOldest": "Terlama",
+    "sortTitle": "Judul A–Z",
+    "filterYear": "Tahun",
+    "allYears": "Semua tahun",
+    "noResults": "Tidak ada hasil yang cocok dengan filter."
   },
   "Pagination": {
     "previous": "Sebelumnya",

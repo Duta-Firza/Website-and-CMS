@@ -655,11 +655,26 @@
       "filterAll": "All",
       "action_view": "View",
       "action_download": "Download",
+      "allTypes": "All reports",
+      "type_annual": "Annual report",
+      "type_financial": "Financial report",
       "searchPlaceholder": "Search name, company, email, report…",
+      "itemsPerPage": "Items per page:",
       "empty": "No leads captured yet.",
       "selectLead": "Select a lead to view its details.",
       "report": "Report",
       "company": "Company"
+    },
+    "reportThumbnail": {
+      "label": "Thumbnail",
+      "mode_upload": "Upload thumbnail",
+      "mode_pdfFirstPage": "Use first page of PDF",
+      "mode_default": "Use default",
+      "generate": "Generate from PDF",
+      "generateHint": "Renders the first page of the uploaded PDF as the thumbnail.",
+      "generateFailed": "Could not generate the thumbnail.",
+      "needPdf": "Upload the PDF first to generate a thumbnail.",
+      "defaultHint": "A neutral placeholder will be shown on the public page."
     },
     "fields": {
       "heroEyebrow": "Eyebrow",
@@ -877,7 +892,18 @@
     "newsroomEmpty": "No articles yet.",
     "publishedDate": "Published",
     "backToNewsroom": "Back to Newsroom",
-    "irContact": "IR Contact"
+    "backToPressRelease": "Back to Press Release",
+    "irContact": "IR Contact",
+    "searchReports": "Search reports…",
+    "searchArticles": "Search articles…",
+    "searchReleases": "Search press releases…",
+    "sortLabel": "Sort",
+    "sortNewest": "Newest",
+    "sortOldest": "Oldest",
+    "sortTitle": "Title A–Z",
+    "filterYear": "Year",
+    "allYears": "All years",
+    "noResults": "No results match your filters."
   },
   "Pagination": {
     "previous": "Previous",

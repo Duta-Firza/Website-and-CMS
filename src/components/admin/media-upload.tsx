@@ -223,10 +223,10 @@ export function MediaUpload({
           target="_blank"
           rel="noreferrer noopener"
           title={value}
-          className="inline-flex max-w-full items-center gap-1 truncate text-[11px] text-muted-foreground hover:text-brand-accent"
+          className="flex max-w-full items-center gap-1 text-[11px] text-muted-foreground hover:text-brand-accent"
         >
           <ExternalLink className="h-3 w-3 shrink-0" />
-          <span className="truncate font-mono">{basename(value)}</span>
+          <span className="min-w-0 truncate font-mono">{basename(value)}</span>
         </a>
       )}
       {cropSource && aspectRatio && (
@@ -302,10 +302,10 @@ function Preview({
         href={value}
         target="_blank"
         rel="noreferrer noopener"
-        className="flex h-32 items-center justify-center gap-3 text-sm text-brand-deep hover:text-brand-accent dark:text-foreground"
+        className="flex h-32 items-center justify-center gap-3 px-4 text-sm text-brand-deep hover:text-brand-accent dark:text-foreground"
       >
-        <FileText className="h-8 w-8 opacity-60" />
-        <span className="truncate font-medium">{basename(value)}</span>
+        <FileText className="h-8 w-8 shrink-0 opacity-60" />
+        <span className="min-w-0 truncate font-medium">{basename(value)}</span>
       </a>
     );
   }

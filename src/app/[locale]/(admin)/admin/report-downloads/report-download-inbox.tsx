@@ -45,6 +45,8 @@ import type { ReportLeadRow } from "./page";
 
 const FILTER_TABS = ["all", "unread", ...REPORT_DOWNLOAD_ACTIONS] as const;
 type FilterTab = (typeof FILTER_TABS)[number];
+const TYPE_FILTERS = ["all", "annual", "financial"] as const;
+type TypeFilter = (typeof TYPE_FILTERS)[number];
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const;
 
 const ACTION_COLOR: Record<ReportDownloadAction, string> = {
@@ -58,6 +60,7 @@ export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
   const locale = useLocale();
   const [rows, setRows] = useState(initial);
   const [filter, setFilter] = useState<FilterTab>("all");
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [search, setSearch] = useState("");
   const [pageSize, setPageSize] = useState<number>(10);
   const [page, setPage] = useState(1);
@@ -70,6 +73,10 @@ export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
 
   const changeFilter = (v: FilterTab) => {
     setFilter(v);
+    setPage(1);
+  };
+  const changeTypeFilter = (v: TypeFilter) => {
+    setTypeFilter(v);
     setPage(1);
   };
   const changeSearch = (v: string) => {
@@ -100,6 +107,7 @@ export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
     } else if (filter !== "all" && r.action !== filter) {
       return false;
     }
+    if (typeFilter !== "all" && r.reportType !== typeFilter) return false;
     if (q && !`${r.company} ${r.fullName} ${r.email} ${r.reportTitle}`.toLowerCase().includes(q)) {
       return false;
     }
@@ -182,6 +190,18 @@ export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
               className="h-9 w-full pl-8 sm:w-64"
             />
           </div>
+          <Select value={typeFilter} onValueChange={(v) => changeTypeFilter(v as TypeFilter)}>
+            <SelectTrigger className="h-9 w-44">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {TYPE_FILTERS.map((tp) => (
+                <SelectItem key={tp} value={tp}>
+                  {tp === "all" ? t("reportLeads.allTypes") : t(`reportLeads.type_${tp}` as never)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button variant="outline" size="sm" onClick={() => router.refresh()}>
             <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
             {t("buttons.refresh")}
@@ -513,18 +533,23 @@ function LeadPagination({
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
-      <Select value={String(pageSize)} onValueChange={(v) => onPageSize(Number(v))}>
-        <SelectTrigger className="h-8 w-28">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {PAGE_SIZE_OPTIONS.map((n) => (
-            <SelectItem key={n} value={String(n)}>
-              {t("common.perPage", { count: n })}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="flex flex-1 items-center justify-between gap-2 text-right ">
+        <label htmlFor="rl-page-size" className="text-xs text-muted-foreground">
+          {t("reportLeads.itemsPerPage")}
+        </label>
+        <Select value={String(pageSize)} onValueChange={(v) => onPageSize(Number(v))}>
+          <SelectTrigger id="rl-page-size" className="h-8 w-28">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PAGE_SIZE_OPTIONS.map((n) => (
+              <SelectItem key={n} value={String(n)}>
+                {t("common.perPage", { count: n })}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 }
