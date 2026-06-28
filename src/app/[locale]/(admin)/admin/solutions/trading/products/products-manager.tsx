@@ -4,10 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { AdminListToolbar } from "@/components/admin/admin-list-toolbar";
 import { DetailDialog } from "@/components/admin/detail-dialog";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
@@ -15,6 +16,8 @@ import { pickLocalized } from "@/components/admin/localized-text";
 import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import { StatusToggle } from "@/components/admin/status-toggle";
+import { TablePagination } from "@/components/admin/table-pagination";
+import { useAdminListParams } from "@/components/admin/use-admin-list-params";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -101,17 +104,29 @@ const empty: FormValues = {
 };
 
 interface Props {
-  initial: ProductRow[];
+  items: ProductRow[];
+  total: number;
+  allIds: string[];
+  origins: string[];
   partners: PartnerOption[];
   whatsappNumber: string;
   whatsappTemplate: { id: string; en: string };
 }
 
-export function ProductsManager({ initial, partners, whatsappNumber, whatsappTemplate }: Props) {
+export function ProductsManager({
+  items,
+  total,
+  allIds,
+  origins,
+  partners,
+  whatsappNumber,
+  whatsappTemplate,
+}: Props) {
   const router = useRouter();
   const t = useTranslations("Admin");
   const locale = useLocale();
-  const [items, setItems] = useState(initial);
+  const lp = useAdminListParams("manual");
+  const [rows, setRows] = useState(items);
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [viewing, setViewing] = useState<ProductRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -120,8 +135,16 @@ export function ProductsManager({ initial, partners, whatsappNumber, whatsappTem
   const [savingWa, setSavingWa] = useState(false);
 
   useEffect(() => {
-    setItems(initial);
-  }, [initial]);
+    setRows(items);
+  }, [items]);
+
+  const partnerById = useMemo(() => new Map(partners.map((p) => [p.id, p])), [partners]);
+
+  const isPristine = !lp.q && lp.status === "all" && lp.filter === "all" && lp.sort === "manual";
+
+  const pageCount = Math.max(1, Math.ceil(total / lp.pageSize));
+  const currentPage = Math.min(lp.page, pageCount);
+  const pageStart = (currentPage - 1) * lp.pageSize;
 
   const saveWhatsapp = async () => {
     setSavingWa(true);
@@ -133,21 +156,21 @@ export function ProductsManager({ initial, partners, whatsappNumber, whatsappTem
     } else toast.error(result.error);
   };
 
-  const handleReorder = async (newIds: string[]) => {
-    const next = newIds
-      .map((id) => items.find((p) => p.id === id))
-      .filter((p): p is ProductRow => !!p);
-    setItems(next);
-    const result = await reorderProducts(newIds);
+  // Drag is only enabled in the pristine view, where the server page is a
+  // contiguous slice of the canonical order. Splice the reordered slice back
+  // into the full id list and persist the whole order.
+  const handleReorder = async (newPageIds: string[]) => {
+    const fullIds = [...allIds];
+    fullIds.splice(pageStart, rows.length, ...newPageIds);
+    setRows((prev) =>
+      newPageIds.map((id) => prev.find((p) => p.id === id)).filter((p): p is ProductRow => !!p),
+    );
+    const result = await reorderProducts(fullIds);
     if (!result.ok) {
       toast.error(result.error);
-      setItems(initial);
-    } else {
-      router.refresh();
     }
+    router.refresh();
   };
-
-  const partnerById = new Map(partners.map((p) => [p.id, p]));
 
   return (
     <section className="space-y-3">
@@ -199,14 +222,46 @@ export function ProductsManager({ initial, partners, whatsappNumber, whatsappTem
       </Card>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <CardTitle>
-            {t("nouns.product")} · {items.length}
-          </CardTitle>
-          <Button onClick={() => setEditing({ ...empty, order: items.length + 1 })}>
-            <Plus className="mr-2 h-4 w-4" />
-            {t("add")}
-          </Button>
+        <CardHeader className="space-y-3">
+          <div className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>
+              {t("nouns.product")} · {total}
+            </CardTitle>
+            <Button onClick={() => setEditing({ ...empty, order: total + 1 })}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t("add")}
+            </Button>
+          </div>
+          <AdminListToolbar
+            params={lp}
+            searchPlaceholder={t("common.searchProducts")}
+            sortLabel={t("common.sortBy")}
+            sortOptions={[
+              { value: "manual", label: t("sort.manual") },
+              { value: "nameAsc", label: t("sort.nameAsc") },
+              { value: "nameDesc", label: t("sort.nameDesc") },
+              { value: "skuDesc", label: t("sort.skuDesc") },
+              { value: "skuAsc", label: t("sort.skuAsc") },
+            ]}
+            filterLabel={t("fields.principleOrigin")}
+            filterOptions={
+              origins.length > 0
+                ? [
+                    { value: "all", label: t("common.allOrigins") },
+                    ...origins.map((o) => ({ value: o, label: o })),
+                  ]
+                : undefined
+            }
+            statusLabel={t("common.status")}
+            statusOptions={[
+              { value: "all", label: t("common.allStatuses") },
+              { value: "active", label: t("common.active") },
+              { value: "inactive", label: t("common.inactive") },
+            ]}
+          />
+          {!isPristine && (
+            <p className="text-xs text-muted-foreground">{t("common.reorderHint")}</p>
+          )}
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -227,16 +282,16 @@ export function ProductsManager({ initial, partners, whatsappNumber, whatsappTem
                   <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
-              <SortableContainer items={items.map((p) => p.id)} onReorder={handleReorder}>
+              <SortableContainer items={rows.map((p) => p.id)} onReorder={handleReorder}>
                 <TableBody>
-                  {items.length === 0 && (
+                  {rows.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
-                        {t("empty.products")}
+                        {isPristine ? t("empty.products") : t("common.noResults")}
                       </TableCell>
                     </TableRow>
                   )}
-                  {items.map((p) => {
+                  {rows.map((p) => {
                     const principleNames = p.principles
                       .map((pr) => partnerById.get(pr.partnerId ?? "")?.name ?? pr.name)
                       .filter(Boolean);
@@ -248,7 +303,7 @@ export function ProductsManager({ initial, partners, whatsappNumber, whatsappTem
                         {({ ref, style, handleProps }) => (
                           <TableRow ref={ref} style={style}>
                             <TableCell>
-                              <DragHandle handleProps={handleProps} size="sm" />
+                              {isPristine && <DragHandle handleProps={handleProps} size="sm" />}
                             </TableCell>
                             <TableCell>
                               <div className="flex flex-wrap gap-1">
@@ -294,12 +349,12 @@ export function ProductsManager({ initial, partners, whatsappNumber, whatsappTem
                                 checked={p.isActive}
                                 ariaLabel={t("common.active")}
                                 onToggle={async (next) => {
-                                  setItems((prev) =>
+                                  setRows((prev) =>
                                     prev.map((x) => (x.id === p.id ? { ...x, isActive: next } : x)),
                                   );
                                   const result = await toggleProductActive(p.id, next);
                                   if (!result.ok) {
-                                    setItems((prev) =>
+                                    setRows((prev) =>
                                       prev.map((x) =>
                                         x.id === p.id ? { ...x, isActive: !next } : x,
                                       ),
@@ -347,6 +402,18 @@ export function ProductsManager({ initial, partners, whatsappNumber, whatsappTem
               </SortableContainer>
             </Table>
           </div>
+          {total > 0 && (
+            <TablePagination
+              page={currentPage}
+              pageCount={pageCount}
+              pageSize={lp.pageSize}
+              total={total}
+              rangeFrom={pageStart + 1}
+              rangeTo={pageStart + rows.length}
+              onPage={(p) => lp.update({ page: p <= 1 ? null : p })}
+              onPageSize={(n) => lp.update({ size: n === 10 ? null : n })}
+            />
+          )}
         </CardContent>
       </Card>
 

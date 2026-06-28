@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { HighlightText } from "@/components/public/highlight-text";
 import { Badge } from "@/components/ui/badge";
 import type { ProjectHighlightData } from "@/lib/cms/home";
 
@@ -9,9 +10,17 @@ interface Props {
   locale: string;
   fallbackBadge: string;
   viewProjectLabel: string;
+  /** Active search term — matching text in client/title/summary is highlighted. */
+  highlight?: string;
 }
 
-export function ProjectCard({ project, locale, fallbackBadge, viewProjectLabel }: Props) {
+export function ProjectCard({
+  project,
+  locale,
+  fallbackBadge,
+  viewProjectLabel,
+  highlight = "",
+}: Props) {
   return (
     <Link
       href={`/${locale}/solutions/epc/${project.slug}`}
@@ -39,13 +48,17 @@ export function ProjectCard({ project, locale, fallbackBadge, viewProjectLabel }
 
       <div className="flex flex-1 flex-col gap-3 p-5">
         <Badge variant="outline" className="self-start text-[10px] uppercase tracking-wider">
-          {project.client || fallbackBadge}
+          {project.client ? (
+            <HighlightText text={project.client} query={highlight} />
+          ) : (
+            fallbackBadge
+          )}
         </Badge>
         <h3 className="text-lg font-semibold leading-snug text-brand-deep transition-colors group-hover/proj:text-brand-accent dark:text-foreground">
-          {project.title}
+          <HighlightText text={project.title} query={highlight} />
         </h3>
         <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-          {project.summary}
+          <HighlightText text={project.summary} query={highlight} />
         </p>
         <span className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-brand-deep opacity-0 transition-all duration-300 group-hover/proj:translate-x-1 group-hover/proj:opacity-100 dark:text-foreground">
           {viewProjectLabel}

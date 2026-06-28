@@ -187,7 +187,16 @@
       "partnershipLabel": "Partnership sejak {year}",
       "empty": "Katalog produk sedang disiapkan.",
       "whatsappCta": "Chat via WhatsApp",
-      "whatsappDefaultTemplate": "Halo, saya tertarik dengan produk '{product}'. Mohon informasi lebih lanjut."
+      "whatsappDefaultTemplate": "Halo, saya tertarik dengan produk '{product}'. Mohon informasi lebih lanjut.",
+      "searchPlaceholder": "Cari produk…",
+      "sortLabel": "Urutkan",
+      "sortDefault": "Unggulan",
+      "sortNameAsc": "Nama A–Z",
+      "sortNameDesc": "Nama Z–A",
+      "sortSkuDesc": "SKU terbanyak",
+      "filterOrigin": "Asal",
+      "allOrigins": "Semua asal",
+      "noResults": "Tidak ada produk yang cocok dengan pencarian."
     },
     "manufacturing": {
       "quoteTitle": "Minta Penawaran",
@@ -199,7 +208,16 @@
       "defaultSubtitle": "Proyek terpilih di sektor minyak, gas, dan energi.",
       "tabsAria": "Tab proyek",
       "viewDetail": "Lihat detail",
-      "empty": "Studi kasus proyek sedang disiapkan."
+      "empty": "Studi kasus proyek sedang disiapkan.",
+      "searchPlaceholder": "Cari proyek…",
+      "sortLabel": "Urutkan",
+      "sortDefault": "Unggulan",
+      "sortNewest": "Terbaru",
+      "sortOldest": "Terlama",
+      "sortNameAsc": "Judul A–Z",
+      "filterYear": "Tahun",
+      "allYears": "Semua tahun",
+      "noResults": "Tidak ada proyek yang cocok dengan pencarian."
     },
     "technology": {
       "inquiryTitle": "Kirim Inquiry",
@@ -293,7 +311,30 @@
       "page": "Halaman {n}",
       "perPage": "{count} / halaman",
       "prevPage": "Halaman sebelumnya",
-      "nextPage": "Halaman berikutnya"
+      "nextPage": "Halaman berikutnya",
+      "searchProducts": "Cari principle, asal, tipe…",
+      "searchProjects": "Cari judul, klien…",
+      "sortBy": "Urutkan",
+      "filter": "Filter",
+      "status": "Status",
+      "inactive": "Nonaktif",
+      "unpublished": "Tidak terbit",
+      "allStatuses": "Semua status",
+      "allCategories": "Semua kategori",
+      "allOrigins": "Semua asal",
+      "noResults": "Tidak ada hasil yang cocok dengan filter.",
+      "reorderHint": "Hapus pencarian, filter, dan pengurutan untuk mengatur urutan dengan menyeret."
+    },
+    "sort": {
+      "manual": "Urutan manual",
+      "nameAsc": "Nama A–Z",
+      "nameDesc": "Nama Z–A",
+      "skuDesc": "SKU terbanyak",
+      "skuAsc": "SKU tersedikit",
+      "titleAsc": "Judul A–Z",
+      "titleDesc": "Judul Z–A",
+      "yearNewest": "Tahun (terbaru)",
+      "yearOldest": "Tahun (terlama)"
     },
     "pages": {
       "landing": {

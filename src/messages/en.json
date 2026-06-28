@@ -187,7 +187,16 @@
       "partnershipLabel": "Partnership since {year}",
       "empty": "Product catalogue is being prepared.",
       "whatsappCta": "Chat via WhatsApp",
-      "whatsappDefaultTemplate": "Hello, I am interested in the product '{product}'. Could you share more details?"
+      "whatsappDefaultTemplate": "Hello, I am interested in the product '{product}'. Could you share more details?",
+      "searchPlaceholder": "Search products…",
+      "sortLabel": "Sort",
+      "sortDefault": "Featured",
+      "sortNameAsc": "Name A–Z",
+      "sortNameDesc": "Name Z–A",
+      "sortSkuDesc": "Most SKUs",
+      "filterOrigin": "Origin",
+      "allOrigins": "All origins",
+      "noResults": "No products match your search."
     },
     "manufacturing": {
       "quoteTitle": "Request a Quote",
@@ -199,7 +208,16 @@
       "defaultSubtitle": "Selected projects across the oil, gas, and energy sectors.",
       "tabsAria": "Project tabs",
       "viewDetail": "View detail",
-      "empty": "Project case studies are being prepared."
+      "empty": "Project case studies are being prepared.",
+      "searchPlaceholder": "Search projects…",
+      "sortLabel": "Sort",
+      "sortDefault": "Featured",
+      "sortNewest": "Newest",
+      "sortOldest": "Oldest",
+      "sortNameAsc": "Title A–Z",
+      "filterYear": "Year",
+      "allYears": "All years",
+      "noResults": "No projects match your search."
     },
     "technology": {
       "inquiryTitle": "Submit an Inquiry",
@@ -293,7 +311,30 @@
       "page": "Page {n}",
       "perPage": "{count} / page",
       "prevPage": "Previous page",
-      "nextPage": "Next page"
+      "nextPage": "Next page",
+      "searchProducts": "Search principle, origin, type…",
+      "searchProjects": "Search title, client…",
+      "sortBy": "Sort by",
+      "filter": "Filter",
+      "status": "Status",
+      "inactive": "Inactive",
+      "unpublished": "Unpublished",
+      "allStatuses": "All statuses",
+      "allCategories": "All categories",
+      "allOrigins": "All origins",
+      "noResults": "No results match your filters.",
+      "reorderHint": "Clear search, filters, and sorting to reorder by dragging."
+    },
+    "sort": {
+      "manual": "Manual order",
+      "nameAsc": "Name A–Z",
+      "nameDesc": "Name Z–A",
+      "skuDesc": "Most SKUs",
+      "skuAsc": "Fewest SKUs",
+      "titleAsc": "Title A–Z",
+      "titleDesc": "Title Z–A",
+      "yearNewest": "Year (newest)",
+      "yearOldest": "Year (oldest)"
     },
     "pages": {
       "landing": {
