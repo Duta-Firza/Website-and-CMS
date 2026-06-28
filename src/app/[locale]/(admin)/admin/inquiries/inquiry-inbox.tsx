@@ -12,9 +12,9 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { deleteInquiry, setInquiryRead, updateInquiryStatus } from "@/lib/cms/actions";
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "@/lib/cms/list-query";
 import { cn } from "@/lib/utils";
 import { INQUIRY_SOURCES, INQUIRY_STATUSES, type InquiryStatus } from "@/models/constants";
 import type { InquiryRow } from "./page";
@@ -46,8 +47,6 @@ import type { InquiryRow } from "./page";
 const SOURCE_FILTERS = ["all", ...INQUIRY_SOURCES] as const;
 type SourceFilter = (typeof SOURCE_FILTERS)[number];
 const STATUS_TABS = ["all", "unread", ...INQUIRY_STATUSES] as const;
-type StatusTab = (typeof STATUS_TABS)[number];
-const PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const;
 
 const SOURCE_COLOR: Record<string, string> = {
   trading: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
@@ -68,41 +67,78 @@ function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-export function InquiryInbox({ initial }: { initial: InquiryRow[] }) {
+export function InquiryInbox({
+  rows: serverRows,
+  total,
+  unreadCount,
+  q: serverQ,
+  source,
+  status,
+  page,
+  pageSize,
+}: {
+  rows: InquiryRow[];
+  total: number;
+  unreadCount: number;
+  q: string;
+  source: SourceFilter;
+  status: string;
+  page: number;
+  pageSize: number;
+}) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const t = useTranslations("Admin");
   const tNav = useTranslations("AdminNav");
   const locale = useLocale();
-  const [rows, setRows] = useState(initial);
-  const [statusFilter, setStatusFilter] = useState<StatusTab>("all");
-  const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
-  const [search, setSearch] = useState("");
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [page, setPage] = useState(1);
+
+  // Local mirrors for optimistic read/delete; resync when the server re-fetches.
+  const [rows, setRows] = useState(serverRows);
+  useEffect(() => {
+    setRows(serverRows);
+  }, [serverRows]);
+  const [unread, setUnread] = useState(unreadCount);
+  useEffect(() => {
+    setUnread(unreadCount);
+  }, [unreadCount]);
+
   const [activeId, setActiveId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
+  // Debounced search; the URL is the source of truth (the server reads `q`).
+  const [term, setTerm] = useState(serverQ);
+  const focusedRef = useRef(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    setRows(initial);
-  }, [initial]);
+    if (!focusedRef.current) setTerm(serverQ);
+  }, [serverQ]);
 
-  // Any change to the result set sends the list back to the first page.
-  const changeStatusFilter = (v: StatusTab) => {
-    setStatusFilter(v);
-    setPage(1);
+  const pushParams = (patch: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [k, v] of Object.entries(patch)) {
+      if (v === null || v === "") params.delete(k);
+      else params.set(k, v);
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
-  const changeSourceFilter = (v: SourceFilter) => {
-    setSourceFilter(v);
-    setPage(1);
+
+  const onSearchChange = (value: string) => {
+    setTerm(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(
+      () => pushParams({ q: value.trim() || null, page: null }),
+      350,
+    );
   };
-  const changeSearch = (v: string) => {
-    setSearch(v);
-    setPage(1);
+  const flushSearch = () => {
+    focusedRef.current = false;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (term.trim() !== serverQ) pushParams({ q: term.trim() || null, page: null });
   };
-  const changePageSize = (n: number) => {
-    setPageSize(n);
-    setPage(1);
-  };
+  const goToPage = (p: number) => pushParams({ page: p <= 1 ? null : String(p) });
+  const changePageSize = (n: number) =>
+    pushParams({ pageSize: n === DEFAULT_PAGE_SIZE ? null : String(n), page: null });
 
   const dateFormat = useMemo(
     () =>
@@ -116,29 +152,9 @@ export function InquiryInbox({ initial }: { initial: InquiryRow[] }) {
   const statusLabel = (s: InquiryStatus) => t(`tabs.inquiries${capitalize(s)}` as never);
   const sourceLabel = (s: string) => (s === "contact" ? tNav("contactInfo") : tNav(s));
 
-  const unreadCount = rows.filter((r) => !r.read).length;
-
-  const q = search.trim().toLowerCase();
-  const filtered = rows.filter((r) => {
-    if (sourceFilter !== "all" && r.source !== sourceFilter) return false;
-    if (statusFilter === "unread") {
-      if (r.read) return false;
-    } else if (statusFilter !== "all" && r.status !== statusFilter) {
-      return false;
-    }
-    if (
-      q &&
-      !`${r.company} ${r.firstName} ${r.lastName} ${r.email} ${r.message}`.toLowerCase().includes(q)
-    ) {
-      return false;
-    }
-    return true;
-  });
-
-  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const currentPage = Math.min(page, pageCount);
-  const pageStart = (currentPage - 1) * pageSize;
-  const paged = filtered.slice(pageStart, pageStart + pageSize);
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
+  const rangeFrom = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const rangeTo = (page - 1) * pageSize + rows.length;
 
   const activeRow = rows.find((r) => r.id === activeId) ?? null;
 
@@ -149,6 +165,7 @@ export function InquiryInbox({ initial }: { initial: InquiryRow[] }) {
     setActiveId(row.id);
     if (!row.read) {
       patchRow(row.id, { read: true });
+      setUnread((u) => Math.max(0, u - 1));
       void setInquiryRead(row.id, true);
     }
   };
@@ -156,6 +173,7 @@ export function InquiryInbox({ initial }: { initial: InquiryRow[] }) {
   const toggleRead = (row: InquiryRow) => {
     const next = !row.read;
     patchRow(row.id, { read: next });
+    setUnread((u) => (next ? Math.max(0, u - 1) : u + 1));
     void setInquiryRead(row.id, next);
   };
 
@@ -170,12 +188,12 @@ export function InquiryInbox({ initial }: { initial: InquiryRow[] }) {
                 : tab === "unread"
                   ? t("tabs.inquiriesUnread")
                   : statusLabel(tab);
-            const active = statusFilter === tab;
+            const active = status === tab;
             return (
               <button
                 key={tab}
                 type="button"
-                onClick={() => changeStatusFilter(tab)}
+                onClick={() => pushParams({ status: tab === "all" ? null : tab, page: null })}
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                   active
@@ -184,14 +202,14 @@ export function InquiryInbox({ initial }: { initial: InquiryRow[] }) {
                 )}
               >
                 {label}
-                {tab === "unread" && unreadCount > 0 && (
+                {tab === "unread" && unread > 0 && (
                   <span
                     className={cn(
                       "inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold leading-none",
                       active ? "bg-white/25 text-white" : "bg-brand-accent text-white",
                     )}
                   >
-                    {unreadCount}
+                    {unread}
                   </span>
                 )}
               </button>
@@ -203,14 +221,21 @@ export function InquiryInbox({ initial }: { initial: InquiryRow[] }) {
             <Search className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              value={search}
-              onChange={(e) => changeSearch(e.target.value)}
+              value={term}
+              onChange={(e) => onSearchChange(e.target.value)}
+              onFocus={() => {
+                focusedRef.current = true;
+              }}
+              onBlur={flushSearch}
               placeholder={t("common.searchInquiries")}
               aria-label={t("common.search")}
               className="h-9 w-full pl-8 sm:w-60"
             />
           </div>
-          <Select value={sourceFilter} onValueChange={(v) => changeSourceFilter(v as SourceFilter)}>
+          <Select
+            value={source}
+            onValueChange={(v) => pushParams({ source: v === "all" ? null : v, page: null })}
+          >
             <SelectTrigger className="h-9 w-44">
               <SelectValue />
             </SelectTrigger>
@@ -238,12 +263,12 @@ export function InquiryInbox({ initial }: { initial: InquiryRow[] }) {
           )}
         >
           <div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto lg:pr-1">
-            {filtered.length === 0 && (
+            {rows.length === 0 && (
               <p className="rounded-lg border border-dashed bg-muted/20 p-6 text-center text-sm text-muted-foreground">
                 {t("empty.inquiries")}
               </p>
             )}
-            {paged.map((r) => {
+            {rows.map((r) => {
               const selected = r.id === activeId;
               const fullName = [r.firstName, r.lastName].filter(Boolean).join(" ");
               return (
@@ -289,15 +314,15 @@ export function InquiryInbox({ initial }: { initial: InquiryRow[] }) {
               );
             })}
           </div>
-          {filtered.length > 0 && (
+          {total > 0 && (
             <InquiryPagination
-              page={currentPage}
+              page={page}
               pageCount={pageCount}
               pageSize={pageSize}
-              rangeFrom={pageStart + 1}
-              rangeTo={pageStart + paged.length}
-              total={filtered.length}
-              onPage={setPage}
+              rangeFrom={rangeFrom}
+              rangeTo={rangeTo}
+              total={total}
+              onPage={goToPage}
               onPageSize={changePageSize}
               t={t}
             />

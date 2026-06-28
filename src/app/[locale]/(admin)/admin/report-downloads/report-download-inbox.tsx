@@ -14,9 +14,9 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -39,54 +39,90 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { deleteReportLead, setReportLeadRead } from "@/lib/cms/actions";
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "@/lib/cms/list-query";
 import { cn } from "@/lib/utils";
 import { REPORT_DOWNLOAD_ACTIONS, type ReportDownloadAction } from "@/models/constants";
 import type { ReportLeadRow } from "./page";
 
 const FILTER_TABS = ["all", "unread", ...REPORT_DOWNLOAD_ACTIONS] as const;
-type FilterTab = (typeof FILTER_TABS)[number];
 const TYPE_FILTERS = ["all", "annual", "financial"] as const;
-type TypeFilter = (typeof TYPE_FILTERS)[number];
-const PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const;
 
 const ACTION_COLOR: Record<ReportDownloadAction, string> = {
   download: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
   view: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
 };
 
-export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
+export function ReportDownloadInbox({
+  rows: serverRows,
+  total,
+  unreadCount,
+  q: serverQ,
+  filter,
+  type,
+  page,
+  pageSize,
+}: {
+  rows: ReportLeadRow[];
+  total: number;
+  unreadCount: number;
+  q: string;
+  filter: string;
+  type: string;
+  page: number;
+  pageSize: number;
+}) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const t = useTranslations("Admin");
   const locale = useLocale();
-  const [rows, setRows] = useState(initial);
-  const [filter, setFilter] = useState<FilterTab>("all");
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
-  const [search, setSearch] = useState("");
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [page, setPage] = useState(1);
+
+  // Local mirrors for optimistic read/delete; resync when the server re-fetches.
+  const [rows, setRows] = useState(serverRows);
+  useEffect(() => {
+    setRows(serverRows);
+  }, [serverRows]);
+  const [unread, setUnread] = useState(unreadCount);
+  useEffect(() => {
+    setUnread(unreadCount);
+  }, [unreadCount]);
+
   const [activeId, setActiveId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
+  // Debounced search; the URL is the source of truth (the server reads `q`).
+  const [term, setTerm] = useState(serverQ);
+  const focusedRef = useRef(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    setRows(initial);
-  }, [initial]);
+    if (!focusedRef.current) setTerm(serverQ);
+  }, [serverQ]);
 
-  const changeFilter = (v: FilterTab) => {
-    setFilter(v);
-    setPage(1);
+  const pushParams = (patch: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [k, v] of Object.entries(patch)) {
+      if (v === null || v === "") params.delete(k);
+      else params.set(k, v);
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
-  const changeTypeFilter = (v: TypeFilter) => {
-    setTypeFilter(v);
-    setPage(1);
+
+  const onSearchChange = (value: string) => {
+    setTerm(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(
+      () => pushParams({ q: value.trim() || null, page: null }),
+      350,
+    );
   };
-  const changeSearch = (v: string) => {
-    setSearch(v);
-    setPage(1);
+  const flushSearch = () => {
+    focusedRef.current = false;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (term.trim() !== serverQ) pushParams({ q: term.trim() || null, page: null });
   };
-  const changePageSize = (n: number) => {
-    setPageSize(n);
-    setPage(1);
-  };
+  const goToPage = (p: number) => pushParams({ page: p <= 1 ? null : String(p) });
+  const changePageSize = (n: number) =>
+    pushParams({ pageSize: n === DEFAULT_PAGE_SIZE ? null : String(n), page: null });
 
   const dateFormat = useMemo(
     () =>
@@ -98,26 +134,10 @@ export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
   );
 
   const actionLabel = (a: ReportDownloadAction) => t(`reportLeads.action_${a}` as never);
-  const unreadCount = rows.filter((r) => !r.read).length;
 
-  const q = search.trim().toLowerCase();
-  const filtered = rows.filter((r) => {
-    if (filter === "unread") {
-      if (r.read) return false;
-    } else if (filter !== "all" && r.action !== filter) {
-      return false;
-    }
-    if (typeFilter !== "all" && r.reportType !== typeFilter) return false;
-    if (q && !`${r.company} ${r.fullName} ${r.email} ${r.reportTitle}`.toLowerCase().includes(q)) {
-      return false;
-    }
-    return true;
-  });
-
-  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const currentPage = Math.min(page, pageCount);
-  const pageStart = (currentPage - 1) * pageSize;
-  const paged = filtered.slice(pageStart, pageStart + pageSize);
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
+  const rangeFrom = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const rangeTo = (page - 1) * pageSize + rows.length;
 
   const activeRow = rows.find((r) => r.id === activeId) ?? null;
 
@@ -128,6 +148,7 @@ export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
     setActiveId(row.id);
     if (!row.read) {
       patchRow(row.id, { read: true });
+      setUnread((u) => Math.max(0, u - 1));
       void setReportLeadRead(row.id, true);
     }
   };
@@ -135,15 +156,16 @@ export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
   const toggleRead = (row: ReportLeadRow) => {
     const next = !row.read;
     patchRow(row.id, { read: next });
+    setUnread((u) => (next ? Math.max(0, u - 1) : u + 1));
     void setReportLeadRead(row.id, next);
   };
 
-  const tabLabel = (tab: FilterTab) =>
+  const tabLabel = (tab: string) =>
     tab === "all"
       ? t("reportLeads.filterAll")
       : tab === "unread"
         ? t("tabs.inquiriesUnread")
-        : actionLabel(tab);
+        : actionLabel(tab as ReportDownloadAction);
 
   return (
     <>
@@ -155,7 +177,7 @@ export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
               <button
                 key={tab}
                 type="button"
-                onClick={() => changeFilter(tab)}
+                onClick={() => pushParams({ filter: tab === "all" ? null : tab, page: null })}
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                   active
@@ -164,14 +186,14 @@ export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
                 )}
               >
                 {tabLabel(tab)}
-                {tab === "unread" && unreadCount > 0 && (
+                {tab === "unread" && unread > 0 && (
                   <span
                     className={cn(
                       "inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold leading-none",
                       active ? "bg-white/25 text-white" : "bg-brand-accent text-white",
                     )}
                   >
-                    {unreadCount}
+                    {unread}
                   </span>
                 )}
               </button>
@@ -183,14 +205,21 @@ export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
             <Search className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              value={search}
-              onChange={(e) => changeSearch(e.target.value)}
+              value={term}
+              onChange={(e) => onSearchChange(e.target.value)}
+              onFocus={() => {
+                focusedRef.current = true;
+              }}
+              onBlur={flushSearch}
               placeholder={t("reportLeads.searchPlaceholder")}
               aria-label={t("common.search")}
               className="h-9 w-full pl-8 sm:w-64"
             />
           </div>
-          <Select value={typeFilter} onValueChange={(v) => changeTypeFilter(v as TypeFilter)}>
+          <Select
+            value={type}
+            onValueChange={(v) => pushParams({ type: v === "all" ? null : v, page: null })}
+          >
             <SelectTrigger className="h-9 w-44">
               <SelectValue />
             </SelectTrigger>
@@ -218,12 +247,12 @@ export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
           )}
         >
           <div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto lg:pr-1">
-            {filtered.length === 0 && (
+            {rows.length === 0 && (
               <p className="rounded-lg border border-dashed bg-muted/20 p-6 text-center text-sm text-muted-foreground">
                 {t("reportLeads.empty")}
               </p>
             )}
-            {paged.map((r) => {
+            {rows.map((r) => {
               const selected = r.id === activeId;
               return (
                 <button
@@ -278,15 +307,15 @@ export function ReportDownloadInbox({ initial }: { initial: ReportLeadRow[] }) {
               );
             })}
           </div>
-          {filtered.length > 0 && (
+          {total > 0 && (
             <LeadPagination
-              page={currentPage}
+              page={page}
               pageCount={pageCount}
               pageSize={pageSize}
-              rangeFrom={pageStart + 1}
-              rangeTo={pageStart + paged.length}
-              total={filtered.length}
-              onPage={setPage}
+              rangeFrom={rangeFrom}
+              rangeTo={rangeTo}
+              total={total}
+              onPage={goToPage}
               onPageSize={changePageSize}
               t={t}
             />
