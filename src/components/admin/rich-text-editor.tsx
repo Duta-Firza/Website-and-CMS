@@ -27,18 +27,23 @@ interface Props {
 
 export function RichTextEditor({ value, onChange, disabled, className }: Props) {
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Link.configure({ openOnClick: false, autolink: true }),
-    ],
+    extensions: [StarterKit, Link.configure({ openOnClick: false, autolink: true })],
     content: value,
     editable: !disabled,
+    // Tiptap v3 defaults this to false, so the component never re-rendered on
+    // selection/format changes and the toolbar's active states stayed stale.
+    shouldRerenderOnTransaction: true,
     onUpdate: ({ editor: e }) => {
       onChange(e.getHTML());
     },
     editorProps: {
       attributes: {
-        class: "min-h-[200px] px-3 py-2 text-sm focus:outline-none",
+        // Reuse the same `prose` typography as the public site so headings,
+        // lists, blockquotes, and links render formatted *inside* the editor.
+        // Without it, Tailwind's preflight strips these styles and formatted
+        // text looks identical to plain text while editing.
+        class:
+          "prose prose-sm dark:prose-invert max-w-none min-h-[200px] px-3 py-2 focus:outline-none",
       },
     },
   });
@@ -129,11 +134,7 @@ export function RichTextEditor({ value, onChange, disabled, className }: Props) 
           <Quote className="h-3.5 w-3.5" />
         </ToolbarButton>
         <span className="mx-1 w-px self-stretch bg-border" />
-        <ToolbarButton
-          active={editor.isActive("link")}
-          onClick={setLink}
-          title="Link"
-        >
+        <ToolbarButton active={editor.isActive("link")} onClick={setLink} title="Link">
           <Link2 className="h-3.5 w-3.5" />
         </ToolbarButton>
       </div>
