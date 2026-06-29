@@ -912,6 +912,7 @@
   },
   "AdminNav": {
     "dashboard": "Dashboard",
+    "visitorAnalytics": "Visitor Analytics",
     "sectionAnalytics": "Analytics",
     "sectionContent": "Content",
     "sectionInbox": "Inbox",
