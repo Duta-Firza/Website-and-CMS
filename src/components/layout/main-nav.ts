@@ -135,6 +135,7 @@ export function buildNav(locale: string): NavTop[] {
         },
         { labelKey: "manufacturing", href: `${base}/solutions/manufacturing` },
         { labelKey: "epc", href: `${base}/solutions/epc` },
+        { labelKey: "technology", href: `${base}/solutions/technology` },
       ],
     },
     {
@@ -161,9 +162,12 @@ export function buildNav(locale: string): NavTop[] {
       ],
     },
     {
-      labelKey: "contact",
+      labelKey: "connect",
       href: `${base}/contact`,
-      children: [{ labelKey: "careers", href: `${base}/contact/careers` }],
+      children: [
+        { labelKey: "contact", href: `${base}/contact` },
+        { labelKey: "careers", href: `${base}/contact/careers` },
+      ],
     },
   ];
 }

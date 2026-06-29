@@ -22,6 +22,7 @@ const siteSettingsSchema = new Schema(
     addressFactory: localizedStringRequired,
     officeHours: localizedStringRequired,
     social: { type: socialSchema, default: () => ({}) },
+    companyProfileUrl: { type: String, default: "" },
   },
   { timestamps: true, ...stripVersion },
 );

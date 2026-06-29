@@ -18,6 +18,9 @@ const inquirySchema = new Schema(
     message: { type: String, required: true, trim: true },
     customFieldValues: { type: Map, of: String, default: {} },
     status: { type: String, enum: INQUIRY_STATUSES, default: "new", index: true },
+    // Read/unread is independent of the follow-up `status` so the unread badge
+    // and the workflow triage don't fight each other.
+    read: { type: Boolean, default: false, index: true },
     notes: { type: String, default: "" },
   },
   { timestamps: true, ...stripVersion },

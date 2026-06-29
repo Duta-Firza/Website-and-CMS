@@ -1,0 +1,92 @@
+[
+  {
+    "_id": "stocks",
+    "status": "comingSoon",
+    "heroMode": "default",
+    "bodyMode": "disabled",
+    "hero": {
+      "eyebrow": { "id": "Hubungan Investor", "en": "Investor Relations" },
+      "title": { "id": "Saham", "en": "Stocks" },
+      "subtitle": { "id": "", "en": "" }
+    },
+    "body": {
+      "heading": { "id": "", "en": "" },
+      "content": { "id": "", "en": "" }
+    }
+  },
+  {
+    "_id": "reports",
+    "status": "comingSoon",
+    "heroMode": "default",
+    "bodyMode": "disabled",
+    "hero": {
+      "eyebrow": { "id": "Hubungan Investor", "en": "Investor Relations" },
+      "title": { "id": "Laporan", "en": "Reports" },
+      "subtitle": { "id": "", "en": "" }
+    },
+    "body": {
+      "heading": { "id": "", "en": "" },
+      "content": { "id": "", "en": "" }
+    }
+  },
+  {
+    "_id": "publications",
+    "status": "published",
+    "heroMode": "default",
+    "bodyMode": "disabled",
+    "hero": {
+      "eyebrow": { "id": "Hubungan Investor", "en": "Investor Relations" },
+      "title": { "id": "Publikasi", "en": "Publications" },
+      "subtitle": { "id": "", "en": "" }
+    },
+    "body": {
+      "heading": { "id": "", "en": "" },
+      "content": { "id": "", "en": "" }
+    }
+  },
+  {
+    "_id": "press-release",
+    "status": "comingSoon",
+    "heroMode": "default",
+    "bodyMode": "disabled",
+    "hero": {
+      "eyebrow": { "id": "Publikasi", "en": "Publications" },
+      "title": { "id": "Siaran Pers", "en": "Press Release" },
+      "subtitle": { "id": "", "en": "" }
+    },
+    "body": {
+      "heading": { "id": "", "en": "" },
+      "content": { "id": "", "en": "" }
+    }
+  },
+  {
+    "_id": "newsroom",
+    "status": "published",
+    "heroMode": "default",
+    "bodyMode": "disabled",
+    "hero": {
+      "eyebrow": { "id": "Publikasi", "en": "Publications" },
+      "title": { "id": "Newsroom", "en": "Newsroom" },
+      "subtitle": { "id": "", "en": "" }
+    },
+    "body": {
+      "heading": { "id": "", "en": "" },
+      "content": { "id": "", "en": "" }
+    }
+  },
+  {
+    "_id": "company-profile",
+    "status": "published",
+    "heroMode": "default",
+    "bodyMode": "disabled",
+    "hero": {
+      "eyebrow": { "id": "Publikasi", "en": "Publications" },
+      "title": { "id": "Profil Perusahaan", "en": "Company Profile" },
+      "subtitle": { "id": "", "en": "" }
+    },
+    "body": {
+      "heading": { "id": "", "en": "" },
+      "content": { "id": "", "en": "" }
+    }
+  }
+]

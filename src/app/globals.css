@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -265,4 +266,27 @@
 }
 .duta-tooltip.leaflet-tooltip-top::before {
   border-top-color: var(--brand-deep);
+}
+
+/* CMS rich-text lists: keep items tight and grouped (instead of reading as
+   separate paragraphs) in BOTH the public `prose` render and the Tiptap editor.
+   The editor element also carries `.tiptap`/`.ProseMirror`, and — unlike the
+   stored HTML — Tiptap wraps every `<li>`'s text in a `<p>`, which otherwise
+   inherits the full paragraph margin and pushes the items far apart. Element
+   selectors keep specificity above @tailwindcss/typography's `:where()` rules. */
+.prose ul,
+.prose ol,
+.tiptap ul,
+.tiptap ol {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+.prose li,
+.tiptap li {
+  margin-top: 0.15em;
+  margin-bottom: 0.15em;
+}
+.prose li p,
+.tiptap li p {
+  margin: 0;
 }

@@ -1,0 +1,56 @@
+[
+  {
+    "slug": "keterbukaan-informasi-rencana-penawaran-umum-perdana",
+    "category": "press-release",
+    "title": {
+      "id": "Keterbukaan Informasi: Rencana Penawaran Umum Perdana Saham",
+      "en": "Information Disclosure: Initial Public Offering Plan"
+    },
+    "summary": {
+      "id": "PT Duta Firza Tbk mengumumkan rencana penawaran umum perdana saham (IPO) di Bursa Efek Indonesia sesuai ketentuan OJK.",
+      "en": "PT Duta Firza Tbk announces its plan for an initial public offering (IPO) on the Indonesia Stock Exchange in accordance with OJK regulations."
+    },
+    "body": { "id": "", "en": "" },
+    "imageUrl": "",
+    "publishedAt": "2026-06-01T00:00:00.000Z",
+    "isPublished": true,
+    "originalUrl": "",
+    "order": 0
+  },
+  {
+    "slug": "penunjukan-underwriter-ipo-duta-firza",
+    "category": "press-release",
+    "title": {
+      "id": "Penunjukan Penjamin Emisi Efek dalam Rangka IPO",
+      "en": "Appointment of Underwriter for IPO"
+    },
+    "summary": {
+      "id": "Perseroan telah menunjuk penjamin emisi efek terkemuka untuk memfasilitasi proses penawaran umum perdana saham PT Duta Firza Tbk.",
+      "en": "The company has appointed a leading underwriter to facilitate the initial public offering process of PT Duta Firza Tbk."
+    },
+    "body": { "id": "", "en": "" },
+    "imageUrl": "",
+    "publishedAt": "2026-05-15T00:00:00.000Z",
+    "isPublished": true,
+    "originalUrl": "",
+    "order": 1
+  },
+  {
+    "slug": "perubahan-susunan-direksi-dan-komisaris",
+    "category": "press-release",
+    "title": {
+      "id": "Perubahan Susunan Direksi dan Dewan Komisaris",
+      "en": "Changes to Board of Directors and Board of Commissioners"
+    },
+    "summary": {
+      "id": "Rapat Umum Pemegang Saham Luar Biasa menyetujui perubahan susunan direksi dan dewan komisaris PT Duta Firza Tbk.",
+      "en": "The Extraordinary General Meeting of Shareholders approved changes to the board of directors and board of commissioners of PT Duta Firza Tbk."
+    },
+    "body": { "id": "", "en": "" },
+    "imageUrl": "",
+    "publishedAt": "2026-03-20T00:00:00.000Z",
+    "isPublished": true,
+    "originalUrl": "",
+    "order": 2
+  }
+]

@@ -26,6 +26,7 @@
     "trading": "Trading",
     "manufacturing": "Manufacturing",
     "epc": "EPC & Projects",
+    "technology": "Technology",
     "partners": "Partners",
     "products": "Products",
     "investorRelations": "Investor Relations",
@@ -34,6 +35,7 @@
     "publications": "Publications",
     "pressRelease": "Press Release",
     "newsroom": "Newsroom",
+    "connect": "Connect",
     "contact": "Contact",
     "careers": "Careers",
     "companyProfile": "Company Profile"
@@ -53,6 +55,7 @@
     "tradingTitle": "Trading",
     "manufacturingTitle": "Manufacturing",
     "epcTitle": "EPC & Projects",
+    "technologyTitle": "Technology",
     "partnersTitle": "Partners",
     "productsTitle": "Products",
     "stocksTitle": "Stocks",
@@ -63,6 +66,34 @@
     "companyProfileTitle": "Company Profile",
     "contactTitle": "Contact Us",
     "careersTitle": "Careers"
+  },
+  "Contact": {
+    "headOffice": "Head Office",
+    "factory": "Factory",
+    "officeHours": "Office Hours",
+    "getDirections": "Get directions",
+    "phone": "Phone",
+    "email": "Email",
+    "generalInquiries": "General Inquiries",
+    "salesInquiries": "Sales",
+    "findUs": "Find Us",
+    "followUs": "Follow Us",
+    "downloadProfile": "Download Company Profile",
+    "formTitle": "Send a Message",
+    "formSubtitle": "Have a question or want to work together? Fill in the form below and our team will get back to you shortly."
+  },
+  "Careers": {
+    "findUsOn": "Find us on",
+    "openPositions": "Open Positions",
+    "noOpenings": "No open positions right now. Keep an eye on this page or follow us on the job boards above.",
+    "apply": "Apply",
+    "viewDescription": "View job description",
+    "empType": {
+      "fullTime": "Full-time",
+      "partTime": "Part-time",
+      "contract": "Contract",
+      "internship": "Internship"
+    }
   },
   "Tabs": {
     "certifications": "Certifications",
@@ -183,7 +214,18 @@
       "skuLabel": "{count} SKU",
       "originLabel": "Origin",
       "partnershipLabel": "Partnership since {year}",
-      "empty": "Product catalogue is being prepared."
+      "empty": "Product catalogue is being prepared.",
+      "whatsappCta": "Chat via WhatsApp",
+      "whatsappDefaultTemplate": "Hello, I am interested in the product '{product}'. Could you share more details?",
+      "searchPlaceholder": "Search products…",
+      "sortLabel": "Sort",
+      "sortDefault": "Featured",
+      "sortNameAsc": "Name A–Z",
+      "sortNameDesc": "Name Z–A",
+      "sortSkuDesc": "Most SKUs",
+      "filterOrigin": "Origin",
+      "allOrigins": "All origins",
+      "noResults": "No products match your search."
     },
     "manufacturing": {
       "quoteTitle": "Request a Quote",
@@ -195,7 +237,23 @@
       "defaultSubtitle": "Selected projects across the oil, gas, and energy sectors.",
       "tabsAria": "Project tabs",
       "viewDetail": "View detail",
-      "empty": "Project case studies are being prepared."
+      "empty": "Project case studies are being prepared.",
+      "searchPlaceholder": "Search projects…",
+      "sortLabel": "Sort",
+      "sortDefault": "Featured",
+      "sortNewest": "Newest",
+      "sortOldest": "Oldest",
+      "sortNameAsc": "Title A–Z",
+      "filterYear": "Year",
+      "allYears": "All years",
+      "noResults": "No projects match your search."
+    },
+    "technology": {
+      "inquiryTitle": "Submit an Inquiry",
+      "inquirySubtitle": "Tell us about your technology needs and our team will respond shortly.",
+      "websiteTitle": "Visit Duta Firza Technologies",
+      "websiteSubtitle": "Explore the dedicated site for our information and communication technology arm.",
+      "websiteCta": "Open website"
     },
     "comingSoon": {
       "title": "Coming soon",
@@ -220,6 +278,15 @@
     "submitContact": "Send Message",
     "submitting": "Sending…",
     "successToast": "Thanks — we've received your message.",
+    "successTitle": "Message sent",
+    "ok": "OK",
+    "errorToast": "Something went wrong. Please try again."
+  },
+  "ReportGate": {
+    "title": "Get the report",
+    "description": "Please share a few details to continue.",
+    "submitting": "Please wait…",
+    "ok": "OK",
     "errorToast": "Something went wrong. Please try again."
   },
   "Admin": {
@@ -273,7 +340,37 @@
       "address": "Address",
       "yes": "Yes",
       "no": "No",
-      "view": "View details"
+      "view": "View details",
+      "search": "Search",
+      "searchInquiries": "Search company, name, email…",
+      "showing": "Showing {from}–{to} of {total}",
+      "page": "Page {n}",
+      "perPage": "{count} / page",
+      "prevPage": "Previous page",
+      "nextPage": "Next page",
+      "searchProducts": "Search principle, origin, type…",
+      "searchProjects": "Search title, client…",
+      "sortBy": "Sort by",
+      "filter": "Filter",
+      "status": "Status",
+      "inactive": "Inactive",
+      "unpublished": "Unpublished",
+      "allStatuses": "All statuses",
+      "allCategories": "All categories",
+      "allOrigins": "All origins",
+      "noResults": "No results match your filters.",
+      "reorderHint": "Clear search, filters, and sorting to reorder by dragging."
+    },
+    "sort": {
+      "manual": "Manual order",
+      "nameAsc": "Name A–Z",
+      "nameDesc": "Name Z–A",
+      "skuDesc": "Most SKUs",
+      "skuAsc": "Fewest SKUs",
+      "titleAsc": "Title A–Z",
+      "titleDesc": "Title Z–A",
+      "yearNewest": "Year (newest)",
+      "yearOldest": "Year (oldest)"
     },
     "pages": {
       "landing": {
@@ -344,10 +441,54 @@
         "title": "EPC page",
         "description": "Hero and intro for /solutions/epc. Project items are managed in Master · Projects."
       },
+      "technology": {
+        "title": "Technology page",
+        "description": "Content for /solutions/technology plus the inquiry form and external website link."
+      },
       "inquiries": {
         "title": "Inquiry Inbox",
-        "description": "Submissions from the Trading, Manufacturing, EPC, and Contact forms."
-      }
+        "description": "Submissions from the Trading, Manufacturing, EPC, Technology, and Contact forms."
+      },
+      "reportDownloads": {
+        "title": "Download Reports",
+        "description": "Leads captured when visitors view or download investor-relations report PDFs."
+      },
+      "irStocks": {
+        "title": "Stocks",
+        "description": "Page content for /investor-relations/stocks."
+      },
+      "irPublications": {
+        "title": "Publications",
+        "description": "Page content for /investor-relations/publications."
+      },
+      "irReports": {
+        "title": "Reports",
+        "description": "Annual and financial reports for /investor-relations/reports."
+      },
+      "irNewsroom": {
+        "title": "Newsroom",
+        "description": "News articles for /investor-relations/publications/newsroom."
+      },
+      "irPressRelease": {
+        "title": "Press Release",
+        "description": "Press releases for /investor-relations/publications/press-release."
+      },
+      "irCompanyProfile": {
+        "title": "Company Profile",
+        "description": "Company profile PDF for /investor-relations/publications/company-profile."
+      },
+      "contact": {
+        "title": "Contact Page",
+        "description": "Hero, intro, location maps, and form for /contact. Address, hours, and email are managed in Settings."
+      },
+      "careers": {
+        "title": "Careers Page",
+        "description": "Content, job-board links, culture, and the job openings list for /contact/careers."
+      },
+      "newArticle": "New Article",
+      "editArticle": "Edit Article",
+      "newJob": "New Opening",
+      "editJob": "Edit Opening"
     },
     "tabs": {
       "content": "Content",
@@ -367,9 +508,24 @@
       "certifications": "Certifications",
       "acknowledgements": "Acknowledgements",
       "inquiriesAll": "All",
+      "inquiriesUnread": "Unread",
       "inquiriesNew": "New",
       "inquiriesRead": "Read",
-      "inquiriesArchived": "Archived"
+      "inquiriesInProgress": "In Progress",
+      "inquiriesResolved": "Resolved",
+      "inquiriesArchived": "Archived",
+      "items": "Items",
+      "annual": "Annual",
+      "financial": "Financial",
+      "downloadForm": "Download Form",
+      "openings": "Openings",
+      "page": "Page",
+      "contactInfo": "Contact Info",
+      "location": "Location & Map",
+      "display": "Display",
+      "form": "Form",
+      "boards": "Job Boards",
+      "culture": "Culture & Benefits"
     },
     "nouns": {
       "stat": "Stat",
@@ -404,7 +560,11 @@
       "values": "No values yet. Add one to display on the Who We Are page.",
       "divisions": "No custom divisions. Defaults to EPC, Trading, Manufacturing.",
       "products": "No products yet.",
-      "inquiries": "No inquiries yet."
+      "inquiries": "No inquiries yet.",
+      "selectInquiry": "Select a submission to view its details.",
+      "reports": "No reports yet. Click Add to upload the first report.",
+      "publications": "No articles yet.",
+      "jobOpenings": "No job openings yet."
     },
     "buttons": {
       "addValue": "Add value",
@@ -421,6 +581,8 @@
       "manageInPartners": "Manage in Partners",
       "manageInProjects": "Manage in Projects",
       "markRead": "Mark read",
+      "markUnread": "Mark unread",
+      "refresh": "Refresh",
       "markNew": "Mark new",
       "archive": "Archive",
       "viewDetail": "View detail",
@@ -440,6 +602,7 @@
       "overrideLabelsIntro": "Section label overrides.",
       "solutionsOverviewIntro": "Set each Solutions page to published, coming-soon, or hidden. Status changes apply immediately.",
       "solutionsPageStatusHint": "Choose how this page behaves on the public site. Hidden pages also drop from the navigation.",
+      "websiteLinkHint": "Optional. Shown as a call-to-action button linking to the external Duta Firza Technologies website.",
       "solutionsPartnersDelegated": "Logo items rendered on this page come from Master · Partners. Edit hero and intro here.",
       "solutionsEpcDelegated": "Project tabs rendered on this page come from Master · Projects (category EPC). Edit hero and intro here.",
       "landingPartnersDelegated": "Partner logos shown on the homepage are managed under Solutions · Trading · Partners.",
@@ -465,14 +628,24 @@
       "uploadOriginal": "Upload original"
     },
     "hints": {
-      "heroBg": "Recommended 1920×1080 (16:9 landscape), JPG/WebP. Rendered full-width as hero backdrop.",
+      "heroBg": "Recommended 1920×1080 (16:9 landscape), JPG/WebP. Rendered full-width as hero backdrop. Leave empty to use the default gradient.",
+      "heroDecorations": "On: dark overlay + pattern + bottom gradient. Off: image is shown as-is without any overlay.",
       "partnerLogo": "Landscape logo, PNG transparent (min 400×133). Public display ~48px tall, width auto.",
       "customerLogo": "Landscape logo, PNG transparent (min 280×93). Public display ~40px tall on the marquee.",
       "businessLogo": "Landscape logo, PNG transparent (min 400×100). Left-aligned inside the affiliated card, ~64px tall.",
       "projectImage": "Recommended 1600×900 (16:9), JPG. Used for the card thumbnail and project page hero.",
       "leadershipPhoto": "Portrait 4:5 (min 400×500), JPG. Face centered in the upper-middle for the best crop.",
       "credentialImage": "Portrait 3:4 document scan (min 600×800), JPG/PNG. Crop the whole document, avoid excessive background.",
-      "aboutVideo": "MP4 H.264 720p+ (16:9 landscape). Compressed to 1080p/H.264; raw size up to 200MB."
+      "historyImage": "Optional landscape 16:9 (min 1280×720), JPG/WebP. Shown opposite the milestone card on the timeline.",
+      "aboutVideo": "MP4 H.264 720p+ (16:9 landscape). Compressed to 1080p/H.264; raw size up to 200MB.",
+      "videoAutoplay": "On: the video plays automatically without sound (muted) and loops when the page opens. Visitors can unmute via the video controls.",
+      "fileUrlHint": "Paste the GCS/CDN URL of the PDF file.",
+      "bodyRichHint": "Use the editor to format the article content.",
+      "slugHint": "Auto-generated from English title. Edit to override.",
+      "companyProfileUrlHint": "Upload the Company Profile PDF document.",
+      "originalUrlHint": "Link to the original external article or source (optional).",
+      "whatsappNumber": "International format, digits only (e.g. 628123456789). Leave empty to disable the WhatsApp button on the public page.",
+      "whatsappTemplate": "Use '{product}' as a placeholder for the product name."
     },
     "status": {
       "toggleSaved": "Status updated",
@@ -519,7 +692,37 @@
       "options": "Options",
       "addOption": "Add option",
       "noOptions": "No options yet.",
-      "moveUp": "Move up"
+      "moveUp": "Move up",
+      "enabled": "Enable form"
+    },
+    "reportLeads": {
+      "settingsTitle": "Download / view gate form",
+      "settingsHint": "Require visitors to share their details before viewing or downloading report PDFs. The four core fields are always collected; add or remove extra fields and toggle the gate on or off.",
+      "viewLeads": "View captured leads",
+      "formSettings": "Form settings",
+      "filterAll": "All",
+      "action_view": "View",
+      "action_download": "Download",
+      "allTypes": "All reports",
+      "type_annual": "Annual report",
+      "type_financial": "Financial report",
+      "searchPlaceholder": "Search name, company, email, report…",
+      "itemsPerPage": "Items per page:",
+      "empty": "No leads captured yet.",
+      "selectLead": "Select a lead to view its details.",
+      "report": "Report",
+      "company": "Company"
+    },
+    "reportThumbnail": {
+      "label": "Thumbnail",
+      "mode_upload": "Upload thumbnail",
+      "mode_pdfFirstPage": "Use first page of PDF",
+      "mode_default": "Use default",
+      "generate": "Generate from PDF",
+      "generateHint": "Renders the first page of the uploaded PDF as the thumbnail.",
+      "generateFailed": "Could not generate the thumbnail.",
+      "needPdf": "Upload the PDF first to generate a thumbnail.",
+      "defaultHint": "A neutral placeholder will be shown on the public page."
     },
     "fields": {
       "heroEyebrow": "Eyebrow",
@@ -528,9 +731,12 @@
       "heroCtaLabel": "Primary CTA label",
       "heroCtaHref": "Primary CTA link",
       "heroBgImage": "Background image",
+      "heroDecorations": "Overlay & hero decorations",
+      "solutionsColumnsPerRow": "Columns per row (Our Solutions)",
       "heroSecondaryCta": "Secondary CTA label (optional)",
       "heroSecondaryCtaHref": "Secondary CTA link (optional)",
       "videoProfile": "Video profile",
+      "videoAutoplay": "Autoplay video",
       "introParagraph": "Intro paragraph",
       "vision": "Vision",
       "mission": "Mission",
@@ -571,6 +777,10 @@
       "longitude": "Longitude",
       "websiteUrl": "Website URL",
       "websiteUrlOptional": "Website URL (optional)",
+      "websiteLinkEnabled": "Show website link",
+      "websiteTitle": "Website link title",
+      "websiteDescription": "Website link description",
+      "websiteCta": "Website CTA label",
       "scopeOfWork": "Scope of work",
       "aboutProject": "About the project",
       "highlightOrder": "Featured order",
@@ -601,6 +811,9 @@
       "productType": "Product type",
       "skuCount": "SKU count",
       "partnershipStart": "Partnership start year",
+      "whatsappNumber": "WhatsApp number",
+      "whatsappTemplate": "WhatsApp message template",
+      "whatsappTemplateOverride": "WhatsApp template (optional override)",
       "productPhotos": "Product photos",
       "productItems": "Product items",
       "addPhoto": "Add photo",
@@ -616,7 +829,16 @@
       "inquiryMessage": "Message",
       "inquiryWebsiteUrl": "Website",
       "inquirySource": "Source",
-      "inquiryReceivedAt": "Received"
+      "inquiryReceivedAt": "Received",
+      "reportType": "Type",
+      "reportYear": "Year",
+      "fileUrl": "File URL (PDF)",
+      "publishedAt": "Published Date",
+      "originalUrl": "Original URL",
+      "companyProfileUrl": "Company Profile PDF URL",
+      "bodyRich": "Article Body",
+      "slug": "Slug",
+      "summary": "Summary"
     },
     "groups": {
       "contact": "Contact",
@@ -636,24 +858,70 @@
       "pageBody": "Page body",
       "comingSoonContent": "Coming-soon content",
       "formSettings": "Form settings",
+      "websiteLink": "Website link",
       "principleSource": "Principle source",
       "productDetails": "Product details",
+      "whatsappChat": "WhatsApp chat",
       "inquiryDetails": "Inquiry details",
-      "inquiryMeta": "Submission info"
+      "inquiryMeta": "Submission info",
+      "updateStatus": "Update status",
+      "reportItem": "Report",
+      "publicationItem": "Article"
     },
     "credentials": {
       "valueIndex": "Value #{index}",
       "divisionIndex": "Division #{index}"
     },
+    "contactPage": {
+      "locationsMap": "Locations & Map",
+      "showMap": "Show map",
+      "showFactory": "Show factory location",
+      "showOfficeHours": "Show office hours",
+      "showGetDirections": "Show directions button",
+      "officeMapEmbed": "Head Office map embed",
+      "officeDirections": "Head Office directions link",
+      "factoryMapEmbed": "Factory map embed",
+      "factoryDirections": "Factory directions link",
+      "mapEmbedHint": "In Google Maps → Share → Embed a map, then paste the iframe src URL. No API key needed.",
+      "extraSections": "Extra sections",
+      "showDepartmentContacts": "Split contacts by department",
+      "showDepartmentContactsHint": "Show the general and sales emails separately.",
+      "showSocial": "Show social media",
+      "showCompanyProfile": "Show company profile download",
+      "fromSettingsHint": "Sourced from Settings.",
+      "formEnabled": "Enable contact form"
+    },
+    "careerPage": {
+      "jobBoards": "Job Boards",
+      "noJobBoards": "No job boards yet.",
+      "addJobBoard": "Add job board",
+      "whyJoin": "Why Join Us",
+      "benefits": "Benefits & Culture",
+      "noBenefits": "No benefits yet.",
+      "addBenefit": "Add benefit",
+      "showOpenings": "Show openings list",
+      "showOpeningsHint": "Show the open positions section on the public page. Items are managed in the Openings tab.",
+      "jobItem": "Opening Details",
+      "department": "Department",
+      "employmentType": "Type",
+      "applyUrl": "Apply link / email",
+      "applyUrlHint": "External ATS/job-board URL, or mailto:hr@dutafirza.com.",
+      "jobDescription": "Job Description"
+    },
     "alertDelete": "This action cannot be undone."
   },
   "AdminNav": {
     "dashboard": "Dashboard",
+    "sectionAnalytics": "Analytics",
+    "sectionContent": "Content",
+    "sectionInbox": "Inbox",
+    "sectionSystem": "System",
     "groupHome": "Home",
     "groupAbout": "About",
     "groupSolutions": "Solutions",
     "groupInvestorRelations": "Investor Relations",
     "groupContact": "Contact",
+    "groupConnect": "Connect",
     "groupContent": "Master Content",
     "groupSystem": "System",
     "groupInbox": "Inbox",
@@ -673,8 +941,10 @@
     "tradingProducts": "Trading · Products",
     "manufacturing": "Manufacturing",
     "epc": "EPC",
+    "technology": "Technology",
     "stocks": "Stocks",
     "reports": "Reports",
+    "publications": "Publications",
     "pressRelease": "Press Release",
     "newsroom": "Newsroom",
     "companyProfile": "Company Profile",
@@ -687,8 +957,42 @@
     "settings": "Settings",
     "users": "Users",
     "inquiries": "Inquiries",
+    "reportDownloads": "Download Reports",
     "comingSoon": "Soon",
     "expand": "Expand sidebar",
     "collapse": "Collapse sidebar"
+  },
+  "IR": {
+    "contactHeading": "Investor Relations Contact",
+    "downloadProfile": "Download Company Profile",
+    "previewProfile": "Preview",
+    "noProfileYet": "Company profile document is being prepared.",
+    "noReportsYet": "No reports available yet.",
+    "readMore": "Read more",
+    "viewReport": "View",
+    "downloadReport": "Download",
+    "previewReport": "Preview PDF",
+    "allReports": "All Reports",
+    "pressReleasesEmpty": "No press releases available yet.",
+    "newsroomEmpty": "No articles yet.",
+    "publishedDate": "Published",
+    "backToNewsroom": "Back to Newsroom",
+    "backToPressRelease": "Back to Press Release",
+    "irContact": "IR Contact",
+    "searchReports": "Search reports…",
+    "searchArticles": "Search articles…",
+    "searchReleases": "Search press releases…",
+    "sortLabel": "Sort",
+    "sortNewest": "Newest",
+    "sortOldest": "Oldest",
+    "sortTitle": "Title A–Z",
+    "filterYear": "Year",
+    "allYears": "All years",
+    "noResults": "No results match your filters."
+  },
+  "Pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {current} of {total}"
   }
 }

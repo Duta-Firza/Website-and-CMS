@@ -15,6 +15,7 @@ import { useUrlTabState } from "@/components/admin/url-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { TabsContent } from "@/components/ui/tabs";
 import { updateAboutPage, updateAboutValues } from "@/lib/cms/actions";
 import type { AboutFormValues } from "./page";
@@ -24,6 +25,7 @@ const localized = z.object({ id: z.string(), en: z.string() });
 const schema = z.object({
   intro: localized,
   videoUrl: z.string(),
+  videoAutoplay: z.boolean(),
   vision: localized,
   mission: localized,
   values: z.array(
@@ -94,6 +96,28 @@ export function AboutForm({ initial }: { initial: AboutFormValues }) {
                 accept="video"
                 folder="about"
                 hint={t("hints.aboutVideo")}
+              />
+            </div>
+            <div
+              className={
+                watch("videoUrl")
+                  ? "flex items-center justify-between gap-4 rounded-lg border bg-muted/30 px-4 py-3"
+                  : "flex items-center justify-between gap-4 rounded-lg border bg-muted/30 px-4 py-3 opacity-40"
+              }
+            >
+              <div className="space-y-0.5">
+                <Label htmlFor="video-autoplay" className="cursor-pointer text-sm font-medium">
+                  {t("fields.videoAutoplay")}
+                </Label>
+                <p className="text-xs text-muted-foreground">{t("hints.videoAutoplay")}</p>
+              </div>
+              <Switch
+                id="video-autoplay"
+                checked={watch("videoAutoplay")}
+                disabled={!watch("videoUrl")}
+                onCheckedChange={(checked) =>
+                  setValue("videoAutoplay", checked, { shouldDirty: true })
+                }
               />
             </div>
             <LocalizedField label={t("fields.vision")} name="vision" form={form} multiline />

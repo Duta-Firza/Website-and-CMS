@@ -1,41 +1,25 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import type { ProjectRow } from "@/app/[locale]/(admin)/admin/projects/page";
 import { ProjectsManager } from "@/app/[locale]/(admin)/admin/projects/projects-manager";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
-import { connectDB } from "@/lib/db";
-import { Project, type ProjectCategory } from "@/models";
+import { loadAdminProjects } from "@/lib/cms/admin-projects";
+import { parseAdminListParams } from "@/lib/cms/list-params";
 import { loadSolutionPageForAdmin } from "../_components/load-solution-page";
 import { SolutionPageForm } from "../_components/solution-page-form";
 
-async function loadProjects(): Promise<ProjectRow[]> {
-  await connectDB();
-  const docs = await Project.find().sort({ order: 1 }).lean();
-  return docs.map((d) => ({
-    id: String(d._id),
-    slug: d.slug,
-    title: { id: d.title.id, en: d.title.en },
-    summary: { id: d.summary.id, en: d.summary.en },
-    image: d.image,
-    client: d.client ?? "",
-    year: d.year,
-    category: d.category as ProjectCategory,
-    about: { id: d.about?.id ?? "", en: d.about?.en ?? "" },
-    scopeOfWork: { id: d.scopeOfWork?.id ?? "", en: d.scopeOfWork?.en ?? "" },
-    isHighlighted: d.isHighlighted ?? false,
-    highlightOrder: d.highlightOrder ?? 0,
-    order: d.order ?? 0,
-    isPublished: d.isPublished ?? true,
-  }));
-}
-
-export default async function EpcAdminPage() {
-  const [page, projects, locale, t] = await Promise.all([
+export default async function EpcAdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const [page, sp, locale, t] = await Promise.all([
     loadSolutionPageForAdmin("epc"),
-    loadProjects(),
+    searchParams,
     getLocale(),
     getTranslations("Admin"),
   ]);
+  const params = parseAdminListParams(sp, "manual");
+  const projects = await loadAdminProjects(params, locale);
   return (
     <div className="space-y-6">
       <AdminPageHeader
@@ -52,7 +36,14 @@ export default async function EpcAdminPage() {
           {
             value: "projects",
             label: t("nouns.project"),
-            content: <ProjectsManager initial={projects} />,
+            content: (
+              <ProjectsManager
+                items={projects.items}
+                total={projects.total}
+                allIds={projects.allIds}
+                allSlugs={projects.allSlugs}
+              />
+            ),
           },
         ]}
       />

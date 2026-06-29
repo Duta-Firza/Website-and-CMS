@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { INQUIRY_SOURCES } from "@/models/constants";
 
 const schema = z.object({
   name: z.string().min(1).max(120),
@@ -8,7 +9,7 @@ const schema = z.object({
   phone: z.string().max(40).optional(),
   subject: z.string().max(200).optional(),
   message: z.string().min(10).max(4000),
-  source: z.enum(["trading", "manufacturing", "epc", "contact"]),
+  source: z.enum(INQUIRY_SOURCES),
   // honeypot — must be empty
   website: z.string().max(0).optional(),
 });

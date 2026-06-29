@@ -26,6 +26,7 @@
     "trading": "Trading",
     "manufacturing": "Manufaktur",
     "epc": "EPC & Proyek",
+    "technology": "Teknologi",
     "partners": "Mitra",
     "products": "Produk",
     "investorRelations": "Hubungan Investor",
@@ -34,6 +35,7 @@
     "publications": "Publikasi",
     "pressRelease": "Siaran Pers",
     "newsroom": "Newsroom",
+    "connect": "Connect",
     "contact": "Kontak",
     "careers": "Karier",
     "companyProfile": "Profil Perusahaan"
@@ -53,6 +55,7 @@
     "tradingTitle": "Trading",
     "manufacturingTitle": "Manufaktur",
     "epcTitle": "EPC & Proyek",
+    "technologyTitle": "Teknologi",
     "partnersTitle": "Mitra",
     "productsTitle": "Produk",
     "stocksTitle": "Saham",
@@ -63,6 +66,34 @@
     "companyProfileTitle": "Profil Perusahaan",
     "contactTitle": "Hubungi Kami",
     "careersTitle": "Karier"
+  },
+  "Contact": {
+    "headOffice": "Kantor Pusat",
+    "factory": "Pabrik",
+    "officeHours": "Jam Operasional",
+    "getDirections": "Lihat rute",
+    "phone": "Telepon",
+    "email": "Email",
+    "generalInquiries": "Pertanyaan Umum",
+    "salesInquiries": "Penjualan",
+    "findUs": "Temukan Kami",
+    "followUs": "Ikuti Kami",
+    "downloadProfile": "Unduh Profil Perusahaan",
+    "formTitle": "Kirim Pesan",
+    "formSubtitle": "Punya pertanyaan atau ingin bekerja sama? Isi formulir di bawah dan tim kami akan segera menghubungi Anda."
+  },
+  "Careers": {
+    "findUsOn": "Temukan kami di",
+    "openPositions": "Lowongan Tersedia",
+    "noOpenings": "Belum ada lowongan saat ini. Pantau terus halaman ini atau ikuti kami di papan lowongan di atas.",
+    "apply": "Lamar",
+    "viewDescription": "Lihat deskripsi pekerjaan",
+    "empType": {
+      "fullTime": "Penuh Waktu",
+      "partTime": "Paruh Waktu",
+      "contract": "Kontrak",
+      "internship": "Magang"
+    }
   },
   "Tabs": {
     "certifications": "Sertifikasi",
@@ -183,7 +214,18 @@
       "skuLabel": "{count} SKU",
       "originLabel": "Asal",
       "partnershipLabel": "Partnership sejak {year}",
-      "empty": "Katalog produk sedang disiapkan."
+      "empty": "Katalog produk sedang disiapkan.",
+      "whatsappCta": "Chat via WhatsApp",
+      "whatsappDefaultTemplate": "Halo, saya tertarik dengan produk '{product}'. Mohon informasi lebih lanjut.",
+      "searchPlaceholder": "Cari produk…",
+      "sortLabel": "Urutkan",
+      "sortDefault": "Unggulan",
+      "sortNameAsc": "Nama A–Z",
+      "sortNameDesc": "Nama Z–A",
+      "sortSkuDesc": "SKU terbanyak",
+      "filterOrigin": "Asal",
+      "allOrigins": "Semua asal",
+      "noResults": "Tidak ada produk yang cocok dengan pencarian."
     },
     "manufacturing": {
       "quoteTitle": "Minta Penawaran",
@@ -195,7 +237,23 @@
       "defaultSubtitle": "Proyek terpilih di sektor minyak, gas, dan energi.",
       "tabsAria": "Tab proyek",
       "viewDetail": "Lihat detail",
-      "empty": "Studi kasus proyek sedang disiapkan."
+      "empty": "Studi kasus proyek sedang disiapkan.",
+      "searchPlaceholder": "Cari proyek…",
+      "sortLabel": "Urutkan",
+      "sortDefault": "Unggulan",
+      "sortNewest": "Terbaru",
+      "sortOldest": "Terlama",
+      "sortNameAsc": "Judul A–Z",
+      "filterYear": "Tahun",
+      "allYears": "Semua tahun",
+      "noResults": "Tidak ada proyek yang cocok dengan pencarian."
+    },
+    "technology": {
+      "inquiryTitle": "Kirim Inquiry",
+      "inquirySubtitle": "Sampaikan kebutuhan teknologi Anda dan tim kami akan segera merespons.",
+      "websiteTitle": "Kunjungi Duta Firza Technologies",
+      "websiteSubtitle": "Jelajahi situs khusus untuk lini teknologi informasi dan komunikasi kami.",
+      "websiteCta": "Buka website"
     },
     "comingSoon": {
       "title": "Segera Hadir",
@@ -220,6 +278,15 @@
     "submitContact": "Kirim Pesan",
     "submitting": "Mengirim…",
     "successToast": "Terima kasih — pesan Anda sudah kami terima.",
+    "successTitle": "Pesan terkirim",
+    "ok": "OK",
+    "errorToast": "Terjadi kesalahan. Silakan coba lagi."
+  },
+  "ReportGate": {
+    "title": "Dapatkan laporan",
+    "description": "Mohon isi beberapa data untuk melanjutkan.",
+    "submitting": "Mohon tunggu…",
+    "ok": "OK",
     "errorToast": "Terjadi kesalahan. Silakan coba lagi."
   },
   "Admin": {
@@ -273,7 +340,37 @@
       "address": "Alamat",
       "yes": "Ya",
       "no": "Tidak",
-      "view": "Lihat detail"
+      "view": "Lihat detail",
+      "search": "Cari",
+      "searchInquiries": "Cari perusahaan, nama, email…",
+      "showing": "Menampilkan {from}–{to} dari {total}",
+      "page": "Halaman {n}",
+      "perPage": "{count} / halaman",
+      "prevPage": "Halaman sebelumnya",
+      "nextPage": "Halaman berikutnya",
+      "searchProducts": "Cari principle, asal, tipe…",
+      "searchProjects": "Cari judul, klien…",
+      "sortBy": "Urutkan",
+      "filter": "Filter",
+      "status": "Status",
+      "inactive": "Nonaktif",
+      "unpublished": "Tidak terbit",
+      "allStatuses": "Semua status",
+      "allCategories": "Semua kategori",
+      "allOrigins": "Semua asal",
+      "noResults": "Tidak ada hasil yang cocok dengan filter.",
+      "reorderHint": "Hapus pencarian, filter, dan pengurutan untuk mengatur urutan dengan menyeret."
+    },
+    "sort": {
+      "manual": "Urutan manual",
+      "nameAsc": "Nama A–Z",
+      "nameDesc": "Nama Z–A",
+      "skuDesc": "SKU terbanyak",
+      "skuAsc": "SKU tersedikit",
+      "titleAsc": "Judul A–Z",
+      "titleDesc": "Judul Z–A",
+      "yearNewest": "Tahun (terbaru)",
+      "yearOldest": "Tahun (terlama)"
     },
     "pages": {
       "landing": {
@@ -344,10 +441,54 @@
         "title": "Halaman EPC",
         "description": "Hero dan intro untuk /solutions/epc. Item proyek dikelola di Master · Proyek."
       },
+      "technology": {
+        "title": "Halaman Teknologi",
+        "description": "Konten untuk /solutions/technology beserta form inquiry dan tautan website eksternal."
+      },
       "inquiries": {
         "title": "Inbox Inquiry",
-        "description": "Submission dari form Trading, Manufaktur, EPC, dan Kontak."
-      }
+        "description": "Submission dari form Trading, Manufaktur, EPC, Teknologi, dan Kontak."
+      },
+      "reportDownloads": {
+        "title": "Download Laporan",
+        "description": "Lead yang tertangkap saat pengunjung melihat atau mengunduh PDF laporan hubungan investor."
+      },
+      "irStocks": {
+        "title": "Saham",
+        "description": "Konten halaman /investor-relations/stocks."
+      },
+      "irPublications": {
+        "title": "Publikasi",
+        "description": "Konten halaman /investor-relations/publications."
+      },
+      "irReports": {
+        "title": "Laporan",
+        "description": "Laporan tahunan dan keuangan untuk /investor-relations/reports."
+      },
+      "irNewsroom": {
+        "title": "Newsroom",
+        "description": "Artikel berita untuk /investor-relations/publications/newsroom."
+      },
+      "irPressRelease": {
+        "title": "Siaran Pers",
+        "description": "Siaran pers untuk /investor-relations/publications/press-release."
+      },
+      "irCompanyProfile": {
+        "title": "Profil Perusahaan",
+        "description": "PDF profil perusahaan untuk /investor-relations/publications/company-profile."
+      },
+      "contact": {
+        "title": "Halaman Kontak",
+        "description": "Hero, intro, peta lokasi, dan form untuk halaman /contact. Alamat, jam, dan email dikelola di Pengaturan."
+      },
+      "careers": {
+        "title": "Halaman Karier",
+        "description": "Konten, link papan lowongan, budaya, dan daftar lowongan untuk /contact/careers."
+      },
+      "newArticle": "Artikel Baru",
+      "editArticle": "Edit Artikel",
+      "newJob": "Lowongan Baru",
+      "editJob": "Edit Lowongan"
     },
     "tabs": {
       "content": "Konten",
@@ -367,9 +508,24 @@
       "certifications": "Sertifikasi",
       "acknowledgements": "Penghargaan",
       "inquiriesAll": "Semua",
+      "inquiriesUnread": "Belum dibaca",
       "inquiriesNew": "Baru",
       "inquiriesRead": "Dibaca",
-      "inquiriesArchived": "Diarsipkan"
+      "inquiriesInProgress": "Diproses",
+      "inquiriesResolved": "Selesai",
+      "inquiriesArchived": "Diarsipkan",
+      "items": "Item",
+      "annual": "Tahunan",
+      "financial": "Keuangan",
+      "downloadForm": "Form Download",
+      "openings": "Lowongan",
+      "page": "Halaman",
+      "contactInfo": "Info Kontak",
+      "location": "Lokasi & Peta",
+      "display": "Tampilan",
+      "form": "Form",
+      "boards": "Papan Lowongan",
+      "culture": "Budaya & Benefit"
     },
     "nouns": {
       "stat": "Statistik",
@@ -404,7 +560,11 @@
       "values": "Belum ada nilai. Tambah satu untuk tampil di Who We Are.",
       "divisions": "Belum ada divisi. Default ke EPC, Trading, Manufaktur.",
       "products": "Belum ada produk.",
-      "inquiries": "Belum ada inquiry."
+      "inquiries": "Belum ada inquiry.",
+      "selectInquiry": "Pilih submission untuk melihat detailnya.",
+      "reports": "Belum ada laporan. Klik Tambah untuk mengunggah laporan pertama.",
+      "publications": "Belum ada artikel.",
+      "jobOpenings": "Belum ada lowongan."
     },
     "buttons": {
       "addValue": "Tambah nilai",
@@ -421,6 +581,8 @@
       "manageInPartners": "Kelola di Mitra",
       "manageInProjects": "Kelola di Proyek",
       "markRead": "Tandai dibaca",
+      "markUnread": "Tandai belum dibaca",
+      "refresh": "Muat ulang",
       "markNew": "Tandai baru",
       "archive": "Arsipkan",
       "viewDetail": "Lihat detail",
@@ -440,6 +602,7 @@
       "overrideLabelsIntro": "Override label section.",
       "solutionsOverviewIntro": "Atur status tiap halaman Solusi: tayang, segera hadir, atau disembunyikan. Perubahan langsung berlaku.",
       "solutionsPageStatusHint": "Pilih perilaku halaman ini di site publik. Status disembunyikan juga membuat halaman hilang dari navigasi.",
+      "websiteLinkHint": "Opsional. Ditampilkan sebagai tombol call-to-action yang menautkan ke website eksternal Duta Firza Technologies.",
       "solutionsPartnersDelegated": "Item logo yang tampil di halaman ini diambil dari Master · Mitra. Edit hero dan intro di sini.",
       "solutionsEpcDelegated": "Tab proyek yang tampil di halaman ini diambil dari Master · Proyek (kategori EPC). Edit hero dan intro di sini.",
       "landingPartnersDelegated": "Logo mitra yang tampil di homepage diatur di Solutions · Trading · Partners.",
@@ -465,14 +628,24 @@
       "uploadOriginal": "Unggah gambar utuh"
     },
     "hints": {
-      "heroBg": "Disarankan 1920×1080 (16:9 landscape), JPG/WebP. Akan ditampilkan full-width sebagai backdrop hero.",
+      "heroBg": "Disarankan 1920×1080 (16:9 landscape), JPG/WebP. Akan ditampilkan full-width sebagai backdrop hero. Kosongkan untuk menggunakan gradasi default.",
+      "heroDecorations": "Aktif: overlay gelap + pola + gradasi bawah. Nonaktif: gambar ditampilkan utuh tanpa dekorasi.",
       "partnerLogo": "Logo landscape, PNG transparent (min 400×133). Tinggi tampilan ~48px di public, lebar otomatis.",
       "customerLogo": "Logo landscape, PNG transparent (min 280×93). Tinggi tampilan ~40px di marquee public.",
       "businessLogo": "Logo landscape, PNG transparent (min 400×100). Tampil rata kiri di card afiliasi, tinggi ~64px.",
       "projectImage": "Disarankan 1600×900 (16:9), JPG. Dipakai untuk thumbnail card dan hero halaman proyek.",
       "leadershipPhoto": "Portrait 4:5 (min 400×500), JPG. Wajah usahakan di tengah-atas frame untuk hasil crop optimal.",
       "credentialImage": "Scan dokumen portrait 3:4 (min 600×800), JPG/PNG. Crop seluruh dokumen, hindari background berlebih.",
-      "aboutVideo": "MP4 H.264 720p+ (16:9 landscape). Akan dikompres ke 1080p/H.264; ukuran asli max 200MB."
+      "historyImage": "Opsional, landscape 16:9 (min 1280×720), JPG/WebP. Tampil di seberang card milestone pada timeline.",
+      "aboutVideo": "MP4 H.264 720p+ (16:9 landscape). Akan dikompres ke 1080p/H.264; ukuran asli max 200MB.",
+      "videoAutoplay": "Aktif: video diputar otomatis tanpa suara (dibisukan) dan diulang saat halaman dibuka. Pengunjung dapat menyalakan suara lewat kontrol video.",
+      "fileUrlHint": "Tempel URL GCS/CDN dari file PDF.",
+      "bodyRichHint": "Gunakan editor untuk memformat isi artikel.",
+      "slugHint": "Otomatis dari judul bahasa Inggris. Edit untuk mengubah manual.",
+      "companyProfileUrlHint": "Upload dokumen PDF Profil Perusahaan.",
+      "originalUrlHint": "Tautan ke artikel atau sumber asli (opsional).",
+      "whatsappNumber": "Format internasional, hanya angka (mis. 628123456789). Kosongkan untuk menonaktifkan tombol WhatsApp di halaman publik.",
+      "whatsappTemplate": "Gunakan '{product}' sebagai placeholder nama produk."
     },
     "status": {
       "toggleSaved": "Status diperbarui",
@@ -519,7 +692,37 @@
       "options": "Opsi",
       "addOption": "Tambah opsi",
       "noOptions": "Belum ada opsi.",
-      "moveUp": "Pindah ke atas"
+      "moveUp": "Pindah ke atas",
+      "enabled": "Aktifkan form"
+    },
+    "reportLeads": {
+      "settingsTitle": "Form gate download / lihat",
+      "settingsHint": "Wajibkan pengunjung mengisi data sebelum melihat atau mengunduh PDF laporan. Empat field inti selalu dikumpulkan; tambah atau hapus field lain dan aktif/nonaktifkan gate.",
+      "viewLeads": "Lihat lead tertangkap",
+      "formSettings": "Pengaturan form",
+      "filterAll": "Semua",
+      "action_view": "Lihat",
+      "action_download": "Download",
+      "allTypes": "Semua laporan",
+      "type_annual": "Laporan tahunan",
+      "type_financial": "Laporan keuangan",
+      "searchPlaceholder": "Cari nama, perusahaan, email, laporan…",
+      "itemsPerPage": "Item per halaman:",
+      "empty": "Belum ada lead tertangkap.",
+      "selectLead": "Pilih lead untuk melihat detailnya.",
+      "report": "Laporan",
+      "company": "Perusahaan"
+    },
+    "reportThumbnail": {
+      "label": "Thumbnail",
+      "mode_upload": "Upload thumbnail",
+      "mode_pdfFirstPage": "Gunakan halaman pertama PDF",
+      "mode_default": "Gunakan default",
+      "generate": "Generate dari PDF",
+      "generateHint": "Render halaman pertama PDF yang diupload sebagai thumbnail.",
+      "generateFailed": "Gagal membuat thumbnail.",
+      "needPdf": "Upload PDF dulu untuk membuat thumbnail.",
+      "defaultHint": "Placeholder netral akan ditampilkan di halaman publik."
     },
     "fields": {
       "heroEyebrow": "Eyebrow",
@@ -528,9 +731,12 @@
       "heroCtaLabel": "Label CTA utama",
       "heroCtaHref": "Link CTA utama",
       "heroBgImage": "Gambar background",
+      "heroDecorations": "Overlay & dekorasi hero",
+      "solutionsColumnsPerRow": "Kolom per baris (Our Solutions)",
       "heroSecondaryCta": "Label CTA sekunder (opsional)",
       "heroSecondaryCtaHref": "Link CTA sekunder (opsional)",
       "videoProfile": "Video profil",
+      "videoAutoplay": "Putar video otomatis",
       "introParagraph": "Paragraf intro",
       "vision": "Visi",
       "mission": "Misi",
@@ -571,6 +777,10 @@
       "longitude": "Longitude",
       "websiteUrl": "URL Website",
       "websiteUrlOptional": "URL Website (opsional)",
+      "websiteLinkEnabled": "Tampilkan tautan website",
+      "websiteTitle": "Judul tautan website",
+      "websiteDescription": "Deskripsi tautan website",
+      "websiteCta": "Label tombol website",
       "scopeOfWork": "Ruang lingkup pekerjaan",
       "aboutProject": "Tentang proyek",
       "highlightOrder": "Urutan unggulan",
@@ -601,6 +811,9 @@
       "productType": "Tipe produk",
       "skuCount": "Jumlah SKU",
       "partnershipStart": "Tahun mulai partnership",
+      "whatsappNumber": "Nomor WhatsApp",
+      "whatsappTemplate": "Template pesan WhatsApp",
+      "whatsappTemplateOverride": "Template WhatsApp (override opsional)",
       "productPhotos": "Foto produk",
       "productItems": "Daftar produk",
       "addPhoto": "Tambah foto",
@@ -616,7 +829,16 @@
       "inquiryMessage": "Pesan",
       "inquiryWebsiteUrl": "Website",
       "inquirySource": "Sumber",
-      "inquiryReceivedAt": "Diterima"
+      "inquiryReceivedAt": "Diterima",
+      "reportType": "Tipe",
+      "reportYear": "Tahun",
+      "fileUrl": "URL File (PDF)",
+      "publishedAt": "Tanggal Terbit",
+      "originalUrl": "URL Asli",
+      "companyProfileUrl": "URL PDF Profil Perusahaan",
+      "bodyRich": "Isi Artikel",
+      "slug": "Slug",
+      "summary": "Ringkasan"
     },
     "groups": {
       "contact": "Kontak",
@@ -636,24 +858,70 @@
       "pageBody": "Body halaman",
       "comingSoonContent": "Konten Coming Soon",
       "formSettings": "Pengaturan form",
+      "websiteLink": "Tautan website",
       "principleSource": "Sumber principle",
       "productDetails": "Detail produk",
+      "whatsappChat": "Chat WhatsApp",
       "inquiryDetails": "Detail inquiry",
-      "inquiryMeta": "Info submission"
+      "inquiryMeta": "Info submission",
+      "updateStatus": "Ubah status",
+      "reportItem": "Laporan",
+      "publicationItem": "Artikel"
     },
     "credentials": {
       "valueIndex": "Nilai #{index}",
       "divisionIndex": "Divisi #{index}"
     },
+    "contactPage": {
+      "locationsMap": "Lokasi & Peta",
+      "showMap": "Tampilkan peta",
+      "showFactory": "Tampilkan lokasi pabrik",
+      "showOfficeHours": "Tampilkan jam operasional",
+      "showGetDirections": "Tampilkan tombol rute",
+      "officeMapEmbed": "Embed peta Kantor Pusat",
+      "officeDirections": "Link rute Kantor Pusat",
+      "factoryMapEmbed": "Embed peta Pabrik",
+      "factoryDirections": "Link rute Pabrik",
+      "mapEmbedHint": "Buka Google Maps → Bagikan → Sematkan peta, lalu tempel URL src dari iframe. Tidak perlu API key.",
+      "extraSections": "Section tambahan",
+      "showDepartmentContacts": "Pisahkan kontak per departemen",
+      "showDepartmentContactsHint": "Tampilkan email umum dan email penjualan secara terpisah.",
+      "showSocial": "Tampilkan media sosial",
+      "showCompanyProfile": "Tampilkan unduh profil perusahaan",
+      "fromSettingsHint": "Sumber data dari Pengaturan.",
+      "formEnabled": "Aktifkan form kontak"
+    },
+    "careerPage": {
+      "jobBoards": "Papan Lowongan",
+      "noJobBoards": "Belum ada papan lowongan.",
+      "addJobBoard": "Tambah papan lowongan",
+      "whyJoin": "Kenapa Bergabung",
+      "benefits": "Benefit & Budaya",
+      "noBenefits": "Belum ada benefit.",
+      "addBenefit": "Tambah benefit",
+      "showOpenings": "Tampilkan daftar lowongan",
+      "showOpeningsHint": "Tampilkan section lowongan terbuka di halaman publik. Item dikelola di tab Lowongan.",
+      "jobItem": "Detail Lowongan",
+      "department": "Departemen",
+      "employmentType": "Tipe",
+      "applyUrl": "Link lamar / email",
+      "applyUrlHint": "URL ATS/papan lowongan eksternal, atau mailto:hr@dutafirza.com.",
+      "jobDescription": "Deskripsi Pekerjaan"
+    },
     "alertDelete": "Aksi ini tidak bisa dibatalkan."
   },
   "AdminNav": {
     "dashboard": "Dasbor",
+    "sectionAnalytics": "Analitik",
+    "sectionContent": "Konten",
+    "sectionInbox": "Inbox",
+    "sectionSystem": "Sistem",
     "groupHome": "Beranda",
     "groupAbout": "Tentang Kami",
     "groupSolutions": "Solusi",
     "groupInvestorRelations": "Hubungan Investor",
     "groupContact": "Kontak",
+    "groupConnect": "Connect",
     "groupContent": "Konten Master",
     "groupSystem": "Sistem",
     "groupInbox": "Inbox",
@@ -673,8 +941,10 @@
     "tradingProducts": "Trading · Produk",
     "manufacturing": "Manufaktur",
     "epc": "EPC",
+    "technology": "Teknologi",
     "stocks": "Saham",
     "reports": "Laporan",
+    "publications": "Publikasi",
     "pressRelease": "Siaran Pers",
     "newsroom": "Newsroom",
     "companyProfile": "Profil Perusahaan",
@@ -687,8 +957,42 @@
     "settings": "Pengaturan",
     "users": "Pengguna",
     "inquiries": "Inquiry",
+    "reportDownloads": "Download Laporan",
     "comingSoon": "Segera",
     "expand": "Perluas sidebar",
     "collapse": "Ringkas sidebar"
+  },
+  "IR": {
+    "contactHeading": "Kontak Hubungan Investor",
+    "downloadProfile": "Unduh Profil Perusahaan",
+    "previewProfile": "Pratinjau",
+    "noProfileYet": "Dokumen profil perusahaan sedang disiapkan.",
+    "noReportsYet": "Belum ada laporan tersedia.",
+    "readMore": "Selengkapnya",
+    "viewReport": "Lihat",
+    "downloadReport": "Unduh",
+    "previewReport": "Pratinjau PDF",
+    "allReports": "Semua Laporan",
+    "pressReleasesEmpty": "Belum ada siaran pers tersedia.",
+    "newsroomEmpty": "Belum ada artikel.",
+    "publishedDate": "Diterbitkan",
+    "backToNewsroom": "Kembali ke Newsroom",
+    "backToPressRelease": "Kembali ke Siaran Pers",
+    "irContact": "Kontak IR",
+    "searchReports": "Cari laporan…",
+    "searchArticles": "Cari artikel…",
+    "searchReleases": "Cari siaran pers…",
+    "sortLabel": "Urutkan",
+    "sortNewest": "Terbaru",
+    "sortOldest": "Terlama",
+    "sortTitle": "Judul A–Z",
+    "filterYear": "Tahun",
+    "allYears": "Semua tahun",
+    "noResults": "Tidak ada hasil yang cocok dengan filter."
+  },
+  "Pagination": {
+    "previous": "Sebelumnya",
+    "next": "Berikutnya",
+    "pageOf": "Halaman {current} dari {total}"
   }
 }

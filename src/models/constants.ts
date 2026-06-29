@@ -7,7 +7,7 @@
 export const PROJECT_CATEGORIES = ["trading", "manufacturing", "epc"] as const;
 export type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
 
-export const SOLUTION_KEYS = ["trading", "manufacturing", "epc"] as const;
+export const SOLUTION_KEYS = ["trading", "manufacturing", "epc", "technology"] as const;
 export type SolutionKey = (typeof SOLUTION_KEYS)[number];
 
 export const USER_ROLES = ["super-admin", "editor", "viewer"] as const;
@@ -26,17 +26,39 @@ export const SOLUTION_PAGE_SLUGS = [
   "trading-products",
   "manufacturing",
   "epc",
+  "technology",
 ] as const;
 export type SolutionPageSlug = (typeof SOLUTION_PAGE_SLUGS)[number];
 
 export const SOLUTION_PAGE_STATUSES = ["published", "comingSoon", "hidden"] as const;
 export type SolutionPageStatus = (typeof SOLUTION_PAGE_STATUSES)[number];
 
-export const INQUIRY_SOURCES = ["trading", "manufacturing", "epc", "contact"] as const;
+export const INQUIRY_SOURCES = [
+  "trading",
+  "manufacturing",
+  "epc",
+  "technology",
+  "contact",
+] as const;
 export type InquirySource = (typeof INQUIRY_SOURCES)[number];
 
-export const INQUIRY_STATUSES = ["new", "read", "archived"] as const;
+// Follow-up workflow status for an inquiry. Read/unread is tracked separately
+// via the Inquiry `read` boolean, so these values are purely about triage.
+export const INQUIRY_STATUSES = ["new", "inProgress", "resolved", "archived"] as const;
 export type InquiryStatus = (typeof INQUIRY_STATUSES)[number];
+
+// Whether a report lead came from a "view" (opened the in-browser preview) or a
+// "download" of the PDF. Stored on the ReportDownload model so admins can tell
+// the two intents apart in the Download Reports inbox.
+export const REPORT_DOWNLOAD_ACTIONS = ["view", "download"] as const;
+export type ReportDownloadAction = (typeof REPORT_DOWNLOAD_ACTIONS)[number];
+
+// How a report's public thumbnail is sourced:
+// - upload       → admin uploaded a custom image (thumbnailUrl)
+// - pdfFirstPage → generated from the first page of the report PDF (thumbnailUrl)
+// - default      → no image; the public page falls back to a placeholder
+export const REPORT_THUMBNAIL_MODES = ["upload", "pdfFirstPage", "default"] as const;
+export type ReportThumbnailMode = (typeof REPORT_THUMBNAIL_MODES)[number];
 
 /**
  * Whitelist of lucide-react icon names that the Quick Stats card can render.
@@ -83,6 +105,31 @@ export type AboutSubPageStatus = (typeof ABOUT_SUB_PAGE_STATUSES)[number];
 export const SECTION_MODES = ["disabled", "default", "custom"] as const;
 export type SectionMode = (typeof SECTION_MODES)[number];
 
+export const IR_SUB_PAGE_SLUGS = [
+  "stocks",
+  "reports",
+  "publications",
+  "press-release",
+  "newsroom",
+  "company-profile",
+] as const;
+export type IrSubPageSlug = (typeof IR_SUB_PAGE_SLUGS)[number];
+
+export const IR_SUB_PAGE_STATUSES = ["published", "comingSoon", "hidden"] as const;
+export type IrSubPageStatus = (typeof IR_SUB_PAGE_STATUSES)[number];
+
+/** Employment type for a Career job opening. */
+export const JOB_EMPLOYMENT_TYPES = ["fullTime", "partTime", "contract", "internship"] as const;
+export type JobEmploymentType = (typeof JOB_EMPLOYMENT_TYPES)[number];
+
+/**
+ * Page-level visibility status shared by the Contact + Career singleton pages.
+ * Same values as the solution/about/IR page statuses — hidden → 404,
+ * comingSoon → Coming Soon page, published → live.
+ */
+export const PAGE_STATUSES = ["published", "comingSoon", "hidden"] as const;
+export type PageStatus = (typeof PAGE_STATUSES)[number];
+
 /**
  * Whitelist of lucide-react icon names available to the Solution card editor
  * on /admin/landing. Reuses several stat icons plus the two trade-specific
@@ -97,5 +144,6 @@ export const SOLUTION_ICONS = [
   "Briefcase",
   "Globe",
   "TrendingUp",
+  "Cpu",
 ] as const;
 export type SolutionIcon = (typeof SOLUTION_ICONS)[number];

@@ -14,7 +14,7 @@ import { pickIcon } from "@/lib/icon-map";
  */
 export function QuickStats({ stats }: { stats: StatData[] }) {
   return (
-    <ScrollReveal className="container relative z-10 mx-auto -mt-20 mb-16 px-4 md:-mt-28 md:mb-20">
+    <ScrollReveal className="container relative z-10 mx-auto -mt-20 px-4 md:-mt-28">
       <div className="relative overflow-hidden rounded-2xl border bg-card shadow-2xl">
         {/* Brand-accent strip across the top of the card */}
         <span className="absolute inset-x-0 top-0 h-1 bg-brand-accent" />

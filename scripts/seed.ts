@@ -8,6 +8,7 @@
  * Available targets: user, siteSettings, homeHero, stats, solutions,
  *                    solutionPages, partners, products, customers,
  *                    projects, reachPoints, aboutPage, aboutSubPages,
+ *                    irSubPages, reports, newsroom, pressRelease,
  *                    leadership, history, affiliatedBusinesses, credentials.
  *
  * - Upserts singleton documents (SiteSettings, HomeHero) by their fixed _id.
@@ -42,11 +43,15 @@ import {
   HistoryEntry,
   HOME_HERO_ID,
   HomeHero,
+  IrSubPage,
+  JobOpening,
   LeadershipMember,
   Partner,
   Product,
   Project,
+  Publication,
   ReachPoint,
+  Report,
   SITE_SETTINGS_ID,
   SiteSettings,
   Solution,
@@ -197,6 +202,44 @@ async function seedAboutSubPages() {
   return items.length;
 }
 
+async function seedIrSubPages() {
+  const items = readJson<Array<Record<string, unknown> & { _id: string }>>("ir-sub-pages.json");
+  for (const item of items) {
+    const { _id, ...data } = item;
+    await IrSubPage.findByIdAndUpdate(_id, data, { upsert: true, new: true });
+  }
+  return items.length;
+}
+
+async function seedReports() {
+  const items = readJson<Array<Record<string, unknown>>>("reports.json");
+  await Report.deleteMany({});
+  await Report.insertMany(items);
+  return items.length;
+}
+
+async function seedNewsroom() {
+  const items = readJson<Array<Record<string, unknown> & { slug: string }>>(
+    "publications-newsroom.json",
+  );
+  for (const item of items) {
+    const { slug, ...data } = item;
+    await Publication.findOneAndUpdate({ slug }, { slug, ...data }, { upsert: true });
+  }
+  return items.length;
+}
+
+async function seedPressRelease() {
+  const items = readJson<Array<Record<string, unknown> & { slug: string }>>(
+    "publications-press-release.json",
+  );
+  for (const item of items) {
+    const { slug, ...data } = item;
+    await Publication.findOneAndUpdate({ slug }, { slug, ...data }, { upsert: true });
+  }
+  return items.length;
+}
+
 interface ProductFixture {
   _principleNames: string[];
   origin: string;
@@ -248,6 +291,13 @@ async function seedProducts() {
   return docs.length;
 }
 
+async function seedJobOpenings() {
+  const items = readJson<Array<Record<string, unknown>>>("job-openings.json");
+  await JobOpening.deleteMany({});
+  await JobOpening.insertMany(items);
+  return items.length;
+}
+
 const SEEDERS = {
   user: seedUser,
   siteSettings: seedSiteSettings,
@@ -262,10 +312,15 @@ const SEEDERS = {
   reachPoints: seedReachPoints,
   aboutPage: seedAboutPage,
   aboutSubPages: seedAboutSubPages,
+  irSubPages: seedIrSubPages,
+  reports: seedReports,
+  newsroom: seedNewsroom,
+  pressRelease: seedPressRelease,
   leadership: seedLeadership,
   history: seedHistory,
   affiliatedBusinesses: seedAffiliatedBusinesses,
   credentials: seedCredentials,
+  jobOpenings: seedJobOpenings,
 } as const;
 
 type SeederName = keyof typeof SEEDERS;
