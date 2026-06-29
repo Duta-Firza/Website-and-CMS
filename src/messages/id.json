@@ -912,6 +912,7 @@
   },
   "AdminNav": {
     "dashboard": "Dasbor",
+    "visitorAnalytics": "Analitik Pengunjung",
     "sectionAnalytics": "Analitik",
     "sectionContent": "Konten",
     "sectionInbox": "Inbox",
