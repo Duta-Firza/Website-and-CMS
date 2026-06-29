@@ -11,6 +11,8 @@ export {
   type SectionMode,
 } from "./about-sub-page";
 export { AffiliatedBusiness, type AffiliatedBusinessDoc } from "./affiliated-business";
+export { CAREER_PAGE_ID, CareerPage, type CareerPageDoc } from "./career-page";
+export { CONTACT_PAGE_ID, ContactPage, type ContactPageDoc } from "./contact-page";
 export {
   CREDENTIAL_TYPES,
   Credential,
@@ -36,6 +38,12 @@ export {
   type IrSubPageSlug,
   type IrSubPageStatus,
 } from "./ir-sub-page";
+export {
+  JOB_EMPLOYMENT_TYPES,
+  type JobEmploymentType,
+  JobOpening,
+  type JobOpeningDoc,
+} from "./job-opening";
 export {
   LEADERSHIP_TYPES,
   LeadershipMember,

@@ -152,15 +152,14 @@ export function buildAdminNav(locale: string): AdminNavData {
           },
           {
             key: "contact",
-            titleKey: "groupContact",
+            titleKey: "groupConnect",
             icon: Mail,
             items: [
-              { labelKey: "contactInfo", href: `${base}/contact`, icon: Mail, comingSoon: true },
+              { labelKey: "contactInfo", href: `${base}/contact`, icon: Mail },
               {
                 labelKey: "careers",
                 href: `${base}/contact/careers`,
                 icon: Briefcase,
-                comingSoon: true,
               },
             ],
           },
@@ -198,10 +197,7 @@ export function buildAdminNav(locale: string): AdminNavData {
             key: "system",
             titleKey: "groupSystem",
             icon: Settings,
-            items: [
-              { labelKey: "settings", href: `${base}/settings`, icon: Settings },
-              { labelKey: "users", href: `${base}/users`, icon: UserCog, comingSoon: true },
-            ],
+            items: [{ labelKey: "users", href: `${base}/users`, icon: UserCog, comingSoon: true }],
           },
         ],
       },

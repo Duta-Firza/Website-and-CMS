@@ -35,6 +35,7 @@
     "publications": "Publikasi",
     "pressRelease": "Siaran Pers",
     "newsroom": "Newsroom",
+    "connect": "Connect",
     "contact": "Kontak",
     "careers": "Karier",
     "companyProfile": "Profil Perusahaan"
@@ -65,6 +66,33 @@
     "companyProfileTitle": "Profil Perusahaan",
     "contactTitle": "Hubungi Kami",
     "careersTitle": "Karier"
+  },
+  "Contact": {
+    "headOffice": "Kantor Pusat",
+    "factory": "Pabrik",
+    "officeHours": "Jam Operasional",
+    "getDirections": "Lihat rute",
+    "phone": "Telepon",
+    "email": "Email",
+    "generalInquiries": "Pertanyaan Umum",
+    "salesInquiries": "Penjualan",
+    "findUs": "Temukan Kami",
+    "followUs": "Ikuti Kami",
+    "downloadProfile": "Unduh Profil Perusahaan",
+    "formTitle": "Kirim Pesan",
+    "formSubtitle": "Punya pertanyaan atau ingin bekerja sama? Isi formulir di bawah dan tim kami akan segera menghubungi Anda."
+  },
+  "Careers": {
+    "findUsOn": "Temukan kami di",
+    "openPositions": "Lowongan Tersedia",
+    "noOpenings": "Belum ada lowongan saat ini. Pantau terus halaman ini atau ikuti kami di papan lowongan di atas.",
+    "apply": "Lamar",
+    "empType": {
+      "fullTime": "Penuh Waktu",
+      "partTime": "Paruh Waktu",
+      "contract": "Kontrak",
+      "internship": "Magang"
+    }
   },
   "Tabs": {
     "certifications": "Sertifikasi",
@@ -448,8 +476,18 @@
         "title": "Profil Perusahaan",
         "description": "PDF profil perusahaan untuk /investor-relations/publications/company-profile."
       },
+      "contact": {
+        "title": "Halaman Kontak",
+        "description": "Hero, intro, peta lokasi, dan form untuk halaman /contact. Alamat, jam, dan email dikelola di Pengaturan."
+      },
+      "careers": {
+        "title": "Halaman Karier",
+        "description": "Konten, link papan lowongan, budaya, dan daftar lowongan untuk /contact/careers."
+      },
       "newArticle": "Artikel Baru",
-      "editArticle": "Edit Artikel"
+      "editArticle": "Edit Artikel",
+      "newJob": "Lowongan Baru",
+      "editJob": "Edit Lowongan"
     },
     "tabs": {
       "content": "Konten",
@@ -478,7 +516,15 @@
       "items": "Item",
       "annual": "Tahunan",
       "financial": "Keuangan",
-      "downloadForm": "Form Download"
+      "downloadForm": "Form Download",
+      "openings": "Lowongan",
+      "page": "Halaman",
+      "contactInfo": "Info Kontak",
+      "location": "Lokasi & Peta",
+      "display": "Tampilan",
+      "form": "Form",
+      "boards": "Papan Lowongan",
+      "culture": "Budaya & Benefit"
     },
     "nouns": {
       "stat": "Statistik",
@@ -516,7 +562,8 @@
       "inquiries": "Belum ada inquiry.",
       "selectInquiry": "Pilih submission untuk melihat detailnya.",
       "reports": "Belum ada laporan. Klik Tambah untuk mengunggah laporan pertama.",
-      "publications": "Belum ada artikel."
+      "publications": "Belum ada artikel.",
+      "jobOpenings": "Belum ada lowongan."
     },
     "buttons": {
       "addValue": "Tambah nilai",
@@ -824,6 +871,42 @@
       "valueIndex": "Nilai #{index}",
       "divisionIndex": "Divisi #{index}"
     },
+    "contactPage": {
+      "locationsMap": "Lokasi & Peta",
+      "showMap": "Tampilkan peta",
+      "showFactory": "Tampilkan lokasi pabrik",
+      "showOfficeHours": "Tampilkan jam operasional",
+      "showGetDirections": "Tampilkan tombol rute",
+      "officeMapEmbed": "Embed peta Kantor Pusat",
+      "officeDirections": "Link rute Kantor Pusat",
+      "factoryMapEmbed": "Embed peta Pabrik",
+      "factoryDirections": "Link rute Pabrik",
+      "mapEmbedHint": "Buka Google Maps → Bagikan → Sematkan peta, lalu tempel URL src dari iframe. Tidak perlu API key.",
+      "extraSections": "Section tambahan",
+      "showDepartmentContacts": "Pisahkan kontak per departemen",
+      "showDepartmentContactsHint": "Tampilkan email umum dan email penjualan secara terpisah.",
+      "showSocial": "Tampilkan media sosial",
+      "showCompanyProfile": "Tampilkan unduh profil perusahaan",
+      "fromSettingsHint": "Sumber data dari Pengaturan.",
+      "formEnabled": "Aktifkan form kontak"
+    },
+    "careerPage": {
+      "jobBoards": "Papan Lowongan",
+      "noJobBoards": "Belum ada papan lowongan.",
+      "addJobBoard": "Tambah papan lowongan",
+      "whyJoin": "Kenapa Bergabung",
+      "benefits": "Benefit & Budaya",
+      "noBenefits": "Belum ada benefit.",
+      "addBenefit": "Tambah benefit",
+      "showOpenings": "Tampilkan daftar lowongan",
+      "showOpeningsHint": "Tampilkan section lowongan terbuka di halaman publik. Item dikelola di tab Lowongan.",
+      "jobItem": "Detail Lowongan",
+      "department": "Departemen",
+      "employmentType": "Tipe",
+      "applyUrl": "Link lamar / email",
+      "applyUrlHint": "URL ATS/papan lowongan eksternal, atau mailto:hr@dutafirza.com.",
+      "jobDescription": "Deskripsi Pekerjaan"
+    },
     "alertDelete": "Aksi ini tidak bisa dibatalkan."
   },
   "AdminNav": {
@@ -837,6 +920,7 @@
     "groupSolutions": "Solusi",
     "groupInvestorRelations": "Hubungan Investor",
     "groupContact": "Kontak",
+    "groupConnect": "Connect",
     "groupContent": "Konten Master",
     "groupSystem": "Sistem",
     "groupInbox": "Inbox",

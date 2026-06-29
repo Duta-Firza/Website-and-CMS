@@ -118,6 +118,18 @@ export type IrSubPageSlug = (typeof IR_SUB_PAGE_SLUGS)[number];
 export const IR_SUB_PAGE_STATUSES = ["published", "comingSoon", "hidden"] as const;
 export type IrSubPageStatus = (typeof IR_SUB_PAGE_STATUSES)[number];
 
+/** Employment type for a Career job opening. */
+export const JOB_EMPLOYMENT_TYPES = ["fullTime", "partTime", "contract", "internship"] as const;
+export type JobEmploymentType = (typeof JOB_EMPLOYMENT_TYPES)[number];
+
+/**
+ * Page-level visibility status shared by the Contact + Career singleton pages.
+ * Same values as the solution/about/IR page statuses — hidden → 404,
+ * comingSoon → Coming Soon page, published → live.
+ */
+export const PAGE_STATUSES = ["published", "comingSoon", "hidden"] as const;
+export type PageStatus = (typeof PAGE_STATUSES)[number];
+
 /**
  * Whitelist of lucide-react icon names available to the Solution card editor
  * on /admin/landing. Reuses several stat icons plus the two trade-specific

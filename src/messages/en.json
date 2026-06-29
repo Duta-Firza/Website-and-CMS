@@ -35,6 +35,7 @@
     "publications": "Publications",
     "pressRelease": "Press Release",
     "newsroom": "Newsroom",
+    "connect": "Connect",
     "contact": "Contact",
     "careers": "Careers",
     "companyProfile": "Company Profile"
@@ -65,6 +66,33 @@
     "companyProfileTitle": "Company Profile",
     "contactTitle": "Contact Us",
     "careersTitle": "Careers"
+  },
+  "Contact": {
+    "headOffice": "Head Office",
+    "factory": "Factory",
+    "officeHours": "Office Hours",
+    "getDirections": "Get directions",
+    "phone": "Phone",
+    "email": "Email",
+    "generalInquiries": "General Inquiries",
+    "salesInquiries": "Sales",
+    "findUs": "Find Us",
+    "followUs": "Follow Us",
+    "downloadProfile": "Download Company Profile",
+    "formTitle": "Send a Message",
+    "formSubtitle": "Have a question or want to work together? Fill in the form below and our team will get back to you shortly."
+  },
+  "Careers": {
+    "findUsOn": "Find us on",
+    "openPositions": "Open Positions",
+    "noOpenings": "No open positions right now. Keep an eye on this page or follow us on the job boards above.",
+    "apply": "Apply",
+    "empType": {
+      "fullTime": "Full-time",
+      "partTime": "Part-time",
+      "contract": "Contract",
+      "internship": "Internship"
+    }
   },
   "Tabs": {
     "certifications": "Certifications",
@@ -448,8 +476,18 @@
         "title": "Company Profile",
         "description": "Company profile PDF for /investor-relations/publications/company-profile."
       },
+      "contact": {
+        "title": "Contact Page",
+        "description": "Hero, intro, location maps, and form for /contact. Address, hours, and email are managed in Settings."
+      },
+      "careers": {
+        "title": "Careers Page",
+        "description": "Content, job-board links, culture, and the job openings list for /contact/careers."
+      },
       "newArticle": "New Article",
-      "editArticle": "Edit Article"
+      "editArticle": "Edit Article",
+      "newJob": "New Opening",
+      "editJob": "Edit Opening"
     },
     "tabs": {
       "content": "Content",
@@ -478,7 +516,15 @@
       "items": "Items",
       "annual": "Annual",
       "financial": "Financial",
-      "downloadForm": "Download Form"
+      "downloadForm": "Download Form",
+      "openings": "Openings",
+      "page": "Page",
+      "contactInfo": "Contact Info",
+      "location": "Location & Map",
+      "display": "Display",
+      "form": "Form",
+      "boards": "Job Boards",
+      "culture": "Culture & Benefits"
     },
     "nouns": {
       "stat": "Stat",
@@ -516,7 +562,8 @@
       "inquiries": "No inquiries yet.",
       "selectInquiry": "Select a submission to view its details.",
       "reports": "No reports yet. Click Add to upload the first report.",
-      "publications": "No articles yet."
+      "publications": "No articles yet.",
+      "jobOpenings": "No job openings yet."
     },
     "buttons": {
       "addValue": "Add value",
@@ -824,6 +871,42 @@
       "valueIndex": "Value #{index}",
       "divisionIndex": "Division #{index}"
     },
+    "contactPage": {
+      "locationsMap": "Locations & Map",
+      "showMap": "Show map",
+      "showFactory": "Show factory location",
+      "showOfficeHours": "Show office hours",
+      "showGetDirections": "Show directions button",
+      "officeMapEmbed": "Head Office map embed",
+      "officeDirections": "Head Office directions link",
+      "factoryMapEmbed": "Factory map embed",
+      "factoryDirections": "Factory directions link",
+      "mapEmbedHint": "In Google Maps → Share → Embed a map, then paste the iframe src URL. No API key needed.",
+      "extraSections": "Extra sections",
+      "showDepartmentContacts": "Split contacts by department",
+      "showDepartmentContactsHint": "Show the general and sales emails separately.",
+      "showSocial": "Show social media",
+      "showCompanyProfile": "Show company profile download",
+      "fromSettingsHint": "Sourced from Settings.",
+      "formEnabled": "Enable contact form"
+    },
+    "careerPage": {
+      "jobBoards": "Job Boards",
+      "noJobBoards": "No job boards yet.",
+      "addJobBoard": "Add job board",
+      "whyJoin": "Why Join Us",
+      "benefits": "Benefits & Culture",
+      "noBenefits": "No benefits yet.",
+      "addBenefit": "Add benefit",
+      "showOpenings": "Show openings list",
+      "showOpeningsHint": "Show the open positions section on the public page. Items are managed in the Openings tab.",
+      "jobItem": "Opening Details",
+      "department": "Department",
+      "employmentType": "Type",
+      "applyUrl": "Apply link / email",
+      "applyUrlHint": "External ATS/job-board URL, or mailto:hr@dutafirza.com.",
+      "jobDescription": "Job Description"
+    },
     "alertDelete": "This action cannot be undone."
   },
   "AdminNav": {
@@ -837,6 +920,7 @@
     "groupSolutions": "Solutions",
     "groupInvestorRelations": "Investor Relations",
     "groupContact": "Contact",
+    "groupConnect": "Connect",
     "groupContent": "Master Content",
     "groupSystem": "System",
     "groupInbox": "Inbox",

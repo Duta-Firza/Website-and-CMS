@@ -1,0 +1,92 @@
+[
+  {
+    "title": { "id": "Mechanical Engineer (EPC)", "en": "Mechanical Engineer (EPC)" },
+    "department": "EPC & Projects",
+    "location": "Jakarta",
+    "employmentType": "fullTime",
+    "applyUrl": "mailto:hr@dutafirza.com?subject=Mechanical%20Engineer%20(EPC)",
+    "summary": {
+      "id": "Merancang dan mengawasi pekerjaan mekanikal pada proyek EPC migas dan energi, dari tahap desain hingga commissioning.",
+      "en": "Design and supervise mechanical scope on oil, gas, and energy EPC projects, from design through commissioning."
+    },
+    "description": {
+      "id": "<p>Kami mencari Mechanical Engineer berpengalaman untuk bergabung dengan tim EPC kami.</p><ul><li>Min. S1 Teknik Mesin dengan pengalaman 3+ tahun di proyek EPC.</li><li>Menguasai standar ASME/API dan software perpipaan.</li><li>Bersedia melakukan kunjungan lapangan ke site proyek.</li></ul>",
+      "en": "<p>We are looking for an experienced Mechanical Engineer to join our EPC team.</p><ul><li>Bachelor's degree in Mechanical Engineering with 3+ years on EPC projects.</li><li>Familiar with ASME/API standards and piping software.</li><li>Willing to travel to project sites.</li></ul>"
+    },
+    "isPublished": true,
+    "order": 0,
+    "postedAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "title": { "id": "Instrumentation Sales Engineer", "en": "Instrumentation Sales Engineer" },
+    "department": "Trading",
+    "location": "Jakarta",
+    "employmentType": "fullTime",
+    "applyUrl": "mailto:hr@dutafirza.com?subject=Instrumentation%20Sales%20Engineer",
+    "summary": {
+      "id": "Mengembangkan penjualan produk instrumentasi dari principal kelas dunia ke pelanggan industri di Indonesia.",
+      "en": "Grow sales of world-class principal instrumentation products to industrial customers across Indonesia."
+    },
+    "description": {
+      "id": "<p>Tanggung jawab utama:</p><ul><li>Membangun hubungan dengan pelanggan di sektor migas, petrokimia, dan power plant.</li><li>Menyusun proposal teknis dan komersial.</li><li>Min. S1 Teknik (Fisika/Elektro/Instrumentasi), fresh graduate dipersilakan melamar.</li></ul>",
+      "en": "<p>Key responsibilities:</p><ul><li>Build relationships with customers in oil & gas, petrochemical, and power sectors.</li><li>Prepare technical and commercial proposals.</li><li>Bachelor's in Engineering (Physics/Electrical/Instrumentation); fresh graduates welcome.</li></ul>"
+    },
+    "isPublished": true,
+    "order": 1,
+    "postedAt": "2026-06-05T00:00:00.000Z"
+  },
+  {
+    "title": { "id": "Procurement Officer", "en": "Procurement Officer" },
+    "department": "Supply Chain",
+    "location": "Cikarang",
+    "employmentType": "fullTime",
+    "applyUrl": "mailto:hr@dutafirza.com?subject=Procurement%20Officer",
+    "summary": {
+      "id": "Mengelola pengadaan material dan jasa untuk mendukung operasional manufaktur dan proyek perusahaan.",
+      "en": "Manage procurement of materials and services supporting the company's manufacturing and project operations."
+    },
+    "description": {
+      "id": "<p>Kualifikasi:</p><ul><li>Min. S1 dengan pengalaman 2+ tahun di bidang procurement/purchasing.</li><li>Memahami proses sourcing, negosiasi, dan vendor management.</li><li>Teliti, terorganisir, dan mampu bekerja dengan tenggat waktu.</li></ul>",
+      "en": "<p>Qualifications:</p><ul><li>Bachelor's degree with 2+ years in procurement/purchasing.</li><li>Understands sourcing, negotiation, and vendor management.</li><li>Detail-oriented, organized, and able to work to deadlines.</li></ul>"
+    },
+    "isPublished": true,
+    "order": 2,
+    "postedAt": "2026-06-10T00:00:00.000Z"
+  },
+  {
+    "title": { "id": "Field Service Technician", "en": "Field Service Technician" },
+    "department": "Technical Services",
+    "location": "Balikpapan",
+    "employmentType": "contract",
+    "applyUrl": "mailto:hr@dutafirza.com?subject=Field%20Service%20Technician",
+    "summary": {
+      "id": "Melakukan instalasi, kalibrasi, dan pemeliharaan instrumentasi di lokasi pelanggan.",
+      "en": "Perform installation, calibration, and maintenance of instrumentation at customer sites."
+    },
+    "description": {
+      "id": "<p>Persyaratan:</p><ul><li>Min. D3 Teknik Elektro/Instrumentasi.</li><li>Pengalaman lapangan di lingkungan industri menjadi nilai tambah.</li><li>Bersedia ditempatkan dan bertugas di area Kalimantan.</li></ul>",
+      "en": "<p>Requirements:</p><ul><li>Diploma in Electrical/Instrumentation Engineering.</li><li>Field experience in industrial environments is a plus.</li><li>Willing to be based and assigned in the Kalimantan area.</li></ul>"
+    },
+    "isPublished": true,
+    "order": 3,
+    "postedAt": "2026-06-14T00:00:00.000Z"
+  },
+  {
+    "title": { "id": "Finance & Accounting Intern", "en": "Finance & Accounting Intern" },
+    "department": "Finance",
+    "location": "Jakarta",
+    "employmentType": "internship",
+    "applyUrl": "mailto:hr@dutafirza.com?subject=Finance%20%26%20Accounting%20Intern",
+    "summary": {
+      "id": "Program magang 6 bulan untuk mahasiswa tingkat akhir yang ingin belajar di lingkungan perusahaan publik.",
+      "en": "A 6-month internship for final-year students who want hands-on experience in a public company."
+    },
+    "description": {
+      "id": "<p>Apa yang akan kamu pelajari:</p><ul><li>Mendukung tim finance dalam pencatatan dan rekonsiliasi.</li><li>Membantu penyusunan laporan rutin.</li><li>Mahasiswa S1 Akuntansi/Keuangan semester akhir.</li></ul>",
+      "en": "<p>What you'll learn:</p><ul><li>Support the finance team with bookkeeping and reconciliation.</li><li>Help prepare routine reports.</li><li>Final-semester Accounting/Finance undergraduates.</li></ul>"
+    },
+    "isPublished": false,
+    "order": 4,
+    "postedAt": "2026-06-18T00:00:00.000Z"
+  }
+]

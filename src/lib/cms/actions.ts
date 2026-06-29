@@ -12,6 +12,10 @@ import {
   AboutPage,
   AboutSubPage,
   AffiliatedBusiness,
+  CAREER_PAGE_ID,
+  CareerPage,
+  CONTACT_PAGE_ID,
+  ContactPage,
   CREDENTIAL_TYPES,
   Credential,
   Customer,
@@ -24,6 +28,8 @@ import {
   IR_SUB_PAGE_SLUGS,
   IR_SUB_PAGE_STATUSES,
   IrSubPage,
+  JOB_EMPLOYMENT_TYPES,
+  JobOpening,
   LEADERSHIP_TYPES,
   LeadershipMember,
   Partner,
@@ -45,7 +51,7 @@ import {
   SolutionPage,
   Stat,
 } from "@/models";
-import { STAT_ICONS } from "@/models/constants";
+import { PAGE_STATUSES, STAT_ICONS } from "@/models/constants";
 
 // ─── Shared ──────────────────────────────────────────────────────────────────
 const localizedSchema = z.object({
@@ -1401,6 +1407,188 @@ export async function deleteReportLead(id: string): Promise<ActionResult> {
     await requireAdmin();
     await connectDB();
     await ReportDownload.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Contact Page (singleton) ─────────────────────────────────────────────────
+// Address / office hours / email / phone / social live on SiteSettings (shared
+// with the footer). This singleton only stores the contact-page-specific extras:
+// hero/intro copy, Google Maps embeds, per-section visibility toggles, and the
+// contact form config.
+const contactPageSchema = z.object({
+  status: z.enum(PAGE_STATUSES).default("published"),
+  heroMode: z.enum(SECTION_MODES).default("default"),
+  bodyMode: z.enum(SECTION_MODES).default("disabled"),
+  hero: z.object({ eyebrow: localizedSchema, title: localizedSchema, subtitle: localizedSchema }),
+  body: z.object({ heading: localizedSchema, content: localizedSchema }),
+  office: z.object({
+    mapEmbedUrl: z.string().default(""),
+    directionsUrl: z.string().default(""),
+  }),
+  factory: z.object({
+    mapEmbedUrl: z.string().default(""),
+    directionsUrl: z.string().default(""),
+  }),
+  showMap: z.boolean().default(true),
+  showFactory: z.boolean().default(true),
+  showOfficeHours: z.boolean().default(true),
+  showGetDirections: z.boolean().default(true),
+  formSettings: formSettingsSchema.default({
+    enabled: true,
+    submitLabel: { id: "", en: "" },
+    successMessage: { id: "", en: "" },
+    fields: [],
+  }),
+});
+
+export async function updateContactPage(
+  input: z.infer<typeof contactPageSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = contactPageSchema.parse(input);
+    await connectDB();
+    await ContactPage.findByIdAndUpdate(CONTACT_PAGE_ID, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// The "extra section" display toggles live on the same ContactPage doc but are
+// edited in the Info Kontak tab (alongside SiteSettings), so they get a focused
+// partial update to avoid clobbering the page-config fields.
+const contactDisplaySchema = z.object({
+  showSocial: z.boolean().default(true),
+  showDepartmentContacts: z.boolean().default(true),
+  showCompanyProfile: z.boolean().default(true),
+});
+
+export async function updateContactDisplay(
+  input: z.infer<typeof contactDisplaySchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = contactDisplaySchema.parse(input);
+    await connectDB();
+    await ContactPage.findByIdAndUpdate(CONTACT_PAGE_ID, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Career Page (singleton) ──────────────────────────────────────────────────
+const jobBoardSchema = z.object({
+  key: z.string().default(""),
+  label: localizedSchema,
+  url: z.string().default(""),
+  enabled: z.boolean().default(true),
+});
+
+const benefitSchema = z.object({
+  icon: z.string().default("Award"),
+  title: localizedSchema,
+  description: localizedSchema,
+});
+
+const careerPageSchema = z.object({
+  status: z.enum(PAGE_STATUSES).default("published"),
+  heroMode: z.enum(SECTION_MODES).default("default"),
+  bodyMode: z.enum(SECTION_MODES).default("disabled"),
+  hero: z.object({ eyebrow: localizedSchema, title: localizedSchema, subtitle: localizedSchema }),
+  body: z.object({ heading: localizedSchema, content: localizedSchema }),
+  showJobBoards: z.boolean().default(true),
+  jobBoards: z.array(jobBoardSchema).default([]),
+  whyJoinMode: z.enum(SECTION_MODES).default("disabled"),
+  whyJoin: z.object({ heading: localizedSchema, content: localizedSchema }),
+  showBenefits: z.boolean().default(true),
+  benefits: z.array(benefitSchema).default([]),
+  showOpenings: z.boolean().default(true),
+});
+
+export async function updateCareerPage(
+  input: z.infer<typeof careerPageSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = careerPageSchema.parse(input);
+    await connectDB();
+    await CareerPage.findByIdAndUpdate(CAREER_PAGE_ID, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Job Openings (collection) ────────────────────────────────────────────────
+const jobOpeningSchema = z.object({
+  id: z.string().optional(),
+  title: localizedSchema,
+  department: z.string().default(""),
+  location: z.string().default(""),
+  employmentType: z.enum(JOB_EMPLOYMENT_TYPES).default("fullTime"),
+  applyUrl: z.string().default(""),
+  summary: localizedSchema,
+  description: localizedSchema,
+  isPublished: z.boolean().default(false),
+  order: z.number().int().default(0),
+  postedAt: z.coerce.date(),
+});
+
+export async function upsertJobOpening(
+  input: z.infer<typeof jobOpeningSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { id, ...data } = jobOpeningSchema.parse(input);
+    await connectDB();
+    if (id) await JobOpening.findByIdAndUpdate(id, data);
+    else await JobOpening.create(data);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteJobOpening(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await JobOpening.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderJobOpenings(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Promise.all(ids.map((id, i) => JobOpening.findByIdAndUpdate(id, { order: i })));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function toggleJobOpeningPublished(id: string, value: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = z.object({ id: z.string().min(1), value: z.boolean() }).parse({ id, value });
+    await connectDB();
+    await JobOpening.findByIdAndUpdate(parsed.id, { isPublished: parsed.value });
     bust();
     return { ok: true };
   } catch (e) {
