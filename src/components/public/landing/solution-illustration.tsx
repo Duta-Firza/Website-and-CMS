@@ -65,6 +65,10 @@ export function SolutionIllustration({ solutionKey, playing, hoverKey }: Props) 
       {solutionKey === "trading" && <TradingIllustration />}
       {solutionKey === "manufacturing" && <ManufacturingIllustration />}
       {solutionKey === "epc" && <EpcIllustration />}
+      {solutionKey === "technology" && <TechnologyIllustration />}
+      {!["trading", "manufacturing", "epc", "technology"].includes(solutionKey) && (
+        <GenericIllustration />
+      )}
     </div>
   );
 }
@@ -233,6 +237,98 @@ function EpcIllustration() {
         <circle cx="160" cy="146" r="7" />
         {/* Center pin */}
         <circle cx="160" cy="146" r="2" fill="currentColor" stroke="none" />
+      </g>
+    </svg>
+  );
+}
+
+function TechnologyIllustration() {
+  return (
+    <svg {...svgProps}>
+      {/* Ground line */}
+      <g className="anim-pop">
+        <path d="M10 178 H 190" />
+      </g>
+
+      {/* CPU chip body */}
+      <g className="anim-pop">
+        <rect x="64" y="72" width="72" height="72" />
+        {/* Inner core */}
+        <rect x="80" y="88" width="40" height="40" />
+        {/* Core grid lines */}
+        <path d="M93 88 V 128" />
+        <path d="M107 88 V 128" />
+        <path d="M80 101 H 120" />
+        <path d="M80 115 H 120" />
+      </g>
+
+      {/* CPU pins — top */}
+      <g className="anim-pop">
+        <path d="M80 72 V 58" />
+        <path d="M93 72 V 58" />
+        <path d="M107 72 V 58" />
+        <path d="M120 72 V 58" />
+      </g>
+
+      {/* CPU pins — bottom */}
+      <g className="anim-pop">
+        <path d="M80 144 V 158" />
+        <path d="M93 144 V 158" />
+        <path d="M107 144 V 158" />
+        <path d="M120 144 V 158" />
+      </g>
+
+      {/* CPU pins — left */}
+      <g className="anim-pop">
+        <path d="M64 88 H 50" />
+        <path d="M64 101 H 50" />
+        <path d="M64 115 H 50" />
+        <path d="M64 128 H 50" />
+      </g>
+
+      {/* CPU pins — right */}
+      <g className="anim-pop">
+        <path d="M136 88 H 150" />
+        <path d="M136 101 H 150" />
+        <path d="M136 115 H 150" />
+        <path d="M136 128 H 150" />
+      </g>
+
+      {/* Signal waves (accent) — emanating from right side */}
+      <g className="anim-pop" stroke="var(--brand-accent)">
+        <path d="M158 96 Q 168 108 158 120" fill="none" />
+        <path d="M166 88 Q 182 108 166 128" fill="none" />
+        <path d="M174 80 Q 196 108 174 136" fill="none" />
+      </g>
+
+      {/* PCB trace lines (subtle) going to ground */}
+      <g className="anim-pop" opacity="0.5">
+        <path d="M80 158 V 166 H 60 V 178" />
+        <path d="M120 158 V 166 H 140 V 178" />
+      </g>
+    </svg>
+  );
+}
+
+function GenericIllustration() {
+  return (
+    <svg {...svgProps}>
+      {/* Ground line */}
+      <g className="anim-pop">
+        <path d="M10 178 H 190" />
+      </g>
+      {/* Simple building */}
+      <g className="anim-pop">
+        <path d="M60 178 V 80 H 140 V 178" />
+        <path d="M50 80 L 100 40 L 150 80" />
+        <rect x="80" y="130" width="18" height="28" />
+        <rect x="102" y="130" width="18" height="28" />
+        <rect x="74" y="100" width="18" height="18" />
+        <rect x="108" y="100" width="18" height="18" />
+      </g>
+      {/* Accent accent bar */}
+      <g className="anim-pop" stroke="var(--brand-accent)">
+        <path d="M60 178 H 140" />
       </g>
     </svg>
   );

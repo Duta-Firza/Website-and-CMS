@@ -12,6 +12,7 @@ import { AboutForm } from "./about-form";
 export interface AboutFormValues {
   intro: { id: string; en: string };
   videoUrl: string;
+  videoAutoplay: boolean;
   vision: { id: string; en: string };
   mission: { id: string; en: string };
   values: {
@@ -23,6 +24,7 @@ export interface AboutFormValues {
 const empty = (): AboutFormValues => ({
   intro: { id: "", en: "" },
   videoUrl: "",
+  videoAutoplay: false,
   vision: { id: "", en: "" },
   mission: { id: "", en: "" },
   values: [],
@@ -47,6 +49,7 @@ async function loadAbout(): Promise<AboutFormValues> {
   return {
     intro: pickLocalized(doc.intro),
     videoUrl: doc.videoUrl ?? "",
+    videoAutoplay: doc.videoAutoplay ?? false,
     vision: pickLocalized(doc.vision),
     mission: pickLocalized(doc.mission),
     values: Array.isArray(doc.values)

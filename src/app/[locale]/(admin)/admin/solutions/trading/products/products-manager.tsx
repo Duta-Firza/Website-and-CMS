@@ -4,10 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { AdminListToolbar } from "@/components/admin/admin-list-toolbar";
 import { DetailDialog } from "@/components/admin/detail-dialog";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
@@ -15,6 +16,8 @@ import { pickLocalized } from "@/components/admin/localized-text";
 import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import { StatusToggle } from "@/components/admin/status-toggle";
+import { TablePagination } from "@/components/admin/table-pagination";
+import { useAdminListParams } from "@/components/admin/use-admin-list-params";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -52,10 +55,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 import {
   deleteProduct,
   reorderProducts,
   toggleProductActive,
+  updateTradingWhatsapp,
   upsertProduct,
 } from "@/lib/cms/actions";
 import type { PartnerOption, ProductItemRow, ProductRow } from "./page";
@@ -78,6 +83,7 @@ const schema = z.object({
   productType: z.object({ id: z.string(), en: z.string() }),
   skuCount: z.number().int().nonnegative(),
   partnershipStart: z.number().int().nullable(),
+  whatsappTemplate: z.object({ id: z.string(), en: z.string() }),
   items: z.array(itemZod),
   order: z.number().int(),
   isActive: z.boolean(),
@@ -91,56 +97,171 @@ const empty: FormValues = {
   productType: { id: "", en: "" },
   skuCount: 0,
   partnershipStart: null,
+  whatsappTemplate: { id: "", en: "" },
   items: [],
   order: 0,
   isActive: true,
 };
 
 interface Props {
-  initial: ProductRow[];
+  items: ProductRow[];
+  total: number;
+  allIds: string[];
+  origins: string[];
   partners: PartnerOption[];
+  whatsappNumber: string;
+  whatsappTemplate: { id: string; en: string };
 }
 
-export function ProductsManager({ initial, partners }: Props) {
+export function ProductsManager({
+  items,
+  total,
+  allIds,
+  origins,
+  partners,
+  whatsappNumber,
+  whatsappTemplate,
+}: Props) {
   const router = useRouter();
   const t = useTranslations("Admin");
   const locale = useLocale();
-  const [items, setItems] = useState(initial);
+  const lp = useAdminListParams("manual");
+  const [rows, setRows] = useState(items);
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [viewing, setViewing] = useState<ProductRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [waNumber, setWaNumber] = useState(whatsappNumber);
+  const [waTemplate, setWaTemplate] = useState(whatsappTemplate);
+  const [savingWa, setSavingWa] = useState(false);
 
   useEffect(() => {
-    setItems(initial);
-  }, [initial]);
+    setRows(items);
+  }, [items]);
 
-  const handleReorder = async (newIds: string[]) => {
-    const next = newIds
-      .map((id) => items.find((p) => p.id === id))
-      .filter((p): p is ProductRow => !!p);
-    setItems(next);
-    const result = await reorderProducts(newIds);
-    if (!result.ok) {
-      toast.error(result.error);
-      setItems(initial);
-    } else {
+  const partnerById = useMemo(() => new Map(partners.map((p) => [p.id, p])), [partners]);
+
+  const isPristine = !lp.q && lp.status === "all" && lp.filter === "all" && lp.sort === "manual";
+
+  const pageCount = Math.max(1, Math.ceil(total / lp.pageSize));
+  const currentPage = Math.min(lp.page, pageCount);
+  const pageStart = (currentPage - 1) * lp.pageSize;
+
+  const saveWhatsapp = async () => {
+    setSavingWa(true);
+    const result = await updateTradingWhatsapp({ number: waNumber, template: waTemplate });
+    setSavingWa(false);
+    if (result.ok) {
+      toast.success(t("saved"));
       router.refresh();
-    }
+    } else toast.error(result.error);
   };
 
-  const partnerById = new Map(partners.map((p) => [p.id, p]));
+  // Drag is only enabled in the pristine view, where the server page is a
+  // contiguous slice of the canonical order. Splice the reordered slice back
+  // into the full id list and persist the whole order.
+  const handleReorder = async (newPageIds: string[]) => {
+    const fullIds = [...allIds];
+    fullIds.splice(pageStart, rows.length, ...newPageIds);
+    setRows((prev) =>
+      newPageIds.map((id) => prev.find((p) => p.id === id)).filter((p): p is ProductRow => !!p),
+    );
+    const result = await reorderProducts(fullIds);
+    if (!result.ok) {
+      toast.error(result.error);
+    }
+    router.refresh();
+  };
 
   return (
     <section className="space-y-3">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <CardTitle>
-            {t("nouns.product")} · {items.length}
-          </CardTitle>
-          <Button onClick={() => setEditing({ ...empty, order: items.length + 1 })}>
-            <Plus className="mr-2 h-4 w-4" />
-            {t("add")}
-          </Button>
+        <CardHeader>
+          <CardTitle>{t("groups.whatsappChat")}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="wa-number">{t("fields.whatsappNumber")}</Label>
+            <Input
+              id="wa-number"
+              value={waNumber}
+              onChange={(e) => setWaNumber(e.target.value)}
+              placeholder="628123456789"
+              inputMode="numeric"
+            />
+            <p className="text-xs text-muted-foreground">{t("hints.whatsappNumber")}</p>
+          </div>
+          <div className="space-y-2">
+            <Label>{t("fields.whatsappTemplate")}</Label>
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+              <div className="space-y-1">
+                <Textarea
+                  value={waTemplate.id}
+                  onChange={(e) => setWaTemplate((prev) => ({ ...prev, id: e.target.value }))}
+                  placeholder="Bahasa Indonesia"
+                />
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">ID</p>
+              </div>
+              <div className="space-y-1">
+                <Textarea
+                  value={waTemplate.en}
+                  onChange={(e) => setWaTemplate((prev) => ({ ...prev, en: e.target.value }))}
+                  placeholder="English"
+                />
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">EN</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">{t("hints.whatsappTemplate")}</p>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={saveWhatsapp} disabled={savingWa}>
+              {savingWa && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t("save")}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="space-y-3">
+          <div className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>
+              {t("nouns.product")} · {total}
+            </CardTitle>
+            <Button onClick={() => setEditing({ ...empty, order: total + 1 })}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t("add")}
+            </Button>
+          </div>
+          <AdminListToolbar
+            params={lp}
+            searchPlaceholder={t("common.searchProducts")}
+            sortLabel={t("common.sortBy")}
+            sortOptions={[
+              { value: "manual", label: t("sort.manual") },
+              { value: "nameAsc", label: t("sort.nameAsc") },
+              { value: "nameDesc", label: t("sort.nameDesc") },
+              { value: "skuDesc", label: t("sort.skuDesc") },
+              { value: "skuAsc", label: t("sort.skuAsc") },
+            ]}
+            filterLabel={t("fields.principleOrigin")}
+            filterOptions={
+              origins.length > 0
+                ? [
+                    { value: "all", label: t("common.allOrigins") },
+                    ...origins.map((o) => ({ value: o, label: o })),
+                  ]
+                : undefined
+            }
+            statusLabel={t("common.status")}
+            statusOptions={[
+              { value: "all", label: t("common.allStatuses") },
+              { value: "active", label: t("common.active") },
+              { value: "inactive", label: t("common.inactive") },
+            ]}
+          />
+          {!isPristine && (
+            <p className="text-xs text-muted-foreground">{t("common.reorderHint")}</p>
+          )}
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -161,16 +282,16 @@ export function ProductsManager({ initial, partners }: Props) {
                   <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
-              <SortableContainer items={items.map((p) => p.id)} onReorder={handleReorder}>
+              <SortableContainer items={rows.map((p) => p.id)} onReorder={handleReorder}>
                 <TableBody>
-                  {items.length === 0 && (
+                  {rows.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
-                        {t("empty.products")}
+                        {isPristine ? t("empty.products") : t("common.noResults")}
                       </TableCell>
                     </TableRow>
                   )}
-                  {items.map((p) => {
+                  {rows.map((p) => {
                     const principleNames = p.principles
                       .map((pr) => partnerById.get(pr.partnerId ?? "")?.name ?? pr.name)
                       .filter(Boolean);
@@ -182,7 +303,7 @@ export function ProductsManager({ initial, partners }: Props) {
                         {({ ref, style, handleProps }) => (
                           <TableRow ref={ref} style={style}>
                             <TableCell>
-                              <DragHandle handleProps={handleProps} size="sm" />
+                              {isPristine && <DragHandle handleProps={handleProps} size="sm" />}
                             </TableCell>
                             <TableCell>
                               <div className="flex flex-wrap gap-1">
@@ -228,12 +349,12 @@ export function ProductsManager({ initial, partners }: Props) {
                                 checked={p.isActive}
                                 ariaLabel={t("common.active")}
                                 onToggle={async (next) => {
-                                  setItems((prev) =>
+                                  setRows((prev) =>
                                     prev.map((x) => (x.id === p.id ? { ...x, isActive: next } : x)),
                                   );
                                   const result = await toggleProductActive(p.id, next);
                                   if (!result.ok) {
-                                    setItems((prev) =>
+                                    setRows((prev) =>
                                       prev.map((x) =>
                                         x.id === p.id ? { ...x, isActive: !next } : x,
                                       ),
@@ -281,6 +402,18 @@ export function ProductsManager({ initial, partners }: Props) {
               </SortableContainer>
             </Table>
           </div>
+          {total > 0 && (
+            <TablePagination
+              page={currentPage}
+              pageCount={pageCount}
+              pageSize={lp.pageSize}
+              total={total}
+              rangeFrom={pageStart + 1}
+              rangeTo={pageStart + rows.length}
+              onPage={(p) => lp.update({ page: p <= 1 ? null : p })}
+              onPageSize={(n) => lp.update({ size: n === 10 ? null : n })}
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -496,6 +629,16 @@ function ProductDialog({
             form={form}
             multiline
           />
+
+          <div className="space-y-2">
+            <LocalizedField
+              label={t("fields.whatsappTemplateOverride")}
+              name="whatsappTemplate"
+              form={form}
+              multiline
+            />
+            <p className="text-xs text-muted-foreground">{t("hints.whatsappTemplate")}</p>
+          </div>
 
           {/* Items array — sub-products (Pressure Gauge / Pressure Switch / …) */}
           <div className="space-y-3 rounded-md border bg-muted/30 p-3">

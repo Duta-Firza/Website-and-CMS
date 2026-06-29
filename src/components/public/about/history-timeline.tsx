@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import type { HistoryEntryData } from "@/lib/cms/about";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,10 @@ interface Props {
  * top accent stripe slides in, the bottom-right gets a soft brand-accent
  * corner triangle, the year reads bigger in mono brand-accent, and the
  * card lifts on hover.
+ *
+ * An optional milestone image fills the opposite half of the line from the
+ * card (card left → image right, and vice versa). On mobile it stacks below
+ * the card. When absent, an empty spacer keeps the card on its own side.
  */
 export function HistoryTimeline({ entries }: Props) {
   return (
@@ -28,7 +33,7 @@ export function HistoryTimeline({ entries }: Props) {
         className="absolute left-4 top-0 h-full w-px bg-brand-deep/20 md:left-1/2 md:-translate-x-1/2 dark:bg-foreground/20"
       />
 
-      <ul className="space-y-6 md:space-y-2">
+      <ul className="space-y-10 md:space-y-16">
         {entries.map((entry, idx) => {
           const onLeft = idx % 2 === 0;
           return (
@@ -48,11 +53,22 @@ export function HistoryTimeline({ entries }: Props) {
                 )}
               />
 
+              {/* Connector arm — desktop only, from dot toward image (opposite side) */}
+              {entry.imageUrl && (
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute top-8 hidden h-px bg-brand-deep/25 md:block dark:bg-foreground/25",
+                    onLeft ? "left-1/2 w-8" : "right-1/2 w-8",
+                  )}
+                />
+              )}
+
               <ScrollReveal
                 delay={idx * 80}
                 className={cn(
-                  "ml-10 md:ml-0 md:flex",
-                  onLeft ? "md:justify-start" : "md:justify-end",
+                  "ml-10 md:ml-0 md:flex md:items-start md:justify-between",
+                  !onLeft && "md:flex-row-reverse",
                 )}
               >
                 <article className="group/hist relative overflow-hidden rounded-xl border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent/30 hover:shadow-md md:w-[calc(50%-2rem)] md:p-6">
@@ -84,6 +100,21 @@ export function HistoryTimeline({ entries }: Props) {
                     </p>
                   )}
                 </article>
+
+                {/* Optional image — fills the opposite half of the line */}
+                {entry.imageUrl ? (
+                  <figure className="group/histimg relative mt-4 aspect-video overflow-hidden rounded-xl border bg-card shadow-sm md:mt-0 md:w-[calc(50%-2rem)]">
+                    <Image
+                      src={entry.imageUrl}
+                      alt={entry.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 40vw"
+                      className="object-cover transition-transform duration-500 group-hover/histimg:scale-105"
+                    />
+                  </figure>
+                ) : (
+                  <span aria-hidden className="hidden md:block md:w-[calc(50%-2rem)]" />
+                )}
               </ScrollReveal>
             </li>
           );

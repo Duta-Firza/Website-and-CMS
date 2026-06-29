@@ -5,9 +5,11 @@ import { UrlTabs } from "@/components/admin/url-tabs";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { connectDB } from "@/lib/db";
 import { Report } from "@/models";
-import type { ReportType } from "@/models/report";
+import type { ReportThumbnailMode, ReportType } from "@/models/report";
 import { IrSubPageForm } from "../_components/ir-sub-page-form";
 import { loadIrSubPageForAdmin } from "../_components/load-ir-sub-page";
+import { loadReportDownloadFormSettings } from "../_components/load-report-download-form";
+import { ReportDownloadFormSettingsForm } from "./report-download-form";
 import { ReportsManager } from "./reports-manager";
 
 export interface ReportRow {
@@ -17,6 +19,8 @@ export interface ReportRow {
   year: number;
   description: { id: string; en: string };
   fileUrl: string;
+  thumbnailMode: ReportThumbnailMode;
+  thumbnailUrl: string;
   publishedAt: Date;
   isPublished: boolean;
   order: number;
@@ -32,6 +36,8 @@ async function loadReports(): Promise<ReportRow[]> {
     year: d.year,
     description: { id: d.description?.id ?? "", en: d.description?.en ?? "" },
     fileUrl: d.fileUrl,
+    thumbnailMode: (d.thumbnailMode ?? "default") as ReportThumbnailMode,
+    thumbnailUrl: d.thumbnailUrl ?? "",
     publishedAt: d.publishedAt,
     isPublished: d.isPublished ?? true,
     order: d.order ?? 0,
@@ -39,15 +45,17 @@ async function loadReports(): Promise<ReportRow[]> {
 }
 
 export default async function ReportsAdminPage() {
-  const [meta, reports, locale, t] = await Promise.all([
+  const [meta, reports, formSettings, locale, t] = await Promise.all([
     loadIrSubPageForAdmin("reports"),
     loadReports(),
+    loadReportDownloadFormSettings(),
     getLocale(),
     getTranslations("Admin"),
   ]);
 
   const annual = reports.filter((r) => r.type === "annual");
   const financial = reports.filter((r) => r.type === "financial");
+  const leadsHref = `/${locale}/admin/report-downloads`;
 
   return (
     <div className="space-y-6">
@@ -61,11 +69,16 @@ export default async function ReportsAdminPage() {
           />
         }
       />
-      <UrlTabs defaultTab="content" validValues={["content", "annual", "financial"]} className="w-full">
-        <TabsList className="grid grid-cols-3 md:w-fit">
+      <UrlTabs
+        defaultTab="content"
+        validValues={["content", "annual", "financial", "form"]}
+        className="w-full"
+      >
+        <TabsList className="grid grid-cols-4 md:w-fit">
           <TabsTrigger value="content">{t("tabs.content")}</TabsTrigger>
           <TabsTrigger value="annual">{t("tabs.annual")}</TabsTrigger>
           <TabsTrigger value="financial">{t("tabs.financial")}</TabsTrigger>
+          <TabsTrigger value="form">{t("tabs.downloadForm")}</TabsTrigger>
         </TabsList>
         <TabsContent value="content" className="mt-6">
           <IrSubPageForm slug="reports" initial={meta} />
@@ -75,6 +88,9 @@ export default async function ReportsAdminPage() {
         </TabsContent>
         <TabsContent value="financial" className="mt-6">
           <ReportsManager type="financial" initial={financial} />
+        </TabsContent>
+        <TabsContent value="form" className="mt-6">
+          <ReportDownloadFormSettingsForm initial={formSettings} leadsHref={leadsHref} />
         </TabsContent>
       </UrlTabs>
     </div>

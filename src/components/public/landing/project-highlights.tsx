@@ -5,8 +5,7 @@ import { ProjectCard } from "@/components/public/projects/project-card";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { buttonVariants } from "@/components/ui/button";
 import type { ProjectHighlightData } from "@/lib/cms/home";
-import { SectionIndex } from "./section-index";
-import { SectionPattern } from "./section-pattern";
+import { SectionAccent } from "./section-accent";
 
 interface Props {
   projects: ProjectHighlightData[];
@@ -24,9 +23,8 @@ export async function ProjectHighlights({ projects, titleOverride, subtitleOverr
   const subtitle = subtitleOverride?.trim() || t("projectHighlightsSubtitle");
 
   return (
-    <section className="relative">
-      <SectionPattern />
-      {/* <SectionIndex value="03" /> */}
+    <section className="relative isolate overflow-hidden">
+      <SectionAccent variant="brackets" />
       <div className="container relative mx-auto px-4 py-20 md:py-24">
         <ScrollReveal className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-3 text-center">
           <span className="h-0.75 w-10 bg-brand-accent" aria-hidden />

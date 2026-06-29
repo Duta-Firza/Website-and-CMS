@@ -9,8 +9,10 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { DetailDialog } from "@/components/admin/detail-dialog";
+import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { pickLocalized } from "@/components/admin/localized-text";
+import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import {
   AlertDialog,
@@ -47,6 +49,7 @@ const schema = z.object({
   year: z.string().min(1),
   title: z.object({ id: z.string().min(1), en: z.string().min(1) }),
   description: z.object({ id: z.string(), en: z.string() }),
+  imageUrl: z.string(),
   order: z.number().int(),
 });
 
@@ -56,6 +59,7 @@ const empty: FormValues = {
   year: "",
   title: { id: "", en: "" },
   description: { id: "", en: "" },
+  imageUrl: "",
   order: 0,
 };
 
@@ -100,6 +104,7 @@ export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-10" />
+              <TableHead className="w-16">{t("common.image")}</TableHead>
               <TableHead className="w-20">{t("common.year")}</TableHead>
               <TableHead>{t("common.title")}</TableHead>
               <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
@@ -109,7 +114,7 @@ export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
             <TableBody>
               {items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-sm text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
                     {t("empty.history")}
                   </TableCell>
                 </TableRow>
@@ -120,6 +125,9 @@ export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
                     <TableRow ref={ref} style={style}>
                       <TableCell>
                         <DragHandle handleProps={handleProps} size="sm" />
+                      </TableCell>
+                      <TableCell>
+                        <ImagePreview src={e.imageUrl} alt={pickLocalized(e.title, locale)} />
                       </TableCell>
                       <TableCell className="font-medium">{e.year}</TableCell>
                       <TableCell className="max-w-sm">
@@ -177,6 +185,7 @@ export function HistoryManager({ initial }: { initial: HistoryRow[] }) {
         fields={
           viewing
             ? [
+                { label: t("common.image"), value: viewing.imageUrl, type: "image" },
                 { label: t("common.year"), value: viewing.year },
                 { label: t("common.title"), value: viewing.title, type: "localized" },
                 {
@@ -235,6 +244,8 @@ function HistoryDialog({
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { isSubmitting, errors },
   } = form;
 
@@ -271,6 +282,17 @@ function HistoryDialog({
             form={form}
             multiline
           />
+          <div className="space-y-2">
+            <Label>{t("common.image")}</Label>
+            <MediaUpload
+              value={watch("imageUrl")}
+              onChange={(url) => setValue("imageUrl", url, { shouldDirty: true })}
+              accept="image"
+              folder="history"
+              aspectRatio={16 / 9}
+              hint={t("hints.historyImage")}
+            />
+          </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               {t("cancel")}

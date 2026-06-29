@@ -44,6 +44,7 @@ import {
   HOME_HERO_ID,
   HomeHero,
   IrSubPage,
+  JobOpening,
   LeadershipMember,
   Partner,
   Product,
@@ -290,6 +291,13 @@ async function seedProducts() {
   return docs.length;
 }
 
+async function seedJobOpenings() {
+  const items = readJson<Array<Record<string, unknown>>>("job-openings.json");
+  await JobOpening.deleteMany({});
+  await JobOpening.insertMany(items);
+  return items.length;
+}
+
 const SEEDERS = {
   user: seedUser,
   siteSettings: seedSiteSettings,
@@ -312,6 +320,7 @@ const SEEDERS = {
   history: seedHistory,
   affiliatedBusinesses: seedAffiliatedBusinesses,
   credentials: seedCredentials,
+  jobOpenings: seedJobOpenings,
 } as const;
 
 type SeederName = keyof typeof SEEDERS;

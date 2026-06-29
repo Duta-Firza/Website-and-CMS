@@ -43,6 +43,11 @@ const productSchema = new Schema(
     skuCount: { type: Number, default: 0 },
     partnershipStart: { type: Number, default: null },
 
+    // Optional per-product override for the WhatsApp chat message. When empty,
+    // the public page falls back to the section-wide template on the
+    // trading-products SolutionPage. `{product}` is replaced with the name.
+    whatsappTemplate: localizedStringOptional,
+
     // Legacy single-principle fields — written by old admin form. Newer writes
     // don't touch them; getter reads them only when `principles`/`items` are
     // empty so existing docs keep rendering.

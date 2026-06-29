@@ -2,6 +2,12 @@ interface Props {
   src: string;
   poster?: string;
   className?: string;
+  /**
+   * When true the video starts playing automatically. Browsers only allow
+   * unattended playback when the video is muted, so autoplay implies a muted,
+   * looping, inline video; viewers can unmute via the native controls.
+   */
+  autoplay?: boolean;
 }
 
 /**
@@ -10,7 +16,7 @@ interface Props {
  * empty (CMS not filled in yet) renders nothing so the section gracefully
  * collapses.
  */
-export function VideoPlayer({ src, poster, className }: Props) {
+export function VideoPlayer({ src, poster, className, autoplay = false }: Props) {
   if (!src) return null;
   return (
     <div
@@ -23,7 +29,11 @@ export function VideoPlayer({ src, poster, className }: Props) {
         src={src}
         poster={poster}
         controls
-        preload="metadata"
+        autoPlay={autoplay}
+        muted={autoplay}
+        loop={autoplay}
+        playsInline={autoplay}
+        preload={autoplay ? "auto" : "metadata"}
         className="aspect-video h-auto w-full bg-black"
       />
     </div>

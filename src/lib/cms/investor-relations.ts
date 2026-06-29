@@ -1,17 +1,20 @@
 import { connectDB } from "@/lib/db";
 import {
+  IrSubPage,
   type IrSubPageSlug,
   type IrSubPageStatus,
-  IrSubPage,
   Publication,
   type PublicationCategory,
   Report,
   type ReportType,
-  SITE_SETTINGS_ID,
   type SectionMode,
+  SITE_SETTINGS_ID,
   SiteSettings,
 } from "@/models";
+import type { FormField, FormSettings } from "./form-fields";
 import { type Locale, localize } from "./localize";
+import { DEFAULT_REPORT_DOWNLOAD_FORM_SETTINGS } from "./report-download-form";
+import type { LocalizedFormField, LocalizedFormSettings } from "./solutions";
 
 // ─── IrSubPage meta ──────────────────────────────────────────────────────────
 
@@ -136,7 +139,10 @@ export async function getPublications(
   return { items, total, totalPages };
 }
 
-export async function getPublication(slug: string, locale: Locale): Promise<PublicationData | null> {
+export async function getPublication(
+  slug: string,
+  locale: Locale,
+): Promise<PublicationData | null> {
   await connectDB();
   const d = await Publication.findOne({ slug, isPublished: true }).lean();
   if (!d) return null;
@@ -174,6 +180,7 @@ export interface ReportData {
   year: number;
   description: string;
   fileUrl: string;
+  thumbnailUrl: string;
   publishedAt: Date;
   isPublished: boolean;
   order: number;
@@ -225,6 +232,7 @@ export async function getReports(
       year: d.year,
       description: loc.description,
       fileUrl: d.fileUrl,
+      thumbnailUrl: d.thumbnailUrl ?? "",
       publishedAt: d.publishedAt,
       isPublished: d.isPublished ?? true,
       order: d.order ?? 0,
@@ -232,6 +240,55 @@ export async function getReports(
   });
 
   return { items, total, totalPages };
+}
+
+// ─── Report Download Gate form settings ───────────────────────────────────────
+
+function pickLoc(field: { id?: string; en?: string } | undefined, locale: Locale): string {
+  if (!field) return "";
+  const primary = locale === "en" ? field.en : field.id;
+  if (primary?.trim()) return primary;
+  const fallback = locale === "en" ? field.id : field.en;
+  return fallback ?? "";
+}
+
+/** Localized report download/view gate form config for the public reports page. */
+export async function getReportDownloadFormSettings(
+  locale: Locale,
+): Promise<LocalizedFormSettings> {
+  await connectDB();
+  const doc = await IrSubPage.findById("reports")
+    .select("formSettings")
+    .lean<{ formSettings?: Partial<FormSettings> } | null>();
+  const raw = doc?.formSettings ?? {};
+  const rawFields =
+    Array.isArray(raw.fields) && raw.fields.length > 0
+      ? (raw.fields as FormField[])
+      : DEFAULT_REPORT_DOWNLOAD_FORM_SETTINGS.fields;
+  const fields: LocalizedFormField[] = [...rawFields]
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .map((f) => ({
+      key: f.key,
+      label: pickLoc(f.label, locale),
+      placeholder: pickLoc(f.placeholder, locale),
+      type: f.type ?? "text",
+      required: Boolean(f.required),
+      order: f.order ?? 0,
+      options: (f.options ?? []).map((o) => ({
+        value: o.value,
+        label: pickLoc(o.label, locale),
+      })),
+    }));
+  return {
+    enabled: raw.enabled ?? DEFAULT_REPORT_DOWNLOAD_FORM_SETTINGS.enabled,
+    submitLabel:
+      pickLoc(raw.submitLabel, locale) ||
+      pickLoc(DEFAULT_REPORT_DOWNLOAD_FORM_SETTINGS.submitLabel, locale),
+    successMessage:
+      pickLoc(raw.successMessage, locale) ||
+      pickLoc(DEFAULT_REPORT_DOWNLOAD_FORM_SETTINGS.successMessage, locale),
+    fields,
+  };
 }
 
 // ─── Company Profile URL ──────────────────────────────────────────────────────

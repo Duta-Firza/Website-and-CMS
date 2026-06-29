@@ -10,12 +10,18 @@ import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { Logo } from "@/components/layout/logo";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
-import { type AdminNavGroup, type AdminNavItem, buildAdminNav } from "./admin-nav-data";
+import {
+  type AdminNavGroup,
+  type AdminNavItem,
+  type AdminNavSection,
+  buildAdminNav,
+} from "./admin-nav-data";
 import { SIDEBAR_COLLAPSED_COOKIE, SIDEBAR_OPEN_GROUPS_COOKIE } from "./admin-sidebar-cookies";
 
 interface Props {
   initialCollapsed: boolean;
   initialOpenGroup: string | null;
+  initialUnreadCount: number;
   user: { name: string; email: string; role?: string } | null;
 }
 
@@ -31,7 +37,12 @@ function splitHref(href: string): { path: string; params: URLSearchParams | null
   return { path, params: query ? new URLSearchParams(query) : null };
 }
 
-export function AdminSidebarShell({ initialCollapsed, initialOpenGroup, user }: Props) {
+export function AdminSidebarShell({
+  initialCollapsed,
+  initialOpenGroup,
+  initialUnreadCount,
+  user,
+}: Props) {
   const locale = useLocale();
   const t = useTranslations("AdminNav");
   const pathname = usePathname() ?? "";
@@ -53,14 +64,32 @@ export function AdminSidebarShell({ initialCollapsed, initialOpenGroup, user }: 
   }, [pathname, searchParams]);
 
   const activeGroupKey = useMemo(() => {
-    for (const g of nav.groups) {
-      if (g.items.some((it) => isActive(it.href))) return g.key;
+    for (const section of nav.sections) {
+      for (const g of section.groups) {
+        if (g.items.some((it) => isActive(it.href))) return g.key;
+      }
     }
     return null;
   }, [nav, isActive]);
 
   const [collapsed, setCollapsed] = useState(initialCollapsed);
   const [openGroup, setOpenGroup] = useState<string | null>(initialOpenGroup ?? activeGroupKey);
+
+  // Live unread-inquiries count via SSE. Seeded from the server-rendered value
+  // so the badge is correct on first paint; EventSource auto-reconnects on drop.
+  const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
+  useEffect(() => {
+    const es = new EventSource("/api/admin/inquiries/unread-stream");
+    es.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data) as { count?: number };
+        if (typeof data.count === "number") setUnreadCount(data.count);
+      } catch {
+        // ignore malformed frame
+      }
+    };
+    return () => es.close();
+  }, []);
 
   useEffect(() => {
     if (!activeGroupKey) return;
@@ -126,25 +155,24 @@ export function AdminSidebarShell({ initialCollapsed, initialOpenGroup, user }: 
       </div>
 
       <nav className={cn("flex-1 overflow-y-auto py-3", collapsed ? "px-2" : "px-3")}>
-        <ItemLink
-          item={nav.top}
-          collapsed={collapsed}
-          active={isActive(nav.top.href)}
-          label={t(nav.top.labelKey)}
-        />
-
         {collapsed ? (
-          <CompactItemList nav={nav} t={t} isActive={isActive} />
+          <CompactSectionList
+            sections={nav.sections}
+            t={t}
+            isActive={isActive}
+            unreadCount={unreadCount}
+          />
         ) : (
-          <div className="mt-2 space-y-1">
-            {nav.groups.map((group) => (
-              <GroupSection
-                key={group.key}
-                group={group}
-                open={openGroup === group.key}
-                onToggle={() => toggleGroup(group.key)}
+          <div className="space-y-4">
+            {nav.sections.map((section) => (
+              <SectionBlock
+                key={section.key}
+                section={section}
+                openGroup={openGroup}
+                onToggleGroup={toggleGroup}
                 t={t}
                 isActive={isActive}
+                unreadCount={unreadCount}
               />
             ))}
           </div>
@@ -176,16 +204,75 @@ export function AdminSidebarShell({ initialCollapsed, initialOpenGroup, user }: 
   );
 }
 
+function unreadFor(item: AdminNavItem, unreadCount: number): number {
+  return item.badge === "unreadInquiries" ? unreadCount : 0;
+}
+
+function SectionBlock({
+  section,
+  openGroup,
+  onToggleGroup,
+  t,
+  isActive,
+  unreadCount,
+}: {
+  section: AdminNavSection;
+  openGroup: string | null;
+  onToggleGroup: (key: string) => void;
+  t: (key: string) => string;
+  isActive: (href: string) => boolean;
+  unreadCount: number;
+}) {
+  // A section with a single group renders that group's items flat under the
+  // section header (so "Inbox" isn't repeated as both a section and a group);
+  // multi-group sections keep the collapsible group headers.
+  const singleGroup = section.groups.length === 1 ? section.groups[0] : null;
+  return (
+    <div className="space-y-1">
+      <p className="px-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/60">
+        {t(section.titleKey)}
+      </p>
+      {singleGroup ? (
+        <div className="space-y-0.5">
+          {singleGroup.items.map((item) => (
+            <ItemLink
+              key={item.labelKey}
+              item={item}
+              collapsed={false}
+              active={isActive(item.href)}
+              label={t(item.labelKey)}
+              badgeCount={unreadFor(item, unreadCount)}
+            />
+          ))}
+        </div>
+      ) : (
+        section.groups.map((group) => (
+          <GroupSection
+            key={group.key}
+            group={group}
+            open={openGroup === group.key}
+            onToggle={() => onToggleGroup(group.key)}
+            t={t}
+            isActive={isActive}
+          />
+        ))
+      )}
+    </div>
+  );
+}
+
 function ItemLink({
   item,
   collapsed,
   active,
   label,
+  badgeCount = 0,
 }: {
   item: AdminNavItem;
   collapsed: boolean;
   active: boolean;
   label: string;
+  badgeCount?: number;
 }) {
   const Icon = item.icon;
   const tNav = useTranslations("AdminNav");
@@ -211,6 +298,7 @@ function ItemLink({
       </span>
     );
   }
+  const showBadge = badgeCount > 0;
   return (
     <Link
       href={item.href}
@@ -219,13 +307,23 @@ function ItemLink({
         "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium transition-colors",
         collapsed && "justify-center",
         active
-          ? "bg-brand-accent/8 pl-[6px] text-brand-accent"
+          ? "bg-brand-accent/8 pl-1.5 text-brand-accent"
           : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
         collapsed && active && "border-l-0 pl-2",
       )}
     >
-      <Icon className="h-4 w-4 shrink-0" />
+      <span className="relative shrink-0">
+        <Icon className="h-4 w-4" />
+        {collapsed && showBadge && (
+          <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-brand-accent ring-2 ring-card" />
+        )}
+      </span>
       {!collapsed && <span className="flex-1 truncate">{label}</span>}
+      {!collapsed && showBadge && (
+        <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-accent px-1 text-[10px] font-semibold leading-none text-white">
+          {badgeCount > 99 ? "99+" : badgeCount}
+        </span>
+      )}
     </Link>
   );
 }
@@ -309,31 +407,36 @@ function GroupSection({
   );
 }
 
-function CompactItemList({
-  nav,
+function CompactSectionList({
+  sections,
   t,
   isActive,
+  unreadCount,
 }: {
-  nav: ReturnType<typeof buildAdminNav>;
+  sections: AdminNavSection[];
   t: (key: string) => string;
   isActive: (href: string) => boolean;
+  unreadCount: number;
 }) {
   return (
     <div className="mt-2 space-y-2">
-      {nav.groups.map((group) => (
+      {sections.map((section) => (
         <div
-          key={group.key}
+          key={section.key}
           className="space-y-0.5 border-t border-border/50 pt-2 first:border-t-0 first:pt-0"
         >
-          {group.items.map((item) => (
-            <ItemLink
-              key={item.labelKey}
-              item={item}
-              collapsed={true}
-              active={isActive(item.href)}
-              label={t(item.labelKey)}
-            />
-          ))}
+          {section.groups
+            .flatMap((g) => g.items)
+            .map((item) => (
+              <ItemLink
+                key={item.labelKey}
+                item={item}
+                collapsed={true}
+                active={isActive(item.href)}
+                label={t(item.labelKey)}
+                badgeCount={unreadFor(item, unreadCount)}
+              />
+            ))}
         </div>
       ))}
     </div>

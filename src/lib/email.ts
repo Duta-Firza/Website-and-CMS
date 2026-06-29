@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import type { InquirySource } from "@/models/constants";
 import { env } from "./env";
 
 let _client: Resend | null = null;
@@ -15,7 +16,7 @@ interface InquiryPayload {
   phone?: string;
   subject?: string;
   message: string;
-  source: "trading" | "manufacturing" | "epc" | "contact";
+  source: InquirySource;
 }
 
 export async function sendInquiryEmail(payload: InquiryPayload) {

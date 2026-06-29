@@ -32,6 +32,19 @@ export interface SolutionPageData {
   };
   inquiryFormEnabled: boolean;
   comingSoonMessage: string;
+  /** Optional external website link rendered as a CTA (used by the technology page). */
+  websiteLink: {
+    enabled: boolean;
+    url: string;
+    title: string;
+    description: string;
+    ctaLabel: string;
+  };
+  /** WhatsApp chat config (used by the trading-products page). */
+  whatsapp: {
+    number: string;
+    template: string;
+  };
 }
 
 function emptyPage(slug: SolutionPageSlug): SolutionPageData {
@@ -44,6 +57,8 @@ function emptyPage(slug: SolutionPageSlug): SolutionPageData {
     body: { heading: "", content: "" },
     inquiryFormEnabled: true,
     comingSoonMessage: "",
+    websiteLink: { enabled: false, url: "", title: "", description: "", ctaLabel: "" },
+    whatsapp: { number: "", template: "" },
   };
 }
 
@@ -61,6 +76,15 @@ export async function getSolutionPage(
     body?: { heading?: unknown; content?: unknown };
     inquiryFormEnabled?: boolean;
     comingSoonMessage?: unknown;
+    websiteLink?: {
+      enabled?: boolean;
+      url?: string;
+      title?: unknown;
+      description?: unknown;
+      ctaLabel?: unknown;
+    };
+    whatsappNumber?: string;
+    whatsappTemplate?: unknown;
   } | null>();
   if (!doc) return emptyPage(slug);
   const localized = localize(
@@ -75,12 +99,20 @@ export async function getSolutionPage(
         content: doc.body?.content ?? EMPTY_LOCALIZED,
       },
       comingSoonMessage: doc.comingSoonMessage ?? EMPTY_LOCALIZED,
+      websiteLink: {
+        title: doc.websiteLink?.title ?? EMPTY_LOCALIZED,
+        description: doc.websiteLink?.description ?? EMPTY_LOCALIZED,
+        ctaLabel: doc.websiteLink?.ctaLabel ?? EMPTY_LOCALIZED,
+      },
+      whatsappTemplate: doc.whatsappTemplate ?? EMPTY_LOCALIZED,
     },
     locale,
   ) as unknown as {
     hero: { eyebrow: string; title: string; subtitle: string };
     body: { heading: string; content: string };
     comingSoonMessage: string;
+    websiteLink: { title: string; description: string; ctaLabel: string };
+    whatsappTemplate: string;
   };
   return {
     slug,
@@ -94,6 +126,17 @@ export async function getSolutionPage(
     body: localized.body,
     inquiryFormEnabled: doc.inquiryFormEnabled ?? true,
     comingSoonMessage: localized.comingSoonMessage,
+    websiteLink: {
+      enabled: doc.websiteLink?.enabled ?? false,
+      url: doc.websiteLink?.url ?? "",
+      title: localized.websiteLink.title,
+      description: localized.websiteLink.description,
+      ctaLabel: localized.websiteLink.ctaLabel,
+    },
+    whatsapp: {
+      number: doc.whatsappNumber ?? "",
+      template: localized.whatsappTemplate,
+    },
   };
 }
 
@@ -200,6 +243,8 @@ export interface ProductData {
   productType: string;
   skuCount: number;
   partnershipStart: number | null;
+  /** Per-product WhatsApp message override; empty = use section template. */
+  whatsappTemplate: string;
   items: ProductItemData[];
   order: number;
   isActive: boolean;
@@ -219,6 +264,7 @@ interface RawProductDoc {
   productType?: unknown;
   skuCount?: number;
   partnershipStart?: number | null;
+  whatsappTemplate?: unknown;
   order?: number;
   isActive?: boolean;
 }
@@ -304,6 +350,7 @@ function mapProductDoc(d: RawProductDoc, partners: PartnerLookup, locale: Locale
       productType: d.productType ?? EMPTY_LOCALIZED,
       skuCount: d.skuCount ?? 0,
       partnershipStart: d.partnershipStart ?? null,
+      whatsappTemplate: d.whatsappTemplate ?? EMPTY_LOCALIZED,
       items: rawItems,
       order: d.order ?? 0,
       isActive: d.isActive ?? true,

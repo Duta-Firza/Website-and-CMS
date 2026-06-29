@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { AdminListToolbar } from "@/components/admin/admin-list-toolbar";
 import { DetailDialog } from "@/components/admin/detail-dialog";
 import { ImagePreview } from "@/components/admin/image-preview";
 import { LocalizedField } from "@/components/admin/localized-field";
@@ -15,6 +16,8 @@ import { pickLocalized } from "@/components/admin/localized-text";
 import { MediaUpload } from "@/components/admin/media-upload";
 import { DragHandle, SortableContainer, SortableItem } from "@/components/admin/sortable-list";
 import { StatusToggle } from "@/components/admin/status-toggle";
+import { TablePagination } from "@/components/admin/table-pagination";
+import { useAdminListParams } from "@/components/admin/use-admin-list-params";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -117,28 +120,48 @@ const empty: FormValues = {
   isPublished: true,
 };
 
-export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
+interface ProjectsManagerProps {
+  items: ProjectRow[];
+  total: number;
+  allIds: string[];
+  allSlugs: string[];
+}
+
+export function ProjectsManager({ items, total, allIds, allSlugs }: ProjectsManagerProps) {
   const router = useRouter();
   const t = useTranslations("Admin");
   const locale = useLocale();
+  const lp = useAdminListParams("manual");
   const [editing, setEditing] = useState<FormValues | null>(null);
   const [viewing, setViewing] = useState<ProjectRow | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [items, setItems] = useState(initial);
+  // Optimistic copy of the current (server-provided) page.
+  const [rows, setRows] = useState(items);
 
   useEffect(() => {
-    setItems(initial);
-  }, [initial]);
+    setRows(items);
+  }, [items]);
 
-  const handleReorder = async (newIds: string[]) => {
-    const next = newIds
-      .map((id) => items.find((p) => p.id === id))
-      .filter((p): p is ProjectRow => !!p);
-    setItems(next);
-    const result = await reorderProjects(newIds);
+  const isPristine = !lp.q && lp.filter === "all" && lp.status === "all" && lp.sort === "manual";
+
+  const pageCount = Math.max(1, Math.ceil(total / lp.pageSize));
+  const currentPage = Math.min(lp.page, pageCount);
+  const pageStart = (currentPage - 1) * lp.pageSize;
+
+  // Drag is only enabled in the pristine view, where the server page is a
+  // contiguous slice of the canonical (manual) order. Splice the reordered
+  // slice back into the full id list; reorderProjects re-numbers each category
+  // from the relative order in that list.
+  const handleReorder = async (newPageIds: string[]) => {
+    const fullIds = [...allIds];
+    fullIds.splice(pageStart, rows.length, ...newPageIds);
+    setRows((prev) =>
+      newPageIds.map((id) => prev.find((p) => p.id === id)).filter((p): p is ProjectRow => !!p),
+    );
+    const result = await reorderProjects(fullIds);
     if (!result.ok) {
       toast.error(result.error);
-      setItems(initial);
+      router.refresh();
     } else {
       router.refresh();
     }
@@ -146,13 +169,44 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-xs text-muted-foreground">{t("helpers.reorderProjectsByCategory")}</p>
-        <Button onClick={() => setEditing({ ...empty, order: items.length + 1 })}>
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="min-w-48 flex-1">
+          <AdminListToolbar
+            params={lp}
+            searchPlaceholder={t("common.searchProjects")}
+            sortLabel={t("common.sortBy")}
+            sortOptions={[
+              { value: "manual", label: t("sort.manual") },
+              { value: "titleAsc", label: t("sort.titleAsc") },
+              { value: "titleDesc", label: t("sort.titleDesc") },
+              { value: "yearNewest", label: t("sort.yearNewest") },
+              { value: "yearOldest", label: t("sort.yearOldest") },
+            ]}
+            filterLabel={t("common.category")}
+            filterOptions={[
+              { value: "all", label: t("common.allCategories") },
+              ...PROJECT_CATEGORIES.map((c) => ({
+                value: c,
+                label: c.charAt(0).toUpperCase() + c.slice(1),
+              })),
+            ]}
+            statusLabel={t("common.status")}
+            statusOptions={[
+              { value: "all", label: t("common.allStatuses") },
+              { value: "published", label: t("common.published") },
+              { value: "unpublished", label: t("common.unpublished") },
+            ]}
+          />
+        </div>
+        <Button onClick={() => setEditing({ ...empty, order: total + 1 })}>
           <Plus className="mr-2 h-4 w-4" />
           {t("add")}
         </Button>
       </div>
+
+      <p className="mt-2 text-xs text-muted-foreground">
+        {isPristine ? t("helpers.reorderProjectsByCategory") : t("common.reorderHint")}
+      </p>
 
       <div className="mt-4 overflow-x-auto rounded-lg border bg-card">
         <Table>
@@ -169,21 +223,21 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
               <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
-          <SortableContainer items={items.map((p) => p.id)} onReorder={handleReorder}>
+          <SortableContainer items={rows.map((p) => p.id)} onReorder={handleReorder}>
             <TableBody>
-              {items.length === 0 && (
+              {rows.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={9} className="text-center text-sm text-muted-foreground">
-                    {t("empty.projects")}
+                    {isPristine ? t("empty.projects") : t("common.noResults")}
                   </TableCell>
                 </TableRow>
               )}
-              {items.map((p) => (
+              {rows.map((p) => (
                 <SortableItem key={p.id} id={p.id}>
                   {({ ref, style, handleProps }) => (
                     <TableRow ref={ref} style={style}>
                       <TableCell>
-                        <DragHandle handleProps={handleProps} size="sm" />
+                        {isPristine && <DragHandle handleProps={handleProps} size="sm" />}
                       </TableCell>
                       <TableCell>
                         <ImagePreview src={p.image} alt={pickLocalized(p.title, locale)} />
@@ -210,12 +264,12 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
                           checked={p.isHighlighted}
                           ariaLabel={t("common.featured")}
                           onToggle={async (next) => {
-                            setItems((prev) =>
+                            setRows((prev) =>
                               prev.map((x) => (x.id === p.id ? { ...x, isHighlighted: next } : x)),
                             );
                             const result = await toggleProjectHighlighted(p.id, next);
                             if (!result.ok) {
-                              setItems((prev) =>
+                              setRows((prev) =>
                                 prev.map((x) =>
                                   x.id === p.id ? { ...x, isHighlighted: !next } : x,
                                 ),
@@ -231,12 +285,12 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
                           checked={p.isPublished}
                           ariaLabel={t("common.live")}
                           onToggle={async (next) => {
-                            setItems((prev) =>
+                            setRows((prev) =>
                               prev.map((x) => (x.id === p.id ? { ...x, isPublished: next } : x)),
                             );
                             const result = await toggleProjectPublished(p.id, next);
                             if (!result.ok) {
-                              setItems((prev) =>
+                              setRows((prev) =>
                                 prev.map((x) => (x.id === p.id ? { ...x, isPublished: !next } : x)),
                               );
                               throw new Error(result.error);
@@ -269,12 +323,24 @@ export function ProjectsManager({ initial }: { initial: ProjectRow[] }) {
             </TableBody>
           </SortableContainer>
         </Table>
+        {total > 0 && (
+          <TablePagination
+            page={currentPage}
+            pageCount={pageCount}
+            pageSize={lp.pageSize}
+            total={total}
+            rangeFrom={pageStart + 1}
+            rangeTo={pageStart + rows.length}
+            onPage={(p) => lp.update({ page: p <= 1 ? null : p })}
+            onPageSize={(n) => lp.update({ size: n === 10 ? null : n })}
+          />
+        )}
       </div>
 
       {editing && (
         <ProjectDialog
           initial={editing}
-          existingSlugs={items.map((p) => p.slug)}
+          existingSlugs={allSlugs}
           onClose={() => setEditing(null)}
           onSaved={() => {
             setEditing(null);

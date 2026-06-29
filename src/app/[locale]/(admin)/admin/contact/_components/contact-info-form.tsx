@@ -12,9 +12,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { updateSiteSettings } from "@/lib/cms/actions";
+import { Switch } from "@/components/ui/switch";
+import { updateContactDisplay, updateSiteSettings } from "@/lib/cms/actions";
 
 const schema = z.object({
+  // SiteSettings fields
   contactEmail: z.string().email(),
   salesEmail: z.string().email(),
   phoneNumber: z.string().min(1),
@@ -26,27 +28,69 @@ const schema = z.object({
     instagram: z.string(),
     youtube: z.string(),
   }),
+  // ContactPage display toggles (gate what shows on the public page)
+  showDepartmentContacts: z.boolean(),
+  showSocial: z.boolean(),
+  showCompanyProfile: z.boolean(),
 });
 
-type FormValues = z.infer<typeof schema>;
+export type ContactInfoFormValues = z.infer<typeof schema>;
 
-export function SettingsForm({ initial }: { initial: FormValues }) {
+function ToggleRow({
+  label,
+  hint,
+  checked,
+  onCheckedChange,
+}: {
+  label: string;
+  hint?: string;
+  checked: boolean;
+  onCheckedChange: (v: boolean) => void;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-4 py-2">
+      <div className="space-y-0.5">
+        <Label>{label}</Label>
+        {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      </div>
+      <Switch checked={checked} onCheckedChange={onCheckedChange} />
+    </div>
+  );
+}
+
+export function ContactInfoForm({ initial }: { initial: ContactInfoFormValues }) {
   const t = useTranslations("Admin");
-  const form = useForm<FormValues>({
+  const form = useForm<ContactInfoFormValues>({
     resolver: zodResolver(schema),
     defaultValues: initial,
   });
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { isSubmitting },
   } = form;
 
-  const onSubmit = async (values: FormValues) => {
-    const result = await updateSiteSettings(values);
-    if (result.ok) toast.success(t("saved"));
-    else toast.error(result.error);
+  const onSubmit = async (values: ContactInfoFormValues) => {
+    const { showDepartmentContacts, showSocial, showCompanyProfile, ...settings } = values;
+    const [settingsResult, displayResult] = await Promise.all([
+      updateSiteSettings(settings),
+      updateContactDisplay({ showDepartmentContacts, showSocial, showCompanyProfile }),
+    ]);
+    if (settingsResult.ok && displayResult.ok) {
+      toast.success(t("saved"));
+    } else {
+      const err =
+        (!settingsResult.ok && settingsResult.error) ||
+        (!displayResult.ok && displayResult.error) ||
+        "Error";
+      toast.error(err);
+    }
   };
+
+  const set = (name: keyof ContactInfoFormValues, v: boolean) =>
+    setValue(name, v as never, { shouldDirty: true });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -103,6 +147,30 @@ export function SettingsForm({ initial }: { initial: FormValues }) {
             <Label htmlFor="youtube">{t("fields.youtube")}</Label>
             <Input id="youtube" {...register("social.youtube")} />
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t("contactPage.extraSections")}</CardTitle>
+        </CardHeader>
+        <CardContent className="divide-y">
+          <ToggleRow
+            label={t("contactPage.showDepartmentContacts")}
+            hint={t("contactPage.showDepartmentContactsHint")}
+            checked={watch("showDepartmentContacts")}
+            onCheckedChange={(v) => set("showDepartmentContacts", v)}
+          />
+          <ToggleRow
+            label={t("contactPage.showSocial")}
+            checked={watch("showSocial")}
+            onCheckedChange={(v) => set("showSocial", v)}
+          />
+          <ToggleRow
+            label={t("contactPage.showCompanyProfile")}
+            checked={watch("showCompanyProfile")}
+            onCheckedChange={(v) => set("showCompanyProfile", v)}
+          />
         </CardContent>
       </Card>
 

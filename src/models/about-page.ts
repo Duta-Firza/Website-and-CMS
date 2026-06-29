@@ -25,6 +25,7 @@ const aboutPageSchema = new Schema(
     // /about (Who We Are) content
     intro: localizedStringOptional,
     videoUrl: { type: String, default: "" },
+    videoAutoplay: { type: Boolean, default: false },
     vision: localizedStringOptional,
     mission: localizedStringOptional,
     values: { type: [valueItemSchema], default: [] },

@@ -12,18 +12,24 @@ import {
   AboutPage,
   AboutSubPage,
   AffiliatedBusiness,
+  CAREER_PAGE_ID,
+  CareerPage,
+  CONTACT_PAGE_ID,
+  ContactPage,
   CREDENTIAL_TYPES,
   Credential,
   Customer,
   HistoryEntry,
   HOME_HERO_ID,
   HomeHero,
-  IR_SUB_PAGE_SLUGS,
-  IR_SUB_PAGE_STATUSES,
-  IrSubPage,
   INQUIRY_SOURCES,
   INQUIRY_STATUSES,
   Inquiry,
+  IR_SUB_PAGE_SLUGS,
+  IR_SUB_PAGE_STATUSES,
+  IrSubPage,
+  JOB_EMPLOYMENT_TYPES,
+  JobOpening,
   LEADERSHIP_TYPES,
   LeadershipMember,
   Partner,
@@ -31,19 +37,21 @@ import {
   Product,
   Project,
   Publication,
+  REPORT_DOWNLOAD_ACTIONS,
+  REPORT_THUMBNAIL_MODES,
   ReachPoint,
   Report,
+  ReportDownload,
   SECTION_MODES,
   SITE_SETTINGS_ID,
   SiteSettings,
-  SOLUTION_KEYS,
   SOLUTION_PAGE_SLUGS,
   SOLUTION_PAGE_STATUSES,
   Solution,
   SolutionPage,
   Stat,
 } from "@/models";
-import { STAT_ICONS } from "@/models/constants";
+import { PAGE_STATUSES, STAT_ICONS } from "@/models/constants";
 
 // ─── Shared ──────────────────────────────────────────────────────────────────
 const localizedSchema = z.object({
@@ -74,7 +82,8 @@ const heroSchema = z.object({
   ctaHref: z.string().min(1),
   secondaryCtaLabel: localizedSchema,
   secondaryCtaHref: z.string().default(""),
-  backgroundImage: z.string().min(1),
+  backgroundImage: z.string().default(""),
+  heroDecorations: z.boolean().default(true),
   partnersTitle: localizedSchema.default({ id: "", en: "" }),
   partnersSubtitle: localizedSchema.default({ id: "", en: "" }),
   solutionsTitle: localizedSchema.default({ id: "", en: "" }),
@@ -91,7 +100,11 @@ export async function updateHomeHero(input: z.infer<typeof heroSchema>): Promise
     await requireAdmin();
     const parsed = heroSchema.parse(input);
     await connectDB();
-    await HomeHero.findByIdAndUpdate(HOME_HERO_ID, parsed, { upsert: true, new: true });
+    await HomeHero.findByIdAndUpdate(
+      HOME_HERO_ID,
+      { $set: parsed },
+      { upsert: true, new: true, strict: false },
+    );
     bust();
     return { ok: true };
   } catch (e) {
@@ -177,12 +190,13 @@ export async function deletePartner(id: string): Promise<ActionResult> {
 // ─── Solutions ───────────────────────────────────────────────────────────────
 const solutionSchema = z.object({
   id: z.string().optional(),
-  key: z.enum(SOLUTION_KEYS),
+  key: z.string().min(1),
   title: localizedSchema,
   description: localizedSchema,
   iconName: z.string().min(1),
   href: z.string().min(1),
   order: z.number().int().default(0),
+  isActive: z.boolean().default(true),
 });
 
 export async function upsertSolution(input: z.infer<typeof solutionSchema>): Promise<ActionResult> {
@@ -190,8 +204,43 @@ export async function upsertSolution(input: z.infer<typeof solutionSchema>): Pro
     await requireAdmin();
     const { id, ...data } = solutionSchema.parse(input);
     await connectDB();
-    if (id) await Solution.findByIdAndUpdate(id, data);
-    else await Solution.findOneAndUpdate({ key: data.key }, data, { upsert: true });
+    const opts = { strict: false } as const;
+    if (id) await Solution.findByIdAndUpdate(id, { $set: data }, opts);
+    else
+      await Solution.findOneAndUpdate({ key: data.key }, { $set: data }, { ...opts, upsert: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteSolution(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Solution.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function updateSolutionsLayout(input: {
+  columnsPerRow: number;
+}): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const columnsPerRow = Math.max(1, Math.min(6, Math.round(input.columnsPerRow)));
+    await connectDB();
+    // strict: false bypasses Mongoose schema cache so the field isn't stripped
+    // if the model was compiled before solutionsColumnsPerRow was added to the schema.
+    await HomeHero.updateOne(
+      { _id: HOME_HERO_ID },
+      { $set: { solutionsColumnsPerRow: columnsPerRow } },
+      { upsert: true, strict: false },
+    );
     bust();
     return { ok: true };
   } catch (e) {
@@ -368,6 +417,7 @@ const aboutValueItemSchema = z.object({
 const aboutPageSchema = z.object({
   intro: localizedSchema,
   videoUrl: z.string().default(""),
+  videoAutoplay: z.boolean().default(false),
   vision: localizedSchema,
   mission: localizedSchema,
   values: z.array(aboutValueItemSchema).default([]),
@@ -547,6 +597,7 @@ const historyEntrySchema = z.object({
   year: z.string().min(1),
   title: z.object({ id: z.string().min(1), en: z.string().min(1) }),
   description: localizedSchema,
+  imageUrl: z.string().default(""),
   order: z.number().int().default(0),
 });
 
@@ -930,6 +981,21 @@ const solutionPageContentSchema = z.object({
     fields: [],
   }),
   comingSoonMessage: localizedSchema,
+  websiteLink: z
+    .object({
+      enabled: z.boolean().default(false),
+      url: z.string().default(""),
+      title: localizedSchema,
+      description: localizedSchema,
+      ctaLabel: localizedSchema,
+    })
+    .default({
+      enabled: false,
+      url: "",
+      title: { id: "", en: "" },
+      description: { id: "", en: "" },
+      ctaLabel: { id: "", en: "" },
+    }),
   status: z.enum(SOLUTION_PAGE_STATUSES),
 });
 
@@ -959,6 +1025,31 @@ export async function setSolutionPageStatus(slug: string, status: string): Promi
     await SolutionPage.findByIdAndUpdate(
       parsedSlug,
       { status: parsedStatus },
+      { upsert: true, new: true },
+    );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Trading Products WhatsApp config ────────────────────────────────────────
+const tradingWhatsappSchema = z.object({
+  number: z.string().default(""),
+  template: localizedSchema,
+});
+
+export async function updateTradingWhatsapp(
+  input: z.infer<typeof tradingWhatsappSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { number, template } = tradingWhatsappSchema.parse(input);
+    await connectDB();
+    await SolutionPage.findByIdAndUpdate(
+      "trading-products",
+      { whatsappNumber: number, whatsappTemplate: template },
       { upsert: true, new: true },
     );
     bust();
@@ -1020,6 +1111,7 @@ const productSchema = z.object({
   productType: localizedSchema,
   skuCount: z.number().int().nonnegative().default(0),
   partnershipStart: z.number().int().nullable().default(null),
+  whatsappTemplate: localizedSchema,
   items: z.array(productItemZod).default([]),
   order: z.number().int().default(0),
   isActive: z.boolean().default(true),
@@ -1190,6 +1282,20 @@ export async function deleteInquiry(id: string): Promise<ActionResult> {
   }
 }
 
+/** Toggle an inquiry's read/unread flag (drives the sidebar unread badge). */
+export async function setInquiryRead(id: string, read: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = z.object({ id: z.string().min(1), read: z.boolean() }).parse({ id, read });
+    await connectDB();
+    await Inquiry.findByIdAndUpdate(parsed.id, { read: parsed.read });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
 // ─── Investor Relations Sub-Pages ─────────────────────────────────────────────
 const irSubPageContentSchema = z.object({
   status: z.enum(IR_SUB_PAGE_STATUSES),
@@ -1215,7 +1321,274 @@ export async function updateIrSubPage(
     const parsedSlug = z.enum(IR_SUB_PAGE_SLUGS).parse(slug);
     const parsed = irSubPageContentSchema.parse(input);
     await connectDB();
+    // `findByIdAndUpdate` with a partial object $set-s only these fields, so the
+    // sibling `formSettings` saved by updateReportDownloadFormSettings survives.
     await IrSubPage.findByIdAndUpdate(parsedSlug, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Report Download Gate (form settings + leads) ─────────────────────────────
+/** Persist the report download/view gate form config onto the `reports` IR doc. */
+export async function updateReportDownloadFormSettings(
+  input: z.infer<typeof formSettingsSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = formSettingsSchema.parse(input);
+    await connectDB();
+    await IrSubPage.findByIdAndUpdate(
+      "reports",
+      { formSettings: parsed },
+      { upsert: true, new: true },
+    );
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+const reportLeadSchema = z.object({
+  reportId: z.string().min(1),
+  action: z.enum(REPORT_DOWNLOAD_ACTIONS),
+  values: z.record(z.string(), z.string()),
+});
+
+/** Public: record a captured lead when a visitor views/downloads a report PDF. */
+export async function submitReportLead(
+  input: z.infer<typeof reportLeadSchema>,
+): Promise<ActionResult> {
+  try {
+    const parsed = reportLeadSchema.parse(input);
+    const { splitReportDownloadPayload } = await import("./report-download-form");
+    const { system, custom } = splitReportDownloadPayload(parsed.values);
+    await connectDB();
+    const report = await Report.findById(parsed.reportId)
+      .select("title type year")
+      .lean<{ title?: { id?: string; en?: string }; type?: string; year?: number } | null>();
+    await ReportDownload.create({
+      reportId: parsed.reportId,
+      reportTitle: { id: report?.title?.id ?? "", en: report?.title?.en ?? "" },
+      reportType: report?.type,
+      reportYear: report?.year,
+      action: parsed.action,
+      fullName: (system.fullName ?? "").trim(),
+      email: (system.email ?? "").trim(),
+      phone: (system.phone ?? "").trim(),
+      company: (system.company ?? "").trim(),
+      customFieldValues: custom,
+    });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+/** Toggle a report lead's read/unread flag. */
+export async function setReportLeadRead(id: string, read: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = z.object({ id: z.string().min(1), read: z.boolean() }).parse({ id, read });
+    await connectDB();
+    await ReportDownload.findByIdAndUpdate(parsed.id, { read: parsed.read });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteReportLead(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await ReportDownload.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Contact Page (singleton) ─────────────────────────────────────────────────
+// Address / office hours / email / phone / social live on SiteSettings (shared
+// with the footer). This singleton only stores the contact-page-specific extras:
+// hero/intro copy, Google Maps embeds, per-section visibility toggles, and the
+// contact form config.
+const contactPageSchema = z.object({
+  status: z.enum(PAGE_STATUSES).default("published"),
+  heroMode: z.enum(SECTION_MODES).default("default"),
+  bodyMode: z.enum(SECTION_MODES).default("disabled"),
+  hero: z.object({ eyebrow: localizedSchema, title: localizedSchema, subtitle: localizedSchema }),
+  body: z.object({ heading: localizedSchema, content: localizedSchema }),
+  office: z.object({
+    mapEmbedUrl: z.string().default(""),
+    directionsUrl: z.string().default(""),
+  }),
+  factory: z.object({
+    mapEmbedUrl: z.string().default(""),
+    directionsUrl: z.string().default(""),
+  }),
+  showMap: z.boolean().default(true),
+  showFactory: z.boolean().default(true),
+  showOfficeHours: z.boolean().default(true),
+  showGetDirections: z.boolean().default(true),
+  formSettings: formSettingsSchema.default({
+    enabled: true,
+    submitLabel: { id: "", en: "" },
+    successMessage: { id: "", en: "" },
+    fields: [],
+  }),
+});
+
+export async function updateContactPage(
+  input: z.infer<typeof contactPageSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = contactPageSchema.parse(input);
+    await connectDB();
+    await ContactPage.findByIdAndUpdate(CONTACT_PAGE_ID, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// The "extra section" display toggles live on the same ContactPage doc but are
+// edited in the Info Kontak tab (alongside SiteSettings), so they get a focused
+// partial update to avoid clobbering the page-config fields.
+const contactDisplaySchema = z.object({
+  showSocial: z.boolean().default(true),
+  showDepartmentContacts: z.boolean().default(true),
+  showCompanyProfile: z.boolean().default(true),
+});
+
+export async function updateContactDisplay(
+  input: z.infer<typeof contactDisplaySchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = contactDisplaySchema.parse(input);
+    await connectDB();
+    await ContactPage.findByIdAndUpdate(CONTACT_PAGE_ID, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Career Page (singleton) ──────────────────────────────────────────────────
+const jobBoardSchema = z.object({
+  key: z.string().default(""),
+  label: localizedSchema,
+  url: z.string().default(""),
+  enabled: z.boolean().default(true),
+});
+
+const benefitSchema = z.object({
+  icon: z.string().default("Award"),
+  title: localizedSchema,
+  description: localizedSchema,
+});
+
+const careerPageSchema = z.object({
+  status: z.enum(PAGE_STATUSES).default("published"),
+  heroMode: z.enum(SECTION_MODES).default("default"),
+  bodyMode: z.enum(SECTION_MODES).default("disabled"),
+  hero: z.object({ eyebrow: localizedSchema, title: localizedSchema, subtitle: localizedSchema }),
+  body: z.object({ heading: localizedSchema, content: localizedSchema }),
+  showJobBoards: z.boolean().default(true),
+  jobBoards: z.array(jobBoardSchema).default([]),
+  whyJoinMode: z.enum(SECTION_MODES).default("disabled"),
+  whyJoin: z.object({ heading: localizedSchema, content: localizedSchema }),
+  showBenefits: z.boolean().default(true),
+  benefits: z.array(benefitSchema).default([]),
+  showOpenings: z.boolean().default(true),
+});
+
+export async function updateCareerPage(
+  input: z.infer<typeof careerPageSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = careerPageSchema.parse(input);
+    await connectDB();
+    await CareerPage.findByIdAndUpdate(CAREER_PAGE_ID, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Job Openings (collection) ────────────────────────────────────────────────
+const jobOpeningSchema = z.object({
+  id: z.string().optional(),
+  title: localizedSchema,
+  department: z.string().default(""),
+  location: z.string().default(""),
+  employmentType: z.enum(JOB_EMPLOYMENT_TYPES).default("fullTime"),
+  applyUrl: z.string().default(""),
+  summary: localizedSchema,
+  description: localizedSchema,
+  isPublished: z.boolean().default(false),
+  order: z.number().int().default(0),
+  postedAt: z.coerce.date(),
+});
+
+export async function upsertJobOpening(
+  input: z.infer<typeof jobOpeningSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { id, ...data } = jobOpeningSchema.parse(input);
+    await connectDB();
+    if (id) await JobOpening.findByIdAndUpdate(id, data);
+    else await JobOpening.create(data);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteJobOpening(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await JobOpening.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function reorderJobOpenings(ids: string[]): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Promise.all(ids.map((id, i) => JobOpening.findByIdAndUpdate(id, { order: i })));
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function toggleJobOpeningPublished(id: string, value: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = z.object({ id: z.string().min(1), value: z.boolean() }).parse({ id, value });
+    await connectDB();
+    await JobOpening.findByIdAndUpdate(parsed.id, { isPublished: parsed.value });
     bust();
     return { ok: true };
   } catch (e) {
@@ -1302,6 +1675,8 @@ const reportSchema = z.object({
   year: z.number().int().min(2000).max(2100),
   description: localizedSchema,
   fileUrl: z.string().min(1),
+  thumbnailMode: z.enum(REPORT_THUMBNAIL_MODES).default("default"),
+  thumbnailUrl: z.string().default(""),
   publishedAt: z.coerce.date(),
   isPublished: z.boolean().default(true),
   order: z.number().int().default(0),
@@ -1311,11 +1686,44 @@ export async function upsertReport(input: z.infer<typeof reportSchema>): Promise
   try {
     await requireAdmin();
     const { id, ...data } = reportSchema.parse(input);
+    // "default" mode never carries an image — clear any stale URL so the public
+    // page falls back to the placeholder.
+    if (data.thumbnailMode === "default") data.thumbnailUrl = "";
     await connectDB();
     if (id) await Report.findByIdAndUpdate(id, data);
     else await Report.create(data);
     bust();
     return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+/**
+ * Generate a thumbnail from the first page of a report PDF and upload it to GCS.
+ * Returns the uploaded image URL, or an error when ghostscript is unavailable.
+ */
+export async function generateReportThumbnail(
+  fileUrl: string,
+): Promise<ActionResult<{ url: string }>> {
+  try {
+    await requireAdmin();
+    const parsed = z.string().url().parse(fileUrl);
+    const res = await fetch(parsed);
+    if (!res.ok) return { ok: false, error: `Failed to fetch PDF (${res.status})` };
+    const pdfBuffer = Buffer.from(await res.arrayBuffer());
+    const { renderPdfFirstPage } = await import("@/lib/storage/pdf-thumbnail");
+    const thumb = await renderPdfFirstPage(pdfBuffer);
+    if (!thumb) {
+      return { ok: false, error: "Could not render PDF (ghostscript unavailable)" };
+    }
+    const { uploadBuffer } = await import("@/lib/storage/gcs");
+    const { url } = await uploadBuffer(thumb, {
+      folder: "reports/thumbnails",
+      mime: "image/jpeg",
+      filename: "report-thumbnail.jpg",
+    });
+    return { ok: true, data: { url } };
   } catch (e) {
     return { ok: false, error: errorMessage(e) };
   }

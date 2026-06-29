@@ -5,7 +5,7 @@ import { SectionLayout } from "@/components/public/section/section-layout";
 
 export default async function ContactLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
-  const section = buildNav(locale).find((n) => n.labelKey === "contact");
+  const section = buildNav(locale).find((n) => n.labelKey === "connect");
   if (!section) notFound();
   return <SectionLayout section={section}>{children}</SectionLayout>;
 }

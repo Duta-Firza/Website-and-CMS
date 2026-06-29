@@ -5,9 +5,13 @@ import { Loader2 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { type UseFormReturn, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import {
+  FormBuilderSection,
+  type FormBuilderValues,
+} from "@/components/admin/form-builder-section";
 import { LocalizedField, LocalizedFieldStatic } from "@/components/admin/localized-field";
 import { SectionModeToggle } from "@/components/admin/section-mode-toggle";
 import { StickyFormBar } from "@/components/admin/sticky-form-bar";
@@ -22,16 +26,21 @@ import {
   type SolutionPageSlug,
   type SolutionPageStatus,
 } from "@/models/constants";
-import { FormBuilderSection } from "./form-builder-section";
 import { StatusGroup } from "./status-group";
+import { WebsiteLinkSection } from "./website-link-section";
 
 type LocalizedStr = { id: string; en: string };
 const empty: LocalizedStr = { id: "", en: "" };
 
-const HERO_DEFAULTS: Partial<Record<SolutionPageSlug, { eyebrow: LocalizedStr; title: LocalizedStr; subtitle: LocalizedStr }>> = {
+const HERO_DEFAULTS: Partial<
+  Record<SolutionPageSlug, { eyebrow: LocalizedStr; title: LocalizedStr; subtitle: LocalizedStr }>
+> = {
   solutions: {
     eyebrow: { id: "Solusi", en: "Solutions" },
-    title: { id: "Solusi terintegrasi di rantai nilai energi", en: "Integrated solutions across the energy value chain" },
+    title: {
+      id: "Solusi terintegrasi di rantai nilai energi",
+      en: "Integrated solutions across the energy value chain",
+    },
     subtitle: empty,
   },
   trading: {
@@ -42,12 +51,18 @@ const HERO_DEFAULTS: Partial<Record<SolutionPageSlug, { eyebrow: LocalizedStr; t
   "trading-partners": {
     eyebrow: { id: "Trading", en: "Trading" },
     title: { id: "Partner Kami", en: "Our Partners" },
-    subtitle: { id: "Produsen kelas dunia yang kami wakili di Indonesia.", en: "World-class manufacturers we represent across Indonesia." },
+    subtitle: {
+      id: "Produsen kelas dunia yang kami wakili di Indonesia.",
+      en: "World-class manufacturers we represent across Indonesia.",
+    },
   },
   "trading-products": {
     eyebrow: { id: "Trading", en: "Trading" },
     title: { id: "Produk Kami", en: "Our Products" },
-    subtitle: { id: "Pilihan produk instrumentasi dan kontrol yang kami suplai.", en: "Selected instrumentation and control products we supply." },
+    subtitle: {
+      id: "Pilihan produk instrumentasi dan kontrol yang kami suplai.",
+      en: "Selected instrumentation and control products we supply.",
+    },
   },
   manufacturing: {
     eyebrow: { id: "Solusi", en: "Solutions" },
@@ -57,7 +72,15 @@ const HERO_DEFAULTS: Partial<Record<SolutionPageSlug, { eyebrow: LocalizedStr; t
   epc: {
     eyebrow: { id: "Solusi", en: "Solutions" },
     title: { id: "EPC & Proyek", en: "EPC & Projects" },
-    subtitle: { id: "Proyek terpilih di sektor minyak, gas, dan energi.", en: "Selected projects across the oil, gas, and energy sectors." },
+    subtitle: {
+      id: "Proyek terpilih di sektor minyak, gas, dan energi.",
+      en: "Selected projects across the oil, gas, and energy sectors.",
+    },
+  },
+  technology: {
+    eyebrow: { id: "Solusi", en: "Solutions" },
+    title: { id: "Teknologi", en: "Technology" },
+    subtitle: empty,
   },
 };
 
@@ -109,6 +132,13 @@ const schema = z.object({
   inquiryFormEnabled: z.boolean(),
   formSettings: formSettingsZod,
   comingSoonMessage: localized,
+  websiteLink: z.object({
+    enabled: z.boolean(),
+    url: z.string(),
+    title: localized,
+    description: localized,
+    ctaLabel: localized,
+  }),
 });
 
 export type SolutionPageFormValues = z.infer<typeof schema>;
@@ -122,13 +152,15 @@ export interface AdditionalTab {
 }
 
 const FORM_TABS_BASE = ["content"] as const;
-type FormTabValue = (typeof FORM_TABS_BASE)[number] | "form";
+type FormTabValue = (typeof FORM_TABS_BASE)[number] | "form" | "website";
 
 interface Props {
   slug: SolutionPageSlug;
   initial: SolutionPageFormValues;
   /** Some pages (partners, products, epc) don't have an inquiry form — hide the tab. */
   showInquiryToggle?: boolean;
+  /** Opt-in external website CTA editor (used by the technology page). */
+  showWebsiteTab?: boolean;
   /** Extra tabs appended to the right of the form-field tabs. Their content is
    * rendered outside the page-form `<form>` so each manager can host its own
    * nested dialog/form without invalid HTML. */
@@ -139,6 +171,7 @@ export function SolutionPageForm({
   slug,
   initial,
   showInquiryToggle = false,
+  showWebsiteTab = false,
   additionalTabs = [],
 }: Props) {
   const t = useTranslations("Admin");
@@ -147,8 +180,12 @@ export function SolutionPageForm({
   const searchParams = useSearchParams();
 
   const formTabs = useMemo<FormTabValue[]>(
-    () => (showInquiryToggle ? [...FORM_TABS_BASE, "form"] : [...FORM_TABS_BASE]),
-    [showInquiryToggle],
+    () => [
+      ...FORM_TABS_BASE,
+      ...(showInquiryToggle ? (["form"] as const) : []),
+      ...(showWebsiteTab ? (["website"] as const) : []),
+    ],
+    [showInquiryToggle, showWebsiteTab],
   );
   const allowedTabs = useMemo(
     () => [...formTabs, ...additionalTabs.map((a) => a.value)],
@@ -203,6 +240,7 @@ export function SolutionPageForm({
       >
         <TabsTrigger value="content">{t("tabs.content")}</TabsTrigger>
         {showInquiryToggle && <TabsTrigger value="form">{t("groups.formSettings")}</TabsTrigger>}
+        {showWebsiteTab && <TabsTrigger value="website">{t("groups.websiteLink")}</TabsTrigger>}
         {additionalTabs.map((extra) => (
           <TabsTrigger key={extra.value} value={extra.value}>
             {extra.label}
@@ -319,7 +357,16 @@ export function SolutionPageForm({
 
         {showInquiryToggle && (
           <TabsContent value="form" className="mt-6">
-            <FormBuilderSection form={form} />
+            <FormBuilderSection
+              form={form as unknown as UseFormReturn<FormBuilderValues>}
+              mirrorLegacyEnabled
+            />
+          </TabsContent>
+        )}
+
+        {showWebsiteTab && (
+          <TabsContent value="website" className="mt-6">
+            <WebsiteLinkSection form={form} />
           </TabsContent>
         )}
 

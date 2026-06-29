@@ -2,7 +2,7 @@
 
 import { GripVertical, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { type UseFormReturn, useFieldArray } from "react-hook-form";
+import { type FieldValues, type UseFormReturn, useFieldArray } from "react-hook-form";
 import { LocalizedField } from "@/components/admin/localized-field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,17 +16,44 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { FORM_FIELD_TYPES, type FormFieldType, isSystemKey } from "@/lib/cms/form-fields";
-import type { SolutionPageFormValues } from "./solution-page-form";
+import {
+  FORM_FIELD_TYPES,
+  type FormFieldType,
+  type FormSettings,
+  SYSTEM_FIELD_KEYS,
+} from "@/lib/cms/form-fields";
 
-interface Props {
-  form: UseFormReturn<SolutionPageFormValues>;
+/**
+ * Minimal form shape the builder needs. Both the Solutions page form and the
+ * Investor-Relations report-download form satisfy this structurally, so they
+ * cast their `UseFormReturn` to this type when passing `form` in.
+ */
+export interface FormBuilderValues extends FieldValues {
+  formSettings: FormSettings;
+  /** Legacy mirror flag (Solutions trading pages only). */
+  inquiryFormEnabled?: boolean;
 }
 
-export function FormBuilderSection({ form }: Props) {
+interface Props {
+  form: UseFormReturn<FormBuilderValues>;
+  /** Field keys treated as locked "system" fields (not deletable/retypable). */
+  systemKeys?: readonly string[];
+  /** Mirror the enabled toggle into the legacy `inquiryFormEnabled` flag. */
+  mirrorLegacyEnabled?: boolean;
+  /** Override the enabled-toggle label (defaults to the inquiry-form copy). */
+  enabledLabel?: string;
+}
+
+export function FormBuilderSection({
+  form,
+  systemKeys = SYSTEM_FIELD_KEYS,
+  mirrorLegacyEnabled = false,
+  enabledLabel,
+}: Props) {
   const t = useTranslations("Admin");
   const { register, watch, setValue, control } = form;
   const enabled = watch("formSettings.enabled");
+  const isSystem = (key: string) => (systemKeys as readonly string[]).includes(key);
 
   const {
     fields: rows,
@@ -61,10 +88,12 @@ export function FormBuilderSection({ form }: Props) {
               checked={enabled}
               onCheckedChange={(v) => {
                 setValue("formSettings.enabled", v, { shouldDirty: true });
-                setValue("inquiryFormEnabled", v, { shouldDirty: true });
+                if (mirrorLegacyEnabled) {
+                  setValue("inquiryFormEnabled", v, { shouldDirty: true });
+                }
               }}
             />
-            <Label htmlFor="fs-enabled">{t("fields.inquiryFormEnabled")}</Label>
+            <Label htmlFor="fs-enabled">{enabledLabel ?? t("fields.inquiryFormEnabled")}</Label>
           </div>
           <LocalizedField
             label={t("formBuilder.submitLabel")}
@@ -99,7 +128,7 @@ export function FormBuilderSection({ form }: Props) {
           {rows.map((row, index) => {
             const fieldKey = watch(`formSettings.fields.${index}.key`);
             const fieldType = watch(`formSettings.fields.${index}.type`) as FormFieldType;
-            const isSystem = isSystemKey(fieldKey);
+            const system = isSystem(fieldKey);
             return (
               <div key={row.id} className="space-y-3 rounded-md border bg-card p-3">
                 <div className="flex items-start gap-2">
@@ -118,7 +147,7 @@ export function FormBuilderSection({ form }: Props) {
                     <div className="space-y-1.5">
                       <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
                         {t("formBuilder.key")}
-                        {isSystem && (
+                        {system && (
                           <span className="ml-1 text-[9px] font-normal normal-case text-brand-accent">
                             ({t("formBuilder.system")})
                           </span>
@@ -126,7 +155,7 @@ export function FormBuilderSection({ form }: Props) {
                       </Label>
                       <Input
                         {...register(`formSettings.fields.${index}.key`)}
-                        readOnly={isSystem}
+                        readOnly={system}
                         className="font-mono text-xs"
                       />
                     </div>
@@ -141,7 +170,7 @@ export function FormBuilderSection({ form }: Props) {
                             shouldDirty: true,
                           })
                         }
-                        disabled={isSystem}
+                        disabled={system}
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -170,7 +199,7 @@ export function FormBuilderSection({ form }: Props) {
                       </Label>
                     </div>
                   </div>
-                  {!isSystem && (
+                  {!system && (
                     <Button
                       type="button"
                       variant="ghost"
@@ -205,7 +234,7 @@ function OptionsEditor({
   form,
   fieldIndex,
 }: {
-  form: UseFormReturn<SolutionPageFormValues>;
+  form: UseFormReturn<FormBuilderValues>;
   fieldIndex: number;
 }) {
   const t = useTranslations("Admin");

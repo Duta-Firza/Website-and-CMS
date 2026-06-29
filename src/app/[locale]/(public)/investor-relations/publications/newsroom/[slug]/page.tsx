@@ -2,7 +2,7 @@ import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { buttonVariants } from "@/components/ui/button";
 import { getPublication } from "@/lib/cms/investor-relations";
@@ -24,10 +24,10 @@ export default async function NewsroomArticlePage({ params }: { params: Promise<
     getPublication(slug, safeLocale),
   ]);
 
-  if (!article) notFound();
+  if (article?.category !== "newsroom") notFound();
 
   return (
-    <article className="mx-auto max-w-3xl">
+    <article className="w-full">
       <ScrollReveal className="mb-8">
         <Link
           href={`/${locale}/investor-relations/publications/newsroom`}
@@ -46,7 +46,7 @@ export default async function NewsroomArticlePage({ params }: { params: Promise<
               fill
               className="object-cover"
               priority
-              sizes="(min-width: 768px) 768px, 100vw"
+              sizes="(min-width: 768px) 80vw, 100vw"
             />
           </div>
         </ScrollReveal>
@@ -55,10 +55,11 @@ export default async function NewsroomArticlePage({ params }: { params: Promise<
       <ScrollReveal className="mb-8">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {tIR("publishedDate")} ·{" "}
-          {new Date(article.publishedAt).toLocaleDateString(
-            locale === "id" ? "id-ID" : "en-US",
-            { year: "numeric", month: "long", day: "numeric" },
-          )}
+          {new Date(article.publishedAt).toLocaleDateString(locale === "id" ? "id-ID" : "en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
         </p>
         <h1 className="text-2xl font-semibold leading-snug tracking-tight text-brand-deep dark:text-foreground md:text-3xl">
           {article.title}
@@ -72,6 +73,7 @@ export default async function NewsroomArticlePage({ params }: { params: Promise<
         <ScrollReveal>
           <div
             className="prose prose-sm dark:prose-invert max-w-none"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: CMS rich-text body is admin-authored
             dangerouslySetInnerHTML={{ __html: article.body }}
           />
         </ScrollReveal>
