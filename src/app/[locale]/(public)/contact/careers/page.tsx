@@ -6,6 +6,12 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { ComingSoonPage } from "@/components/public/coming-soon-page";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { getCareerPage, getPublishedJobOpenings } from "@/lib/cms/careers";
@@ -161,43 +167,60 @@ export default async function CareersPublicPage() {
           ) : (
             <div className="space-y-3">
               {openings.map((job) => (
-                <div
-                  key={job.id}
-                  className="flex flex-col gap-3 rounded-xl border bg-card p-5 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="min-w-0 space-y-1.5">
-                    <h3 className="font-semibold text-brand-deep dark:text-foreground">
-                      {job.title}
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                      <Badge variant="secondary">{t(`empType.${job.employmentType}`)}</Badge>
-                      {job.department && (
-                        <span className="inline-flex items-center gap-1">
-                          <Briefcase className="h-3 w-3" />
-                          {job.department}
-                        </span>
-                      )}
-                      {job.location && (
-                        <span className="inline-flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
-                          {job.location}
-                        </span>
+                <div key={job.id} className="rounded-xl border bg-card p-5">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0 space-y-1.5">
+                      <h3 className="font-semibold text-brand-deep dark:text-foreground">
+                        {job.title}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <Badge variant="secondary">{t(`empType.${job.employmentType}`)}</Badge>
+                        {job.department && (
+                          <span className="inline-flex items-center gap-1">
+                            <Briefcase className="h-3 w-3" />
+                            {job.department}
+                          </span>
+                        )}
+                        {job.location && (
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin className="h-3 w-3" />
+                            {job.location}
+                          </span>
+                        )}
+                      </div>
+                      {job.summary && (
+                        <p className="text-sm leading-relaxed text-muted-foreground">
+                          {job.summary}
+                        </p>
                       )}
                     </div>
-                    {job.summary && (
-                      <p className="text-sm leading-relaxed text-muted-foreground">{job.summary}</p>
+                    {job.applyUrl && (
+                      <Link
+                        href={job.applyUrl}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className={buttonVariants({ variant: "brand", className: "shrink-0" })}
+                      >
+                        {t("apply")}
+                        <ArrowRight className="ml-1.5 h-4 w-4" />
+                      </Link>
                     )}
                   </div>
-                  {job.applyUrl && (
-                    <Link
-                      href={job.applyUrl}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      className={buttonVariants({ variant: "brand", className: "shrink-0" })}
-                    >
-                      {t("apply")}
-                      <ArrowRight className="ml-1.5 h-4 w-4" />
-                    </Link>
+                  {job.description && (
+                    <Accordion className="mt-3 border-t pt-1">
+                      <AccordionItem value="desc" className="border-b-0">
+                        <AccordionTrigger className="font-medium text-brand-accent hover:no-underline">
+                          {t("viewDescription")}
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div
+                            className="prose prose-sm dark:prose-invert max-w-none"
+                            // biome-ignore lint/security/noDangerouslySetInnerHtml: CMS rich-text is admin-authored
+                            dangerouslySetInnerHTML={{ __html: job.description }}
+                          />
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                   )}
                 </div>
               ))}

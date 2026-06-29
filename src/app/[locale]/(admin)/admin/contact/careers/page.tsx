@@ -13,8 +13,12 @@ export interface JobOpeningRow {
   department: string;
   location: string;
   employmentType: JobEmploymentType;
+  summary: { id: string; en: string };
+  description: { id: string; en: string };
+  applyUrl: string;
   isPublished: boolean;
   order: number;
+  postedAt: Date;
 }
 
 async function loadJobOpenings(): Promise<JobOpeningRow[]> {
@@ -26,8 +30,12 @@ async function loadJobOpenings(): Promise<JobOpeningRow[]> {
     department: d.department ?? "",
     location: d.location ?? "",
     employmentType: (d.employmentType ?? "fullTime") as JobEmploymentType,
+    summary: { id: d.summary?.id ?? "", en: d.summary?.en ?? "" },
+    description: { id: d.description?.id ?? "", en: d.description?.en ?? "" },
+    applyUrl: d.applyUrl ?? "",
     isPublished: d.isPublished ?? false,
     order: d.order ?? 0,
+    postedAt: d.postedAt,
   }));
 }
 
