@@ -65,7 +65,7 @@ export function JobOpeningsManager({ initial, newHref, editBase }: Props) {
           <TableHeader>
             <TableRow>
               <TableHead>{t("common.title")}</TableHead>
-              <TableHead className="w-32">{tc("employmentType")}</TableHead>
+              <TableHead className="w-32">{t("careerPage.employmentType")}</TableHead>
               <TableHead className="w-32">{t("common.city")}</TableHead>
               <TableHead className="w-24">{t("common.published")}</TableHead>
               <TableHead className="w-28 text-right">{t("common.actions")}</TableHead>
@@ -145,7 +145,7 @@ export function JobOpeningsManager({ initial, newHref, editBase }: Props) {
           viewing
             ? [
                 {
-                  label: tc("employmentType"),
+                  label: t("careerPage.employmentType"),
                   value: tc(`empType.${viewing.employmentType}`),
                 },
                 { label: t("careerPage.department"), value: viewing.department || "—" },

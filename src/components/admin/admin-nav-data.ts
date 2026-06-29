@@ -70,7 +70,15 @@ export function buildAdminNav(locale: string): AdminNavData {
             key: "dashboard",
             titleKey: "dashboard",
             icon: LayoutDashboard,
-            items: [{ labelKey: "dashboard", href: base, icon: LayoutDashboard }],
+            items: [
+              { labelKey: "dashboard", href: base, icon: LayoutDashboard },
+              {
+                labelKey: "visitorAnalytics",
+                href: `${base}/visitor-analytics`,
+                icon: LineChart,
+                comingSoon: true,
+              },
+            ],
           },
         ],
       },
