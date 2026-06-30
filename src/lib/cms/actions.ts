@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
-import { sendInquiryEmail } from "@/lib/email";
+import { sendApplicationEmail, sendInquiryEmail } from "@/lib/email";
 import {
   ABOUT_PAGE_ID,
   ABOUT_SUB_PAGE_SLUGS,
@@ -12,6 +12,8 @@ import {
   AboutPage,
   AboutSubPage,
   AffiliatedBusiness,
+  APPLICATION_STATUSES,
+  Application,
   CAREER_PAGE_ID,
   CareerPage,
   CONTACT_PAGE_ID,
@@ -51,7 +53,7 @@ import {
   SolutionPage,
   Stat,
 } from "@/models";
-import { PAGE_STATUSES, STAT_ICONS } from "@/models/constants";
+import { JOB_APPLY_MODES, PAGE_STATUSES, STAT_ICONS } from "@/models/constants";
 
 // ─── Shared ──────────────────────────────────────────────────────────────────
 const localizedSchema = z.object({
@@ -1489,6 +1491,7 @@ const jobBoardSchema = z.object({
   key: z.string().default(""),
   label: localizedSchema,
   url: z.string().default(""),
+  logoUrl: z.string().default(""),
   enabled: z.boolean().default(true),
 });
 
@@ -1511,6 +1514,12 @@ const careerPageSchema = z.object({
   showBenefits: z.boolean().default(true),
   benefits: z.array(benefitSchema).default([]),
   showOpenings: z.boolean().default(true),
+  applicationForm: formSettingsSchema.default({
+    enabled: true,
+    submitLabel: { id: "", en: "" },
+    successMessage: { id: "", en: "" },
+    fields: [],
+  }),
 });
 
 export async function updateCareerPage(
@@ -1535,7 +1544,9 @@ const jobOpeningSchema = z.object({
   department: z.string().default(""),
   location: z.string().default(""),
   employmentType: z.enum(JOB_EMPLOYMENT_TYPES).default("fullTime"),
+  applyMode: z.enum(JOB_APPLY_MODES).default("form"),
   applyUrl: z.string().default(""),
+  applyEmail: z.string().default(""),
   summary: localizedSchema,
   description: localizedSchema,
   isPublished: z.boolean().default(false),
@@ -1589,6 +1600,123 @@ export async function toggleJobOpeningPublished(id: string, value: boolean): Pro
     const parsed = z.object({ id: z.string().min(1), value: z.boolean() }).parse({ id, value });
     await connectDB();
     await JobOpening.findByIdAndUpdate(parsed.id, { isPublished: parsed.value });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Job Applications (public submit + admin inbox) ───────────────────────────
+const applicationPayloadSchema = z.object({
+  jobOpeningId: z.string().min(1),
+  values: z.record(z.string(), z.string()),
+  cvUrl: z.string().min(1),
+  cvFileName: z.string().default(""),
+});
+
+/**
+ * Public — no requireAdmin. The opening is re-loaded server-side to validate it
+ * exists + is published + accepts in-app applications, and to snapshot its title
+ * (never trust the client). The CV was already uploaded via the public upload
+ * route; only its URL is sent here.
+ */
+export async function submitApplication(
+  input: z.infer<typeof applicationPayloadSchema>,
+): Promise<ActionResult> {
+  try {
+    const parsed = applicationPayloadSchema.parse(input);
+    const { splitApplicationPayload } = await import("./application-form");
+    const { system, custom } = splitApplicationPayload(parsed.values);
+    if (!system.firstName?.trim()) return { ok: false, error: "First name is required" };
+    if (!system.email?.trim()) return { ok: false, error: "Email is required" };
+    if (!parsed.cvUrl.trim()) return { ok: false, error: "CV is required" };
+    await connectDB();
+    const opening = await JobOpening.findById(parsed.jobOpeningId)
+      .select("title isPublished applyMode")
+      .lean<{
+        title?: { id?: string; en?: string };
+        isPublished?: boolean;
+        applyMode?: string;
+      } | null>();
+    if (!opening) return { ok: false, error: "Job opening not found" };
+    if (!opening.isPublished || opening.applyMode === "url") {
+      return { ok: false, error: "Job opening not found" };
+    }
+    const jobTitle = { id: opening.title?.id ?? "", en: opening.title?.en ?? "" };
+    const doc = {
+      jobOpeningId: parsed.jobOpeningId,
+      jobTitle,
+      firstName: system.firstName.trim(),
+      lastName: (system.lastName ?? "").trim(),
+      email: system.email.trim(),
+      phone: (system.phone ?? "").trim(),
+      cvUrl: parsed.cvUrl.trim(),
+      cvFileName: parsed.cvFileName.trim(),
+      customFieldValues: custom,
+    };
+    await Application.create(doc);
+    try {
+      await sendApplicationEmail({
+        name: [doc.firstName, doc.lastName].filter(Boolean).join(" "),
+        email: doc.email,
+        phone: doc.phone || undefined,
+        jobTitle: jobTitle.en || jobTitle.id,
+        cvUrl: doc.cvUrl,
+        cvFileName: doc.cvFileName || undefined,
+      });
+    } catch (emailErr) {
+      console.error("[application] email send failed", emailErr);
+    }
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function updateApplicationStatus(
+  id: string,
+  status: string,
+  notes?: string,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = z
+      .object({
+        id: z.string().min(1),
+        status: z.enum(APPLICATION_STATUSES),
+        notes: z.string().max(4000).optional(),
+      })
+      .parse({ id, status, notes });
+    await connectDB();
+    const update: Record<string, unknown> = { status: parsed.status };
+    if (parsed.notes !== undefined) update.notes = parsed.notes;
+    await Application.findByIdAndUpdate(parsed.id, update);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function deleteApplication(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    await connectDB();
+    await Application.findByIdAndDelete(id);
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function setApplicationRead(id: string, read: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = z.object({ id: z.string().min(1), read: z.boolean() }).parse({ id, read });
+    await connectDB();
+    await Application.findByIdAndUpdate(parsed.id, { read: parsed.read });
     bust();
     return { ok: true };
   } catch (e) {

@@ -22,7 +22,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { upsertJobOpening } from "@/lib/cms/actions";
-import { JOB_EMPLOYMENT_TYPES } from "@/models/constants";
+import { JOB_APPLY_MODES, JOB_EMPLOYMENT_TYPES } from "@/models/constants";
 
 const localized = z.object({ id: z.string(), en: z.string() });
 
@@ -32,7 +32,9 @@ export const jobOpeningFormSchema = z.object({
   department: z.string(),
   location: z.string(),
   employmentType: z.enum(JOB_EMPLOYMENT_TYPES),
+  applyMode: z.enum(JOB_APPLY_MODES),
   applyUrl: z.string(),
+  applyEmail: z.string(),
   summary: localized,
   description: localized,
   isPublished: z.boolean(),
@@ -134,14 +136,45 @@ export function JobOpeningForm({
               </Select>
             </div>
           </div>
-          <div className="space-y-2">
-            <Label>{t("careerPage.applyUrl")}</Label>
-            <Input
-              {...register("applyUrl")}
-              placeholder="https://...  /  mailto:hr@dutafirza.com"
-            />
-            <p className="text-xs text-muted-foreground">{t("careerPage.applyUrlHint")}</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>{t("careerPage.applyMode")}</Label>
+              <Select
+                value={watch("applyMode")}
+                onValueChange={(v) =>
+                  setValue("applyMode", v as JobOpeningFormValues["applyMode"], {
+                    shouldDirty: true,
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {JOB_APPLY_MODES.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {t(`careerPage.applyMode_${m}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {watch("applyMode") === "url" && (
+              <div className="space-y-2">
+                <Label>{t("careerPage.applyUrl")}</Label>
+                <Input {...register("applyUrl")} placeholder="https://..." />
+              </div>
+            )}
+            {watch("applyMode") === "email" && (
+              <div className="space-y-2">
+                <Label>{t("careerPage.applyEmail")}</Label>
+                <Input {...register("applyEmail")} placeholder="hr@dutafirza.com" />
+              </div>
+            )}
           </div>
+          {watch("applyMode") === "form" && (
+            <p className="text-xs text-muted-foreground">{t("careerPage.applyModeFormHint")}</p>
+          )}
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label>{t("fields.summary")} — ID</Label>

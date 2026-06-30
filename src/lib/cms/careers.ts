@@ -1,8 +1,14 @@
 import { connectDB } from "@/lib/db";
 import { CAREER_PAGE_ID, CareerPage, JobOpening } from "@/models";
 import type { LocalizedString } from "@/models/_shared";
-import type { JobEmploymentType, PageStatus, SectionMode } from "@/models/constants";
+import type { JobApplyMode, JobEmploymentType, PageStatus, SectionMode } from "@/models/constants";
+import {
+  DEFAULT_APPLICATION_FORM_SETTINGS,
+  type FormField,
+  type FormSettings,
+} from "./application-form";
 import { type Locale, localize, pickLocale } from "./localize";
+import type { LocalizedFormField, LocalizedFormSettings } from "./solutions";
 
 const EMPTY_LOCALIZED = { id: "", en: "" };
 
@@ -10,20 +16,34 @@ interface RawJobBoard {
   key?: string;
   label?: LocalizedString;
   url?: string;
+  logoUrl?: string;
   enabled?: boolean;
 }
 
 /** Seed boards shown in the admin editor (and as fallbacks) before any are saved. */
 export const DEFAULT_JOB_BOARDS: RawJobBoard[] = [
-  { key: "linkedin", label: { id: "LinkedIn", en: "LinkedIn" }, url: "", enabled: true },
-  { key: "seek", label: { id: "Seek", en: "Seek" }, url: "", enabled: true },
-  { key: "jobstreet", label: { id: "Jobstreet", en: "Jobstreet" }, url: "", enabled: true },
+  {
+    key: "linkedin",
+    label: { id: "LinkedIn", en: "LinkedIn" },
+    url: "",
+    logoUrl: "",
+    enabled: true,
+  },
+  { key: "seek", label: { id: "Seek", en: "Seek" }, url: "", logoUrl: "", enabled: true },
+  {
+    key: "jobstreet",
+    label: { id: "Jobstreet", en: "Jobstreet" },
+    url: "",
+    logoUrl: "",
+    enabled: true,
+  },
 ];
 
 export interface JobBoardLink {
   key: string;
   label: string;
   url: string;
+  logoUrl: string;
 }
 
 export interface BenefitItem {
@@ -96,6 +116,7 @@ export async function getCareerPage(locale: Locale): Promise<CareerPageData> {
       key: b.key ?? "",
       label: pickLocale(b.label, locale),
       url: b.url ?? "",
+      logoUrl: b.logoUrl ?? "",
     }));
 
   const benefits: BenefitItem[] = (doc?.benefits ?? []).map((b) => ({
@@ -126,7 +147,9 @@ export interface JobOpeningData {
   department: string;
   location: string;
   employmentType: JobEmploymentType;
+  applyMode: JobApplyMode;
   applyUrl: string;
+  applyEmail: string;
   summary: string;
   description: string;
   postedAt: Date;
@@ -143,7 +166,9 @@ export async function getPublishedJobOpenings(locale: Locale): Promise<JobOpenin
         department: d.department ?? "",
         location: d.location ?? "",
         employmentType: (d.employmentType ?? "fullTime") as JobEmploymentType,
+        applyMode: (d.applyMode ?? "form") as JobApplyMode,
         applyUrl: d.applyUrl ?? "",
+        applyEmail: d.applyEmail ?? "",
         summary: d.summary ?? EMPTY_LOCALIZED,
         description: d.description ?? EMPTY_LOCALIZED,
         postedAt: d.postedAt,
@@ -151,4 +176,41 @@ export async function getPublishedJobOpenings(locale: Locale): Promise<JobOpenin
       locale,
     ),
   );
+}
+
+/** Localized in-app application form config (used by openings with applyMode "form"). */
+export async function getApplicationFormSettings(locale: Locale): Promise<LocalizedFormSettings> {
+  await connectDB();
+  const doc = await CareerPage.findById(CAREER_PAGE_ID)
+    .select("applicationForm")
+    .lean<{ applicationForm?: Partial<FormSettings> } | null>();
+  const raw = doc?.applicationForm ?? {};
+  const rawFields =
+    Array.isArray(raw.fields) && raw.fields.length > 0
+      ? (raw.fields as FormField[])
+      : DEFAULT_APPLICATION_FORM_SETTINGS.fields;
+  const fields: LocalizedFormField[] = [...rawFields]
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .map((f) => ({
+      key: f.key,
+      label: pickLocale(f.label, locale),
+      placeholder: pickLocale(f.placeholder, locale),
+      type: f.type ?? "text",
+      required: Boolean(f.required),
+      order: f.order ?? 0,
+      options: (f.options ?? []).map((o) => ({
+        value: o.value,
+        label: pickLocale(o.label, locale),
+      })),
+    }));
+  return {
+    enabled: raw.enabled ?? true,
+    submitLabel:
+      pickLocale(raw.submitLabel, locale) ||
+      pickLocale(DEFAULT_APPLICATION_FORM_SETTINGS.submitLabel, locale),
+    successMessage:
+      pickLocale(raw.successMessage, locale) ||
+      pickLocale(DEFAULT_APPLICATION_FORM_SETTINGS.successMessage, locale),
+    fields,
+  };
 }

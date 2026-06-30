@@ -4,11 +4,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useFieldArray, useForm } from "react-hook-form";
+import { type UseFormReturn, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import {
+  FormBuilderSection,
+  type FormBuilderValues,
+} from "@/components/admin/form-builder-section";
 import { IconPicker } from "@/components/admin/icon-picker";
 import { LocalizedField } from "@/components/admin/localized-field";
+import { MediaUpload } from "@/components/admin/media-upload";
 import { SectionModeToggle } from "@/components/admin/section-mode-toggle";
 import { StickyFormBar } from "@/components/admin/sticky-form-bar";
 import { Button } from "@/components/ui/button";
@@ -28,6 +33,15 @@ import {
 import { StatusGroup } from "../../../solutions/_components/status-group";
 
 const localized = z.object({ id: z.string(), en: z.string() });
+const formFieldSchema = z.object({
+  key: z.string(),
+  label: localized,
+  placeholder: localized,
+  type: z.enum(["text", "email", "tel", "textarea", "number", "select"]),
+  required: z.boolean(),
+  order: z.number().int(),
+  options: z.array(z.object({ value: z.string(), label: localized })),
+});
 
 const schema = z.object({
   status: z.enum(PAGE_STATUSES),
@@ -37,13 +51,28 @@ const schema = z.object({
   body: z.object({ heading: localized, content: localized }),
   showJobBoards: z.boolean(),
   jobBoards: z.array(
-    z.object({ key: z.string(), label: localized, url: z.string(), enabled: z.boolean() }),
+    z.object({
+      key: z.string(),
+      label: localized,
+      url: z.string(),
+      logoUrl: z.string(),
+      enabled: z.boolean(),
+    }),
   ),
   whyJoinMode: z.enum(SECTION_MODES),
   whyJoin: z.object({ heading: localized, content: localized }),
   showBenefits: z.boolean(),
   benefits: z.array(z.object({ icon: z.string(), title: localized, description: localized })),
   showOpenings: z.boolean(),
+  // Named `formSettings` (not `applicationForm`) so the shared FormBuilderSection —
+  // which is hardcoded to the `formSettings.*` field path — can edit it directly.
+  // Mapped back to `applicationForm` on submit.
+  formSettings: z.object({
+    enabled: z.boolean(),
+    submitLabel: localized,
+    successMessage: localized,
+    fields: z.array(formFieldSchema),
+  }),
 });
 
 export type CareerPageFormValues = z.infer<typeof schema>;
@@ -75,7 +104,8 @@ export function CareerPageForm({
   const benefits = useFieldArray({ control, name: "benefits" });
 
   const onSubmit = async (values: CareerPageFormValues) => {
-    const result = await updateCareerPage(values);
+    // `formSettings` is the in-app application form; persist it as `applicationForm`.
+    const result = await updateCareerPage({ ...values, applicationForm: values.formSettings });
     if (result.ok) {
       toast.success(t("saved"));
       router.refresh();
@@ -220,6 +250,22 @@ export function CareerPageForm({
                   <Label className="text-xs text-muted-foreground">URL</Label>
                   <Input {...register(`jobBoards.${index}.url`)} placeholder="https://..." />
                 </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">
+                    {t("careerPage.boardLogo")}
+                  </Label>
+                  <MediaUpload
+                    accept="image"
+                    folder="job-boards"
+                    aspectRatio={3}
+                    className="max-w-sm"
+                    value={watch(`jobBoards.${index}.logoUrl`)}
+                    onChange={(url) =>
+                      setValue(`jobBoards.${index}.logoUrl`, url, { shouldDirty: true })
+                    }
+                    hint={t("careerPage.boardLogoHint")}
+                  />
+                </div>
               </div>
             ))}
             <Button
@@ -227,7 +273,13 @@ export function CareerPageForm({
               size="sm"
               variant="outline"
               onClick={() =>
-                boards.append({ key: "", label: { id: "", en: "" }, url: "", enabled: true })
+                boards.append({
+                  key: "",
+                  label: { id: "", en: "" },
+                  url: "",
+                  logoUrl: "",
+                  enabled: true,
+                })
               }
             >
               <Plus className="mr-1 h-3.5 w-3.5" />
@@ -350,6 +402,15 @@ export function CareerPageForm({
             />
           </CardContent>
         </Card>
+      </TabsContent>
+
+      <TabsContent value="applyForm" keepMounted className="space-y-4">
+        {/* In-app application form (used by openings with applyMode = form) */}
+        <p className="text-sm text-muted-foreground">{t("careerPage.applyFormIntro")}</p>
+        <FormBuilderSection
+          form={form as unknown as UseFormReturn<FormBuilderValues>}
+          enabledLabel={t("careerPage.applyFormEnabled")}
+        />
       </TabsContent>
 
       {activeTab !== "items" && (

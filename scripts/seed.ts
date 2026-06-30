@@ -38,6 +38,8 @@ import {
   AboutPage,
   AboutSubPage,
   AffiliatedBusiness,
+  CAREER_PAGE_ID,
+  CareerPage,
   Credential,
   Customer,
   HistoryEntry,
@@ -298,6 +300,12 @@ async function seedJobOpenings() {
   return items.length;
 }
 
+async function seedCareerPage() {
+  const data = readJson<Record<string, unknown>>("career-page.json");
+  await CareerPage.findByIdAndUpdate(CAREER_PAGE_ID, data, { upsert: true, new: true });
+  return 1;
+}
+
 const SEEDERS = {
   user: seedUser,
   siteSettings: seedSiteSettings,
@@ -321,6 +329,7 @@ const SEEDERS = {
   affiliatedBusinesses: seedAffiliatedBusinesses,
   credentials: seedCredentials,
   jobOpenings: seedJobOpenings,
+  careerPage: seedCareerPage,
 } as const;
 
 type SeederName = keyof typeof SEEDERS;

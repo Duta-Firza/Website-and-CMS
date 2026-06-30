@@ -1,8 +1,9 @@
-import { ArrowRight, Briefcase, ExternalLink, MapPin } from "lucide-react";
+import { Briefcase, ExternalLink, MapPin } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
+import { ApplyButton } from "@/components/public/careers/apply-button";
 import { ComingSoonPage } from "@/components/public/coming-soon-page";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
@@ -13,8 +14,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
-import { getCareerPage, getPublishedJobOpenings } from "@/lib/cms/careers";
+import {
+  getApplicationFormSettings,
+  getCareerPage,
+  getPublishedJobOpenings,
+} from "@/lib/cms/careers";
 import type { Locale } from "@/lib/cms/localize";
 import { resolveBody, resolveHero } from "@/lib/cms/section-mode";
 import { pickIcon } from "@/lib/icon-map";
@@ -26,9 +30,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function CareersPublicPage() {
   const locale = (await getLocale()) as Locale;
-  const [page, openings, tTitles, t] = await Promise.all([
+  const [page, openings, applyForm, tTitles, t] = await Promise.all([
     getCareerPage(locale),
     getPublishedJobOpenings(locale),
+    getApplicationFormSettings(locale),
     getTranslations("SectionTitles"),
     getTranslations("Careers"),
   ]);
@@ -87,23 +92,43 @@ export default async function CareersPublicPage() {
         </ScrollReveal>
       )}
 
-      {/* Job boards */}
+      {/* Job boards — "Find us on" */}
       {page.showJobBoards && boards.length > 0 && (
         <ScrollReveal className="space-y-4">
-          <h2 className="text-xl font-semibold tracking-tight text-brand-deep dark:text-foreground">
-            {t("findUsOn")}
-          </h2>
-          <div className="flex flex-wrap gap-3">
+          <div className="space-y-1">
+            <h2 className="text-xl font-semibold tracking-tight text-brand-deep dark:text-foreground">
+              {t("findUsOn")}
+            </h2>
+            <p className="text-sm text-muted-foreground">{t("findUsOnSubtitle")}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {boards.map((b) => (
               <a
                 key={b.key || b.label}
                 href={b.url}
                 target="_blank"
                 rel="noreferrer noopener"
-                className={buttonVariants({ variant: "outline" })}
+                aria-label={b.label}
+                className="group flex h-24 flex-col items-center justify-center gap-2 rounded-xl border bg-card p-4 text-center transition hover:-translate-y-0.5 hover:border-brand-accent/40 hover:shadow-md"
               >
-                <ExternalLink className="mr-2 h-4 w-4" />
-                {b.label}
+                {b.logoUrl ? (
+                  <Image
+                    src={b.logoUrl}
+                    alt={b.label}
+                    width={140}
+                    height={40}
+                    unoptimized
+                    className="h-9 w-auto max-w-35 object-contain transition-transform group-hover:scale-105"
+                  />
+                ) : (
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-accent/10 text-sm font-bold uppercase text-brand-accent">
+                    {b.label.slice(0, 2)}
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1 text-sm font-medium text-brand-deep dark:text-foreground">
+                  {b.label}
+                  <ExternalLink className="h-3 w-3 text-muted-foreground transition group-hover:text-brand-accent" />
+                </span>
               </a>
             ))}
           </div>
@@ -194,17 +219,16 @@ export default async function CareersPublicPage() {
                         </p>
                       )}
                     </div>
-                    {job.applyUrl && (
-                      <Link
-                        href={job.applyUrl}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className={buttonVariants({ variant: "brand", className: "shrink-0" })}
-                      >
-                        {t("apply")}
-                        <ArrowRight className="ml-1.5 h-4 w-4" />
-                      </Link>
-                    )}
+                    <ApplyButton
+                      job={{
+                        id: job.id,
+                        title: job.title,
+                        applyMode: job.applyMode,
+                        applyUrl: job.applyUrl,
+                        applyEmail: job.applyEmail,
+                      }}
+                      applyForm={applyForm}
+                    />
                   </div>
                   {job.description && (
                     <Accordion className="mt-3 border-t pt-1">

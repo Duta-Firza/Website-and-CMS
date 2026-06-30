@@ -268,6 +268,8 @@ function EmptyState({ accept }: { accept: Accept }) {
 
 function aspectClass(ratio?: number): string {
   if (!ratio) return "max-h-64";
+  if (Math.abs(ratio - 3) < 0.01) return "aspect-[3/1]";
+  if (Math.abs(ratio - 2) < 0.01) return "aspect-[2/1]";
   if (Math.abs(ratio - 16 / 9) < 0.01) return "aspect-video";
   if (Math.abs(ratio - 4 / 3) < 0.01) return "aspect-[4/3]";
   if (Math.abs(ratio - 4 / 5) < 0.01) return "aspect-[4/5]";

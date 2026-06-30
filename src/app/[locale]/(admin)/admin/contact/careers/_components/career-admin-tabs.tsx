@@ -7,7 +7,7 @@ import type { JobOpeningRow } from "../page";
 import { CareerPageForm, type CareerPageFormValues } from "./career-page-form";
 import { JobOpeningsManager } from "./job-openings-manager";
 
-const TABS = ["content", "boards", "culture", "items"] as const;
+const TABS = ["content", "boards", "culture", "applyForm", "items"] as const;
 
 export function CareerAdminTabs({
   pageInitial,
@@ -29,6 +29,7 @@ export function CareerAdminTabs({
         <TabsTrigger value="content">{t("tabs.content")}</TabsTrigger>
         <TabsTrigger value="boards">{t("tabs.boards")}</TabsTrigger>
         <TabsTrigger value="culture">{t("tabs.culture")}</TabsTrigger>
+        <TabsTrigger value="applyForm">{t("tabs.applyForm")}</TabsTrigger>
         <TabsTrigger value="items">{t("tabs.openings")}</TabsTrigger>
       </TabsList>
 

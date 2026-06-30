@@ -1,0 +1,139 @@
+{
+  "status": "published",
+  "heroMode": "default",
+  "bodyMode": "custom",
+  "body": {
+    "heading": { "id": "Bergabung dengan PT Duta Firza", "en": "Join PT Duta Firza" },
+    "content": {
+      "id": "Kami selalu mencari talenta terbaik untuk tumbuh bersama di industri energi dan instrumentasi. Lihat lowongan yang tersedia atau temukan kami di papan lowongan berikut.",
+      "en": "We're always looking for great talent to grow with us in the energy and instrumentation industry. Browse our open roles or find us on the job boards below."
+    }
+  },
+  "showJobBoards": true,
+  "jobBoards": [
+    {
+      "key": "linkedin",
+      "label": { "id": "LinkedIn", "en": "LinkedIn" },
+      "url": "https://www.linkedin.com/company/duta-firza/jobs/",
+      "logoUrl": "/job-boards/linkedin.svg",
+      "enabled": true
+    },
+    {
+      "key": "jobstreet",
+      "label": { "id": "Jobstreet", "en": "Jobstreet" },
+      "url": "https://www.jobstreet.co.id/",
+      "logoUrl": "/job-boards/jobstreet.svg",
+      "enabled": true
+    },
+    {
+      "key": "seek",
+      "label": { "id": "Seek", "en": "Seek" },
+      "url": "https://www.seek.com/",
+      "logoUrl": "/job-boards/seek.svg",
+      "enabled": true
+    }
+  ],
+  "whyJoinMode": "custom",
+  "whyJoin": {
+    "heading": { "id": "Kenapa Bergabung", "en": "Why Join Us" },
+    "content": {
+      "id": "Lingkungan kerja kolaboratif, proyek berskala nasional, dan kesempatan berkembang bersama tim profesional.",
+      "en": "A collaborative environment, nationwide projects, and room to grow alongside a professional team."
+    }
+  },
+  "showBenefits": true,
+  "benefits": [
+    {
+      "icon": "TrendingUp",
+      "title": { "id": "Pengembangan Karier", "en": "Career Growth" },
+      "description": {
+        "id": "Jalur karier yang jelas dan pelatihan berkelanjutan.",
+        "en": "Clear career paths and continuous training."
+      }
+    },
+    {
+      "icon": "Users",
+      "title": { "id": "Tim Solid", "en": "Great Team" },
+      "description": {
+        "id": "Budaya kerja kolaboratif dan saling mendukung.",
+        "en": "A collaborative, supportive working culture."
+      }
+    },
+    {
+      "icon": "Award",
+      "title": { "id": "Proyek Bergengsi", "en": "Impactful Projects" },
+      "description": {
+        "id": "Terlibat dalam proyek EPC dan energi berskala nasional.",
+        "en": "Work on nationwide EPC and energy projects."
+      }
+    }
+  ],
+  "showOpenings": true,
+  "applicationForm": {
+    "enabled": true,
+    "submitLabel": { "id": "Kirim Lamaran", "en": "Submit Application" },
+    "successMessage": {
+      "id": "Terima kasih, lamaran Anda sudah kami terima. Tim kami akan meninjau dan menghubungi Anda.",
+      "en": "Thank you, your application has been received. Our team will review it and get back to you."
+    },
+    "fields": [
+      {
+        "key": "firstName",
+        "label": { "id": "Nama Depan", "en": "First Name" },
+        "placeholder": { "id": "", "en": "" },
+        "type": "text",
+        "required": true,
+        "order": 1,
+        "options": []
+      },
+      {
+        "key": "lastName",
+        "label": { "id": "Nama Belakang", "en": "Last Name" },
+        "placeholder": { "id": "", "en": "" },
+        "type": "text",
+        "required": false,
+        "order": 2,
+        "options": []
+      },
+      {
+        "key": "email",
+        "label": { "id": "Email", "en": "Email" },
+        "placeholder": { "id": "", "en": "" },
+        "type": "email",
+        "required": true,
+        "order": 3,
+        "options": []
+      },
+      {
+        "key": "phone",
+        "label": { "id": "Telepon", "en": "Phone" },
+        "placeholder": { "id": "", "en": "" },
+        "type": "tel",
+        "required": true,
+        "order": 4,
+        "options": []
+      },
+      {
+        "key": "linkedinUrl",
+        "label": { "id": "Profil LinkedIn", "en": "LinkedIn Profile" },
+        "placeholder": { "id": "https://linkedin.com/in/…", "en": "https://linkedin.com/in/…" },
+        "type": "text",
+        "required": false,
+        "order": 5,
+        "options": []
+      },
+      {
+        "key": "coverLetter",
+        "label": { "id": "Cover Letter", "en": "Cover Letter" },
+        "placeholder": {
+          "id": "Ceritakan kenapa Anda cocok untuk posisi ini…",
+          "en": "Tell us why you're a great fit…"
+        },
+        "type": "textarea",
+        "required": false,
+        "order": 6,
+        "options": []
+      }
+    ]
+  }
+}
