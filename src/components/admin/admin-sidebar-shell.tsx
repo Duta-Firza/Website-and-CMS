@@ -22,8 +22,11 @@ interface Props {
   initialCollapsed: boolean;
   initialOpenGroup: string | null;
   initialUnreadCount: number;
+  initialUnreadApplications: number;
   user: { name: string; email: string; role?: string } | null;
 }
+
+type BadgeCounts = { unreadInquiries: number; unreadApplications: number };
 
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
@@ -41,6 +44,7 @@ export function AdminSidebarShell({
   initialCollapsed,
   initialOpenGroup,
   initialUnreadCount,
+  initialUnreadApplications,
   user,
 }: Props) {
   const locale = useLocale();
@@ -78,6 +82,7 @@ export function AdminSidebarShell({
   // Live unread-inquiries count via SSE. Seeded from the server-rendered value
   // so the badge is correct on first paint; EventSource auto-reconnects on drop.
   const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
+  const [unreadApplications, setUnreadApplications] = useState(initialUnreadApplications);
   useEffect(() => {
     const es = new EventSource("/api/admin/inquiries/unread-stream");
     es.onmessage = (e) => {
@@ -90,6 +95,20 @@ export function AdminSidebarShell({
     };
     return () => es.close();
   }, []);
+  useEffect(() => {
+    const es = new EventSource("/api/admin/applications/unread-stream");
+    es.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data) as { count?: number };
+        if (typeof data.count === "number") setUnreadApplications(data.count);
+      } catch {
+        // ignore malformed frame
+      }
+    };
+    return () => es.close();
+  }, []);
+
+  const counts: BadgeCounts = { unreadInquiries: unreadCount, unreadApplications };
 
   useEffect(() => {
     if (!activeGroupKey) return;
@@ -156,12 +175,7 @@ export function AdminSidebarShell({
 
       <nav className={cn("flex-1 overflow-y-auto py-3", collapsed ? "px-2" : "px-3")}>
         {collapsed ? (
-          <CompactSectionList
-            sections={nav.sections}
-            t={t}
-            isActive={isActive}
-            unreadCount={unreadCount}
-          />
+          <CompactSectionList sections={nav.sections} t={t} isActive={isActive} counts={counts} />
         ) : (
           <div className="space-y-4">
             {nav.sections.map((section) => (
@@ -172,7 +186,7 @@ export function AdminSidebarShell({
                 onToggleGroup={toggleGroup}
                 t={t}
                 isActive={isActive}
-                unreadCount={unreadCount}
+                counts={counts}
               />
             ))}
           </div>
@@ -204,8 +218,8 @@ export function AdminSidebarShell({
   );
 }
 
-function unreadFor(item: AdminNavItem, unreadCount: number): number {
-  return item.badge === "unreadInquiries" ? unreadCount : 0;
+function unreadFor(item: AdminNavItem, counts: BadgeCounts): number {
+  return item.badge ? (counts[item.badge] ?? 0) : 0;
 }
 
 function SectionBlock({
@@ -214,14 +228,14 @@ function SectionBlock({
   onToggleGroup,
   t,
   isActive,
-  unreadCount,
+  counts,
 }: {
   section: AdminNavSection;
   openGroup: string | null;
   onToggleGroup: (key: string) => void;
   t: (key: string) => string;
   isActive: (href: string) => boolean;
-  unreadCount: number;
+  counts: BadgeCounts;
 }) {
   // A section with a single group renders that group's items flat under the
   // section header (so "Inbox" isn't repeated as both a section and a group);
@@ -241,7 +255,7 @@ function SectionBlock({
               collapsed={false}
               active={isActive(item.href)}
               label={t(item.labelKey)}
-              badgeCount={unreadFor(item, unreadCount)}
+              badgeCount={unreadFor(item, counts)}
             />
           ))}
         </div>
@@ -411,12 +425,12 @@ function CompactSectionList({
   sections,
   t,
   isActive,
-  unreadCount,
+  counts,
 }: {
   sections: AdminNavSection[];
   t: (key: string) => string;
   isActive: (href: string) => boolean;
-  unreadCount: number;
+  counts: BadgeCounts;
 }) {
   return (
     <div className="mt-2 space-y-2">
@@ -434,7 +448,7 @@ function CompactSectionList({
                 collapsed={true}
                 active={isActive(item.href)}
                 label={t(item.labelKey)}
-                badgeCount={unreadFor(item, unreadCount)}
+                badgeCount={unreadFor(item, counts)}
               />
             ))}
         </div>

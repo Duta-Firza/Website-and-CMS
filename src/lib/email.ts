@@ -42,3 +42,34 @@ export async function sendInquiryEmail(payload: InquiryPayload) {
       .join("\n"),
   });
 }
+
+interface ApplicationPayload {
+  name: string;
+  email: string;
+  phone?: string;
+  jobTitle: string;
+  cvUrl: string;
+  cvFileName?: string;
+}
+
+export async function sendApplicationEmail(payload: ApplicationPayload) {
+  // Dedicated recipient if configured, otherwise reuse the inquiry inbox.
+  const to = env.APPLICATIONS_TO_EMAIL || env.INQUIRY_TO_EMAIL;
+
+  return client().emails.send({
+    from: env.RESEND_FROM_EMAIL,
+    to,
+    replyTo: payload.email,
+    subject: `[CAREER] Application: ${payload.jobTitle} — ${payload.name}`,
+    text: [
+      `Position: ${payload.jobTitle}`,
+      `Name: ${payload.name}`,
+      `Email: ${payload.email}`,
+      payload.phone ? `Phone: ${payload.phone}` : null,
+      "",
+      `CV${payload.cvFileName ? ` (${payload.cvFileName})` : ""}: ${payload.cvUrl}`,
+    ]
+      .filter(Boolean)
+      .join("\n"),
+  });
+}

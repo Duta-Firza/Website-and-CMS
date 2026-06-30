@@ -8,6 +8,8 @@ const schema = z.object({
   RESEND_FROM_EMAIL: z.string().email(),
   INQUIRY_TO_EMAIL: z.string().email(),
   CONTACT_TO_EMAIL: z.string().email(),
+  // Optional dedicated recipient for job applications; falls back to INQUIRY_TO_EMAIL.
+  APPLICATIONS_TO_EMAIL: z.string().email().optional(),
   NEXT_PUBLIC_SITE_URL: z.string().url(),
 });
 

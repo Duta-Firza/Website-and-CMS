@@ -1,9 +1,9 @@
 import { type InferSchemaType, model, models, Schema } from "mongoose";
 import { localizedStringOptional, localizedStringRequired, stripVersion } from "./_shared";
-import { JOB_EMPLOYMENT_TYPES } from "./constants";
+import { JOB_APPLY_MODES, JOB_EMPLOYMENT_TYPES } from "./constants";
 
-export type { JobEmploymentType } from "./constants";
-export { JOB_EMPLOYMENT_TYPES };
+export type { JobApplyMode, JobEmploymentType } from "./constants";
+export { JOB_APPLY_MODES, JOB_EMPLOYMENT_TYPES };
 
 const jobOpeningSchema = new Schema(
   {
@@ -11,9 +11,12 @@ const jobOpeningSchema = new Schema(
     department: { type: String, default: "" },
     location: { type: String, default: "" },
     employmentType: { type: String, enum: JOB_EMPLOYMENT_TYPES, default: "fullTime", index: true },
-    // Where "Apply" sends the candidate — an external ATS/job-board URL or a
-    // `mailto:` address. Stored as a raw string so either works.
+    // How the public "Apply" button behaves: in-app form, external url, or email.
+    applyMode: { type: String, enum: JOB_APPLY_MODES, default: "form" },
+    // Used when applyMode === "url": external ATS/job-board link.
     applyUrl: { type: String, default: "" },
+    // Used when applyMode === "email": destination address for `mailto:`.
+    applyEmail: { type: String, default: "" },
     summary: localizedStringOptional,
     description: localizedStringOptional,
     isPublished: { type: Boolean, default: false, index: true },

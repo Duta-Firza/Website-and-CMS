@@ -36,8 +36,8 @@ export interface AdminNavItem {
   href: string;
   icon: LucideIcon;
   comingSoon?: boolean;
-  /** Marks the item that displays the live unread-inquiries badge. */
-  badge?: "unreadInquiries";
+  /** Marks the item that displays a live unread-count badge. */
+  badge?: "unreadInquiries" | "unreadApplications";
 }
 
 export interface AdminNavGroup {
@@ -187,6 +187,12 @@ export function buildAdminNav(locale: string): AdminNavData {
                 href: `${base}/inquiries`,
                 icon: MailQuestion,
                 badge: "unreadInquiries",
+              },
+              {
+                labelKey: "applications",
+                href: `${base}/applications`,
+                icon: Briefcase,
+                badge: "unreadApplications",
               },
               {
                 labelKey: "reportDownloads",

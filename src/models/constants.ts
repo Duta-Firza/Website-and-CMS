@@ -123,6 +123,25 @@ export const JOB_EMPLOYMENT_TYPES = ["fullTime", "partTime", "contract", "intern
 export type JobEmploymentType = (typeof JOB_EMPLOYMENT_TYPES)[number];
 
 /**
+ * How the public "Apply" button behaves for a job opening:
+ * - form  → in-app application form (collects data + CV upload into the inbox)
+ * - url   → redirect to an external ATS/job-board URL (`applyUrl`)
+ * - email → open the visitor's mail client (`mailto:applyEmail`)
+ */
+export const JOB_APPLY_MODES = ["form", "url", "email"] as const;
+export type JobApplyMode = (typeof JOB_APPLY_MODES)[number];
+
+/** Hiring-pipeline status for a submitted job application (admin inbox). */
+export const APPLICATION_STATUSES = [
+  "new",
+  "reviewing",
+  "shortlisted",
+  "rejected",
+  "hired",
+] as const;
+export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
+
+/**
  * Page-level visibility status shared by the Contact + Career singleton pages.
  * Same values as the solution/about/IR page statuses — hidden → 404,
  * comingSoon → Coming Soon page, published → live.

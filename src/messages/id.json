@@ -88,6 +88,24 @@
     "noOpenings": "Belum ada lowongan saat ini. Pantau terus halaman ini atau ikuti kami di papan lowongan di atas.",
     "apply": "Lamar",
     "viewDescription": "Lihat deskripsi pekerjaan",
+    "findUsOnSubtitle": "Ikuti dan temukan lowongan kami di platform berikut.",
+    "applyEmailSubject": "Lamaran: {title}",
+    "applyFor": "Lamar: {title}",
+    "applyDialogSubtitle": "Lengkapi data diri dan unggah CV Anda (PDF).",
+    "applySubmit": "Kirim Lamaran",
+    "applySubmitting": "Mengirim…",
+    "applySuccessTitle": "Lamaran terkirim",
+    "applySuccessMessage": "Terima kasih, lamaran Anda sudah kami terima.",
+    "ok": "OK",
+    "errorToast": "Terjadi kesalahan. Silakan coba lagi.",
+    "cvLabel": "CV / Resume (PDF)",
+    "cvUploadHint": "Klik untuk unggah CV (PDF, maks 10MB)",
+    "cvUploading": "Mengunggah…",
+    "cvUploadFailed": "Gagal mengunggah CV.",
+    "cvInvalid": "File harus berformat PDF.",
+    "cvTooLarge": "Ukuran file maksimal 10MB.",
+    "cvRequired": "CV wajib diunggah.",
+    "cvRemove": "Hapus CV",
     "empType": {
       "fullTime": "Penuh Waktu",
       "partTime": "Paruh Waktu",
@@ -488,7 +506,12 @@
       "newArticle": "Artikel Baru",
       "editArticle": "Edit Artikel",
       "newJob": "Lowongan Baru",
-      "editJob": "Edit Lowongan"
+      "editJob": "Edit Lowongan",
+      "applications": {
+        "title": "Lamaran Kerja",
+        "description": "Lamaran yang masuk dari form lamaran di halaman karier, beserta CV.",
+        "searchPlaceholder": "Cari nama, email, posisi…"
+      }
     },
     "tabs": {
       "content": "Konten",
@@ -519,6 +542,7 @@
       "financial": "Keuangan",
       "downloadForm": "Form Download",
       "openings": "Lowongan",
+      "applyForm": "Form Lamaran",
       "page": "Halaman",
       "contactInfo": "Info Kontak",
       "location": "Lokasi & Peta",
@@ -564,7 +588,9 @@
       "selectInquiry": "Pilih submission untuk melihat detailnya.",
       "reports": "Belum ada laporan. Klik Tambah untuk mengunggah laporan pertama.",
       "publications": "Belum ada artikel.",
-      "jobOpenings": "Belum ada lowongan."
+      "jobOpenings": "Belum ada lowongan.",
+      "applications": "Belum ada lamaran.",
+      "selectApplication": "Pilih lamaran untuk melihat detailnya."
     },
     "buttons": {
       "addValue": "Tambah nilai",
@@ -906,7 +932,28 @@
       "employmentType": "Tipe",
       "applyUrl": "Link lamar / email",
       "applyUrlHint": "URL ATS/papan lowongan eksternal, atau mailto:hr@dutafirza.com.",
-      "jobDescription": "Deskripsi Pekerjaan"
+      "jobDescription": "Deskripsi Pekerjaan",
+      "applyMode": "Metode Lamar",
+      "applyMode_form": "Form di website ini",
+      "applyMode_url": "Link eksternal",
+      "applyMode_email": "Kirim email",
+      "applyEmail": "Email tujuan lamaran",
+      "applyModeFormHint": "Pelamar mengisi form & mengunggah CV; lamaran masuk ke inbox Lamaran.",
+      "boardLogo": "Logo",
+      "boardLogoHint": "Logo landscape PNG/WebP (rasio ~3:1), background transparan. Bisa di-crop saat unggah.",
+      "applyFormIntro": "Form lamaran in-app dipakai oleh lowongan dengan metode \"Form di website ini\". Field nama, email, telepon, dan upload CV selalu ada.",
+      "applyFormEnabled": "Aktifkan form lamaran"
+    },
+    "applicationStatus": {
+      "new": "Baru",
+      "reviewing": "Direview",
+      "shortlisted": "Shortlist",
+      "rejected": "Ditolak",
+      "hired": "Diterima"
+    },
+    "applicationsInbox": {
+      "cv": "CV / Resume",
+      "downloadCv": "Unduh CV"
     },
     "alertDelete": "Aksi ini tidak bisa dibatalkan."
   },
@@ -958,6 +1005,7 @@
     "settings": "Pengaturan",
     "users": "Pengguna",
     "inquiries": "Inquiry",
+    "applications": "Lamaran Kerja",
     "reportDownloads": "Download Laporan",
     "comingSoon": "Segera",
     "expand": "Perluas sidebar",

@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { connectDB } from "@/lib/db";
 import { JobOpening } from "@/models";
-import type { JobEmploymentType } from "@/models/constants";
+import type { JobApplyMode, JobEmploymentType } from "@/models/constants";
 import { JobOpeningForm } from "../../_components/job-opening-form";
 
 interface PageParams {
@@ -20,7 +20,9 @@ async function loadJobOpening(id: string) {
     department: doc.department ?? "",
     location: doc.location ?? "",
     employmentType: (doc.employmentType ?? "fullTime") as JobEmploymentType,
+    applyMode: (doc.applyMode ?? "form") as JobApplyMode,
     applyUrl: doc.applyUrl ?? "",
+    applyEmail: doc.applyEmail ?? "",
     summary: { id: doc.summary?.id ?? "", en: doc.summary?.en ?? "" },
     description: { id: doc.description?.id ?? "", en: doc.description?.en ?? "" },
     isPublished: doc.isPublished ?? false,

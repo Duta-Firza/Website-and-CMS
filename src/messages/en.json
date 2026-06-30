@@ -88,6 +88,24 @@
     "noOpenings": "No open positions right now. Keep an eye on this page or follow us on the job boards above.",
     "apply": "Apply",
     "viewDescription": "View job description",
+    "findUsOnSubtitle": "Follow us and find our openings on these platforms.",
+    "applyEmailSubject": "Application: {title}",
+    "applyFor": "Apply: {title}",
+    "applyDialogSubtitle": "Fill in your details and upload your CV (PDF).",
+    "applySubmit": "Submit Application",
+    "applySubmitting": "Submitting…",
+    "applySuccessTitle": "Application sent",
+    "applySuccessMessage": "Thank you, your application has been received.",
+    "ok": "OK",
+    "errorToast": "Something went wrong. Please try again.",
+    "cvLabel": "CV / Resume (PDF)",
+    "cvUploadHint": "Click to upload your CV (PDF, max 10MB)",
+    "cvUploading": "Uploading…",
+    "cvUploadFailed": "Failed to upload CV.",
+    "cvInvalid": "File must be a PDF.",
+    "cvTooLarge": "Maximum file size is 10MB.",
+    "cvRequired": "CV is required.",
+    "cvRemove": "Remove CV",
     "empType": {
       "fullTime": "Full-time",
       "partTime": "Part-time",
@@ -488,7 +506,12 @@
       "newArticle": "New Article",
       "editArticle": "Edit Article",
       "newJob": "New Opening",
-      "editJob": "Edit Opening"
+      "editJob": "Edit Opening",
+      "applications": {
+        "title": "Job Applications",
+        "description": "Applications submitted via the careers page form, including CVs.",
+        "searchPlaceholder": "Search name, email, position…"
+      }
     },
     "tabs": {
       "content": "Content",
@@ -519,6 +542,7 @@
       "financial": "Financial",
       "downloadForm": "Download Form",
       "openings": "Openings",
+      "applyForm": "Application Form",
       "page": "Page",
       "contactInfo": "Contact Info",
       "location": "Location & Map",
@@ -564,7 +588,9 @@
       "selectInquiry": "Select a submission to view its details.",
       "reports": "No reports yet. Click Add to upload the first report.",
       "publications": "No articles yet.",
-      "jobOpenings": "No job openings yet."
+      "jobOpenings": "No job openings yet.",
+      "applications": "No applications yet.",
+      "selectApplication": "Select an application to view its details."
     },
     "buttons": {
       "addValue": "Add value",
@@ -906,7 +932,28 @@
       "employmentType": "Type",
       "applyUrl": "Apply link / email",
       "applyUrlHint": "External ATS/job-board URL, or mailto:hr@dutafirza.com.",
-      "jobDescription": "Job Description"
+      "jobDescription": "Job Description",
+      "applyMode": "Apply Method",
+      "applyMode_form": "In-app form",
+      "applyMode_url": "External link",
+      "applyMode_email": "Send email",
+      "applyEmail": "Application email",
+      "applyModeFormHint": "Applicants fill a form & upload a CV; submissions land in the Applications inbox.",
+      "boardLogo": "Logo",
+      "boardLogoHint": "Landscape PNG/WebP logo (~3:1), transparent background. Croppable on upload.",
+      "applyFormIntro": "The in-app application form is used by openings set to \"In-app form\". Name, email, phone, and CV upload are always included.",
+      "applyFormEnabled": "Enable application form"
+    },
+    "applicationStatus": {
+      "new": "New",
+      "reviewing": "Reviewing",
+      "shortlisted": "Shortlisted",
+      "rejected": "Rejected",
+      "hired": "Hired"
+    },
+    "applicationsInbox": {
+      "cv": "CV / Resume",
+      "downloadCv": "Download CV"
     },
     "alertDelete": "This action cannot be undone."
   },
@@ -958,6 +1005,7 @@
     "settings": "Settings",
     "users": "Users",
     "inquiries": "Inquiries",
+    "applications": "Job Applications",
     "reportDownloads": "Download Reports",
     "comingSoon": "Soon",
     "expand": "Expand sidebar",
