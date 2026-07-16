@@ -549,7 +549,9 @@
       "display": "Display",
       "form": "Form",
       "boards": "Job Boards",
-      "culture": "Culture & Benefits"
+      "culture": "Culture & Benefits",
+      "paragraph": "Paragraph",
+      "shareholders": "Shareholders"
     },
     "nouns": {
       "stat": "Stat",
@@ -671,7 +673,8 @@
       "companyProfileUrlHint": "Upload the Company Profile PDF document.",
       "originalUrlHint": "Link to the original external article or source (optional).",
       "whatsappNumber": "International format, digits only (e.g. 628123456789). Leave empty to disable the WhatsApp button on the public page.",
-      "whatsappTemplate": "Use '{product}' as a placeholder for the product name."
+      "whatsappTemplate": "Use '{product}' as a placeholder for the product name.",
+      "paragraphRichHint": "Use the editor to format the page paragraph."
     },
     "status": {
       "toggleSaved": "Status updated",
@@ -864,7 +867,10 @@
       "companyProfileUrl": "Company Profile PDF URL",
       "bodyRich": "Article Body",
       "slug": "Slug",
-      "summary": "Summary"
+      "summary": "Summary",
+      "shareholdersEnabled": "Show the table on the public page",
+      "shareholdersHeading": "Table heading",
+      "shareholdersNote": "Footnote"
     },
     "groups": {
       "contact": "Contact",
@@ -892,7 +898,8 @@
       "inquiryMeta": "Submission info",
       "updateStatus": "Update status",
       "reportItem": "Report",
-      "publicationItem": "Article"
+      "publicationItem": "Article",
+      "shareholdersTable": "Shareholder composition"
     },
     "credentials": {
       "valueIndex": "Value #{index}",
@@ -955,7 +962,30 @@
       "cv": "CV / Resume",
       "downloadCv": "Download CV"
     },
-    "alertDelete": "This action cannot be undone."
+    "alertDelete": "This action cannot be undone.",
+    "shareholders": {
+      "columns": "Columns",
+      "rows": "Rows",
+      "addColumn": "Add column",
+      "addRow": "Add row",
+      "removeColumn": "Remove column",
+      "removeRow": "Remove row",
+      "moveUp": "Move up",
+      "columnLabel": "Column label",
+      "columnAlign": "Alignment",
+      "untitledColumn": "Untitled",
+      "emptyColumns": "No columns yet. Add one to start building the table.",
+      "emptyRows": "No rows yet.",
+      "columnsFirst": "Add at least one column before adding rows.",
+      "cellLocale": "Editing cells in:",
+      "enFallbackHint": "Leave a cell blank to reuse the Indonesian value.",
+      "emphasis": "Emphasise this row (e.g. a total)",
+      "align": {
+        "left": "Left",
+        "center": "Center",
+        "right": "Right"
+      }
+    }
   },
   "AdminNav": {
     "dashboard": "Dashboard",
@@ -1037,7 +1067,8 @@
     "sortTitle": "Title A–Z",
     "filterYear": "Year",
     "allYears": "All years",
-    "noResults": "No results match your filters."
+    "noResults": "No results match your filters.",
+    "shareholdersHeading": "Shareholder Composition"
   },
   "Pagination": {
     "previous": "Previous",

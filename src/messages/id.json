@@ -549,7 +549,9 @@
       "display": "Tampilan",
       "form": "Form",
       "boards": "Papan Lowongan",
-      "culture": "Budaya & Benefit"
+      "culture": "Budaya & Benefit",
+      "paragraph": "Paragraf",
+      "shareholders": "Pemegang Saham"
     },
     "nouns": {
       "stat": "Statistik",
@@ -671,7 +673,8 @@
       "companyProfileUrlHint": "Upload dokumen PDF Profil Perusahaan.",
       "originalUrlHint": "Tautan ke artikel atau sumber asli (opsional).",
       "whatsappNumber": "Format internasional, hanya angka (mis. 628123456789). Kosongkan untuk menonaktifkan tombol WhatsApp di halaman publik.",
-      "whatsappTemplate": "Gunakan '{product}' sebagai placeholder nama produk."
+      "whatsappTemplate": "Gunakan '{product}' sebagai placeholder nama produk.",
+      "paragraphRichHint": "Gunakan editor untuk memformat paragraf halaman."
     },
     "status": {
       "toggleSaved": "Status diperbarui",
@@ -864,7 +867,10 @@
       "companyProfileUrl": "URL PDF Profil Perusahaan",
       "bodyRich": "Isi Artikel",
       "slug": "Slug",
-      "summary": "Ringkasan"
+      "summary": "Ringkasan",
+      "shareholdersEnabled": "Tampilkan tabel di halaman publik",
+      "shareholdersHeading": "Judul tabel",
+      "shareholdersNote": "Catatan kaki"
     },
     "groups": {
       "contact": "Kontak",
@@ -892,7 +898,8 @@
       "inquiryMeta": "Info submission",
       "updateStatus": "Ubah status",
       "reportItem": "Laporan",
-      "publicationItem": "Artikel"
+      "publicationItem": "Artikel",
+      "shareholdersTable": "Komposisi pemegang saham"
     },
     "credentials": {
       "valueIndex": "Nilai #{index}",
@@ -955,7 +962,30 @@
       "cv": "CV / Resume",
       "downloadCv": "Unduh CV"
     },
-    "alertDelete": "Aksi ini tidak bisa dibatalkan."
+    "alertDelete": "Aksi ini tidak bisa dibatalkan.",
+    "shareholders": {
+      "columns": "Kolom",
+      "rows": "Baris",
+      "addColumn": "Tambah kolom",
+      "addRow": "Tambah baris",
+      "removeColumn": "Hapus kolom",
+      "removeRow": "Hapus baris",
+      "moveUp": "Naikkan",
+      "columnLabel": "Label kolom",
+      "columnAlign": "Perataan",
+      "untitledColumn": "Tanpa judul",
+      "emptyColumns": "Belum ada kolom. Tambahkan satu untuk mulai menyusun tabel.",
+      "emptyRows": "Belum ada baris.",
+      "columnsFirst": "Tambahkan minimal satu kolom sebelum menambah baris.",
+      "cellLocale": "Mengisi sel dalam:",
+      "enFallbackHint": "Kosongkan sel untuk memakai nilai bahasa Indonesia.",
+      "emphasis": "Tebalkan baris ini (mis. baris total)",
+      "align": {
+        "left": "Kiri",
+        "center": "Tengah",
+        "right": "Kanan"
+      }
+    }
   },
   "AdminNav": {
     "dashboard": "Dasbor",
@@ -1037,7 +1067,8 @@
     "sortTitle": "Judul A–Z",
     "filterYear": "Tahun",
     "allYears": "Semua tahun",
-    "noResults": "Tidak ada hasil yang cocok dengan filter."
+    "noResults": "Tidak ada hasil yang cocok dengan filter.",
+    "shareholdersHeading": "Komposisi Pemegang Saham"
   },
   "Pagination": {
     "previous": "Sebelumnya",

@@ -53,7 +53,13 @@ import {
   SolutionPage,
   Stat,
 } from "@/models";
-import { JOB_APPLY_MODES, PAGE_STATUSES, STAT_ICONS } from "@/models/constants";
+import {
+  JOB_APPLY_MODES,
+  PAGE_STATUSES,
+  type SectionMode,
+  STAT_ICONS,
+  TABLE_COLUMN_ALIGNS,
+} from "@/models/constants";
 
 // ─── Shared ──────────────────────────────────────────────────────────────────
 const localizedSchema = z.object({
@@ -1299,19 +1305,25 @@ export async function setInquiryRead(id: string, read: boolean): Promise<ActionR
 }
 
 // ─── Investor Relations Sub-Pages ─────────────────────────────────────────────
+const irSubPageBodySchema = z.object({
+  heading: localizedSchema,
+  content: localizedSchema,
+});
+
 const irSubPageContentSchema = z.object({
   status: z.enum(IR_SUB_PAGE_STATUSES),
   heroMode: z.enum(SECTION_MODES).default("default"),
-  bodyMode: z.enum(SECTION_MODES).default("disabled"),
   hero: z.object({
     eyebrow: localizedSchema,
     title: localizedSchema,
     subtitle: localizedSchema,
   }),
-  body: z.object({
-    heading: localizedSchema,
-    content: localizedSchema,
-  }),
+  // Sub-pages that edit the body in a tab of its own (stocks) save it through
+  // updateIrSubPageBody and omit it here. Neither key may carry a `.default()`:
+  // zod would materialise it for those callers and the $set below would then
+  // reset the body the other tab just saved.
+  bodyMode: z.enum(SECTION_MODES).optional(),
+  body: irSubPageBodySchema.optional(),
 });
 
 export async function updateIrSubPage(
@@ -1326,6 +1338,85 @@ export async function updateIrSubPage(
     // `findByIdAndUpdate` with a partial object $set-s only these fields, so the
     // sibling `formSettings` saved by updateReportDownloadFormSettings survives.
     await IrSubPage.findByIdAndUpdate(parsedSlug, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+/**
+ * Persist only the Page Body of an IR sub-page. Split out from updateIrSubPage
+ * so a page that edits the body in a separate tab can save it without holding
+ * — and re-writing — a stale copy of the sibling status/hero fields.
+ */
+export async function updateIrSubPageBody(
+  slug: string,
+  input: { bodyMode: SectionMode; body: z.infer<typeof irSubPageBodySchema> },
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsedSlug = z.enum(IR_SUB_PAGE_SLUGS).parse(slug);
+    const parsed = z
+      .object({ bodyMode: z.enum(SECTION_MODES), body: irSubPageBodySchema })
+      .parse(input);
+    await connectDB();
+    await IrSubPage.findByIdAndUpdate(parsedSlug, parsed, { upsert: true, new: true });
+    bust();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+// ─── Stocks shareholder table ────────────────────────────────────────────────
+const stocksShareholdersSchema = z.object({
+  enabled: z.boolean().default(false),
+  heading: localizedSchema,
+  note: localizedSchema,
+  columns: z
+    .array(
+      z.object({
+        key: z.string().min(1),
+        label: localizedSchema,
+        align: z.enum(TABLE_COLUMN_ALIGNS).default("left"),
+      }),
+    )
+    .default([]),
+  rows: z
+    .array(
+      z.object({
+        cells: z
+          .array(z.object({ columnKey: z.string().min(1), value: localizedSchema }))
+          .default([]),
+        emphasis: z.boolean().default(false),
+      }),
+    )
+    .default([]),
+});
+
+/** Persist the shareholder-composition table onto the `stocks` IR doc. */
+export async function updateStocksShareholders(
+  input: z.infer<typeof stocksShareholdersSchema>,
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const parsed = stocksShareholdersSchema.parse(input);
+
+    // Drop cells whose column was deleted in this same save — otherwise they
+    // linger invisibly and reappear if a new column reuses the key.
+    const columnKeys = new Set(parsed.columns.map((c) => c.key));
+    const shareholders = {
+      ...parsed,
+      rows: parsed.rows.map((row, i) => ({
+        cells: row.cells.filter((cell) => columnKeys.has(cell.columnKey)),
+        emphasis: row.emphasis,
+        order: i,
+      })),
+    };
+
+    await connectDB();
+    await IrSubPage.findByIdAndUpdate("stocks", { shareholders }, { upsert: true, new: true });
     bust();
     return { ok: true };
   } catch (e) {

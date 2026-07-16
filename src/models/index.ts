@@ -43,6 +43,8 @@ export {
   type IrSubPageDoc,
   type IrSubPageSlug,
   type IrSubPageStatus,
+  TABLE_COLUMN_ALIGNS,
+  type TableColumnAlign,
 } from "./ir-sub-page";
 export {
   JOB_EMPLOYMENT_TYPES,

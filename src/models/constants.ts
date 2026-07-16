@@ -118,6 +118,10 @@ export type IrSubPageSlug = (typeof IR_SUB_PAGE_SLUGS)[number];
 export const IR_SUB_PAGE_STATUSES = ["published", "comingSoon", "hidden"] as const;
 export type IrSubPageStatus = (typeof IR_SUB_PAGE_STATUSES)[number];
 
+/** Horizontal alignment of a CMS-defined table column (stocks shareholder table). */
+export const TABLE_COLUMN_ALIGNS = ["left", "center", "right"] as const;
+export type TableColumnAlign = (typeof TABLE_COLUMN_ALIGNS)[number];
+
 /** Employment type for a Career job opening. */
 export const JOB_EMPLOYMENT_TYPES = ["fullTime", "partTime", "contract", "internship"] as const;
 export type JobEmploymentType = (typeof JOB_EMPLOYMENT_TYPES)[number];
