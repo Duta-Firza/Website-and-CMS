@@ -471,6 +471,17 @@
         "title": "Download Reports",
         "description": "Leads captured when visitors view or download investor-relations report PDFs."
       },
+      "visitorAnalytics": {
+        "title": "Visitor Analytics",
+        "description": "Traffic on the public site, measured by Umami.",
+        "openInUmami": "Open in Umami",
+        "notConfigured": "Umami is not connected yet",
+        "notConfiguredDesc": "Add the Umami settings to .env.local to enable tracking and show the dashboard here.",
+        "setupStep1": "In Umami, open Settings → Websites → Edit and copy the Website ID.",
+        "setupStep2": "On the same screen, enable \"Share URL\" and copy the generated link.",
+        "setupStep3": "Put both into .env.local, then restart the dev server.",
+        "setupHint": "Self-hosted Umami blocks embedding by default — add this site's URL to its ALLOWED_FRAME_URLS variable."
+      },
       "irStocks": {
         "title": "Stocks",
         "description": "Page content for /investor-relations/stocks."
@@ -986,6 +997,13 @@
         "right": "Right"
       }
     }
+  },
+  "AdminDashboard": {
+    "description": "Overview of every content section and inbox.",
+    "seeAll": "See all",
+    "unread": "{count} unread",
+    "allRead": "All caught up",
+    "emptyInbox": "No submissions yet."
   },
   "AdminNav": {
     "dashboard": "Dashboard",

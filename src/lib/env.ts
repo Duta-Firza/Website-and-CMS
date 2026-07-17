@@ -11,6 +11,17 @@ const schema = z.object({
   // Optional dedicated recipient for job applications; falls back to INQUIRY_TO_EMAIL.
   APPLICATIONS_TO_EMAIL: z.string().email().optional(),
   NEXT_PUBLIC_SITE_URL: z.string().url(),
+  // Umami analytics. Declared here for documentation only — these are read via
+  // direct `process.env` access in src/lib/umami.ts (Next only inlines
+  // NEXT_PUBLIC_* at build time through member access, and this `env` proxy is
+  // server-only). All three stay optional so an unconfigured deploy keeps
+  // working with tracking simply switched off.
+  // `""` is accepted alongside a real URL because .env.example ships these keys
+  // empty to disable tracking — a bare .url() would reject that and take the
+  // whole proxy (and with it db/auth/email) down.
+  NEXT_PUBLIC_UMAMI_WEBSITE_ID: z.string().optional(),
+  NEXT_PUBLIC_UMAMI_SHARE_URL: z.union([z.string().url(), z.literal("")]).optional(),
+  NEXT_PUBLIC_UMAMI_SCRIPT_URL: z.union([z.string().url(), z.literal("")]).optional(),
 });
 
 type Env = z.infer<typeof schema>;

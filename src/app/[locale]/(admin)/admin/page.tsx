@@ -1,85 +1,78 @@
-import { Briefcase, Building2, Handshake, Sparkles } from "lucide-react";
-import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
+import { buildAdminNav } from "@/components/admin/admin-nav-data";
 import { AdminPageHeader } from "@/components/admin/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { connectDB } from "@/lib/db";
-import { Customer, Partner, Project } from "@/models";
-
-async function getDashboardMetrics() {
-  await connectDB();
-  const [partnersCount, projectsCount, customersCount] = await Promise.all([
-    Partner.countDocuments({ isActive: true }),
-    Project.countDocuments({ isPublished: true }),
-    Customer.countDocuments({}),
-  ]);
-  return { partnersCount, projectsCount, customersCount };
-}
+import { type DashboardData, EMPTY_DASHBOARD, getDashboardData } from "@/lib/cms/dashboard";
+import type { Locale } from "@/lib/cms/localize";
+import { ContentGroupCard } from "./_components/content-group-card";
+import { InboxCard } from "./_components/inbox-card";
 
 export default async function AdminDashboardPage() {
-  const locale = await getLocale();
-  const t = await getTranslations("AdminNav");
-  const tAdmin = await getTranslations("Admin");
+  const locale = (await getLocale()) as Locale;
+  const [tNav, tAdmin, t] = await Promise.all([
+    getTranslations("AdminNav"),
+    getTranslations("Admin"),
+    getTranslations("AdminDashboard"),
+  ]);
 
-  let metrics = { partnersCount: 0, projectsCount: 0, customersCount: 0 };
+  // Every query fails together when Mongo is unreachable, so one catch is enough
+  // to keep the page rendering.
+  let data: DashboardData = EMPTY_DASHBOARD;
   try {
-    metrics = await getDashboardMetrics();
+    data = await getDashboardData(locale);
   } catch {
-    // DB not reachable — show zeros, page still renders
+    // DB not reachable — render the shell with empty metrics.
   }
 
-  const base = `/${locale}/admin`;
-  const quickLinks = [
-    { href: `${base}/landing`, icon: Sparkles, label: t("landing") },
-    { href: `${base}/partners`, icon: Handshake, label: t("partners") },
-    { href: `${base}/projects`, icon: Briefcase, label: t("projects") },
-    { href: `${base}/customers`, icon: Building2, label: t("customers") },
-  ];
+  // Sections come from the sidebar itself, so the dashboard can't drift out of
+  // sync with the nav the way the old hand-written link list did.
+  const nav = buildAdminNav(locale);
+  const inboxItems = nav.sections.flatMap((s) =>
+    s.key === "inbox" ? s.groups.flatMap((g) => g.items) : [],
+  );
+  const contentGroups = nav.sections.find((s) => s.key === "content")?.groups ?? [];
+
+  const dateFormat = new Intl.DateTimeFormat(locale === "id" ? "id-ID" : "en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader title={tAdmin("dashboard")} />
+      <AdminPageHeader title={tAdmin("dashboard")} description={t("description")} />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <MetricCard label={t("partners")} value={metrics.partnersCount} />
-        <MetricCard label={t("projects")} value={metrics.projectsCount} />
-        <MetricCard label={t("customers")} value={metrics.customersCount} />
-      </div>
-
-      <div>
-        <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
-          Quick actions
+      <section className="space-y-3">
+        <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          {tNav("sectionInbox")}
         </h2>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {quickLinks.map(({ href, icon: Icon, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className="flex items-center gap-3 rounded-lg border bg-card p-4 transition hover:border-brand-accent/30 hover:shadow-sm"
-            >
-              <span className="rounded-md bg-muted p-2 text-foreground">
-                <Icon className="h-4 w-4" />
-              </span>
-              <span className="text-sm font-medium">{label}</span>
-            </Link>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {inboxItems.map((item) => (
+            <InboxCard
+              key={item.labelKey}
+              item={item}
+              metric={data.inbox[item.labelKey]}
+              dateFormat={dateFormat}
+            />
           ))}
         </div>
-      </div>
-    </div>
-  );
-}
+      </section>
 
-function MetricCard({ label, value }: { label: string; value: number }) {
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          {label}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-3xl font-semibold tracking-tight">{value}</p>
-      </CardContent>
-    </Card>
+      <section className="space-y-3">
+        <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          {tNav("sectionContent")}
+        </h2>
+        {/* items-start: groups run 1–6 rows, so cards shouldn't stretch to match. */}
+        <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {contentGroups.map((group) => (
+            <ContentGroupCard
+              key={group.key}
+              group={group}
+              metrics={data.content}
+              dateFormat={dateFormat}
+            />
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }

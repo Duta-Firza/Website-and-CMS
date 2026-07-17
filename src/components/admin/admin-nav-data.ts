@@ -76,7 +76,6 @@ export function buildAdminNav(locale: string): AdminNavData {
                 labelKey: "visitorAnalytics",
                 href: `${base}/visitor-analytics`,
                 icon: LineChart,
-                comingSoon: true,
               },
             ],
           },

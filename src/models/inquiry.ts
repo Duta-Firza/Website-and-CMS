@@ -26,6 +26,10 @@ const inquirySchema = new Schema(
   { timestamps: true, ...stripVersion },
 );
 
+// Every read of this collection is newest-first; `timestamps: true` alone does
+// not index createdAt, so without this the inbox and dashboard both collscan.
+inquirySchema.index({ createdAt: -1 });
+
 export type InquiryDoc = InferSchemaType<typeof inquirySchema>;
 
 if (process.env.NODE_ENV !== "production" && models.Inquiry) {

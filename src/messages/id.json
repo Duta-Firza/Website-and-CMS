@@ -471,6 +471,17 @@
         "title": "Download Laporan",
         "description": "Lead yang tertangkap saat pengunjung melihat atau mengunduh PDF laporan hubungan investor."
       },
+      "visitorAnalytics": {
+        "title": "Analitik Pengunjung",
+        "description": "Trafik situs publik, diukur dengan Umami.",
+        "openInUmami": "Buka di Umami",
+        "notConfigured": "Umami belum terhubung",
+        "notConfiguredDesc": "Tambahkan pengaturan Umami ke .env.local untuk mengaktifkan pelacakan dan menampilkan dasbornya di sini.",
+        "setupStep1": "Di Umami, buka Settings → Websites → Edit lalu salin Website ID.",
+        "setupStep2": "Di layar yang sama, aktifkan \"Share URL\" lalu salin tautan yang muncul.",
+        "setupStep3": "Isikan keduanya ke .env.local, lalu jalankan ulang dev server.",
+        "setupHint": "Umami self-host memblokir embed secara bawaan — tambahkan URL situs ini ke variabel ALLOWED_FRAME_URLS miliknya."
+      },
       "irStocks": {
         "title": "Saham",
         "description": "Konten halaman /investor-relations/stocks."
@@ -986,6 +997,13 @@
         "right": "Kanan"
       }
     }
+  },
+  "AdminDashboard": {
+    "description": "Ringkasan seluruh bagian konten dan inbox.",
+    "seeAll": "Lihat semua",
+    "unread": "{count} belum dibaca",
+    "allRead": "Semua sudah dibaca",
+    "emptyInbox": "Belum ada kiriman."
   },
   "AdminNav": {
     "dashboard": "Dasbor",

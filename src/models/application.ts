@@ -29,6 +29,10 @@ const applicationSchema = new Schema(
   { timestamps: true, ...stripVersion },
 );
 
+// Every read of this collection is newest-first; `timestamps: true` alone does
+// not index createdAt, so without this the inbox and dashboard both collscan.
+applicationSchema.index({ createdAt: -1 });
+
 export type ApplicationDoc = InferSchemaType<typeof applicationSchema>;
 
 if (process.env.NODE_ENV !== "production" && models.Application) {
