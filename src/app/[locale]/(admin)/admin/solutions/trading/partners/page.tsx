@@ -3,6 +3,7 @@ import type { PartnerRow } from "@/app/[locale]/(admin)/admin/partners/page";
 import { PartnersManager } from "@/app/[locale]/(admin)/admin/partners/partners-manager";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
+import { requirePageScope } from "@/lib/cms/access";
 import { connectDB } from "@/lib/db";
 import { Partner } from "@/models";
 import { loadSolutionPageForAdmin } from "../../_components/load-solution-page";
@@ -24,6 +25,8 @@ async function loadPartners(): Promise<PartnerRow[]> {
 }
 
 export default async function TradingPartnersAdminPage() {
+  await requirePageScope("solutions");
+
   const [page, partners, locale, t] = await Promise.all([
     loadSolutionPageForAdmin("trading-partners"),
     loadPartners(),

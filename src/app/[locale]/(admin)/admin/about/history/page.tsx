@@ -1,6 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
+import { requirePageScope } from "@/lib/cms/access";
 import { connectDB } from "@/lib/db";
 import { HistoryEntry } from "@/models";
 import { AboutSubPageForm } from "../_components/about-sub-page-form";
@@ -31,6 +32,8 @@ async function loadEntries(): Promise<HistoryRow[]> {
 }
 
 export default async function HistoryAdminPage() {
+  await requirePageScope("about");
+
   const [entries, meta, locale, t] = await Promise.all([
     loadEntries(),
     loadAboutSubPageForAdmin("history"),

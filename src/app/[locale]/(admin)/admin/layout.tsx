@@ -1,6 +1,15 @@
+import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import { getCurrentAdmin } from "@/lib/cms/access";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  // Catches sessions revoked mid-flight (deactivated or deleted user). This is
+  // a safety net, not the authorization boundary: soft navigation reuses a
+  // layout without re-running it, so each page guards its own scope.
+  const [admin, locale] = await Promise.all([getCurrentAdmin(), getLocale()]);
+  if (!admin) redirect(`/${locale}/admin/login?reason=revoked`);
+
   return (
     <div className="flex h-screen overflow-hidden">
       <AdminSidebar />

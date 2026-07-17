@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { requirePageScope } from "@/lib/cms/access";
 import { PublicationForm } from "../../newsroom/_components/publication-form";
 
 const emptyPublication = {
@@ -15,6 +16,8 @@ const emptyPublication = {
 };
 
 export default async function NewPressReleasePage() {
+  await requirePageScope("investorRelations");
+
   const t = await getTranslations("Admin");
 
   return (

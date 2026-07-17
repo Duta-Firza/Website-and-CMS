@@ -1,6 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
+import { requirePageScope } from "@/lib/cms/access";
 import { connectDB } from "@/lib/db";
 import { JobOpening } from "@/models";
 import type { JobEmploymentType } from "@/models/constants";
@@ -40,6 +41,8 @@ async function loadJobOpenings(): Promise<JobOpeningRow[]> {
 }
 
 export default async function CareersAdminPage() {
+  await requirePageScope("contact");
+
   const [content, openings, locale, t] = await Promise.all([
     loadCareerPageForAdmin(),
     loadJobOpenings(),

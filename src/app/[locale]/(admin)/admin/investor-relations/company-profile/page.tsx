@@ -3,12 +3,15 @@ import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
 import { UrlTabs } from "@/components/admin/url-tabs";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { requirePageScope } from "@/lib/cms/access";
 import { getCompanyProfileUrl } from "@/lib/cms/investor-relations";
 import { IrSubPageForm } from "../_components/ir-sub-page-form";
 import { loadIrSubPageForAdmin } from "../_components/load-ir-sub-page";
 import { CompanyProfileCard } from "./company-profile-card";
 
 export default async function CompanyProfileAdminPage() {
+  await requirePageScope("investorRelations");
+
   const [meta, profileUrl, locale, t] = await Promise.all([
     loadIrSubPageForAdmin("company-profile"),
     getCompanyProfileUrl(),

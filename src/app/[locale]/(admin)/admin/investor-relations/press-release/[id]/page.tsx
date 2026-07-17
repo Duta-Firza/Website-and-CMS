@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { requirePageScope } from "@/lib/cms/access";
 import { connectDB } from "@/lib/db";
 import { Publication } from "@/models";
 import { PublicationForm } from "../../newsroom/_components/publication-form";
@@ -29,6 +30,8 @@ async function loadPublication(id: string) {
 }
 
 export default async function EditPressReleasePage({ params }: { params: Promise<PageParams> }) {
+  await requirePageScope("investorRelations");
+
   const { id } = await params;
   const [publication, t] = await Promise.all([loadPublication(id), getTranslations("Admin")]);
 

@@ -13,6 +13,29 @@ export type SolutionKey = (typeof SOLUTION_KEYS)[number];
 export const USER_ROLES = ["super-admin", "editor", "viewer"] as const;
 export type UserRole = (typeof USER_ROLES)[number];
 
+/**
+ * Sections of the CMS an editor can be granted access to — the "where" half of
+ * RBAC, with `role` being the "what". Each value pairs with a `scope` field on
+ * an admin nav group or item.
+ *
+ * Two scopes are deliberately absent:
+ * - The dashboard is ungated. Scoping it would leave a user with no landing
+ *   page: /admin denies -> proxy redirects to login -> login returns to /admin.
+ *   Visitor Analytics is real business data, so it splits out as `analytics`.
+ * - `system` (user management) is derived from role, not granted as a scope —
+ *   there's no point restricting someone who can edit their own restrictions.
+ */
+export const ADMIN_SCOPES = [
+  "analytics",
+  "home",
+  "about",
+  "solutions",
+  "investorRelations",
+  "contact",
+  "inbox",
+] as const;
+export type AdminScope = (typeof ADMIN_SCOPES)[number];
+
 export const LEADERSHIP_TYPES = ["director", "commissioner"] as const;
 export type LeadershipType = (typeof LEADERSHIP_TYPES)[number];
 

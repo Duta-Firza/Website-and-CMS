@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { requirePageScope } from "@/lib/cms/access";
 import { JobOpeningForm } from "../../_components/job-opening-form";
 
 const emptyJob = {
@@ -18,6 +19,8 @@ const emptyJob = {
 };
 
 export default async function NewJobOpeningPage() {
+  await requirePageScope("contact");
+
   const t = await getTranslations("Admin");
 
   return (

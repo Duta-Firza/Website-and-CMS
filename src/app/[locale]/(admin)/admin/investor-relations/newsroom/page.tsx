@@ -3,6 +3,7 @@ import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
 import { UrlTabs } from "@/components/admin/url-tabs";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { requirePageScope } from "@/lib/cms/access";
 import { connectDB } from "@/lib/db";
 import { Publication } from "@/models";
 import { IrSubPageForm } from "../_components/ir-sub-page-form";
@@ -34,6 +35,8 @@ async function loadPublications(category: string): Promise<PublicationRow[]> {
 }
 
 export default async function NewsroomAdminPage() {
+  await requirePageScope("investorRelations");
+
   const [meta, publications, locale, t] = await Promise.all([
     loadIrSubPageForAdmin("newsroom"),
     loadPublications("newsroom"),

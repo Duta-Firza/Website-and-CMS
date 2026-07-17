@@ -1,10 +1,13 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
+import { requirePageScope } from "@/lib/cms/access";
 import { IrSubPageForm } from "../_components/ir-sub-page-form";
 import { loadIrSubPageForAdmin } from "../_components/load-ir-sub-page";
 
 export default async function PublicationsAdminPage() {
+  await requirePageScope("investorRelations");
+
   const [meta, locale, t] = await Promise.all([
     loadIrSubPageForAdmin("publications"),
     getLocale(),

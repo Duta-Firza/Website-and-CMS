@@ -30,6 +30,9 @@ import {
   UserCog,
   Users,
 } from "lucide-react";
+// Client-safe: @/models/constants holds pure constants. Importing from
+// @/models instead would drag Mongoose into the browser bundle.
+import { type AdminAccess, canAccess, type NavScope } from "@/lib/rbac";
 
 export interface AdminNavItem {
   labelKey: string;
@@ -38,12 +41,21 @@ export interface AdminNavItem {
   comingSoon?: boolean;
   /** Marks the item that displays a live unread-count badge. */
   badge?: "unreadInquiries" | "unreadApplications";
+  /** Overrides the group's scope for this item alone. */
+  scope?: NavScope;
 }
 
 export interface AdminNavGroup {
   key: string;
   titleKey: string;
   icon: LucideIcon;
+  /**
+   * Permission required to see this group. `null` means always visible.
+   * Kept separate from `key`, which is already the sidebar's open/collapse
+   * cookie value — tying authz to it would mean renaming a scope silently
+   * invalidates everyone's saved sidebar state.
+   */
+  scope: NavScope | null;
   items: AdminNavItem[];
 }
 
@@ -58,8 +70,33 @@ export interface AdminNavData {
   sections: AdminNavSection[];
 }
 
-export function buildAdminNav(locale: string): AdminNavData {
+/**
+ * Builds the admin nav, optionally filtered to what `access` may reach. Omit
+ * `access` only where the caller has already authorized (or is a pure layout
+ * measurement) — the sidebar and dashboard must always pass it, or they'd
+ * advertise pages the user gets bounced from.
+ */
+export function buildAdminNav(locale: string, access?: AdminAccess): AdminNavData {
   const base = `/${locale}/admin`;
+  const nav = buildFullNav(base);
+  if (!access) return nav;
+
+  const sections = nav.sections
+    .map((section) => ({
+      ...section,
+      groups: section.groups
+        .map((group) => ({
+          ...group,
+          items: group.items.filter((item) => canAccess(access, item.scope ?? group.scope)),
+        }))
+        .filter((group) => group.items.length > 0),
+    }))
+    .filter((section) => section.groups.length > 0);
+
+  return { sections };
+}
+
+function buildFullNav(base: string): AdminNavData {
   return {
     sections: [
       {
@@ -67,15 +104,20 @@ export function buildAdminNav(locale: string): AdminNavData {
         titleKey: "sectionAnalytics",
         groups: [
           {
+            // Ungated: every admin needs a landing page, otherwise /admin
+            // denies -> login -> back to /admin. Visitor Analytics is real
+            // business data, so it opts into a scope on its own.
             key: "dashboard",
             titleKey: "dashboard",
             icon: LayoutDashboard,
+            scope: null,
             items: [
               { labelKey: "dashboard", href: base, icon: LayoutDashboard },
               {
                 labelKey: "visitorAnalytics",
                 href: `${base}/visitor-analytics`,
                 icon: LineChart,
+                scope: "analytics",
               },
             ],
           },
@@ -89,12 +131,14 @@ export function buildAdminNav(locale: string): AdminNavData {
             key: "home",
             titleKey: "groupHome",
             icon: Home,
+            scope: "home",
             items: [{ labelKey: "landing", href: `${base}/landing`, icon: Sparkles }],
           },
           {
             key: "about",
             titleKey: "groupAbout",
             icon: Info,
+            scope: "about",
             items: [
               { labelKey: "about", href: `${base}/about`, icon: FileText },
               { labelKey: "leadership", href: `${base}/about/leadership`, icon: Users },
@@ -107,6 +151,7 @@ export function buildAdminNav(locale: string): AdminNavData {
             key: "solutions",
             titleKey: "groupSolutions",
             icon: Layers,
+            scope: "solutions",
             items: [
               { labelKey: "trading", href: `${base}/solutions/trading`, icon: ArrowRightLeft },
               {
@@ -128,6 +173,7 @@ export function buildAdminNav(locale: string): AdminNavData {
             key: "investorRelations",
             titleKey: "groupInvestorRelations",
             icon: LineChart,
+            scope: "investorRelations",
             items: [
               { labelKey: "stocks", href: `${base}/investor-relations/stocks`, icon: TrendingUp },
               {
@@ -161,6 +207,7 @@ export function buildAdminNav(locale: string): AdminNavData {
             key: "contact",
             titleKey: "groupConnect",
             icon: Mail,
+            scope: "contact",
             items: [
               { labelKey: "contactInfo", href: `${base}/contact`, icon: Mail },
               {
@@ -180,6 +227,7 @@ export function buildAdminNav(locale: string): AdminNavData {
             key: "inbox",
             titleKey: "groupInbox",
             icon: Inbox,
+            scope: "inbox",
             items: [
               {
                 labelKey: "inquiries",
@@ -210,7 +258,8 @@ export function buildAdminNav(locale: string): AdminNavData {
             key: "system",
             titleKey: "groupSystem",
             icon: Settings,
-            items: [{ labelKey: "users", href: `${base}/users`, icon: UserCog, comingSoon: true }],
+            scope: "system",
+            items: [{ labelKey: "users", href: `${base}/users`, icon: UserCog }],
           },
         ],
       },

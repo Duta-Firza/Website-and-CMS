@@ -1,5 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { requirePageScope } from "@/lib/cms/access";
 import { loadAdminProjects } from "@/lib/cms/admin-projects";
 import { parseAdminListParams } from "@/lib/cms/list-params";
 import { ProjectsManager } from "./projects-manager";
@@ -11,6 +12,8 @@ export default async function ProjectsAdminPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageScope("solutions");
+
   const [sp, locale, t] = await Promise.all([
     searchParams,
     getLocale(),

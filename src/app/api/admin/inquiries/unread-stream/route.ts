@@ -1,5 +1,6 @@
-import { auth } from "@/lib/auth";
+import { loadCurrentAdmin } from "@/lib/cms/access";
 import { getUnreadInquiryCount } from "@/lib/cms/inquiries";
+import { canAccess } from "@/lib/rbac";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,9 +14,9 @@ const POLL_MS = 10_000;
  * long-lived; on a self-hosted Node server (`next start`) that's fine.
  */
 export async function GET(req: Request) {
-  const session = await auth();
-  const role = (session?.user as { role?: string } | undefined)?.role;
-  if (!session?.user || (role !== "super-admin" && role !== "editor")) {
+  // Reading counts is allowed for viewers too, so this gates on scope only.
+  const admin = await loadCurrentAdmin();
+  if (!admin || !canAccess(admin, "inbox")) {
     return new Response("Unauthorized", { status: 401 });
   }
 
@@ -25,6 +26,7 @@ export async function GET(req: Request) {
     async start(controller) {
       let closed = false;
       let last = -1;
+      let interval: ReturnType<typeof setInterval> | undefined;
 
       const send = (count: number) => {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ count })}\n\n`));
@@ -32,10 +34,28 @@ export async function GET(req: Request) {
       const keepalive = () => {
         controller.enqueue(encoder.encode(": keepalive\n\n"));
       };
+      // Declared before `tick`, which closes the stream when access is revoked.
+      const close = () => {
+        if (closed) return;
+        closed = true;
+        if (interval) clearInterval(interval);
+        try {
+          controller.close();
+        } catch {
+          // already closed
+        }
+      };
 
       const tick = async () => {
         if (closed) return;
         try {
+          // Re-authorize every tick, not just on connect: this connection can
+          // outlive a deactivation by days otherwise. `loadCurrentAdmin` (not
+          // the cached `getCurrentAdmin`) because React's cache is scoped to
+          // the request — and this request lasts as long as the stream.
+          const admin = await loadCurrentAdmin();
+          if (!admin || !canAccess(admin, "inbox")) return close();
+
           const count = await getUnreadInquiryCount();
           if (count !== last) {
             last = count;
@@ -51,18 +71,7 @@ export async function GET(req: Request) {
 
       // Emit the current count immediately so the badge is accurate on connect.
       await tick();
-      const interval = setInterval(tick, POLL_MS);
-
-      const close = () => {
-        if (closed) return;
-        closed = true;
-        clearInterval(interval);
-        try {
-          controller.close();
-        } catch {
-          // already closed
-        }
-      };
+      interval = setInterval(tick, POLL_MS);
 
       req.signal.addEventListener("abort", close);
     },
