@@ -58,7 +58,10 @@ import {
   STAT_ICONS,
   TABLE_COLUMN_ALIGNS,
 } from "@/models/constants";
-import { type ActionResult, bust, errorMessage, requireAdmin } from "./access";
+// `import type` (statement form, not an inline modifier) so the binding is
+// erased outright and can never survive into the "use server" transform.
+import type { ActionResult } from "./access";
+import { bust, errorMessage, requireAdmin } from "./access";
 
 // ─── Shared ──────────────────────────────────────────────────────────────────
 const localizedSchema = z.object({
@@ -69,7 +72,11 @@ const localizedSchema = z.object({
 // requireAdmin / bust / errorMessage / ActionResult now live in ./access, which
 // re-reads the user from MongoDB per call so role, scope and active state are
 // never read from a stale token. Each action names the scope it belongs to.
-export type { ActionResult };
+//
+// ActionResult is deliberately NOT re-exported from here: this is a "use server"
+// module, and Next's action loader turns any re-export into a runtime value
+// binding — which throws ReferenceError on module evaluation and takes every
+// action in the file down with it. Import it from "./access" instead.
 
 // ─── Hero ────────────────────────────────────────────────────────────────────
 const heroSchema = z.object({
