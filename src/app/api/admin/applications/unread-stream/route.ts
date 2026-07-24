@@ -15,7 +15,7 @@ const POLL_MS = 10_000;
 export async function GET(req: Request) {
   // Reading counts is allowed for viewers too, so this gates on scope only.
   const admin = await loadCurrentAdmin();
-  if (!admin || !canAccess(admin, "inbox")) {
+  if (!admin || !canAccess(admin, "applications")) {
     return new Response("Unauthorized", { status: 401 });
   }
 
@@ -51,7 +51,7 @@ export async function GET(req: Request) {
           // Re-authorize every tick — see the inquiries stream for why this
           // uses the uncached loader.
           const current = await loadCurrentAdmin();
-          if (!current || !canAccess(current, "inbox")) return close();
+          if (!current || !canAccess(current, "applications")) return close();
 
           const count = await getUnreadApplicationCount();
           if (count !== last) {

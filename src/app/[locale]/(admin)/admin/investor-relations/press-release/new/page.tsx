@@ -16,7 +16,7 @@ const emptyPublication = {
 };
 
 export default async function NewPressReleasePage() {
-  await requirePageScope("investorRelations");
+  await requirePageScope("pressRelease");
 
   const t = await getTranslations("Admin");
 

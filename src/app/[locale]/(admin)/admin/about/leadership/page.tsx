@@ -60,7 +60,7 @@ async function loadBoardLabels(): Promise<BoardLabels> {
 }
 
 export default async function LeadershipAdminPage() {
-  await requirePageScope("about");
+  await requirePageScope("leadership");
 
   const [members, meta, boardLabels, locale, t, tAbout] = await Promise.all([
     loadMembers(),

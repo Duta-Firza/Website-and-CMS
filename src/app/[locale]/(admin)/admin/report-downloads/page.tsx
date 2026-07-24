@@ -60,7 +60,7 @@ export default async function ReportDownloadsAdminPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  await requirePageScope("inbox");
+  await requirePageScope("reportDownloads");
 
   const [locale, t, sp] = await Promise.all([getLocale(), getTranslations("Admin"), searchParams]);
 

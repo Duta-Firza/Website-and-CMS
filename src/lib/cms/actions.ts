@@ -51,6 +51,9 @@ import {
   SolutionPage,
   Stat,
 } from "@/models";
+// `import type` (statement form, not an inline modifier) so the binding is
+// erased outright and can never survive into the "use server" transform.
+import type { AdminScope } from "@/models/constants";
 import {
   JOB_APPLY_MODES,
   PAGE_STATUSES,
@@ -58,8 +61,6 @@ import {
   STAT_ICONS,
   TABLE_COLUMN_ALIGNS,
 } from "@/models/constants";
-// `import type` (statement form, not an inline modifier) so the binding is
-// erased outright and can never survive into the "use server" transform.
 import type { ActionResult } from "./access";
 import { bust, errorMessage, requireAdmin } from "./access";
 
@@ -68,6 +69,43 @@ const localizedSchema = z.object({
   id: z.string().default(""),
   en: z.string().default(""),
 });
+
+// A few actions serve several submenus through one function keyed by a `slug`
+// (or, for publications, a `category`). Their access scope is the leaf that
+// slug maps to, not a fixed one — so an editor scoped to only Newsroom can't
+// edit Press Release through the shared upsert. Slugs absent from a map (e.g.
+// the "solutions" landing, which has no editor) resolve to no scope and are
+// denied to everyone but super-admins.
+const SOLUTION_SLUG_SCOPE: Record<string, AdminScope> = {
+  trading: "trading",
+  "trading-partners": "tradingPartners",
+  "trading-products": "tradingProducts",
+  manufacturing: "manufacturing",
+  epc: "epc",
+  technology: "technology",
+};
+const ABOUT_SLUG_SCOPE: Record<string, AdminScope> = {
+  "who-we-are": "about",
+  leadership: "leadership",
+  history: "history",
+  business: "business",
+  credentials: "credentials",
+};
+const IR_SLUG_SCOPE: Record<string, AdminScope> = {
+  stocks: "stocks",
+  reports: "reports",
+  publications: "publications",
+  "press-release": "pressRelease",
+  newsroom: "newsroom",
+  "company-profile": "companyProfile",
+};
+
+/** requireAdmin for a slug-keyed action; an unmapped slug is rejected outright. */
+async function requireAdminForSlug(map: Record<string, AdminScope>, slug: string): Promise<void> {
+  const scope = map[slug];
+  if (!scope) throw new Error("FORBIDDEN");
+  await requireAdmin(scope);
+}
 
 // requireAdmin / bust / errorMessage / ActionResult now live in ./access, which
 // re-reads the user from MongoDB per call so role, scope and active state are
@@ -102,7 +140,7 @@ const heroSchema = z.object({
 
 export async function updateHomeHero(input: z.infer<typeof heroSchema>): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     const parsed = heroSchema.parse(input);
     await connectDB();
     await HomeHero.findByIdAndUpdate(
@@ -130,7 +168,7 @@ const statSchema = z.object({
 
 export async function upsertStat(input: z.infer<typeof statSchema>): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     const { id, ...data } = statSchema.parse(input);
     await connectDB();
     if (id) await Stat.findByIdAndUpdate(id, data);
@@ -144,7 +182,7 @@ export async function upsertStat(input: z.infer<typeof statSchema>): Promise<Act
 
 export async function deleteStat(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     await connectDB();
     await Stat.findByIdAndDelete(id);
     bust();
@@ -168,7 +206,7 @@ const partnerSchema = z.object({
 
 export async function upsertPartner(input: z.infer<typeof partnerSchema>): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("tradingPartners");
     const { id, ...data } = partnerSchema.parse(input);
     await connectDB();
     if (id) await Partner.findByIdAndUpdate(id, data);
@@ -182,7 +220,7 @@ export async function upsertPartner(input: z.infer<typeof partnerSchema>): Promi
 
 export async function deletePartner(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("tradingPartners");
     await connectDB();
     await Partner.findByIdAndDelete(id);
     bust();
@@ -206,7 +244,7 @@ const solutionSchema = z.object({
 
 export async function upsertSolution(input: z.infer<typeof solutionSchema>): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     const { id, ...data } = solutionSchema.parse(input);
     await connectDB();
     const opts = { strict: false } as const;
@@ -222,7 +260,7 @@ export async function upsertSolution(input: z.infer<typeof solutionSchema>): Pro
 
 export async function deleteSolution(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     await connectDB();
     await Solution.findByIdAndDelete(id);
     bust();
@@ -236,7 +274,7 @@ export async function updateSolutionsLayout(input: {
   columnsPerRow: number;
 }): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     const columnsPerRow = Math.max(1, Math.min(6, Math.round(input.columnsPerRow)));
     await connectDB();
     // strict: false bypasses Mongoose schema cache so the field isn't stripped
@@ -273,7 +311,7 @@ const projectSchema = z.object({
 
 export async function upsertProject(input: z.infer<typeof projectSchema>): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("epc");
     const { id, ...data } = projectSchema.parse(input);
     await connectDB();
     if (id) await Project.findByIdAndUpdate(id, data);
@@ -287,7 +325,7 @@ export async function upsertProject(input: z.infer<typeof projectSchema>): Promi
 
 export async function deleteProject(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("epc");
     await connectDB();
     await Project.findByIdAndDelete(id);
     bust();
@@ -309,7 +347,7 @@ const customerSchema = z.object({
 
 export async function upsertCustomer(input: z.infer<typeof customerSchema>): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     const { id, ...data } = customerSchema.parse(input);
     await connectDB();
     if (id) await Customer.findByIdAndUpdate(id, data);
@@ -323,7 +361,7 @@ export async function upsertCustomer(input: z.infer<typeof customerSchema>): Pro
 
 export async function deleteCustomer(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     await connectDB();
     await Customer.findByIdAndDelete(id);
     bust();
@@ -335,7 +373,7 @@ export async function deleteCustomer(id: string): Promise<ActionResult> {
 
 export async function toggleCustomerActive(id: string, value: boolean): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     await connectDB();
     await Customer.findByIdAndUpdate(id, { isActive: value });
     bust();
@@ -359,7 +397,7 @@ export async function upsertReachPoint(
   input: z.infer<typeof reachPointSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     const { id, ...data } = reachPointSchema.parse(input);
     await connectDB();
     if (id) await ReachPoint.findByIdAndUpdate(id, data);
@@ -373,7 +411,7 @@ export async function upsertReachPoint(
 
 export async function deleteReachPoint(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     await connectDB();
     await ReachPoint.findByIdAndDelete(id);
     bust();
@@ -402,7 +440,7 @@ export async function updateSiteSettings(
   input: z.infer<typeof siteSettingsSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("contact");
+    await requireAdmin("contactInfo");
     const parsed = siteSettingsSchema.parse(input);
     await connectDB();
     await SiteSettings.findByIdAndUpdate(SITE_SETTINGS_ID, parsed, { upsert: true, new: true });
@@ -474,7 +512,7 @@ export async function updateLeadershipLabel(
   value: z.infer<typeof localizedSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("leadership");
     const parsedField = leadershipLabelFields.parse(field);
     const parsedValue = localizedSchema.parse(value);
     await connectDB();
@@ -499,7 +537,7 @@ export async function updateCoreBusinessSection(
   input: z.infer<typeof coreBusinessSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("business");
     const parsed = coreBusinessSchema.parse(input);
     await connectDB();
     await AboutPage.findByIdAndUpdate(ABOUT_PAGE_ID, { $set: parsed }, { upsert: true, new: true });
@@ -519,7 +557,7 @@ export async function updateAffiliatedBusinessSection(
   input: z.infer<typeof affiliatedHeaderSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("business");
     const parsed = affiliatedHeaderSchema.parse(input);
     await connectDB();
     await AboutPage.findByIdAndUpdate(ABOUT_PAGE_ID, { $set: parsed }, { upsert: true, new: true });
@@ -545,7 +583,7 @@ export async function updateAboutHolding(
   input: z.infer<typeof aboutHoldingSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("business");
     const parsed = aboutHoldingSchema.parse(input);
     await connectDB();
     await AboutPage.findByIdAndUpdate(ABOUT_PAGE_ID, { $set: parsed }, { upsert: true, new: true });
@@ -572,7 +610,7 @@ export async function upsertLeadershipMember(
   input: z.infer<typeof leadershipSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("leadership");
     const { id, ...data } = leadershipSchema.parse(input);
     await connectDB();
     if (id) await LeadershipMember.findByIdAndUpdate(id, data);
@@ -586,7 +624,7 @@ export async function upsertLeadershipMember(
 
 export async function deleteLeadershipMember(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("leadership");
     await connectDB();
     await LeadershipMember.findByIdAndDelete(id);
     bust();
@@ -610,7 +648,7 @@ export async function upsertHistoryEntry(
   input: z.infer<typeof historyEntrySchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("history");
     const { id, ...data } = historyEntrySchema.parse(input);
     await connectDB();
     if (id) await HistoryEntry.findByIdAndUpdate(id, data);
@@ -624,7 +662,7 @@ export async function upsertHistoryEntry(
 
 export async function deleteHistoryEntry(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("history");
     await connectDB();
     await HistoryEntry.findByIdAndDelete(id);
     bust();
@@ -648,7 +686,7 @@ export async function upsertAffiliatedBusiness(
   input: z.infer<typeof affiliatedBusinessSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("business");
     const { id, ...data } = affiliatedBusinessSchema.parse(input);
     await connectDB();
     if (id) await AffiliatedBusiness.findByIdAndUpdate(id, data);
@@ -662,7 +700,7 @@ export async function upsertAffiliatedBusiness(
 
 export async function deleteAffiliatedBusiness(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("business");
     await connectDB();
     await AffiliatedBusiness.findByIdAndDelete(id);
     bust();
@@ -688,7 +726,7 @@ export async function upsertCredential(
   input: z.infer<typeof credentialSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("credentials");
     const { id, ...data } = credentialSchema.parse(input);
     await connectDB();
     if (id) await Credential.findByIdAndUpdate(id, data);
@@ -702,7 +740,7 @@ export async function upsertCredential(
 
 export async function deleteCredential(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("credentials");
     await connectDB();
     await Credential.findByIdAndDelete(id);
     bust();
@@ -726,7 +764,7 @@ async function reorderDocs<TDoc>(
 
 export async function reorderStats(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     await reorderDocs(Stat, reorderSchema.parse(ids));
     bust();
     return { ok: true };
@@ -737,7 +775,7 @@ export async function reorderStats(ids: string[]): Promise<ActionResult> {
 
 export async function reorderReachPoints(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     await reorderDocs(ReachPoint, reorderSchema.parse(ids));
     bust();
     return { ok: true };
@@ -748,7 +786,7 @@ export async function reorderReachPoints(ids: string[]): Promise<ActionResult> {
 
 export async function reorderPartners(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("tradingPartners");
     await reorderDocs(Partner, reorderSchema.parse(ids));
     bust();
     return { ok: true };
@@ -759,7 +797,7 @@ export async function reorderPartners(ids: string[]): Promise<ActionResult> {
 
 export async function reorderCustomers(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     await reorderDocs(Customer, reorderSchema.parse(ids));
     bust();
     return { ok: true };
@@ -770,7 +808,7 @@ export async function reorderCustomers(ids: string[]): Promise<ActionResult> {
 
 export async function reorderProjects(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("epc");
     const parsed = reorderSchema.parse(ids);
     await connectDB();
     const docs = await Project.find({ _id: { $in: parsed } })
@@ -795,7 +833,7 @@ export async function reorderProjects(ids: string[]): Promise<ActionResult> {
 
 export async function reorderProjectHighlights(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("epc");
     await reorderDocs(Project, reorderSchema.parse(ids), "highlightOrder");
     bust();
     return { ok: true };
@@ -806,7 +844,7 @@ export async function reorderProjectHighlights(ids: string[]): Promise<ActionRes
 
 export async function reorderSolutions(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("home");
+    await requireAdmin("landing");
     await reorderDocs(Solution, reorderSchema.parse(ids));
     bust();
     return { ok: true };
@@ -817,7 +855,7 @@ export async function reorderSolutions(ids: string[]): Promise<ActionResult> {
 
 export async function reorderLeadership(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("leadership");
     const parsed = reorderSchema.parse(ids);
     await connectDB();
     const docs = await LeadershipMember.find({ _id: { $in: parsed } })
@@ -842,7 +880,7 @@ export async function reorderLeadership(ids: string[]): Promise<ActionResult> {
 
 export async function reorderHistory(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("history");
     await reorderDocs(HistoryEntry, reorderSchema.parse(ids));
     bust();
     return { ok: true };
@@ -853,7 +891,7 @@ export async function reorderHistory(ids: string[]): Promise<ActionResult> {
 
 export async function reorderAffiliatedBusinesses(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("business");
     await reorderDocs(AffiliatedBusiness, reorderSchema.parse(ids));
     bust();
     return { ok: true };
@@ -864,7 +902,7 @@ export async function reorderAffiliatedBusinesses(ids: string[]): Promise<Action
 
 export async function reorderCredentials(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("credentials");
     const parsed = reorderSchema.parse(ids);
     await connectDB();
     const docs = await Credential.find({ _id: { $in: parsed } })
@@ -892,7 +930,7 @@ const toggleSchema = z.object({ id: z.string().min(1), value: z.boolean() });
 
 export async function togglePartnerActive(id: string, value: boolean): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("tradingPartners");
     const parsed = toggleSchema.parse({ id, value });
     await connectDB();
     await Partner.findByIdAndUpdate(parsed.id, { isActive: parsed.value });
@@ -905,7 +943,7 @@ export async function togglePartnerActive(id: string, value: boolean): Promise<A
 
 export async function toggleLeadershipActive(id: string, value: boolean): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
+    await requireAdmin("leadership");
     const parsed = toggleSchema.parse({ id, value });
     await connectDB();
     await LeadershipMember.findByIdAndUpdate(parsed.id, { isActive: parsed.value });
@@ -918,7 +956,7 @@ export async function toggleLeadershipActive(id: string, value: boolean): Promis
 
 export async function toggleProjectPublished(id: string, value: boolean): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("epc");
     const parsed = toggleSchema.parse({ id, value });
     await connectDB();
     await Project.findByIdAndUpdate(parsed.id, { isPublished: parsed.value });
@@ -931,7 +969,7 @@ export async function toggleProjectPublished(id: string, value: boolean): Promis
 
 export async function toggleProjectHighlighted(id: string, value: boolean): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("epc");
     const parsed = toggleSchema.parse({ id, value });
     await connectDB();
     await Project.findByIdAndUpdate(parsed.id, { isHighlighted: parsed.value });
@@ -1009,8 +1047,8 @@ export async function updateSolutionPage(
   input: z.infer<typeof solutionPageContentSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
     const parsedSlug = z.enum(SOLUTION_PAGE_SLUGS).parse(slug);
+    await requireAdminForSlug(SOLUTION_SLUG_SCOPE, parsedSlug);
     const parsed = solutionPageContentSchema.parse(input);
     await connectDB();
     await SolutionPage.findByIdAndUpdate(parsedSlug, parsed, { upsert: true, new: true });
@@ -1023,8 +1061,8 @@ export async function updateSolutionPage(
 
 export async function setSolutionPageStatus(slug: string, status: string): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
     const parsedSlug = z.enum(SOLUTION_PAGE_SLUGS).parse(slug);
+    await requireAdminForSlug(SOLUTION_SLUG_SCOPE, parsedSlug);
     const parsedStatus = z.enum(SOLUTION_PAGE_STATUSES).parse(status);
     await connectDB();
     await SolutionPage.findByIdAndUpdate(
@@ -1049,7 +1087,7 @@ export async function updateTradingWhatsapp(
   input: z.infer<typeof tradingWhatsappSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("tradingProducts");
     const { number, template } = tradingWhatsappSchema.parse(input);
     await connectDB();
     await SolutionPage.findByIdAndUpdate(
@@ -1085,8 +1123,8 @@ export async function updateAboutSubPage(
   input: z.infer<typeof aboutSubPageContentSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("about");
     const parsedSlug = z.enum(ABOUT_SUB_PAGE_SLUGS).parse(slug);
+    await requireAdminForSlug(ABOUT_SLUG_SCOPE, parsedSlug);
     const parsed = aboutSubPageContentSchema.parse(input);
     await connectDB();
     await AboutSubPage.findByIdAndUpdate(parsedSlug, parsed, { upsert: true, new: true });
@@ -1124,7 +1162,7 @@ const productSchema = z.object({
 
 export async function upsertProduct(input: z.infer<typeof productSchema>): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("tradingProducts");
     const { id, ...data } = productSchema.parse(input);
     await connectDB();
     if (id) {
@@ -1148,7 +1186,7 @@ export async function upsertProduct(input: z.infer<typeof productSchema>): Promi
 
 export async function deleteProduct(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("tradingProducts");
     await connectDB();
     await Product.findByIdAndDelete(id);
     bust();
@@ -1160,7 +1198,7 @@ export async function deleteProduct(id: string): Promise<ActionResult> {
 
 export async function reorderProducts(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("tradingProducts");
     await reorderDocs(Product, reorderSchema.parse(ids));
     bust();
     return { ok: true };
@@ -1171,7 +1209,7 @@ export async function reorderProducts(ids: string[]): Promise<ActionResult> {
 
 export async function toggleProductActive(id: string, value: boolean): Promise<ActionResult> {
   try {
-    await requireAdmin("solutions");
+    await requireAdmin("tradingProducts");
     const parsed = toggleSchema.parse({ id, value });
     await connectDB();
     await Product.findByIdAndUpdate(parsed.id, { isActive: parsed.value });
@@ -1256,7 +1294,7 @@ export async function updateInquiryStatus(
   notes?: string,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("inbox");
+    await requireAdmin("inquiries");
     const parsed = z
       .object({
         id: z.string().min(1),
@@ -1277,7 +1315,7 @@ export async function updateInquiryStatus(
 
 export async function deleteInquiry(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("inbox");
+    await requireAdmin("inquiries");
     await connectDB();
     await Inquiry.findByIdAndDelete(id);
     bust();
@@ -1290,7 +1328,7 @@ export async function deleteInquiry(id: string): Promise<ActionResult> {
 /** Toggle an inquiry's read/unread flag (drives the sidebar unread badge). */
 export async function setInquiryRead(id: string, read: boolean): Promise<ActionResult> {
   try {
-    await requireAdmin("inbox");
+    await requireAdmin("inquiries");
     const parsed = z.object({ id: z.string().min(1), read: z.boolean() }).parse({ id, read });
     await connectDB();
     await Inquiry.findByIdAndUpdate(parsed.id, { read: parsed.read });
@@ -1328,8 +1366,8 @@ export async function updateIrSubPage(
   input: z.infer<typeof irSubPageContentSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("investorRelations");
     const parsedSlug = z.enum(IR_SUB_PAGE_SLUGS).parse(slug);
+    await requireAdminForSlug(IR_SLUG_SCOPE, parsedSlug);
     const parsed = irSubPageContentSchema.parse(input);
     await connectDB();
     // `findByIdAndUpdate` with a partial object $set-s only these fields, so the
@@ -1352,8 +1390,8 @@ export async function updateIrSubPageBody(
   input: { bodyMode: SectionMode; body: z.infer<typeof irSubPageBodySchema> },
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("investorRelations");
     const parsedSlug = z.enum(IR_SUB_PAGE_SLUGS).parse(slug);
+    await requireAdminForSlug(IR_SLUG_SCOPE, parsedSlug);
     const parsed = z
       .object({ bodyMode: z.enum(SECTION_MODES), body: irSubPageBodySchema })
       .parse(input);
@@ -1397,7 +1435,7 @@ export async function updateStocksShareholders(
   input: z.infer<typeof stocksShareholdersSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("investorRelations");
+    await requireAdmin("stocks");
     const parsed = stocksShareholdersSchema.parse(input);
 
     // Drop cells whose column was deleted in this same save — otherwise they
@@ -1427,7 +1465,7 @@ export async function updateReportDownloadFormSettings(
   input: z.infer<typeof formSettingsSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("investorRelations");
+    await requireAdmin("reports");
     const parsed = formSettingsSchema.parse(input);
     await connectDB();
     await IrSubPage.findByIdAndUpdate(
@@ -1481,7 +1519,7 @@ export async function submitReportLead(
 /** Toggle a report lead's read/unread flag. */
 export async function setReportLeadRead(id: string, read: boolean): Promise<ActionResult> {
   try {
-    await requireAdmin("inbox");
+    await requireAdmin("reportDownloads");
     const parsed = z.object({ id: z.string().min(1), read: z.boolean() }).parse({ id, read });
     await connectDB();
     await ReportDownload.findByIdAndUpdate(parsed.id, { read: parsed.read });
@@ -1494,7 +1532,7 @@ export async function setReportLeadRead(id: string, read: boolean): Promise<Acti
 
 export async function deleteReportLead(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("inbox");
+    await requireAdmin("reportDownloads");
     await connectDB();
     await ReportDownload.findByIdAndDelete(id);
     bust();
@@ -1539,7 +1577,7 @@ export async function updateContactPage(
   input: z.infer<typeof contactPageSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("contact");
+    await requireAdmin("contactInfo");
     const parsed = contactPageSchema.parse(input);
     await connectDB();
     await ContactPage.findByIdAndUpdate(CONTACT_PAGE_ID, parsed, { upsert: true, new: true });
@@ -1563,7 +1601,7 @@ export async function updateContactDisplay(
   input: z.infer<typeof contactDisplaySchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("contact");
+    await requireAdmin("contactInfo");
     const parsed = contactDisplaySchema.parse(input);
     await connectDB();
     await ContactPage.findByIdAndUpdate(CONTACT_PAGE_ID, parsed, { upsert: true, new: true });
@@ -1614,7 +1652,7 @@ export async function updateCareerPage(
   input: z.infer<typeof careerPageSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("contact");
+    await requireAdmin("careers");
     const parsed = careerPageSchema.parse(input);
     await connectDB();
     await CareerPage.findByIdAndUpdate(CAREER_PAGE_ID, parsed, { upsert: true, new: true });
@@ -1646,7 +1684,7 @@ export async function upsertJobOpening(
   input: z.infer<typeof jobOpeningSchema>,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("contact");
+    await requireAdmin("careers");
     const { id, ...data } = jobOpeningSchema.parse(input);
     await connectDB();
     if (id) await JobOpening.findByIdAndUpdate(id, data);
@@ -1660,7 +1698,7 @@ export async function upsertJobOpening(
 
 export async function deleteJobOpening(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("contact");
+    await requireAdmin("careers");
     await connectDB();
     await JobOpening.findByIdAndDelete(id);
     bust();
@@ -1672,7 +1710,7 @@ export async function deleteJobOpening(id: string): Promise<ActionResult> {
 
 export async function reorderJobOpenings(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("contact");
+    await requireAdmin("careers");
     await connectDB();
     await Promise.all(ids.map((id, i) => JobOpening.findByIdAndUpdate(id, { order: i })));
     bust();
@@ -1684,7 +1722,7 @@ export async function reorderJobOpenings(ids: string[]): Promise<ActionResult> {
 
 export async function toggleJobOpeningPublished(id: string, value: boolean): Promise<ActionResult> {
   try {
-    await requireAdmin("contact");
+    await requireAdmin("careers");
     const parsed = z.object({ id: z.string().min(1), value: z.boolean() }).parse({ id, value });
     await connectDB();
     await JobOpening.findByIdAndUpdate(parsed.id, { isPublished: parsed.value });
@@ -1768,7 +1806,7 @@ export async function updateApplicationStatus(
   notes?: string,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin("inbox");
+    await requireAdmin("applications");
     const parsed = z
       .object({
         id: z.string().min(1),
@@ -1789,7 +1827,7 @@ export async function updateApplicationStatus(
 
 export async function deleteApplication(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("inbox");
+    await requireAdmin("applications");
     await connectDB();
     await Application.findByIdAndDelete(id);
     bust();
@@ -1801,7 +1839,7 @@ export async function deleteApplication(id: string): Promise<ActionResult> {
 
 export async function setApplicationRead(id: string, read: boolean): Promise<ActionResult> {
   try {
-    await requireAdmin("inbox");
+    await requireAdmin("applications");
     const parsed = z.object({ id: z.string().min(1), read: z.boolean() }).parse({ id, read });
     await connectDB();
     await Application.findByIdAndUpdate(parsed.id, { read: parsed.read });
@@ -1837,12 +1875,27 @@ function generateSlug(text: string): string {
     .slice(0, 80);
 }
 
+/** Newsroom and Press Release are one collection split by `category`, so their
+ * shared actions scope to whichever the row belongs to. */
+function publicationScope(category: string): AdminScope {
+  return category === "press-release" ? "pressRelease" : "newsroom";
+}
+
+/** For actions that only get an id: read the row's category to find its scope. */
+async function requireAdminForPublicationId(id: string): Promise<void> {
+  await connectDB();
+  const doc = await Publication.findById(id)
+    .select("category")
+    .lean<{ category?: string } | null>();
+  await requireAdmin(publicationScope(doc?.category ?? "newsroom"));
+}
+
 export async function upsertPublication(
   input: z.infer<typeof publicationSchema>,
 ): Promise<ActionResult<{ id: string; slug: string }>> {
   try {
-    await requireAdmin("investorRelations");
     const { id, slug, ...data } = publicationSchema.parse(input);
+    await requireAdmin(publicationScope(data.category));
     await connectDB();
     const finalSlug = slug?.trim() || generateSlug(data.title.en || data.title.id);
     if (id) {
@@ -1861,8 +1914,7 @@ export async function upsertPublication(
 
 export async function deletePublication(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("investorRelations");
-    await connectDB();
+    await requireAdminForPublicationId(id);
     await Publication.findByIdAndDelete(id);
     bust();
     return { ok: true };
@@ -1873,8 +1925,9 @@ export async function deletePublication(id: string): Promise<ActionResult> {
 
 export async function reorderPublications(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("investorRelations");
-    await connectDB();
+    // Reorders happen within one category list, so the first row's scope covers
+    // the batch.
+    await requireAdminForPublicationId(ids[0] ?? "");
     await Promise.all(ids.map((id, i) => Publication.findByIdAndUpdate(id, { order: i })));
     bust();
     return { ok: true };
@@ -1900,7 +1953,7 @@ const reportSchema = z.object({
 
 export async function upsertReport(input: z.infer<typeof reportSchema>): Promise<ActionResult> {
   try {
-    await requireAdmin("investorRelations");
+    await requireAdmin("reports");
     const { id, ...data } = reportSchema.parse(input);
     // "default" mode never carries an image — clear any stale URL so the public
     // page falls back to the placeholder.
@@ -1923,7 +1976,7 @@ export async function generateReportThumbnail(
   fileUrl: string,
 ): Promise<ActionResult<{ url: string }>> {
   try {
-    await requireAdmin("investorRelations");
+    await requireAdmin("reports");
     const parsed = z.string().url().parse(fileUrl);
     const res = await fetch(parsed);
     if (!res.ok) return { ok: false, error: `Failed to fetch PDF (${res.status})` };
@@ -1947,7 +2000,7 @@ export async function generateReportThumbnail(
 
 export async function deleteReport(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin("investorRelations");
+    await requireAdmin("reports");
     await connectDB();
     await Report.findByIdAndDelete(id);
     bust();
@@ -1959,7 +2012,7 @@ export async function deleteReport(id: string): Promise<ActionResult> {
 
 export async function reorderReports(ids: string[]): Promise<ActionResult> {
   try {
-    await requireAdmin("investorRelations");
+    await requireAdmin("reports");
     await connectDB();
     await Promise.all(ids.map((id, i) => Report.findByIdAndUpdate(id, { order: i })));
     bust();
@@ -1972,7 +2025,7 @@ export async function reorderReports(ids: string[]): Promise<ActionResult> {
 // ─── Company Profile URL ──────────────────────────────────────────────────────
 export async function updateCompanyProfileUrl(url: string): Promise<ActionResult> {
   try {
-    await requireAdmin("investorRelations");
+    await requireAdmin("companyProfile");
     const parsed = z.string().parse(url);
     await connectDB();
     await SiteSettings.findByIdAndUpdate(

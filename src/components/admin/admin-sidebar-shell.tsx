@@ -55,7 +55,8 @@ export function AdminSidebarShell({
   const pathname = usePathname() ?? "";
   const searchParams = useSearchParams();
   const nav = useMemo(() => buildAdminNav(locale, access), [locale, access]);
-  const showInbox = canAccess(access, "inbox");
+  const showInquiries = canAccess(access, "inquiries");
+  const showApplications = canAccess(access, "applications");
 
   const isActive = useMemo(() => {
     return (href: string): boolean => {
@@ -90,7 +91,7 @@ export function AdminSidebarShell({
   const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
   const [unreadApplications, setUnreadApplications] = useState(initialUnreadApplications);
   useEffect(() => {
-    if (!showInbox) return;
+    if (!showInquiries) return;
     const es = new EventSource("/api/admin/inquiries/unread-stream");
     es.onmessage = (e) => {
       try {
@@ -101,9 +102,9 @@ export function AdminSidebarShell({
       }
     };
     return () => es.close();
-  }, [showInbox]);
+  }, [showInquiries]);
   useEffect(() => {
-    if (!showInbox) return;
+    if (!showApplications) return;
     const es = new EventSource("/api/admin/applications/unread-stream");
     es.onmessage = (e) => {
       try {
@@ -114,7 +115,7 @@ export function AdminSidebarShell({
       }
     };
     return () => es.close();
-  }, [showInbox]);
+  }, [showApplications]);
 
   const counts: BadgeCounts = { unreadInquiries: unreadCount, unreadApplications };
 

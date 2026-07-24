@@ -17,10 +17,10 @@ export async function AdminSidebar() {
   const admin = await getCurrentAdmin();
   if (!admin) return null;
 
-  const showInbox = canAccess(admin, "inbox");
+  // Each badge is seeded only when its own submenu is in scope.
   const [initialUnreadCount, initialUnreadApplications] = await Promise.all([
-    showInbox ? getUnreadInquiryCount().catch(() => 0) : 0,
-    showInbox ? getUnreadApplicationCount().catch(() => 0) : 0,
+    canAccess(admin, "inquiries") ? getUnreadInquiryCount().catch(() => 0) : 0,
+    canAccess(admin, "applications") ? getUnreadApplicationCount().catch(() => 0) : 0,
   ]);
 
   return (

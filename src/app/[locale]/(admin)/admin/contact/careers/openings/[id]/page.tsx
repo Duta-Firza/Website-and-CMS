@@ -33,7 +33,7 @@ async function loadJobOpening(id: string) {
 }
 
 export default async function EditJobOpeningPage({ params }: { params: Promise<PageParams> }) {
-  await requirePageScope("contact");
+  await requirePageScope("careers");
 
   const { id } = await params;
   const [job, t] = await Promise.all([loadJobOpening(id), getTranslations("Admin")]);

@@ -35,7 +35,7 @@ async function loadPublications(category: string): Promise<PublicationRow[]> {
 }
 
 export default async function NewsroomAdminPage() {
-  await requirePageScope("investorRelations");
+  await requirePageScope("newsroom");
 
   const [meta, publications, locale, t] = await Promise.all([
     loadIrSubPageForAdmin("newsroom"),

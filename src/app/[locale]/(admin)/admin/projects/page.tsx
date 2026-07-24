@@ -12,7 +12,7 @@ export default async function ProjectsAdminPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  await requirePageScope("solutions");
+  await requirePageScope("epc");
 
   const [sp, locale, t] = await Promise.all([
     searchParams,

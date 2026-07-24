@@ -33,6 +33,7 @@ import {
 // Client-safe: @/models/constants holds pure constants. Importing from
 // @/models instead would drag Mongoose into the browser bundle.
 import { type AdminAccess, canAccess, type NavScope } from "@/lib/rbac";
+import { ADMIN_SCOPES, type AdminScope } from "@/models/constants";
 
 export interface AdminNavItem {
   labelKey: string;
@@ -41,22 +42,32 @@ export interface AdminNavItem {
   comingSoon?: boolean;
   /** Marks the item that displays a live unread-count badge. */
   badge?: "unreadInquiries" | "unreadApplications";
-  /** Overrides the group's scope for this item alone. */
-  scope?: NavScope;
 }
 
 export interface AdminNavGroup {
   key: string;
   titleKey: string;
   icon: LucideIcon;
-  /**
-   * Permission required to see this group. `null` means always visible.
-   * Kept separate from `key`, which is already the sidebar's open/collapse
-   * cookie value — tying authz to it would mean renaming a scope silently
-   * invalidates everyone's saved sidebar state.
-   */
-  scope: NavScope | null;
   items: AdminNavItem[];
+}
+
+/**
+ * The permission an item requires, derived from its `labelKey`: every leaf's
+ * scope id is its nav label key. Two items don't map to a grantable scope —
+ * the dashboard is ungated, and Users is super-admin only (token "system").
+ * Anything unrecognised fails closed to "system" so a mis-keyed item is hidden
+ * from editors rather than silently exposed.
+ */
+const ITEM_SCOPE_OVERRIDES: Record<string, NavScope | null> = {
+  dashboard: null,
+  users: "system",
+};
+
+function itemScope(labelKey: string): NavScope | null {
+  if (labelKey in ITEM_SCOPE_OVERRIDES) return ITEM_SCOPE_OVERRIDES[labelKey];
+  return (ADMIN_SCOPES as readonly string[]).includes(labelKey)
+    ? (labelKey as AdminScope)
+    : "system";
 }
 
 /** Functional grouping (Analytics, Content, Inbox, System) above the groups. */
@@ -87,7 +98,7 @@ export function buildAdminNav(locale: string, access?: AdminAccess): AdminNavDat
       groups: section.groups
         .map((group) => ({
           ...group,
-          items: group.items.filter((item) => canAccess(access, item.scope ?? group.scope)),
+          items: group.items.filter((item) => canAccess(access, itemScope(item.labelKey))),
         }))
         .filter((group) => group.items.length > 0),
     }))
@@ -110,14 +121,12 @@ function buildFullNav(base: string): AdminNavData {
             key: "dashboard",
             titleKey: "dashboard",
             icon: LayoutDashboard,
-            scope: null,
             items: [
               { labelKey: "dashboard", href: base, icon: LayoutDashboard },
               {
                 labelKey: "visitorAnalytics",
                 href: `${base}/visitor-analytics`,
                 icon: LineChart,
-                scope: "analytics",
               },
             ],
           },
@@ -131,14 +140,12 @@ function buildFullNav(base: string): AdminNavData {
             key: "home",
             titleKey: "groupHome",
             icon: Home,
-            scope: "home",
             items: [{ labelKey: "landing", href: `${base}/landing`, icon: Sparkles }],
           },
           {
             key: "about",
             titleKey: "groupAbout",
             icon: Info,
-            scope: "about",
             items: [
               { labelKey: "about", href: `${base}/about`, icon: FileText },
               { labelKey: "leadership", href: `${base}/about/leadership`, icon: Users },
@@ -151,7 +158,6 @@ function buildFullNav(base: string): AdminNavData {
             key: "solutions",
             titleKey: "groupSolutions",
             icon: Layers,
-            scope: "solutions",
             items: [
               { labelKey: "trading", href: `${base}/solutions/trading`, icon: ArrowRightLeft },
               {
@@ -173,7 +179,6 @@ function buildFullNav(base: string): AdminNavData {
             key: "investorRelations",
             titleKey: "groupInvestorRelations",
             icon: LineChart,
-            scope: "investorRelations",
             items: [
               { labelKey: "stocks", href: `${base}/investor-relations/stocks`, icon: TrendingUp },
               {
@@ -207,7 +212,6 @@ function buildFullNav(base: string): AdminNavData {
             key: "contact",
             titleKey: "groupConnect",
             icon: Mail,
-            scope: "contact",
             items: [
               { labelKey: "contactInfo", href: `${base}/contact`, icon: Mail },
               {
@@ -227,7 +231,6 @@ function buildFullNav(base: string): AdminNavData {
             key: "inbox",
             titleKey: "groupInbox",
             icon: Inbox,
-            scope: "inbox",
             items: [
               {
                 labelKey: "inquiries",
@@ -258,7 +261,6 @@ function buildFullNav(base: string): AdminNavData {
             key: "system",
             titleKey: "groupSystem",
             icon: Settings,
-            scope: "system",
             items: [{ labelKey: "users", href: `${base}/users`, icon: UserCog }],
           },
         ],

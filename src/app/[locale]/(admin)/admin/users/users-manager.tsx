@@ -31,7 +31,6 @@ import {
 } from "@/components/ui/table";
 import type { UserRow } from "@/lib/cms/admin-users";
 import { deleteUser, toggleUserActive } from "@/lib/cms/user-actions";
-import { SCOPE_LABEL_KEYS } from "@/lib/rbac";
 import {
   ASSIGNABLE_ROLES,
   ResetPasswordDialog,
@@ -157,8 +156,9 @@ export function UsersManager({ items, total, currentUserId }: Props) {
                     ) : u.scopes.length === 0 ? (
                       <span className="text-destructive">{tu("scopesNone")}</span>
                     ) : (
+                      // Scope id == its AdminNav label key.
                       <span className="block truncate">
-                        {u.scopes.map((s) => tNav(SCOPE_LABEL_KEYS[s])).join(", ")}
+                        {u.scopes.map((s) => tNav(s)).join(", ")}
                       </span>
                     )}
                   </TableCell>

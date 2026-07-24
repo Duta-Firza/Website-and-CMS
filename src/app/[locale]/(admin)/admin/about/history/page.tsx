@@ -32,7 +32,7 @@ async function loadEntries(): Promise<HistoryRow[]> {
 }
 
 export default async function HistoryAdminPage() {
-  await requirePageScope("about");
+  await requirePageScope("history");
 
   const [entries, meta, locale, t] = await Promise.all([
     loadEntries(),

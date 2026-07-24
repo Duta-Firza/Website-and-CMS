@@ -74,7 +74,7 @@ async function loadBusinessSections(): Promise<BusinessSections> {
 }
 
 export default async function BusinessAdminPage() {
-  await requirePageScope("about");
+  await requirePageScope("business");
 
   const [businesses, meta, sections, locale, t] = await Promise.all([
     loadBusinesses(),

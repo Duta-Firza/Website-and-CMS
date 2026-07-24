@@ -30,7 +30,7 @@ async function loadPublication(id: string) {
 }
 
 export default async function EditNewsroomArticlePage({ params }: { params: Promise<PageParams> }) {
-  await requirePageScope("investorRelations");
+  await requirePageScope("newsroom");
 
   const { id } = await params;
   const [publication, t] = await Promise.all([loadPublication(id), getTranslations("Admin")]);

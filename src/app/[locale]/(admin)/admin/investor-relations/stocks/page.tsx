@@ -11,7 +11,7 @@ import { ShareholdersForm } from "./_components/shareholders-form";
 import { StocksBodyForm } from "./_components/stocks-body-form";
 
 export default async function StocksAdminPage() {
-  await requirePageScope("investorRelations");
+  await requirePageScope("stocks");
 
   const [meta, shareholders, locale, t] = await Promise.all([
     loadIrSubPageForAdmin("stocks"),

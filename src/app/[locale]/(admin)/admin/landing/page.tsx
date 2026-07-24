@@ -130,7 +130,7 @@ async function loadAll() {
 const LANDING_SECTIONS = ["hero", "stats", "partners", "solutions", "reach", "customers"] as const;
 
 export default async function LandingAdminPage() {
-  await requirePageScope("home");
+  await requirePageScope("landing");
 
   const [data, locale, t] = await Promise.all([loadAll(), getLocale(), getTranslations("Admin")]);
   return (

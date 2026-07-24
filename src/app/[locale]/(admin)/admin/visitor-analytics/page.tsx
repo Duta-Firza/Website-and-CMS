@@ -8,7 +8,7 @@ import { requirePageScope } from "@/lib/cms/access";
 import { getUmamiConfig } from "@/lib/umami";
 
 export default async function VisitorAnalyticsPage() {
-  await requirePageScope("analytics");
+  await requirePageScope("visitorAnalytics");
 
   const t = await getTranslations("Admin.pages.visitorAnalytics");
   const { shareUrl } = getUmamiConfig();

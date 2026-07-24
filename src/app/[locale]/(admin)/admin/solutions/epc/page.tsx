@@ -13,7 +13,7 @@ export default async function EpcAdminPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  await requirePageScope("solutions");
+  await requirePageScope("epc");
 
   const [page, sp, locale, t] = await Promise.all([
     loadSolutionPageForAdmin("epc"),

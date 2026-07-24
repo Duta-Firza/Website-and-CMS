@@ -56,7 +56,7 @@ export default async function ApplicationsAdminPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  await requirePageScope("inbox");
+  await requirePageScope("applications");
 
   const [sp, locale, t] = await Promise.all([
     searchParams,

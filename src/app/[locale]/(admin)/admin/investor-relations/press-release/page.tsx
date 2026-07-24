@@ -28,7 +28,7 @@ async function loadPublications(): Promise<PublicationRow[]> {
 }
 
 export default async function PressReleaseAdminPage() {
-  await requirePageScope("investorRelations");
+  await requirePageScope("pressRelease");
 
   const [meta, publications, locale, t] = await Promise.all([
     loadIrSubPageForAdmin("press-release"),

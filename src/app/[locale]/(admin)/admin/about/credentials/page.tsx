@@ -37,7 +37,7 @@ async function loadCredentials(): Promise<CredentialRow[]> {
 }
 
 export default async function CredentialsAdminPage() {
-  await requirePageScope("about");
+  await requirePageScope("credentials");
 
   const [credentials, meta, locale, t] = await Promise.all([
     loadCredentials(),

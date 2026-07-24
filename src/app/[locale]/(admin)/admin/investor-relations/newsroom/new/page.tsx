@@ -16,7 +16,7 @@ const emptyPublication = {
 };
 
 export default async function NewNewsroomArticlePage() {
-  await requirePageScope("investorRelations");
+  await requirePageScope("newsroom");
 
   const t = await getTranslations("Admin");
 

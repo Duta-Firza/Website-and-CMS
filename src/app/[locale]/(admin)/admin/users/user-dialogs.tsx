@@ -21,7 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import type { UserRow } from "@/lib/cms/admin-users";
 import { createUser, resetUserPassword, updateUser } from "@/lib/cms/user-actions";
-import { SCOPE_LABEL_KEYS } from "@/lib/rbac";
+import { ADMIN_SCOPE_GROUPS } from "@/lib/rbac";
 import { ADMIN_SCOPES, type AdminScope, type UserRole } from "@/models/constants";
 
 /**
@@ -116,10 +116,20 @@ export function UserFormDialog({
   const scopes = watch("scopes");
   const isSuperAdmin = role === "super-admin";
 
+  const setScopes = (next: AdminScope[]) => setValue("scopes", next, { shouldDirty: true });
+
   const toggleScope = (scope: AdminScope, on: boolean) => {
-    setValue("scopes", on ? [...scopes, scope] : scopes.filter((s) => s !== scope), {
-      shouldDirty: true,
-    });
+    setScopes(on ? [...new Set([...scopes, scope])] : scopes.filter((s) => s !== scope));
+  };
+
+  // Checking a section header grants all its submenus; unchecking clears them.
+  const toggleGroup = (groupScopes: AdminScope[], on: boolean) => {
+    const set = new Set(scopes);
+    for (const s of groupScopes) {
+      if (on) set.add(s);
+      else set.delete(s);
+    }
+    setScopes([...set]);
   };
 
   const onSubmit = async (values: FormValues) => {
@@ -206,21 +216,51 @@ export function UserFormDialog({
             ) : (
               <>
                 <p className="text-xs text-muted-foreground">{tu("scopesHint")}</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {ADMIN_SCOPES.map((s) => (
-                    <label
-                      key={s}
-                      htmlFor={`u-scope-${s}`}
-                      className="flex cursor-pointer items-center gap-2 text-sm"
-                    >
-                      <Checkbox
-                        id={`u-scope-${s}`}
-                        checked={scopes.includes(s)}
-                        onCheckedChange={(v) => toggleScope(s, v)}
-                      />
-                      {tNav(SCOPE_LABEL_KEYS[s])}
-                    </label>
-                  ))}
+                <div className="space-y-3 rounded-md border p-3">
+                  {ADMIN_SCOPE_GROUPS.map((group) => {
+                    const selected = group.scopes.filter((s) => scopes.includes(s)).length;
+                    const all = selected === group.scopes.length;
+                    const some = selected > 0 && !all;
+                    return (
+                      <div key={group.key} className="space-y-1.5">
+                        <label
+                          htmlFor={`u-scopegroup-${group.key}`}
+                          className="flex cursor-pointer items-center gap-2 text-sm font-medium"
+                        >
+                          <Checkbox
+                            id={`u-scopegroup-${group.key}`}
+                            checked={all}
+                            indeterminate={some}
+                            // Drive from our own state, not base-ui's value: it
+                            // takes an indeterminate click to *unchecked*, so a
+                            // half-filled group would clear instead of fill.
+                            onCheckedChange={() => toggleGroup(group.scopes, !all)}
+                          />
+                          {tNav(group.titleKey)}
+                        </label>
+                        {/* One item is redundant with its own group header, so
+                            only show children when the group actually splits. */}
+                        {group.scopes.length > 1 && (
+                          <div className="ml-6 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                            {group.scopes.map((s) => (
+                              <label
+                                key={s}
+                                htmlFor={`u-scope-${s}`}
+                                className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground"
+                              >
+                                <Checkbox
+                                  id={`u-scope-${s}`}
+                                  checked={scopes.includes(s)}
+                                  onCheckedChange={(v) => toggleScope(s, v)}
+                                />
+                                {tNav(s)}
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </>
             )}

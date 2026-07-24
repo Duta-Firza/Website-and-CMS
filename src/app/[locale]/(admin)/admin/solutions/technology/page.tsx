@@ -6,7 +6,7 @@ import { loadSolutionPageForAdmin } from "../_components/load-solution-page";
 import { SolutionPageForm } from "../_components/solution-page-form";
 
 export default async function TechnologyAdminPage() {
-  await requirePageScope("solutions");
+  await requirePageScope("technology");
 
   const [page, locale, t] = await Promise.all([
     loadSolutionPageForAdmin("technology"),

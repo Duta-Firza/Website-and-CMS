@@ -25,7 +25,7 @@ async function loadPartners(): Promise<PartnerRow[]> {
 }
 
 export default async function TradingPartnersAdminPage() {
-  await requirePageScope("solutions");
+  await requirePageScope("tradingPartners");
 
   const [page, partners, locale, t] = await Promise.all([
     loadSolutionPageForAdmin("trading-partners"),

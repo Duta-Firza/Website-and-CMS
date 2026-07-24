@@ -68,7 +68,7 @@ export default async function InquiriesAdminPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  await requirePageScope("inbox");
+  await requirePageScope("inquiries");
 
   const [sp, t] = await Promise.all([searchParams, getTranslations("Admin.pages.inquiries")]);
 

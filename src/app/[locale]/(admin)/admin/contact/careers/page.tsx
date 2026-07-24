@@ -41,7 +41,7 @@ async function loadJobOpenings(): Promise<JobOpeningRow[]> {
 }
 
 export default async function CareersAdminPage() {
-  await requirePageScope("contact");
+  await requirePageScope("careers");
 
   const [content, openings, locale, t] = await Promise.all([
     loadCareerPageForAdmin(),

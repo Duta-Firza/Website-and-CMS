@@ -46,7 +46,7 @@ async function loadReports(): Promise<ReportRow[]> {
 }
 
 export default async function ReportsAdminPage() {
-  await requirePageScope("investorRelations");
+  await requirePageScope("reports");
 
   const [meta, reports, formSettings, locale, t] = await Promise.all([
     loadIrSubPageForAdmin("reports"),

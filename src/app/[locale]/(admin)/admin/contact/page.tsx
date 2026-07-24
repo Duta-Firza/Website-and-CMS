@@ -7,7 +7,7 @@ import { loadContactInfo } from "./_components/load-contact-info";
 import { loadContactPageForAdmin } from "./_components/load-contact-page";
 
 export default async function ContactAdminPage() {
-  await requirePageScope("contact");
+  await requirePageScope("contactInfo");
 
   const [pageInitial, infoInitial, locale, t] = await Promise.all([
     loadContactPageForAdmin(),

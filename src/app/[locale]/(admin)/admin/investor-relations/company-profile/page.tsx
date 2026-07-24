@@ -10,7 +10,7 @@ import { loadIrSubPageForAdmin } from "../_components/load-ir-sub-page";
 import { CompanyProfileCard } from "./company-profile-card";
 
 export default async function CompanyProfileAdminPage() {
-  await requirePageScope("investorRelations");
+  await requirePageScope("companyProfile");
 
   const [meta, profileUrl, locale, t] = await Promise.all([
     loadIrSubPageForAdmin("company-profile"),

@@ -32,7 +32,7 @@ async function loadPartners(): Promise<PartnerRow[]> {
 }
 
 export default async function PartnersAdminPage() {
-  await requirePageScope("solutions");
+  await requirePageScope("tradingPartners");
 
   const partners = await loadPartners();
   const t = await getTranslations("Admin.pages.partners");

@@ -16,7 +16,7 @@ const POLL_MS = 10_000;
 export async function GET(req: Request) {
   // Reading counts is allowed for viewers too, so this gates on scope only.
   const admin = await loadCurrentAdmin();
-  if (!admin || !canAccess(admin, "inbox")) {
+  if (!admin || !canAccess(admin, "inquiries")) {
     return new Response("Unauthorized", { status: 401 });
   }
 
@@ -54,7 +54,7 @@ export async function GET(req: Request) {
           // the cached `getCurrentAdmin`) because React's cache is scoped to
           // the request — and this request lasts as long as the stream.
           const admin = await loadCurrentAdmin();
-          if (!admin || !canAccess(admin, "inbox")) return close();
+          if (!admin || !canAccess(admin, "inquiries")) return close();
 
           const count = await getUnreadInquiryCount();
           if (count !== last) {

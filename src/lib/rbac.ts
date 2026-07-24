@@ -28,16 +28,41 @@ export function canWrite(role: UserRole): boolean {
 }
 
 /**
- * Scope -> key in the `AdminNav` message namespace. Reuses the sidebar's own
- * labels so a section can't be named one thing in the nav and another in the
- * permission picker.
+ * Leaf scopes grouped under their section, for the "Section access" picker in
+ * the user form. `titleKey` and each scope both resolve against the `AdminNav`
+ * message namespace (scope id == its nav label key), so the picker always reads
+ * the same names as the sidebar. Order and grouping mirror the nav.
  */
-export const SCOPE_LABEL_KEYS: Record<AdminScope, string> = {
-  analytics: "visitorAnalytics",
-  home: "groupHome",
-  about: "groupAbout",
-  solutions: "groupSolutions",
-  investorRelations: "groupInvestorRelations",
-  contact: "groupConnect",
-  inbox: "groupInbox",
-};
+export interface AdminScopeGroup {
+  /** Stable key for React lists / the group checkbox id. */
+  key: string;
+  /** `AdminNav` message key for the section header. */
+  titleKey: string;
+  scopes: AdminScope[];
+}
+
+export const ADMIN_SCOPE_GROUPS: AdminScopeGroup[] = [
+  { key: "analytics", titleKey: "sectionAnalytics", scopes: ["visitorAnalytics"] },
+  { key: "home", titleKey: "groupHome", scopes: ["landing"] },
+  {
+    key: "about",
+    titleKey: "groupAbout",
+    scopes: ["about", "leadership", "history", "business", "credentials"],
+  },
+  {
+    key: "solutions",
+    titleKey: "groupSolutions",
+    scopes: ["trading", "tradingPartners", "tradingProducts", "manufacturing", "epc", "technology"],
+  },
+  {
+    key: "investorRelations",
+    titleKey: "groupInvestorRelations",
+    scopes: ["stocks", "reports", "publications", "pressRelease", "newsroom", "companyProfile"],
+  },
+  { key: "contact", titleKey: "groupConnect", scopes: ["contactInfo", "careers"] },
+  {
+    key: "inbox",
+    titleKey: "groupInbox",
+    scopes: ["inquiries", "applications", "reportDownloads"],
+  },
+];

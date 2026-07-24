@@ -19,7 +19,7 @@ const emptyJob = {
 };
 
 export default async function NewJobOpeningPage() {
-  await requirePageScope("contact");
+  await requirePageScope("careers");
 
   const t = await getTranslations("Admin");
 
