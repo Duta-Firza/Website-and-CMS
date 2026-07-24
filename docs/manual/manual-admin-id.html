@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Buku Manual Admin — Website & CMS PT Duta Firza</title>
+<style>
+  /* ============================================================
+     CETAK / PRINT-TO-PDF
+     Buka file ini di Chrome/Edge → Ctrl/Cmd+P → "Save as PDF".
+     Set: Paper A4, Margins Default, aktifkan "Background graphics".
+     ============================================================ */
+  :root{
+    --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+    --brand:#0f3d2e; --brand-2:#12694f; --accent:#c8912a;
+    --bg-soft:#f7f8f7; --note:#eef6f2; --warn:#fff6e6; --tip:#eef3fb;
+    --note-b:#12694f; --warn-b:#c8912a; --tip-b:#3b6fb0;
+  }
+  *{box-sizing:border-box;}
+  html{font-size:15px;}
+  body{
+    margin:0; color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;
+  }
+  .page{max-width:820px; margin:0 auto; padding:32px 40px;}
+
+  h1,h2,h3,h4{color:var(--brand); line-height:1.25; font-weight:700;}
+  h1{font-size:1.9rem; margin:0 0 .3em;}
+  h2{font-size:1.5rem; margin:1.6em 0 .5em; padding-bottom:.25em; border-bottom:2px solid var(--line);}
+  h3{font-size:1.18rem; margin:1.3em 0 .4em;}
+  h4{font-size:1rem; margin:1.1em 0 .3em; color:var(--brand-2);}
+  p{margin:.5em 0;}
+  a{color:var(--brand-2); text-decoration:none;}
+  code,.k{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.87em;
+    background:var(--bg-soft); border:1px solid var(--line); border-radius:5px; padding:.05em .4em;}
+  .path{color:var(--brand-2);}
+  ul,ol{margin:.4em 0 .8em; padding-left:1.3em;}
+  li{margin:.25em 0;}
+  small,.muted{color:var(--muted);}
+
+  /* Sampul */
+  .cover{min-height:88vh; display:flex; flex-direction:column; justify-content:center;
+    text-align:center; page-break-after:always;}
+  .cover .kicker{letter-spacing:.22em; text-transform:uppercase; color:var(--accent); font-weight:700; font-size:.8rem;}
+  .cover h1{font-size:2.7rem; margin:.2em 0 .1em; border:0;}
+  .cover .sub{font-size:1.15rem; color:var(--muted); margin-bottom:2.4em;}
+  .cover .brandbar{height:6px;width:120px;margin:1.4em auto;
+    background:linear-gradient(90deg,var(--brand),var(--brand-2),var(--accent));border-radius:6px;}
+  .cover .meta{color:var(--muted); font-size:.92rem; margin-top:2.4em;}
+  .cover .badge{display:inline-block;background:var(--note);color:var(--brand-2);
+    border:1px solid #cfe6db;border-radius:999px;padding:.25em .9em;font-size:.8rem;font-weight:600;margin-top:1em;}
+
+  /* Daftar isi */
+  .toc{page-break-after:always;}
+  .toc ol{list-style:none; padding-left:0; counter-reset:toc;}
+  .toc > ol > li{margin:.35em 0; font-weight:600;}
+  .toc ol ol{padding-left:1.2em; font-weight:400; margin:.2em 0;}
+  .toc a{display:flex; justify-content:space-between; gap:.6em; border-bottom:1px dotted var(--line); padding:.15em 0;}
+
+  /* Bab */
+  .chapter{page-break-before:always;}
+  .chapter > h2:first-child{border-bottom:0; margin-top:.2em;}
+  .chapno{display:inline-block; background:var(--brand); color:#fff; border-radius:8px;
+    font-size:.8rem; font-weight:700; padding:.15em .6em; margin-right:.5em; vertical-align:middle;}
+
+  /* Callout */
+  .box{border-left:4px solid var(--note-b); background:var(--note); padding:.7em 1em;
+    border-radius:0 8px 8px 0; margin:1em 0; page-break-inside:avoid;}
+  .box.warn{border-color:var(--warn-b); background:var(--warn);}
+  .box.tip{border-color:var(--tip-b); background:var(--tip);}
+  .box .lbl{font-weight:700; font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; display:block; margin-bottom:.2em;}
+  .box.note .lbl{color:var(--note-b);} .box.warn .lbl{color:#a5720f;} .box.tip .lbl{color:var(--tip-b);}
+  .box p{margin:.25em 0;}
+
+  /* Tabel */
+  table{border-collapse:collapse; width:100%; margin:1em 0; font-size:.9rem; page-break-inside:auto;}
+  th,td{border:1px solid var(--line); padding:.5em .7em; text-align:left; vertical-align:top;}
+  th{background:var(--bg-soft); color:var(--brand); font-weight:700;}
+  tr{page-break-inside:avoid;}
+  .tbl-wrap{overflow-x:auto;}
+
+  /* Placeholder screenshot */
+  figure.shot{margin:1.2em 0; page-break-inside:avoid;}
+  .shot-ph{border:2px dashed #b8c3bd; border-radius:10px; background:
+    repeating-linear-gradient(45deg,#fafbfa,#fafbfa 12px,#f2f5f3 12px,#f2f5f3 24px);
+    min-height:150px; display:flex; align-items:center; justify-content:center;
+    color:#8a988f; font-size:.9rem; text-align:center; padding:1em;}
+  figure.shot figcaption{font-size:.85rem; color:var(--muted); margin-top:.5em;}
+  .shot-no{display:inline-block; background:var(--brand); color:#fff; border-radius:6px;
+    font-weight:700; font-size:.75rem; padding:.1em .5em; margin-right:.4em;}
+  .shot-url{font-family:ui-monospace,Menlo,monospace; color:var(--brand-2); font-size:.82em;}
+
+  /* Langkah bernomor tebal */
+  ol.steps{counter-reset:step; list-style:none; padding-left:0;}
+  ol.steps > li{position:relative; padding-left:2.1em; margin:.5em 0;}
+  ol.steps > li::before{counter-increment:step; content:counter(step);
+    position:absolute; left:0; top:.05em; width:1.5em; height:1.5em; border-radius:50%;
+    background:var(--brand-2); color:#fff; font-size:.8rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center;}
+
+  .pill{display:inline-block;border-radius:999px;padding:.05em .55em;font-size:.78rem;font-weight:600;border:1px solid;}
+  .pill.pub{background:#e9f6ee;color:#166534;border-color:#bfe3cd;}
+  .pill.soon{background:#fff4e0;color:#9a6a10;border-color:#f0d9a8;}
+  .pill.hid{background:#f3f4f6;color:#4b5563;border-color:#d8dbe0;}
+
+  .lead{font-size:1.05rem;color:#374151;}
+  hr.soft{border:0;border-top:1px solid var(--line);margin:1.6em 0;}
+
+  @media print{
+    .page{max-width:none; padding:0 8mm;}
+    a{color:var(--ink);}
+    .no-print{display:none;}
+  }
+  @page{size:A4; margin:16mm 14mm;}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ============================ SAMPUL ============================ -->
+<section class="cover">
+  <div class="kicker">Buku Manual Administrator</div>
+  <h1>Website &amp; CMS<br />PT Duta Firza</h1>
+  <div class="brandbar"></div>
+  <div class="sub">Panduan lengkap pengelolaan konten, pembacaan data, dan administrasi dashboard admin</div>
+  <div class="badge">Versi Draf 1.0 · Bahasa Indonesia</div>
+  <div class="meta">
+    Dokumen internal · Disusun untuk tim admin PT Duta Firza<br />
+    Tanggal: __________ &nbsp;·&nbsp; Disusun oleh: __________
+  </div>
+</section>
+
+<!-- ============================ DAFTAR ISI ============================ -->
+<section class="toc">
+  <h1>Daftar Isi</h1>
+  <ol>
+    <li><a href="#bab1"><span>1 · Pendahuluan</span></a>
+      <ol>
+        <li><a href="#s1-1"><span>1.1 Tujuan buku ini</span></a></li>
+        <li><a href="#s1-2"><span>1.2 Untuk siapa buku ini</span></a></li>
+        <li><a href="#s1-3"><span>1.3 Ikhtisar website &amp; CMS</span></a></li>
+        <li><a href="#s1-4"><span>1.4 Istilah penting</span></a></li>
+      </ol>
+    </li>
+    <li><a href="#bab2"><span>2 · Memulai</span></a>
+      <ol>
+        <li><a href="#s2-1"><span>2.1 Masuk (login) &amp; keluar (logout)</span></a></li>
+        <li><a href="#s2-2"><span>2.2 Orientasi dashboard &amp; sidebar</span></a></li>
+        <li><a href="#s2-3"><span>2.3 Ganti bahasa antarmuka &amp; tema</span></a></li>
+      </ol>
+    </li>
+    <li><a href="#bab3"><span>3 · Konsep Dasar (dipakai di semua halaman)</span></a>
+      <ol>
+        <li><a href="#s3-1"><span>3.1 Konten dua bahasa (ID/EN)</span></a></li>
+        <li><a href="#s3-2"><span>3.2 Editor teks kaya (rich text)</span></a></li>
+        <li><a href="#s3-3"><span>3.3 Unggah &amp; crop gambar/video</span></a></li>
+        <li><a href="#s3-4"><span>3.4 Pemilih ikon &amp; pemilih titik peta</span></a></li>
+        <li><a href="#s3-5"><span>3.5 Mengubah urutan (drag &amp; drop)</span></a></li>
+        <li><a href="#s3-6"><span>3.6 Status halaman &amp; mode section</span></a></li>
+        <li><a href="#s3-7"><span>3.7 Menyimpan &amp; melihat pratinjau</span></a></li>
+        <li><a href="#s3-8"><span>3.8 Mencari, memfilter &amp; mengurutkan daftar</span></a></li>
+      </ol>
+    </li>
+    <li><a href="#bab4"><span>4 · Mengelola Konten</span></a>
+      <ol>
+        <li><a href="#s4-1"><span>4.1 Beranda (Halaman Beranda)</span></a></li>
+        <li><a href="#s4-2"><span>4.2 Tentang Kami</span></a></li>
+        <li><a href="#s4-3"><span>4.3 Solusi</span></a></li>
+        <li><a href="#s4-4"><span>4.4 Hubungan Investor</span></a></li>
+        <li><a href="#s4-5"><span>4.5 Kontak &amp; Karir</span></a></li>
+      </ol>
+    </li>
+    <li><a href="#bab5"><span>5 · Membaca Data &amp; Menindaklanjuti Inbox</span></a>
+      <ol>
+        <li><a href="#s5-1"><span>5.1 Dasbor (ringkasan)</span></a></li>
+        <li><a href="#s5-2"><span>5.2 Analitik Pengunjung (Umami)</span></a></li>
+        <li><a href="#s5-3"><span>5.3 Inbox Inquiry</span></a></li>
+        <li><a href="#s5-4"><span>5.4 Lamaran Kerja</span></a></li>
+        <li><a href="#s5-5"><span>5.5 Download Laporan (lead)</span></a></li>
+      </ol>
+    </li>
+    <li><a href="#bab6"><span>6 · Manajemen Pengguna &amp; Hak Akses (RBAC)</span></a>
+      <ol>
+        <li><a href="#s6-1"><span>6.1 Peran: Super Admin, Editor, Viewer</span></a></li>
+        <li><a href="#s6-2"><span>6.2 Menambah &amp; menyunting pengguna</span></a></li>
+        <li><a href="#s6-3"><span>6.3 Reset &amp; ganti kata sandi</span></a></li>
+      </ol>
+    </li>
+    <li><a href="#bab7"><span>7 · Lampiran Teknis &amp; Operasional</span></a>
+      <ol>
+        <li><a href="#s7-1"><span>7.1 Konfigurasi Analitik (Umami)</span></a></li>
+        <li><a href="#s7-2"><span>7.2 Variabel lingkungan (.env) &amp; deploy</span></a></li>
+        <li><a href="#s7-3"><span>7.3 Cadangan data &amp; pemulihan</span></a></li>
+        <li><a href="#s7-4"><span>7.4 Pemecahan masalah umum (FAQ)</span></a></li>
+      </ol>
+    </li>
+    <li><a href="#lampiran"><span>Lampiran · Daftar Screenshot (Checklist)</span></a></li>
+  </ol>
+</section>
+
+<!-- ============================ BAB 1 ============================ -->
+<section class="chapter" id="bab1">
+  <h2><span class="chapno">Bab 1</span> Pendahuluan</h2>
+
+  <h3 id="s1-1">1.1 Tujuan buku ini</h3>
+  <p class="lead">Buku ini adalah panduan praktis untuk mengelola website PT Duta Firza melalui dashboard admin (CMS). Setelah membaca buku ini, admin diharapkan mampu:</p>
+  <ul>
+    <li>Masuk ke dashboard admin dan memahami tata letaknya.</li>
+    <li>Mengatur konten setiap halaman — teks, gambar, dokumen — dalam dua bahasa (Indonesia &amp; Inggris).</li>
+    <li>Memahami <strong>di mana</strong> dan <strong>bagaimana</strong> setiap konten muncul di website publik.</li>
+    <li>Membaca data pengunjung serta menindaklanjuti pesan masuk (inquiry, lamaran kerja, dan lead unduhan laporan).</li>
+    <li>Mengelola akun pengguna admin beserta hak aksesnya.</li>
+  </ul>
+
+  <h3 id="s1-2">1.2 Untuk siapa buku ini</h3>
+  <p>Buku ini ditujukan untuk <strong>admin non-teknis</strong> yang bertugas memelihara konten website sehari-hari. Bagian teknis (Bab 7) ditujukan untuk pengelola sistem/IT dan boleh dilewati oleh editor konten.</p>
+
+  <h3 id="s1-3">1.3 Ikhtisar website &amp; CMS</h3>
+  <p>Website PT Duta Firza terdiri dari dua sisi:</p>
+  <ul>
+    <li><strong>Sisi Publik</strong> — halaman yang dilihat pengunjung (beranda, profil, solusi/layanan, hubungan investor, kontak, karir). Alamatnya diawali <span class="k">/id/…</span> (Indonesia) atau <span class="k">/en/…</span> (Inggris).</li>
+    <li><strong>Sisi Admin (CMS)</strong> — tempat mengelola semua konten di atas. Alamatnya diawali <span class="k">/id/admin</span>. Hanya bisa diakses setelah login.</li>
+  </ul>
+  <p>Setiap perubahan yang Anda simpan di sisi admin akan <strong>langsung tampil</strong> di sisi publik (kecuali status halaman diatur tersembunyi/segera hadir — lihat <a href="#s3-6">bagian 3.6</a>).</p>
+  <div class="box tip">
+    <span class="lbl">Info Teknis Singkat</span>
+    <p>Website dibangun dengan Next.js + MongoDB, mendukung dua bahasa, tema terang/gelap, editor teks kaya, unggah gambar &amp; PDF, peta lokasi, dan analitik pengunjung (Umami). Anda tidak perlu memahami teknologi ini untuk memakai CMS.</p>
+  </div>
+
+  <h3 id="s1-4">1.4 Istilah penting</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Istilah</th><th>Arti</th></tr>
+    <tr><td><strong>CMS / Dashboard admin</strong></td><td>Area <span class="k">/id/admin</span> tempat mengelola konten.</td></tr>
+    <tr><td><strong>Sisi publik</strong></td><td>Halaman website yang dilihat pengunjung umum.</td></tr>
+    <tr><td><strong>Field</strong></td><td>Kolom isian pada formulir (mis. Judul, Deskripsi).</td></tr>
+    <tr><td><strong>Localized field (ID/EN)</strong></td><td>Field yang punya versi Indonesia dan Inggris sekaligus.</td></tr>
+    <tr><td><strong>Section</strong></td><td>Satu blok/bagian pada sebuah halaman (mis. bagian "Hero", "Statistik").</td></tr>
+    <tr><td><strong>Status halaman</strong></td><td>Pengaturan tampil/tidaknya halaman: <span class="pill pub">Tayang</span> <span class="pill soon">Segera Hadir</span> <span class="pill hid">Disembunyikan</span>.</td></tr>
+    <tr><td><strong>Slug</strong></td><td>Potongan alamat unik sebuah artikel/halaman (mis. <span class="k">/newsroom/<em>judul-artikel</em></span>).</td></tr>
+    <tr><td><strong>Inquiry</strong></td><td>Pesan/pertanyaan yang dikirim pengunjung lewat formulir.</td></tr>
+    <tr><td><strong>Lead</strong></td><td>Data calon kontak yang tertangkap (mis. saat mengunduh laporan).</td></tr>
+    <tr><td><strong>RBAC</strong></td><td>Pengaturan hak akses berbasis peran (Super Admin / Editor / Viewer).</td></tr>
+  </table>
+  </div>
+</section>
+
+<!-- ============================ BAB 2 ============================ -->
+<section class="chapter" id="bab2">
+  <h2><span class="chapno">Bab 2</span> Memulai</h2>
+
+  <h3 id="s2-1">2.1 Masuk (login) &amp; keluar (logout)</h3>
+  <ol class="steps">
+    <li>Buka peramban (Chrome/Edge/Safari) dan kunjungi <span class="k path">/id/admin/login</span> (mis. <span class="k">https://dutafirza.com/id/admin/login</span>).</li>
+    <li>Masukkan <strong>Email</strong> dan <strong>Kata sandi</strong> akun admin Anda.</li>
+    <li>Klik tombol <strong>Masuk</strong>. Bila berhasil, Anda diarahkan ke <span class="k path">/id/admin</span> (Dasbor).</li>
+  </ol>
+  <figure class="shot" id="fig-2-1">
+    <div class="shot-ph">[ Screenshot GBR-2.1 — Halaman login ]</div>
+    <figcaption><span class="shot-no">GBR-2.1</span> Halaman masuk admin · <span class="shot-url">/id/admin/login</span></figcaption>
+  </figure>
+  <div class="box warn">
+    <span class="lbl">Bila gagal masuk</span>
+    <p>Pesan "Email atau kata sandi salah" berarti kredensial keliru. Jika akun Anda dinonaktifkan atau sesi berakhir, sistem akan mengembalikan Anda ke halaman login. Hubungi Super Admin bila perlu reset kata sandi (lihat <a href="#s6-3">6.3</a>).</p>
+  </div>
+  <p><strong>Keluar (logout):</strong> klik nama/avatar Anda di pojok bawah sidebar, lalu pilih <strong>Keluar</strong>.</p>
+
+  <h3 id="s2-2">2.2 Orientasi dashboard &amp; sidebar</h3>
+  <p>Setelah masuk, layar terbagi menjadi dua: <strong>sidebar menu</strong> di kiri dan <strong>area kerja</strong> di kanan. Menu dikelompokkan menjadi empat bagian:</p>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Bagian</th><th>Isi menu</th><th>Fungsi</th></tr>
+    <tr><td><strong>Analitik</strong></td><td>Dasbor, Analitik Pengunjung</td><td>Ringkasan &amp; data trafik.</td></tr>
+    <tr><td><strong>Konten</strong></td><td>Beranda, Tentang Kami, Solusi, Hubungan Investor, Connect</td><td>Semua konten yang tampil ke publik.</td></tr>
+    <tr><td><strong>Inbox</strong></td><td>Inquiry, Lamaran Kerja, Download Laporan</td><td>Pesan &amp; lead yang masuk.</td></tr>
+    <tr><td><strong>Sistem</strong></td><td>Pengguna</td><td>Kelola akun admin (khusus Super Admin).</td></tr>
+  </table>
+  </div>
+  <p>Angka merah kecil (badge) pada menu <strong>Inquiry</strong> dan <strong>Lamaran Kerja</strong> menunjukkan jumlah pesan yang <em>belum dibaca</em> dan diperbarui otomatis.</p>
+  <div class="box note">
+    <span class="lbl">Catatan RBAC</span>
+    <p>Menu yang tampil bergantung pada peran &amp; hak akses akun Anda. Editor mungkin hanya melihat sebagian menu. Menu <strong>Pengguna</strong> hanya muncul untuk Super Admin. Lihat <a href="#bab6">Bab 6</a>.</p>
+  </div>
+  <figure class="shot" id="fig-2-2">
+    <div class="shot-ph">[ Screenshot GBR-2.2 — Dasbor + sidebar penuh ]</div>
+    <figcaption><span class="shot-no">GBR-2.2</span> Tata letak dasbor &amp; sidebar menu · <span class="shot-url">/id/admin</span></figcaption>
+  </figure>
+  <p>Halaman <strong>Dasbor</strong> menampilkan kartu ringkasan tiap kelompok konten dan inbox — berguna sebagai titik awal navigasi. Sidebar bisa diperlebar/diringkas lewat tombol <strong>Perluas/Ringkas sidebar</strong>.</p>
+
+  <h3 id="s2-3">2.3 Ganti bahasa antarmuka &amp; tema</h3>
+  <p>Di pojok bawah sidebar (menu akun) tersedia:</p>
+  <ul>
+    <li><strong>Pengalih bahasa</strong> — mengubah bahasa tampilan CMS antara Indonesia &amp; Inggris. (Ini <em>berbeda</em> dari mengisi konten dua bahasa — lihat <a href="#s3-1">3.1</a>.)</li>
+    <li><strong>Pengalih tema</strong> — Terang / Gelap / Ikuti sistem.</li>
+    <li><strong>Ganti kata sandi</strong> — untuk mengubah kata sandi akun Anda sendiri (lihat <a href="#s6-3">6.3</a>).</li>
+  </ul>
+  <figure class="shot" id="fig-2-3">
+    <div class="shot-ph">[ Screenshot GBR-2.3 — Menu akun (bahasa, tema, ganti sandi, keluar) ]</div>
+    <figcaption><span class="shot-no">GBR-2.3</span> Menu akun di sidebar · pengalih bahasa &amp; tema</figcaption>
+  </figure>
+</section>
+
+<!-- ============================ BAB 3 ============================ -->
+<section class="chapter" id="bab3">
+  <h2><span class="chapno">Bab 3</span> Konsep Dasar (dipakai di semua halaman)</h2>
+  <p class="lead">Sebagian besar halaman CMS memakai elemen antarmuka yang sama. Pahami sekali di sini, lalu Anda bisa mengelola halaman mana pun di Bab 4–6.</p>
+
+  <h3 id="s3-1">3.1 Konten dua bahasa (ID/EN)</h3>
+  <p>Hampir semua field teks (Judul, Deskripsi, Ringkasan, dll.) memiliki <strong>dua versi</strong>: Indonesia dan Inggris. Field seperti ini punya penanda/tab bahasa <span class="k">ID</span> dan <span class="k">EN</span>. Isi keduanya agar konten tampil benar di kedua versi bahasa website.</p>
+  <figure class="shot" id="fig-3-1">
+    <div class="shot-ph">[ Screenshot GBR-3.1 — Field dengan tab/penanda ID &amp; EN ]</div>
+    <figcaption><span class="shot-no">GBR-3.1</span> Mengisi konten dua bahasa pada satu field</figcaption>
+  </figure>
+  <div class="box warn">
+    <span class="lbl">Penting</span>
+    <p>Jika versi <strong>EN</strong> dibiarkan kosong, pengunjung berbahasa Inggris bisa melihat bagian kosong (kecuali dinyatakan "boleh kosong → memakai teks Indonesia", seperti pada sel tabel pemegang saham). <strong>Biasakan mengisi kedua bahasa.</strong></p>
+  </div>
+
+  <h3 id="s3-2">3.2 Editor teks kaya (rich text)</h3>
+  <p>Untuk isi panjang (paragraf, isi artikel, deskripsi pekerjaan) tersedia editor teks kaya dengan toolbar: <strong>tebal, miring, judul, daftar, tautan,</strong> dan sisip <strong>gambar</strong>. Gunakan toolbar ini untuk memformat; hindari menempel format mentah dari Word.</p>
+  <figure class="shot" id="fig-3-2">
+    <div class="shot-ph">[ Screenshot GBR-3.2 — Toolbar editor teks kaya ]</div>
+    <figcaption><span class="shot-no">GBR-3.2</span> Editor teks kaya &amp; toolbar pemformatan</figcaption>
+  </figure>
+
+  <h3 id="s3-3">3.3 Unggah &amp; crop gambar/video</h3>
+  <p>Untuk gambar/logo/foto: klik area unggah atau seret berkas (drag &amp; drop). Setelah memilih gambar, muncul dialog <strong>Crop gambar</strong>:</p>
+  <ol class="steps">
+    <li>Atur <strong>Zoom</strong> dan geser gambar untuk menentukan area yang tampil.</li>
+    <li>Klik <strong>Terapkan crop</strong> untuk memakai hasil potongan, atau <strong>Unggah gambar utuh</strong> untuk memakai gambar apa adanya.</li>
+    <li>Sistem mengompres gambar otomatis dan menampilkan penghematan ukuran (mis. "2 MB → 400 KB").</li>
+  </ol>
+  <figure class="shot" id="fig-3-3">
+    <div class="shot-ph">[ Screenshot GBR-3.3 — Dialog crop gambar ]</div>
+    <figcaption><span class="shot-no">GBR-3.3</span> Dialog crop &amp; kompres gambar sebelum simpan</figcaption>
+  </figure>
+  <div class="box tip">
+    <span class="lbl">Ukuran gambar yang disarankan</span>
+    <p>Setiap field gambar mencantumkan rekomendasi ukuran &amp; rasio (mis. hero 1920×1080/16:9, foto pimpinan potret 4:5, logo mitra PNG transparan). Ikuti anjuran ini agar hasil tampil rapi. Detail per konten ada di Bab 4.</p>
+  </div>
+  <p><strong>Video</strong> (khusus halaman About): unggah MP4; sistem mengompres ke 1080p. Ada opsi putar otomatis tanpa suara.</p>
+
+  <h3 id="s3-4">3.4 Pemilih ikon &amp; pemilih titik peta</h3>
+  <ul>
+    <li><strong>Pemilih ikon</strong> — beberapa kartu (Statistik &amp; Solusi di beranda) memakai ikon. Klik untuk memilih dari daftar ikon yang tersedia.</li>
+    <li><strong>Pemilih titik peta</strong> — pada <em>Jangkauan</em> (peta di beranda), klik di peta atau geser pin untuk menentukan koordinat lokasi.</li>
+  </ul>
+  <figure class="shot" id="fig-3-4">
+    <div class="shot-ph">[ Screenshot GBR-3.4 — Pemilih ikon &amp; pemilih titik peta ]</div>
+    <figcaption><span class="shot-no">GBR-3.4</span> Pemilih ikon (kiri) &amp; pemilih titik peta (kanan)</figcaption>
+  </figure>
+
+  <h3 id="s3-5">3.5 Mengubah urutan (drag &amp; drop)</h3>
+  <p>Daftar item (statistik, mitra, produk, milestone, dll.) bisa diurutkan dengan menyeret. Tarik pegangan (⋮⋮) sebuah item ke posisi baru.</p>
+  <div class="box note">
+    <span class="lbl">Syarat mengurutkan</span>
+    <p>Fitur seret-urut hanya aktif saat daftar dalam <strong>urutan manual</strong>. Bila Anda sedang mencari/memfilter/mengurutkan berdasarkan nama, hapus dulu pencarian &amp; filter agar bisa menyeret.</p>
+  </div>
+
+  <h3 id="s3-6">3.6 Status halaman &amp; mode section</h3>
+  <p>Banyak halaman publik punya <strong>Status</strong> yang menentukan apakah halaman tampil:</p>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Status</th><th>Perilaku di publik</th></tr>
+    <tr><td><span class="pill pub">Tayang</span></td><td>Halaman dapat diakses publik secara normal.</td></tr>
+    <tr><td><span class="pill soon">Segera Hadir</span></td><td>Pengunjung melihat halaman "Segera Hadir".</td></tr>
+    <tr><td><span class="pill hid">Disembunyikan</span></td><td>Halaman menampilkan 404 dan tidak muncul di navigasi.</td></tr>
+  </table>
+  </div>
+  <p>Selain itu, banyak <strong>section</strong> (Judul &amp; Body halaman) punya <strong>mode</strong>:</p>
+  <ul>
+    <li><strong>Section aktif</strong> (on/off) — nyalakan/matikan tampilnya section.</li>
+    <li><strong>Default</strong> — memakai teks bawaan sistem.</li>
+    <li><strong>Custom</strong> — memakai teks yang Anda tulis sendiri.</li>
+  </ul>
+  <figure class="shot" id="fig-3-6">
+    <div class="shot-ph">[ Screenshot GBR-3.6 — Kontrol status halaman &amp; mode Default/Custom ]</div>
+    <figcaption><span class="shot-no">GBR-3.6</span> Status halaman (Tayang/Segera/Sembunyi) &amp; mode section</figcaption>
+  </figure>
+
+  <h3 id="s3-7">3.7 Menyimpan &amp; melihat pratinjau</h3>
+  <p>Saat Anda mengubah sesuatu, muncul <strong>bar simpan</strong> di bawah layar. Klik <strong>Simpan</strong> untuk menyimpan; status berubah menjadi "Tersimpan". Banyak halaman juga punya tombol <strong>Lihat halaman publik</strong> untuk membuka hasilnya di tab baru.</p>
+  <figure class="shot" id="fig-3-7">
+    <div class="shot-ph">[ Screenshot GBR-3.7 — Bar Simpan + tombol Lihat halaman publik ]</div>
+    <figcaption><span class="shot-no">GBR-3.7</span> Bar simpan &amp; tautan pratinjau publik</figcaption>
+  </figure>
+  <div class="box warn">
+    <span class="lbl">Jangan lupa Simpan</span>
+    <p>Perubahan hanya berlaku setelah <strong>Simpan</strong> ditekan. Meninggalkan halaman tanpa menyimpan akan membatalkan perubahan.</p>
+  </div>
+
+  <h3 id="s3-8">3.8 Mencari, memfilter &amp; mengurutkan daftar</h3>
+  <p>Halaman berbentuk daftar (produk, proyek, artikel, inquiry, pengguna) punya toolbar: <strong>kotak Cari</strong>, <strong>Filter</strong> (status/kategori), <strong>Urutkan</strong>, dan pengalih <strong>tampilan kartu/tabel</strong>. Bawah daftar ada penomoran halaman (pagination).</p>
+  <figure class="shot" id="fig-3-8">
+    <div class="shot-ph">[ Screenshot GBR-3.8 — Toolbar daftar: cari, filter, urutkan, kartu/tabel ]</div>
+    <figcaption><span class="shot-no">GBR-3.8</span> Toolbar pencarian, filter, pengurutan, &amp; pergantian tampilan</figcaption>
+  </figure>
+</section>
+
+<!-- ============================ BAB 4 ============================ -->
+<section class="chapter" id="bab4">
+  <h2><span class="chapno">Bab 4</span> Mengelola Konten</h2>
+  <p class="lead">Bab ini membahas setiap menu di grup <strong>Konten</strong>. Pola tiap bagian sama: <em>Apa yang dikelola → Field/langkah → Di mana muncul di publik → Efek status</em>.</p>
+  <div class="box tip">
+    <span class="lbl">Cara membaca tabel "Di mana muncul di publik"</span>
+    <p>Kolom "Halaman publik" adalah alamat yang bisa Anda buka untuk memeriksa hasil. Ganti awalan <span class="k">/id</span> menjadi <span class="k">/en</span> untuk versi Inggris.</p>
+  </div>
+
+  <!-- ---------- 4.1 LANDING ---------- -->
+  <h3 id="s4-1">4.1 Beranda — menu "Beranda &rsaquo; Halaman Beranda"</h3>
+  <p><strong>Lokasi admin:</strong> <span class="k path">/id/admin/landing</span> &nbsp;·&nbsp; <strong>Muncul di:</strong> homepage <span class="k path">/id</span></p>
+  <p>Halaman ini memakai <strong>tab</strong> yang urutannya mengikuti urutan section di homepage:</p>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Tab</th><th>Yang diatur</th><th>Muncul di homepage sebagai</th></tr>
+    <tr><td><strong>Hero</strong></td><td>Eyebrow, judul, subjudul, tombol CTA (utama &amp; sekunder), gambar latar, dekorasi hero, serta judul/subjudul tiap section homepage.</td><td>Banner utama paling atas + heading tiap bagian.</td></tr>
+    <tr><td><strong>Statistik</strong></td><td>Kartu angka (label ID/EN, prefix, nilai, sufiks, ikon). Bisa diurutkan.</td><td>Baris angka ringkas ("Quick Stats").</td></tr>
+    <tr><td><strong>Mitra Kami</strong></td><td>—</td><td>Strip logo mitra. <em>Dikelola di menu lain</em> (lihat catatan).</td></tr>
+    <tr><td><strong>Solusi Kami</strong></td><td>Kartu solusi (judul, deskripsi, ikon, tautan) + jumlah kolom per baris.</td><td>Bagian "Solutions Spotlight".</td></tr>
+    <tr><td><strong>Jangkauan</strong></td><td>Titik lokasi (kota, provinsi, koordinat via peta).</td><td>Peta sebaran + daftar lokasi.</td></tr>
+    <tr><td><strong>Pelanggan</strong></td><td>Logo pelanggan (nama, logo, opsi invert di tema gelap, aktif).</td><td>Carousel logo pelanggan.</td></tr>
+  </table>
+  </div>
+  <div class="box note">
+    <span class="lbl">Mitra dikelola terpisah</span>
+    <p>Tab "Mitra Kami" hanya berisi pintasan. Logo mitra sebenarnya dikelola di <span class="k path">/id/admin/solutions/trading/partners</span> (tab Mitra). Lihat <a href="#s4-3">4.3</a>.</p>
+  </div>
+  <h4>Rekomendasi gambar</h4>
+  <ul>
+    <li><strong>Latar Hero:</strong> 1920×1080 (16:9), JPG/WebP. Kosongkan untuk memakai gradasi bawaan. Opsi <em>dekorasi</em>: aktif = overlay gelap+pola; nonaktif = gambar utuh.</li>
+    <li><strong>Logo pelanggan:</strong> PNG transparan, min 280×93 (tampil ~40px).</li>
+  </ul>
+  <figure class="shot" id="fig-4-1-1">
+    <div class="shot-ph">[ Screenshot GBR-4.1.1 — Halaman Beranda dengan deretan tab ]</div>
+    <figcaption><span class="shot-no">GBR-4.1.1</span> Editor Beranda &amp; tab section · <span class="shot-url">/id/admin/landing</span></figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-1-2">
+    <div class="shot-ph">[ Screenshot GBR-4.1.2 — Tab Hero (form lengkap) ]</div>
+    <figcaption><span class="shot-no">GBR-4.1.2</span> Tab Hero: judul, CTA, gambar latar</figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-1-3">
+    <div class="shot-ph">[ Screenshot GBR-4.1.3 — Tab Statistik &amp; Tab Solusi ]</div>
+    <figcaption><span class="shot-no">GBR-4.1.3</span> Tab Statistik (kartu angka) &amp; Tab Solusi (kartu + ikon)</figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-1-4">
+    <div class="shot-ph">[ Screenshot GBR-4.1.4 — Tab Jangkauan (pemilih peta) ]</div>
+    <figcaption><span class="shot-no">GBR-4.1.4</span> Tab Jangkauan: menandai titik lokasi di peta</figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-1-pub">
+    <div class="shot-ph">[ Screenshot GBR-4.1.5 — Homepage publik (hasil) ]</div>
+    <figcaption><span class="shot-no">GBR-4.1.5</span> <strong>Hasil di publik</strong>: homepage · <span class="shot-url">/id</span> (hero, statistik, solusi, peta, pelanggan)</figcaption>
+  </figure>
+
+  <!-- ---------- 4.2 ABOUT ---------- -->
+  <h3 id="s4-2">4.2 Tentang Kami — menu "Tentang Kami"</h3>
+  <p>Grup ini mengelola seluruh halaman di bawah <span class="k path">/id/about</span>.</p>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Menu admin</th><th>Lokasi admin</th><th>Yang dikelola</th><th>Halaman publik</th></tr>
+    <tr><td><strong>Tentang Kami</strong></td><td><span class="k">/admin/about</span></td><td>Konten "Who We Are" &amp; intro halaman Bisnis; nilai perusahaan; video profil.</td><td><span class="k">/id/about</span></td></tr>
+    <tr><td><strong>Kepemimpinan</strong></td><td><span class="k">/admin/about/leadership</span></td><td>Daftar Direksi &amp; Komisaris (foto, nama, jabatan, bio). Ada tab per tipe.</td><td><span class="k">/id/about/leadership</span></td></tr>
+    <tr><td><strong>Sejarah</strong></td><td><span class="k">/admin/about/history</span></td><td>Timeline milestone (tahun, judul, deskripsi, gambar opsional).</td><td><span class="k">/id/about/history</span></td></tr>
+    <tr><td><strong>Bisnis Kami</strong></td><td><span class="k">/admin/about/business</span></td><td>Bisnis inti &amp; bisnis afiliasi / sister company (logo, deskripsi, divisi).</td><td><span class="k">/id/about/business</span></td></tr>
+    <tr><td><strong>Kredensial</strong></td><td><span class="k">/admin/about/credentials</span></td><td>Sertifikasi &amp; penghargaan (scan dokumen, penerbit, tahun). Tab: Sertifikasi / Penghargaan.</td><td><span class="k">/id/about/credentials</span></td></tr>
+  </table>
+  </div>
+  <div class="box tip">
+    <span class="lbl">Rekomendasi gambar (About)</span>
+    <p>Foto pimpinan: potret 4:5 (min 400×500), wajah di tengah-atas frame. Scan kredensial: potret 3:4 (min 600×800). Gambar sejarah (opsional): 16:9 (min 1280×720). Video About: MP4 16:9, maks 200 MB.</p>
+  </div>
+  <figure class="shot" id="fig-4-2-1">
+    <div class="shot-ph">[ Screenshot GBR-4.2.1 — Admin Kepemimpinan (kartu Direksi/Komisaris) ]</div>
+    <figcaption><span class="shot-no">GBR-4.2.1</span> Editor Kepemimpinan · <span class="shot-url">/id/admin/about/leadership</span></figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-2-2">
+    <div class="shot-ph">[ Screenshot GBR-4.2.2 — Admin Sejarah (timeline milestone) ]</div>
+    <figcaption><span class="shot-no">GBR-4.2.2</span> Editor Sejarah (timeline) · <span class="shot-url">/id/admin/about/history</span></figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-2-3">
+    <div class="shot-ph">[ Screenshot GBR-4.2.3 — Admin Kredensial &amp; Bisnis Afiliasi ]</div>
+    <figcaption><span class="shot-no">GBR-4.2.3</span> Editor Kredensial &amp; Bisnis Afiliasi</figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-2-pub">
+    <div class="shot-ph">[ Screenshot GBR-4.2.4 — Halaman publik About (hasil) ]</div>
+    <figcaption><span class="shot-no">GBR-4.2.4</span> <strong>Hasil di publik</strong> · <span class="shot-url">/id/about/leadership</span> &amp; <span class="shot-url">/id/about/history</span></figcaption>
+  </figure>
+
+  <!-- ---------- 4.3 SOLUTIONS ---------- -->
+  <h3 id="s4-3">4.3 Solusi — menu "Solusi"</h3>
+  <p>Grup ini mengatur halaman layanan di bawah <span class="k path">/id/solutions</span>. Mulailah dari <strong>Overview</strong> untuk menentukan status tiap halaman.</p>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Menu admin</th><th>Yang dikelola</th><th>Halaman publik</th></tr>
+    <tr><td><strong>Solusi (Overview)</strong> <span class="k">/admin/solutions</span></td><td>Status &amp; konten setiap sub-halaman Solusi (Tayang/Segera/Sembunyi).</td><td>—</td></tr>
+    <tr><td><strong>Trading</strong> <span class="k">/admin/solutions/trading</span></td><td>Hero &amp; intro + pengaturan form inquiry.</td><td><span class="k">/id/solutions/trading</span></td></tr>
+    <tr><td><strong>Trading · Mitra</strong> <span class="k">/admin/solutions/trading/partners</span></td><td>Hero/intro + <strong>logo mitra</strong> (dipakai juga di strip homepage).</td><td><span class="k">/id/solutions/trading/partners</span></td></tr>
+    <tr><td><strong>Trading · Produk</strong> <span class="k">/admin/solutions/trading/products</span></td><td>Hero/intro + katalog produk (principle, asal, tipe, dll.).</td><td><span class="k">/id/solutions/trading/products</span></td></tr>
+    <tr><td><strong>Manufaktur</strong> <span class="k">/admin/solutions/manufacturing</span></td><td>Konten + form quote.</td><td><span class="k">/id/solutions/manufacturing</span></td></tr>
+    <tr><td><strong>EPC</strong> <span class="k">/admin/solutions/epc</span></td><td>Hero/intro. Item proyek dikelola di Master · Proyek.</td><td><span class="k">/id/solutions/epc</span></td></tr>
+    <tr><td><strong>Teknologi</strong> <span class="k">/admin/solutions/technology</span></td><td>Konten + form inquiry + tautan website eksternal.</td><td><span class="k">/id/solutions/technology</span></td></tr>
+  </table>
+  </div>
+  <div class="box note">
+    <span class="lbl">Form &amp; WhatsApp</span>
+    <p>Beberapa halaman Solusi punya <strong>form inquiry</strong> yang bisa dinyalakan/dimatikan dan field-nya diatur lewat <em>Form Builder</em> (lihat 4.5 &amp; 5.3). Halaman Produk mendukung tombol <strong>Chat WhatsApp</strong> — isi nomor format internasional (mis. <span class="k">628123456789</span>); kosongkan untuk menonaktifkan.</p>
+  </div>
+  <figure class="shot" id="fig-4-3-1">
+    <div class="shot-ph">[ Screenshot GBR-4.3.1 — Solusi Overview (daftar status) ]</div>
+    <figcaption><span class="shot-no">GBR-4.3.1</span> Overview Solusi &amp; pengaturan status · <span class="shot-url">/id/admin/solutions</span></figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-3-2">
+    <div class="shot-ph">[ Screenshot GBR-4.3.2 — Editor Trading Produk (katalog) ]</div>
+    <figcaption><span class="shot-no">GBR-4.3.2</span> Katalog produk Trading + WhatsApp · <span class="shot-url">/id/admin/solutions/trading/products</span></figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-3-pub">
+    <div class="shot-ph">[ Screenshot GBR-4.3.3 — Halaman Solusi publik (hasil) ]</div>
+    <figcaption><span class="shot-no">GBR-4.3.3</span> <strong>Hasil di publik</strong> · <span class="shot-url">/id/solutions/trading/products</span></figcaption>
+  </figure>
+
+  <!-- ---------- 4.4 IR ---------- -->
+  <h3 id="s4-4">4.4 Hubungan Investor — menu "Hubungan Investor"</h3>
+  <p>Grup ini mengelola halaman investor di bawah <span class="k path">/id/investor-relations</span>.</p>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Menu admin</th><th>Yang dikelola</th><th>Halaman publik</th></tr>
+    <tr><td><strong>Saham</strong> <span class="k">/admin/investor-relations/stocks</span></td><td>Konten + <strong>tabel komposisi pemegang saham</strong> (kolom &amp; baris dinamis).</td><td><span class="k">/id/investor-relations/stocks</span></td></tr>
+    <tr><td><strong>Laporan</strong> <span class="k">/admin/investor-relations/reports</span></td><td>Laporan tahunan &amp; keuangan (PDF + thumbnail) + pengaturan form gate.</td><td><span class="k">/id/investor-relations/reports</span></td></tr>
+    <tr><td><strong>Publikasi</strong> <span class="k">/admin/investor-relations/publications</span></td><td>Konten halaman publikasi (payung berita &amp; siaran pers).</td><td><span class="k">/id/investor-relations/publications</span></td></tr>
+    <tr><td><strong>Siaran Pers</strong> <span class="k">/admin/investor-relations/press-release</span></td><td>Artikel siaran pers (judul, slug, isi, tanggal, gambar).</td><td><span class="k">/id/investor-relations/publications/press-release</span></td></tr>
+    <tr><td><strong>Newsroom</strong> <span class="k">/admin/investor-relations/newsroom</span></td><td>Artikel berita (judul, slug, isi, sumber asli opsional).</td><td><span class="k">/id/investor-relations/publications/newsroom</span></td></tr>
+    <tr><td><strong>Profil Perusahaan</strong> <span class="k">/admin/investor-relations/company-profile</span></td><td>Unggah PDF Profil Perusahaan.</td><td><span class="k">/id/investor-relations/publications/company-profile</span></td></tr>
+  </table>
+  </div>
+  <h4>Tabel pemegang saham (Saham)</h4>
+  <p>Susun tabel dengan menambah <strong>kolom</strong> dulu (label + perataan kiri/tengah/kanan), lalu <strong>baris</strong>. Isi sel per bahasa; sel EN yang kosong otomatis memakai teks Indonesia. Centang "Tebalkan baris ini" untuk baris total.</p>
+  <h4>Laporan &amp; thumbnail (Laporan)</h4>
+  <p>Untuk tiap laporan, unggah PDF dan pilih sumber thumbnail:</p>
+  <ul>
+    <li><strong>Upload thumbnail</strong> — Anda unggah gambar sendiri.</li>
+    <li><strong>Gunakan halaman pertama PDF</strong> — sistem membuat thumbnail dari halaman 1 PDF (klik <em>Generate dari PDF</em>).</li>
+    <li><strong>Gunakan default</strong> — placeholder netral.</li>
+  </ul>
+  <div class="box note">
+    <span class="lbl">Slug otomatis</span>
+    <p>Untuk artikel (Siaran Pers/Newsroom), <strong>slug</strong> dibuat otomatis dari judul bahasa Inggris. Edit manual bila perlu. Slug menjadi bagian alamat artikel di publik.</p>
+  </div>
+  <figure class="shot" id="fig-4-4-1">
+    <div class="shot-ph">[ Screenshot GBR-4.4.1 — Editor Saham (tabel pemegang saham) ]</div>
+    <figcaption><span class="shot-no">GBR-4.4.1</span> Penyusun tabel pemegang saham · <span class="shot-url">/id/admin/investor-relations/stocks</span></figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-4-2">
+    <div class="shot-ph">[ Screenshot GBR-4.4.2 — Editor Laporan (PDF + pilihan thumbnail) ]</div>
+    <figcaption><span class="shot-no">GBR-4.4.2</span> Unggah laporan &amp; pilih thumbnail · <span class="shot-url">/id/admin/investor-relations/reports</span></figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-4-3">
+    <div class="shot-ph">[ Screenshot GBR-4.4.3 — Editor artikel Newsroom/Siaran Pers ]</div>
+    <figcaption><span class="shot-no">GBR-4.4.3</span> Editor artikel (judul, slug, isi teks kaya)</figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-4-pub">
+    <div class="shot-ph">[ Screenshot GBR-4.4.4 — Halaman IR publik (hasil) ]</div>
+    <figcaption><span class="shot-no">GBR-4.4.4</span> <strong>Hasil di publik</strong> · <span class="shot-url">/id/investor-relations/reports</span></figcaption>
+  </figure>
+
+  <!-- ---------- 4.5 CONNECT ---------- -->
+  <h3 id="s4-5">4.5 Kontak &amp; Karir — menu "Connect"</h3>
+  <h4>Halaman Kontak — <span class="k">/admin/contact</span> → <span class="k path">/id/contact</span></h4>
+  <p>Halaman ini memiliki 4 tab:</p>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Tab</th><th>Isi</th></tr>
+    <tr><td><strong>Konten</strong></td><td>Hero &amp; intro halaman kontak.</td></tr>
+    <tr><td><strong>Lokasi &amp; Peta</strong></td><td>Tampilkan/sembunyikan peta, lokasi pabrik, jam operasional, tombol rute; embed peta Google Maps &amp; link rute (Kantor Pusat &amp; Pabrik).</td></tr>
+    <tr><td><strong>Info Kontak</strong></td><td><strong>Sumber data "Pengaturan"</strong>: alamat, jam, telepon, email umum/penjualan, dan tautan media sosial. Data ini dipakai di seluruh situs (mis. footer).</td></tr>
+    <tr><td><strong>Form</strong></td><td>Aktif/nonaktifkan form kontak &amp; atur field-nya (Form Builder).</td></tr>
+  </table>
+  </div>
+  <div class="box tip">
+    <span class="lbl">Cara embed peta Google Maps</span>
+    <p>Buka Google Maps → <strong>Bagikan → Sematkan peta</strong>, lalu tempel URL <span class="k">src</span> dari iframe ke field embed. Tidak perlu API key.</p>
+  </div>
+  <h4>Halaman Karir — <span class="k">/admin/contact/careers</span> → <span class="k path">/id/contact/careers</span></h4>
+  <p>Tab: <strong>Halaman</strong> (hero/intro), <strong>Papan Lowongan</strong> (link papan eksternal), <strong>Budaya &amp; Benefit</strong>, <strong>Lowongan</strong> (daftar posisi), dan <strong>Form Lamaran</strong>.</p>
+  <p>Untuk tiap <strong>Lowongan</strong>, pilih <strong>Metode Lamar</strong>:</p>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Metode</th><th>Perilaku tombol "Lamar" di publik</th></tr>
+    <tr><td><strong>Form di website ini</strong></td><td>Pelamar mengisi form &amp; unggah CV; lamaran masuk ke <em>Inbox Lamaran Kerja</em> (Bab 5.4).</td></tr>
+    <tr><td><strong>Link eksternal</strong></td><td>Mengarahkan ke URL ATS/papan lowongan (<span class="k">applyUrl</span>).</td></tr>
+    <tr><td><strong>Kirim email</strong></td><td>Membuka aplikasi email pelamar ke alamat tujuan.</td></tr>
+  </table>
+  </div>
+  <div class="box note">
+    <span class="lbl">Form Builder</span>
+    <p>Baik form kontak, form quote, maupun form lamaran memakai <strong>Form Builder</strong> yang sama: tambah field (tipe, label, placeholder, wajib/opsional), atur label tombol kirim &amp; pesan sukses. Untuk form lamaran, field <em>nama, email, telepon,</em> dan <em>unggah CV</em> selalu ada.</p>
+  </div>
+  <figure class="shot" id="fig-4-5-1">
+    <div class="shot-ph">[ Screenshot GBR-4.5.1 — Kontak tab "Info Kontak" (Pengaturan) ]</div>
+    <figcaption><span class="shot-no">GBR-4.5.1</span> Tab Info Kontak (alamat, jam, email, sosial) · <span class="shot-url">/id/admin/contact</span></figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-5-2">
+    <div class="shot-ph">[ Screenshot GBR-4.5.2 — Karir: daftar Lowongan &amp; Metode Lamar ]</div>
+    <figcaption><span class="shot-no">GBR-4.5.2</span> Editor Lowongan &amp; metode lamar · <span class="shot-url">/id/admin/contact/careers</span></figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-5-3">
+    <div class="shot-ph">[ Screenshot GBR-4.5.3 — Form Builder (tambah/atur field) ]</div>
+    <figcaption><span class="shot-no">GBR-4.5.3</span> Form Builder: menyusun field formulir</figcaption>
+  </figure>
+  <figure class="shot" id="fig-4-5-pub">
+    <div class="shot-ph">[ Screenshot GBR-4.5.4 — Halaman Kontak &amp; Karir publik (hasil) ]</div>
+    <figcaption><span class="shot-no">GBR-4.5.4</span> <strong>Hasil di publik</strong> · <span class="shot-url">/id/contact</span> &amp; <span class="shot-url">/id/contact/careers</span></figcaption>
+  </figure>
+</section>
+
+<!-- ============================ BAB 5 ============================ -->
+<section class="chapter" id="bab5">
+  <h2><span class="chapno">Bab 5</span> Membaca Data &amp; Menindaklanjuti Inbox</h2>
+  <p class="lead">Bab ini menjelaskan cara membaca angka &amp; menindaklanjuti pesan yang masuk dari website.</p>
+
+  <h3 id="s5-1">5.1 Dasbor (ringkasan)</h3>
+  <p><strong>Lokasi:</strong> <span class="k path">/id/admin</span>. Dasbor menampilkan kartu ringkasan setiap kelompok konten dan inbox, plus tanggal pembaruan. Gunakan sebagai titik awal untuk melompat ke area yang perlu dikelola. Isi kartu menyesuaikan hak akses akun Anda.</p>
+  <figure class="shot" id="fig-5-1">
+    <div class="shot-ph">[ Screenshot GBR-5.1 — Dasbor dengan kartu ringkasan ]</div>
+    <figcaption><span class="shot-no">GBR-5.1</span> Dasbor ringkasan · <span class="shot-url">/id/admin</span></figcaption>
+  </figure>
+
+  <h3 id="s5-2">5.2 Analitik Pengunjung (Umami)</h3>
+  <p><strong>Lokasi:</strong> <span class="k path">/id/admin/visitor-analytics</span>. Menampilkan trafik situs publik yang diukur oleh <strong>Umami</strong>, tertanam langsung di dalam dashboard. Tombol <strong>Buka di Umami</strong> membuka dasbor Umami penuh di tab baru.</p>
+  <p>Yang biasa dibaca: jumlah pengunjung &amp; tampilan halaman, halaman terpopuler, sumber rujukan (referrer), perangkat, dan negara/kota. Gunakan rentang tanggal untuk membandingkan periode.</p>
+  <div class="box note">
+    <span class="lbl">Bila tampil "Belum dikonfigurasi"</span>
+    <p>Berarti kredensial Umami belum diisi. Ini tugas teknis — lihat <a href="#s7-1">7.1</a>.</p>
+  </div>
+  <figure class="shot" id="fig-5-2">
+    <div class="shot-ph">[ Screenshot GBR-5.2 — Analitik Pengunjung (Umami embed) ]</div>
+    <figcaption><span class="shot-no">GBR-5.2</span> Analitik pengunjung · <span class="shot-url">/id/admin/visitor-analytics</span></figcaption>
+  </figure>
+
+  <h3 id="s5-3">5.3 Inbox Inquiry</h3>
+  <p><strong>Lokasi:</strong> <span class="k path">/id/admin/inquiries</span>. Berisi kiriman dari form <strong>Trading, Manufaktur, EPC, Teknologi,</strong> dan <strong>Kontak</strong>. Menu ini menampilkan badge jumlah <em>belum dibaca</em>.</p>
+  <h4>Tab penyaring</h4>
+  <p>Semua · Belum dibaca · Baru · Dibaca · Diproses · Selesai · Diarsipkan. Ada pula kotak cari (perusahaan, nama, email).</p>
+  <h4>Menindaklanjuti sebuah inquiry</h4>
+  <ol class="steps">
+    <li>Klik sebuah baris untuk membuka <strong>detail</strong> (isi pesan + info pengirim &amp; sumber form).</li>
+    <li>Perbarui <strong>status</strong> sesuai progres: <strong>Baru → Diproses → Selesai</strong> (atau <strong>Diarsipkan</strong>).</li>
+    <li>Tandai <strong>dibaca / belum dibaca</strong> sesuai kebutuhan.</li>
+    <li>Klik <strong>Balas via email</strong> untuk membalas lewat aplikasi email Anda.</li>
+  </ol>
+  <div class="box tip">
+    <span class="lbl">Baca ≠ Status</span>
+    <p>"Belum dibaca/Dibaca" hanya penanda apakah Anda sudah membuka pesan. "Status" (Baru/Diproses/Selesai/Diarsipkan) adalah alur tindak lanjut yang terpisah.</p>
+  </div>
+  <figure class="shot" id="fig-5-3a">
+    <div class="shot-ph">[ Screenshot GBR-5.3 — Daftar Inquiry + tab penyaring ]</div>
+    <figcaption><span class="shot-no">GBR-5.3</span> Inbox Inquiry &amp; tab · <span class="shot-url">/id/admin/inquiries</span></figcaption>
+  </figure>
+  <figure class="shot" id="fig-5-3b">
+    <div class="shot-ph">[ Screenshot GBR-5.4 — Detail inquiry + ubah status + balas email ]</div>
+    <figcaption><span class="shot-no">GBR-5.4</span> Detail inquiry, ubah status, &amp; balas email</figcaption>
+  </figure>
+
+  <h3 id="s5-4">5.4 Lamaran Kerja</h3>
+  <p><strong>Lokasi:</strong> <span class="k path">/id/admin/applications</span>. Berisi lamaran dari form karir (metode "Form di website ini"), lengkap dengan CV. Alur status (pipeline rekrutmen):</p>
+  <p><span class="pill pub">Baru</span> → <span class="pill soon">Direview</span> → <span class="pill tip" style="background:#eef3fb;color:#3b6fb0;border:1px solid #cdddf0;">Shortlist</span> → <span class="pill hid">Ditolak</span> / <span class="pill pub">Diterima</span></p>
+  <p>Buka sebuah lamaran untuk melihat detail &amp; klik <strong>Unduh CV</strong> untuk mengambil berkas pelamar.</p>
+  <figure class="shot" id="fig-5-4">
+    <div class="shot-ph">[ Screenshot GBR-5.5 — Inbox Lamaran + status pipeline + unduh CV ]</div>
+    <figcaption><span class="shot-no">GBR-5.5</span> Inbox Lamaran Kerja &amp; pipeline · <span class="shot-url">/id/admin/applications</span></figcaption>
+  </figure>
+
+  <h3 id="s5-5">5.5 Download Laporan (lead)</h3>
+  <p><strong>Lokasi:</strong> <span class="k path">/id/admin/report-downloads</span>. Menangkap <strong>lead</strong> ketika pengunjung <em>melihat</em> atau <em>mengunduh</em> PDF laporan investor. Terdapat dua bagian:</p>
+  <ul>
+    <li><strong>Lihat lead tertangkap</strong> — daftar lead (nama, perusahaan, email, laporan) dengan penanda aksi <span class="pill tip" style="background:#eef3fb;color:#3b6fb0;border:1px solid #cdddf0;">Lihat</span> atau <span class="pill pub">Download</span>. Bisa difilter per jenis laporan (Tahunan/Keuangan) dan dicari.</li>
+    <li><strong>Pengaturan form</strong> — aktif/nonaktifkan "gate": mewajibkan pengunjung mengisi data sebelum melihat/mengunduh. Empat field inti selalu dikumpulkan; field lain bisa ditambah/dihapus.</li>
+  </ul>
+  <figure class="shot" id="fig-5-5a">
+    <div class="shot-ph">[ Screenshot GBR-5.6 — Daftar lead (Lihat vs Download) ]</div>
+    <figcaption><span class="shot-no">GBR-5.6</span> Lead download laporan · <span class="shot-url">/id/admin/report-downloads</span></figcaption>
+  </figure>
+  <figure class="shot" id="fig-5-5b">
+    <div class="shot-ph">[ Screenshot GBR-5.7 — Pengaturan form gate ]</div>
+    <figcaption><span class="shot-no">GBR-5.7</span> Pengaturan form gate download/lihat</figcaption>
+  </figure>
+  <div class="box note">
+    <span class="lbl">Notifikasi</span>
+    <p>Inquiry &amp; lamaran baru dapat memicu notifikasi email otomatis (via layanan Resend), dan badge "belum dibaca" di sidebar diperbarui secara langsung tanpa perlu me-refresh.</p>
+  </div>
+</section>
+
+<!-- ============================ BAB 6 ============================ -->
+<section class="chapter" id="bab6">
+  <h2><span class="chapno">Bab 6</span> Manajemen Pengguna &amp; Hak Akses (RBAC)</h2>
+  <p><strong>Lokasi:</strong> <span class="k path">/id/admin/users</span>. <strong>Hanya Super Admin</strong> yang dapat membuka menu ini.</p>
+
+  <h3 id="s6-1">6.1 Peran: Super Admin, Editor, Viewer</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Peran</th><th>Hak</th></tr>
+    <tr><td><strong>Super Admin</strong></td><td>Akses penuh ke semua section, plus mengelola pengguna.</td></tr>
+    <tr><td><strong>Editor</strong></td><td>Hanya bisa mengubah section yang <em>dicentang</em> pada "Akses section". Dasbor selalu tersedia.</td></tr>
+    <tr><td><strong>Viewer</strong></td><td>Hanya baca (tidak bisa mengubah apa pun).</td></tr>
+  </table>
+  </div>
+  <div class="box tip">
+    <span class="lbl">Akses section (scope)</span>
+    <p>Untuk Editor, centang section mana yang boleh dibuka &amp; diubah (mis. hanya "Newsroom" &amp; "Siaran Pers"). Ini membuat pembagian tugas rapi — mis. tim humas hanya mengurus publikasi, tim HR hanya mengurus karir &amp; lamaran.</p>
+  </div>
+
+  <h3 id="s6-2">6.2 Menambah &amp; menyunting pengguna</h3>
+  <ol class="steps">
+    <li>Klik <strong>Tambah</strong> pengguna, isi nama, email, kata sandi, dan pilih peran.</li>
+    <li>Jika peran <strong>Editor</strong>, centang section yang boleh diaksesnya.</li>
+    <li>Klik <strong>Simpan</strong>.</li>
+  </ol>
+  <p><strong>Menonaktifkan (hapus):</strong> akun dinonaktifkan &amp; disembunyikan, dan emailnya bebas dipakai lagi. Perubahan peran/nonaktif langsung berlaku pada permintaan berikutnya pengguna tersebut.</p>
+  <div class="box warn">
+    <span class="lbl">Pengaman</span>
+    <p>Anda tidak bisa menghapus, menonaktifkan, atau menurunkan peran <strong>akun sendiri</strong>. Super Admin aktif terakhir tidak boleh diturunkan — angkat Super Admin lain lebih dulu.</p>
+  </div>
+  <figure class="shot" id="fig-6-1">
+    <div class="shot-ph">[ Screenshot GBR-6.1 — Daftar Pengguna (peran, akses, login terakhir) ]</div>
+    <figcaption><span class="shot-no">GBR-6.1</span> Daftar pengguna · <span class="shot-url">/id/admin/users</span></figcaption>
+  </figure>
+  <figure class="shot" id="fig-6-2">
+    <div class="shot-ph">[ Screenshot GBR-6.2 — Form tambah/edit pengguna: peran + centang akses section ]</div>
+    <figcaption><span class="shot-no">GBR-6.2</span> Form pengguna: peran &amp; akses section</figcaption>
+  </figure>
+
+  <h3 id="s6-3">6.3 Reset &amp; ganti kata sandi</h3>
+  <ul>
+    <li><strong>Reset kata sandi (untuk orang lain)</strong> — Super Admin menetapkan kata sandi baru untuk pengguna. Pengguna <em>tidak</em> diberi notifikasi otomatis, jadi sampaikan langsung.</li>
+    <li><strong>Ganti kata sandi (akun sendiri)</strong> — lewat menu akun di sidebar; masukkan kata sandi saat ini + kata sandi baru.</li>
+  </ul>
+  <div class="box note">
+    <span class="lbl">Aturan kata sandi</span>
+    <p>Minimal <strong>12 karakter</strong>. Konfirmasi harus cocok.</p>
+  </div>
+  <figure class="shot" id="fig-6-3">
+    <div class="shot-ph">[ Screenshot GBR-6.3 — Dialog reset / ganti kata sandi ]</div>
+    <figcaption><span class="shot-no">GBR-6.3</span> Dialog reset / ganti kata sandi</figcaption>
+  </figure>
+</section>
+
+<!-- ============================ BAB 7 ============================ -->
+<section class="chapter" id="bab7">
+  <h2><span class="chapno">Bab 7</span> Lampiran Teknis &amp; Operasional</h2>
+  <div class="box warn">
+    <span class="lbl">Untuk pengelola sistem / IT</span>
+    <p>Bagian ini bersifat teknis dan umumnya <strong>tidak diperlukan editor konten sehari-hari</strong>. Perubahan di sini biasanya butuh akses server/hosting.</p>
+  </div>
+
+  <h3 id="s7-1">7.1 Konfigurasi Analitik (Umami)</h3>
+  <p>Agar halaman <a href="#s5-2">Analitik Pengunjung</a> menampilkan data, isi variabel lingkungan berikut lalu deploy ulang:</p>
+  <pre class="k" style="display:block;padding:.8em 1em;white-space:pre-wrap;">NEXT_PUBLIC_UMAMI_WEBSITE_ID="…"
+NEXT_PUBLIC_UMAMI_SHARE_URL="…"</pre>
+  <p><span class="shot-no">GBR-7.1</span> (opsional) — layar "Belum dikonfigurasi" beserta langkah setup dapat difoto sebagai referensi.</p>
+
+  <h3 id="s7-2">7.2 Variabel lingkungan (.env) &amp; deploy</h3>
+  <ul>
+    <li>Seluruh variabel didokumentasikan di berkas <span class="k">.env.example</span> (MongoDB URI, kunci Resend, kredensial GCS, Umami, dll.). Salin ke <span class="k">.env.local</span> untuk lokal.</li>
+    <li>Aplikasi memvalidasi variabel saat boot — bila ada yang kurang/salah, aplikasi gagal start dengan pesan jelas.</li>
+    <li><strong>Build:</strong> <span class="k">pnpm build</span>. <strong>Hosting:</strong> GCP Cloud Run (lihat README repo).</li>
+  </ul>
+
+  <h3 id="s7-3">7.3 Cadangan data &amp; pemulihan</h3>
+  <ul>
+    <li>Semua konten &amp; pesan tersimpan di <strong>MongoDB</strong>; berkas (gambar/PDF/CV) di <strong>Google Cloud Storage</strong>.</li>
+    <li>Jadwalkan cadangan berkala database (mis. <span class="k">mongodump</span>) dan pastikan bucket GCS memiliki kebijakan retensi. Simpan salinan kredensial secara aman.</li>
+  </ul>
+
+  <h3 id="s7-4">7.4 Pemecahan masalah umum (FAQ)</h3>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Gejala</th><th>Kemungkinan &amp; solusi</th></tr>
+    <tr><td>Perubahan tidak tampil di publik</td><td>Pastikan sudah <strong>Simpan</strong>; cek status halaman bukan Disembunyikan/Segera Hadir; segarkan halaman publik.</td></tr>
+    <tr><td>Versi Inggris kosong</td><td>Field EN belum diisi — lengkapi versi EN (lihat <a href="#s3-1">3.1</a>).</td></tr>
+    <tr><td>Tidak bisa menyeret untuk mengurutkan</td><td>Hapus pencarian/filter, pilih "Urutan manual" (lihat <a href="#s3-5">3.5</a>).</td></tr>
+    <tr><td>Analitik kosong / "Belum dikonfigurasi"</td><td>Isi variabel Umami (lihat <a href="#s7-1">7.1</a>).</td></tr>
+    <tr><td>Menu tertentu tidak muncul</td><td>Hak akses akun terbatas; minta Super Admin menyesuaikan (Bab 6).</td></tr>
+    <tr><td>Ter-logout tiba-tiba</td><td>Sesi berakhir atau akun dinonaktifkan; login ulang / hubungi Super Admin.</td></tr>
+  </table>
+  </div>
+</section>
+
+<!-- ============================ LAMPIRAN ============================ -->
+<section class="chapter" id="lampiran">
+  <h2>Lampiran · Daftar Screenshot (Checklist)</h2>
+  <p>Ambil screenshot berikut lalu tempel menggantikan kotak placeholder pada bab terkait. Ambil dalam bahasa <strong>Indonesia</strong> (URL <span class="k">/id/…</span>), resolusi layar penuh, dan sembunyikan data sensitif bila perlu. Untuk pasangan admin↔publik, jepret keduanya agar pembaca paham hubungan sebab-akibat.</p>
+  <div class="box tip">
+    <span class="lbl">Tips menempel gambar</span>
+    <p>Di berkas HTML ini, ganti baris <span class="k">&lt;div class="shot-ph"&gt;…&lt;/div&gt;</span> dengan <span class="k">&lt;img src="gambar/GBR-2.1.png" style="width:100%"&gt;</span>. Simpan gambar di folder <span class="k">gambar/</span> bersebelahan dengan berkas ini, lalu Print → Save as PDF.</p>
+  </div>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Kode</th><th>Halaman / URL</th><th>Yang di-frame</th><th>Bab</th></tr>
+    <tr><td>GBR-2.1</td><td><span class="k">/id/admin/login</span></td><td>Form login</td><td>2.1</td></tr>
+    <tr><td>GBR-2.2</td><td><span class="k">/id/admin</span></td><td>Dasbor + sidebar penuh</td><td>2.2</td></tr>
+    <tr><td>GBR-2.3</td><td>menu akun (sidebar)</td><td>Pengalih bahasa, tema, keluar</td><td>2.3</td></tr>
+    <tr><td>GBR-3.1</td><td>form mana pun</td><td>Field ID/EN</td><td>3.1</td></tr>
+    <tr><td>GBR-3.2</td><td>editor teks kaya</td><td>Toolbar pemformatan</td><td>3.2</td></tr>
+    <tr><td>GBR-3.3</td><td>dialog unggah</td><td>Crop &amp; kompres gambar</td><td>3.3</td></tr>
+    <tr><td>GBR-3.4</td><td>Statistik / Jangkauan</td><td>Pemilih ikon &amp; titik peta</td><td>3.4</td></tr>
+    <tr><td>GBR-3.6</td><td>halaman berstatus</td><td>Status &amp; mode section</td><td>3.6</td></tr>
+    <tr><td>GBR-3.7</td><td>form mana pun</td><td>Bar Simpan + Lihat publik</td><td>3.7</td></tr>
+    <tr><td>GBR-3.8</td><td>halaman daftar</td><td>Cari / filter / urut / kartu-tabel</td><td>3.8</td></tr>
+    <tr><td>GBR-4.1.1</td><td><span class="k">/id/admin/landing</span></td><td>Deretan tab</td><td>4.1</td></tr>
+    <tr><td>GBR-4.1.2</td><td>landing · tab Hero</td><td>Form hero</td><td>4.1</td></tr>
+    <tr><td>GBR-4.1.3</td><td>landing · Statistik &amp; Solusi</td><td>Kartu angka &amp; solusi</td><td>4.1</td></tr>
+    <tr><td>GBR-4.1.4</td><td>landing · Jangkauan</td><td>Pemilih peta</td><td>4.1</td></tr>
+    <tr><td>GBR-4.1.5</td><td><span class="k">/id</span> (publik)</td><td>Homepage hasil</td><td>4.1</td></tr>
+    <tr><td>GBR-4.2.1</td><td><span class="k">/id/admin/about/leadership</span></td><td>Kartu Direksi/Komisaris</td><td>4.2</td></tr>
+    <tr><td>GBR-4.2.2</td><td><span class="k">/id/admin/about/history</span></td><td>Timeline milestone</td><td>4.2</td></tr>
+    <tr><td>GBR-4.2.3</td><td>about · Kredensial &amp; Bisnis</td><td>Editor kredensial/afiliasi</td><td>4.2</td></tr>
+    <tr><td>GBR-4.2.4</td><td><span class="k">/id/about/leadership</span> &amp; <span class="k">/history</span></td><td>Hasil publik</td><td>4.2</td></tr>
+    <tr><td>GBR-4.3.1</td><td><span class="k">/id/admin/solutions</span></td><td>Overview status</td><td>4.3</td></tr>
+    <tr><td>GBR-4.3.2</td><td><span class="k">/id/admin/solutions/trading/products</span></td><td>Katalog produk + WhatsApp</td><td>4.3</td></tr>
+    <tr><td>GBR-4.3.3</td><td><span class="k">/id/solutions/trading/products</span></td><td>Hasil publik</td><td>4.3</td></tr>
+    <tr><td>GBR-4.4.1</td><td><span class="k">/id/admin/investor-relations/stocks</span></td><td>Tabel pemegang saham</td><td>4.4</td></tr>
+    <tr><td>GBR-4.4.2</td><td><span class="k">/id/admin/investor-relations/reports</span></td><td>Unggah PDF + thumbnail</td><td>4.4</td></tr>
+    <tr><td>GBR-4.4.3</td><td>IR · editor artikel</td><td>Judul, slug, isi</td><td>4.4</td></tr>
+    <tr><td>GBR-4.4.4</td><td><span class="k">/id/investor-relations/reports</span></td><td>Hasil publik</td><td>4.4</td></tr>
+    <tr><td>GBR-4.5.1</td><td><span class="k">/id/admin/contact</span> · Info Kontak</td><td>Alamat, jam, email, sosial</td><td>4.5</td></tr>
+    <tr><td>GBR-4.5.2</td><td><span class="k">/id/admin/contact/careers</span></td><td>Lowongan &amp; metode lamar</td><td>4.5</td></tr>
+    <tr><td>GBR-4.5.3</td><td>Form Builder</td><td>Menyusun field</td><td>4.5</td></tr>
+    <tr><td>GBR-4.5.4</td><td><span class="k">/id/contact</span> &amp; <span class="k">/careers</span></td><td>Hasil publik</td><td>4.5</td></tr>
+    <tr><td>GBR-5.1</td><td><span class="k">/id/admin</span></td><td>Kartu ringkasan</td><td>5.1</td></tr>
+    <tr><td>GBR-5.2</td><td><span class="k">/id/admin/visitor-analytics</span></td><td>Umami embed</td><td>5.2</td></tr>
+    <tr><td>GBR-5.3</td><td><span class="k">/id/admin/inquiries</span></td><td>Daftar + tab</td><td>5.3</td></tr>
+    <tr><td>GBR-5.4</td><td>inquiry · detail</td><td>Ubah status + balas email</td><td>5.3</td></tr>
+    <tr><td>GBR-5.5</td><td><span class="k">/id/admin/applications</span></td><td>Pipeline + unduh CV</td><td>5.4</td></tr>
+    <tr><td>GBR-5.6</td><td><span class="k">/id/admin/report-downloads</span></td><td>Daftar lead (Lihat/Download)</td><td>5.5</td></tr>
+    <tr><td>GBR-5.7</td><td>report-downloads · Pengaturan</td><td>Form gate</td><td>5.5</td></tr>
+    <tr><td>GBR-6.1</td><td><span class="k">/id/admin/users</span></td><td>Daftar pengguna</td><td>6.2</td></tr>
+    <tr><td>GBR-6.2</td><td>users · form</td><td>Peran + akses section</td><td>6.2</td></tr>
+    <tr><td>GBR-6.3</td><td>dialog kata sandi</td><td>Reset / ganti sandi</td><td>6.3</td></tr>
+    <tr><td>GBR-7.1</td><td>visitor-analytics (opsional)</td><td>Layar "Belum dikonfigurasi"</td><td>7.1</td></tr>
+  </table>
+  </div>
+  <hr class="soft" />
+  <p class="muted" style="text-align:center;">— Akhir dokumen · Draf 1.0 (Bahasa Indonesia) · Versi Inggris menyusul —</p>
+</section>
+
+</div>
+</body>
+</html>
