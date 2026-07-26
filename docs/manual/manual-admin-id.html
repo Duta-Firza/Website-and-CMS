@@ -31,7 +31,7 @@
   h3{font-size:1.18rem; margin:1.3em 0 .4em;}
   h4{font-size:1rem; margin:1.1em 0 .3em; color:var(--brand-2);}
   p{margin:.5em 0;}
-  a{color:var(--brand-2); text-decoration:none;}
+  a{color:var(--brand-2); text-decoration:none; cursor:pointer;}
   code,.k{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.87em;
     background:var(--bg-soft); border:1px solid var(--line); border-radius:5px; padding:.05em .4em;}
   .path{color:var(--brand-2);}
@@ -56,7 +56,9 @@
   .toc ol{list-style:none; padding-left:0; counter-reset:toc;}
   .toc > ol > li{margin:.35em 0; font-weight:600;}
   .toc ol ol{padding-left:1.2em; font-weight:400; margin:.2em 0;}
-  .toc a{display:flex; justify-content:space-between; gap:.6em; border-bottom:1px dotted var(--line); padding:.15em 0;}
+  .toc a{display:flex; justify-content:space-between; gap:.6em; border-bottom:1px dotted var(--line); padding:.15em 0; cursor:pointer;}
+  .toc a:hover{color:var(--brand-2); border-bottom-color:var(--brand-2);}
+  .toc a:hover span{text-decoration:underline;}
 
   /* Bab */
   .chapter{page-break-before:always;}
