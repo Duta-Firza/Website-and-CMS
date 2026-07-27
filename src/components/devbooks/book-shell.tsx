@@ -56,18 +56,21 @@ export function BookShell({ book }: { book: Book }) {
       {/* Cover */}
       <section className="book-cover flex min-h-[70vh] flex-col items-center justify-center border-b border-border py-16 text-center print:min-h-0 print:border-0">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-accent">
-          Buku Manual Administrator
+          {book.coverKicker}
         </p>
-        <h1 className="mt-4 text-3xl font-bold leading-tight text-brand-deep dark:text-foreground">
-          {book.title}
+        <h1 className="mt-3 text-3xl font-bold leading-tight text-brand-deep dark:text-foreground">
+          {book.coverTitle}
         </h1>
-        <div className="my-5 h-1.5 w-24 rounded bg-linear-to-r from-brand-deep via-brand-primary to-brand-accent" />
+        <div className="my-5 h-1.5 w-56 max-w-[70%] rounded bg-linear-to-r from-brand-deep via-brand-primary to-brand-accent" />
         <p className="max-w-md text-muted-foreground">{book.subtitle}</p>
         <div className="mt-10 space-y-1 text-sm text-muted-foreground">
           <p>
-            {book.langLabel} · <span className="font-medium text-foreground">{book.version}</span>
+            <span className="font-medium text-foreground">
+              {book.langLabel} · Versi {book.version}
+            </span>
           </p>
           <p>{CREDIT}</p>
+          <p>{book.year}</p>
         </div>
       </section>
 

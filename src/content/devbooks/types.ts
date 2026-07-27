@@ -38,8 +38,13 @@ export interface Book {
   lang: "id" | "en";
   langLabel: string;
   title: string;
+  /** Cover line 1 (small caps eyebrow). */
+  coverKicker: string;
+  /** Cover line 2 (large title). */
+  coverTitle: string;
   subtitle: string;
   version: string;
+  year: string;
   chapters: Chapter[];
   /** Appendix checklist rows. */
   screenshotChecklist: ScreenshotRow[];

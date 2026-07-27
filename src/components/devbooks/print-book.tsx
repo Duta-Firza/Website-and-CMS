@@ -55,39 +55,39 @@ const PRINT_CSS = `
   * { box-sizing: border-box; }
   html { font-size: 11pt; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1f2937; line-height: 1.55; background: #ffffff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  h1,h2,h3,h4 { color: #0f3d2e; line-height: 1.25; }
+  h1,h2,h3,h4 { color: #1d1a57; line-height: 1.25; }
   h2 { font-size: 1.5rem; margin: 0 0 .4em; }
   h3 { font-size: 1.15rem; margin: 1.1em 0 .3em; }
-  h4 { font-size: 1rem; margin: 1em 0 .2em; color: #12694f; }
+  h4 { font-size: 1rem; margin: 1em 0 .2em; color: #3c526d; }
   p { margin: .5em 0; }
-  a { color: #12694f; text-decoration: none; }
+  a { color: #3c526d; text-decoration: none; }
   code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .85em; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; padding: .05em .3em; }
   ul { margin: .4em 0 .8em; padding-left: 1.3em; }
   li { margin: .2em 0; }
   ol.steps { list-style: none; padding-left: 0; counter-reset: step; margin: .5em 0; }
   ol.steps > li { position: relative; padding-left: 1.9em; margin: .4em 0; }
-  ol.steps > li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: .05em; width: 1.4em; height: 1.4em; background: #12694f; color: #fff; border-radius: 50%; font-size: .72em; font-weight: 700; display: flex; align-items: center; justify-content: center; }
-  .callout { border-left: 4px solid #12694f; background: #eef6f2; padding: .55em .9em; border-radius: 0 6px 6px 0; margin: .8em 0; break-inside: avoid; }
+  ol.steps > li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: .05em; width: 1.4em; height: 1.4em; background: #3c526d; color: #fff; border-radius: 50%; font-size: .72em; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .callout { border-left: 4px solid #3c526d; background: #eef1f6; padding: .55em .9em; border-radius: 0 6px 6px 0; margin: .8em 0; break-inside: avoid; }
   .callout.tip { border-color: #3b6fb0; background: #eef3fb; }
-  .callout.warn { border-color: #c8912a; background: #fff6e6; }
+  .callout.warn { border-color: #9f1211; background: #fff6e6; }
   .callout .ct { font-weight: 700; font-size: .78em; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 .2em; }
   table { border-collapse: collapse; width: 100%; margin: .8em 0; font-size: .88em; }
   th,td { border: 1px solid #e5e7eb; padding: .4em .6em; text-align: left; vertical-align: top; }
-  th { background: #f3f4f6; color: #0f3d2e; }
+  th { background: #f3f4f6; color: #1d1a57; }
   tr { break-inside: avoid; }
   figure { margin: 1em 0; break-inside: avoid; }
   figure img { width: 100%; border: 1px solid #e5e7eb; border-radius: 6px; }
   figure .ph { min-height: 90px; border: 1px dashed #cbd5e1; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: .85em; }
   figcaption { font-size: .8em; color: #6b7280; margin-top: .3em; }
-  figcaption .fc { background: #0f3d2e; color: #fff; border-radius: 4px; padding: .1em .4em; font-family: monospace; font-size: .8em; margin-right: .4em; }
-  figcaption .fu { font-family: monospace; color: #12694f; }
-  .cover { text-align: center; padding: 26mm 0; break-after: page; }
-  .cover .kicker { letter-spacing: .2em; text-transform: uppercase; color: #c8912a; font-weight: 700; font-size: .72rem; }
-  .cover h1 { font-size: 2rem; margin: .4em 0 .2em; }
-  .cover .bar { height: 5px; width: 84px; margin: 1em auto; background: linear-gradient(90deg,#0f3d2e,#12694f,#c8912a); border-radius: 4px; }
-  .cover .sub { color: #6b7280; }
-  .cover .meta { margin-top: 2.2em; color: #6b7280; font-size: .9rem; }
-  .cover .meta b { color: #1f2937; }
+  figcaption .fc { background: #1d1a57; color: #fff; border-radius: 4px; padding: .1em .4em; font-family: monospace; font-size: .8em; margin-right: .4em; }
+  figcaption .fu { font-family: monospace; color: #3c526d; }
+  .cover { display: flex; flex-direction: column; justify-content: space-between; min-height: 225mm; text-align: center; break-after: page; padding: 26mm 0 12mm; }
+  .cover .kicker { letter-spacing: .22em; text-transform: uppercase; color: #9f1211; font-weight: 700; font-size: .78rem; }
+  .cover h1 { font-size: 2.1rem; margin: .5em 0 .35em; }
+  .cover .bar { height: 5px; width: 230px; max-width: 70%; margin: 1.1em auto; background: linear-gradient(90deg,#1d1a57,#3c526d,#9f1211); border-radius: 4px; }
+  .cover .sub { color: #6b7280; max-width: 130mm; margin: 0 auto; }
+  .cover-bottom { color: #6b7280; font-size: .92rem; line-height: 1.9; }
+  .cover-bottom b { color: #1f2937; font-weight: 600; }
   .toc { break-after: page; }
   .toc h2 { margin-bottom: .6em; }
   .toc ol { list-style: none; padding-left: 0; margin: 0; }
@@ -96,7 +96,7 @@ const PRINT_CSS = `
   .toc a { display: flex; justify-content: space-between; gap: 8px; color: #1f2937; border-bottom: 1px dotted #d1d5db; padding: 1px 0; }
   .toc a::after { content: target-counter(attr(href), page); color: #6b7280; }
   .chapter { break-before: page; }
-  .chapter > h2 .chip { display: inline-block; background: #0f3d2e; color: #fff; border-radius: 5px; font-size: .68rem; font-weight: 700; padding: .15em .5em; margin-right: .4em; vertical-align: middle; }
+  .chapter > h2 .chip { display: inline-block; background: #1d1a57; color: #fff; border-radius: 5px; font-size: .68rem; font-weight: 700; padding: .15em .5em; margin-right: .4em; vertical-align: middle; }
   @page { size: A4; margin: 18mm 16mm 15mm;
     @top-right { content: "Manual Admin · PT Duta Firza"; font-size: 8pt; color: #9ca3af; }
     @bottom-center { content: counter(page); font-size: 9pt; color: #6b7280; }
@@ -153,11 +153,13 @@ function blockHtml(b: Block, exists: Record<string, boolean>): string {
 }
 
 function bookHtml(book: Book, exists: Record<string, boolean>): string {
-  const cover = `<section class="cover"><div class="kicker">Buku Manual Administrator</div><h1>${esc(
-    book.title,
-  )}</h1><div class="bar"></div><p class="sub">${esc(book.subtitle)}</p><div class="meta"><p>${esc(
-    book.langLabel,
-  )} · <b>Versi ${esc(book.version)}</b></p><p>Dibuat oleh zullstack.dev</p></div></section>`;
+  const cover = `<section class="cover"><div class="cover-top"><div class="kicker">${esc(
+    book.coverKicker,
+  )}</div><h1>${esc(book.coverTitle)}</h1><div class="bar"></div><p class="sub">${esc(
+    book.subtitle,
+  )}</p></div><div class="cover-bottom"><p><b>${esc(book.langLabel)} · Versi ${esc(
+    book.version,
+  )}</b></p><p>Dibuat oleh zullstack.dev</p><p>${esc(book.year)}</p></div></section>`;
 
   const tocItems = book.chapters
     .map((ch) => {

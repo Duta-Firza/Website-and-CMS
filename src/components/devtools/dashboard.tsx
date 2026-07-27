@@ -42,8 +42,9 @@ const REFRESH_OPTIONS = [
   { v: 0, l: "Off" },
 ];
 
-const BAND_TEXT = { ok: "text-emerald-500", warn: "text-amber-500", crit: "text-red-500" } as const;
-const BAND_BAR = { ok: "bg-emerald-500", warn: "bg-amber-500", crit: "bg-red-500" } as const;
+// Healthy = neutral/brand (not green); only warn/crit draw attention.
+const BAND_TEXT = { ok: "text-foreground", warn: "text-amber-500", crit: "text-red-500" } as const;
+const BAND_BAR = { ok: "bg-brand-primary", warn: "bg-amber-500", crit: "bg-red-500" } as const;
 
 export function DevToolsDashboard() {
   const [ov, setOv] = useState<OverviewResponse | null>(null);
@@ -465,7 +466,7 @@ const ACTION_META = {
   downgrade: {
     label: "Downgrade",
     icon: ArrowDown,
-    cls: "text-emerald-600 dark:text-emerald-400 border-emerald-500/40 bg-emerald-500/10",
+    cls: "text-brand-primary border-brand-primary/40 bg-brand-primary/10",
   },
   maintain: { label: "Maintain", icon: Minus, cls: "text-muted-foreground border-border bg-muted" },
   upgrade: {

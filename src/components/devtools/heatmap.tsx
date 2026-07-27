@@ -2,8 +2,8 @@
 
 import type { Heatmap } from "@/lib/devtools/types";
 
-// Low → high ramp (emerald → amber → red), matching the reference design.
-const RAMP = ["#0f3d2e", "#0f766e", "#22c55e", "#eab308", "#f97316", "#ef4444"];
+// Low → high ramp using the brand palette (light slate → navy → red accent).
+const RAMP = ["#eef1f6", "#c7d2e2", "#93a7c4", "#5b7192", "#3c526d", "#9f1211"];
 
 function colorFor(value: number, max: number): string {
   if (max <= 0) return RAMP[0];
