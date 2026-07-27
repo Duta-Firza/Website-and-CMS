@@ -20,6 +20,9 @@ export function DevChrome() {
   useEffect(() => setMounted(true), []);
 
   if (pathname === "/devlogin" || pathname.startsWith("/devlogin/")) return null;
+  // Book reading/print pages (/devbooks/<slug>/<lang>) render as a clean,
+  // self-contained document — hide all /dev chrome so nothing leaks into print.
+  if (/^\/devbooks\/[^/]+\/[^/]+/.test(pathname)) return null;
 
   const links = [
     { href: "/devbooks", label: "Books", icon: BookText },

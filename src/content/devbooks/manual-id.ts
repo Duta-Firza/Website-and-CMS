@@ -12,7 +12,7 @@ export const manualId: Book = {
   langLabel: "Bahasa Indonesia",
   title: "Buku Manual Admin — Website & CMS PT Duta Firza",
   subtitle: "Panduan pengelolaan konten, pembacaan data, dan administrasi dashboard admin",
-  version: "Draf 1.0",
+  version: "1.0",
   chapters: [
     {
       no: "1",
