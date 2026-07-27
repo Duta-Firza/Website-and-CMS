@@ -93,6 +93,41 @@
     font-weight:700; font-size:.75rem; padding:.1em .5em; margin-right:.4em;}
   .shot-url{font-family:ui-monospace,Menlo,monospace; color:var(--brand-2); font-size:.82em;}
 
+  /* Interaktif: drag & drop gambar (layar saja) */
+  figure.shot{position:relative;}
+  .shot-ph{cursor:pointer; flex-direction:column; gap:.4em;}
+  .shot-ph .ph-hint{font-size:.78rem; color:var(--brand-2); font-weight:600;}
+  figure.shot.dragover .shot-ph{border-color:var(--brand-2); background:#eaf3ee; color:var(--brand-2);}
+  .shot-img-wrap{position:relative;}
+  .shot-img{width:100%; display:block; border:1px solid var(--line); border-radius:10px;}
+  .shot-tools{position:absolute; top:8px; right:8px; display:flex; gap:6px;}
+  .shot-tools button{font:inherit; font-size:.75rem; font-weight:600; cursor:pointer;
+    border:1px solid rgba(0,0,0,.15); background:rgba(255,255,255,.94); color:var(--ink);
+    border-radius:6px; padding:.22em .6em; box-shadow:0 1px 3px rgba(0,0,0,.18);}
+  .shot-tools button:hover{background:#fff;}
+  .shot-tools .btn-remove{color:#b42318;}
+  .shot-meta{font-size:.72rem; color:var(--muted); margin-top:.35em;}
+  #img-bar{position:fixed; right:14px; bottom:14px; z-index:60; background:#fff;
+    border:1px solid var(--line); border-radius:12px; box-shadow:0 6px 24px rgba(0,0,0,.16);
+    padding:.65em .8em; font-size:.8rem; max-width:272px; line-height:1.4;}
+  #img-bar h5{margin:0 0 .25em; color:var(--brand); font-size:.82rem;}
+  #img-bar .row{display:flex; gap:.4em; flex-wrap:wrap; margin-top:.45em;}
+  #img-bar button{font:inherit; font-size:.75rem; cursor:pointer; border:1px solid var(--line);
+    background:var(--bg-soft); border-radius:6px; padding:.3em .55em;}
+  #img-bar button:hover{background:#eef2f0;}
+  #img-bar button.primary{width:100%; background:var(--brand-2); color:#fff; border-color:var(--brand-2); font-weight:600; padding:.45em .55em;}
+  #img-bar button.primary:hover{background:var(--brand);}
+  #img-bar .status{color:var(--muted); font-size:.72rem;}
+  #img-bar .status.warn{color:#a5720f;}
+  #img-bar .fill{color:var(--brand-2); font-weight:700;}
+  @media print{
+    #img-bar{display:none !important;}
+    .shot-tools{display:none !important;}
+    .shot-meta{display:none !important;}
+    .shot-ph{cursor:default;}
+    figure.shot.dragover .shot-ph{background:inherit; border-color:#b8c3bd; color:#8a988f;}
+  }
+
   /* Langkah bernomor tebal */
   ol.steps{counter-reset:step; list-style:none; padding-left:0;}
   ol.steps > li{position:relative; padding-left:2.1em; margin:.5em 0;}
@@ -791,8 +826,10 @@ NEXT_PUBLIC_UMAMI_SHARE_URL="…"</pre>
   <h2>Lampiran · Daftar Screenshot (Checklist)</h2>
   <p>Ambil screenshot berikut lalu tempel menggantikan kotak placeholder pada bab terkait. Ambil dalam bahasa <strong>Indonesia</strong> (URL <span class="k">/id/…</span>), resolusi layar penuh, dan sembunyikan data sensitif bila perlu. Untuk pasangan admin↔publik, jepret keduanya agar pembaca paham hubungan sebab-akibat.</p>
   <div class="box tip">
-    <span class="lbl">Tips menempel gambar</span>
-    <p>Di berkas HTML ini, ganti baris <span class="k">&lt;div class="shot-ph"&gt;…&lt;/div&gt;</span> dengan <span class="k">&lt;img src="gambar/GBR-2.1.png" style="width:100%"&gt;</span>. Simpan gambar di folder <span class="k">gambar/</span> bersebelahan dengan berkas ini, lalu Print → Save as PDF.</p>
+    <span class="lbl">Cara menempel gambar (tanpa edit HTML)</span>
+    <p><strong>Seret &amp; lepaskan</strong> berkas gambar langsung ke kotak placeholder tempat gambar itu akan tampil, atau <strong>klik</strong> kotaknya untuk memilih file. Gambar otomatis <strong>dikompres</strong> (maks 1600px, JPEG) dan tersimpan di peramban Anda. Gunakan tombol <strong>Ganti</strong> / <strong>Hapus</strong> pada gambar untuk mengubahnya.</p>
+    <p>Pekerjaan tersimpan otomatis di peramban. Klik <strong>Ekspor</strong> (panel kanan bawah) untuk membuat cadangan <span class="k">.json</span>, dan <strong>Impor</strong> untuk memuatnya kembali di komputer lain. Setelah semua gambar terpasang: <strong>Cetak (Ctrl/Cmd+P) → Save as PDF</strong> — semua tombol bantu otomatis tersembunyi di hasil PDF.</p>
+    <p><strong>Menyimpan gambar sebagai file (untuk git):</strong> di panel kanan bawah, klik <strong>💾 Simpan ke folder gambar/</strong> (Chrome/Edge) lalu pilih folder <span class="k">docs/manual</span> — semua gambar ditulis sebagai <span class="k">gambar/GBR-x.y.jpg</span>, siap di-commit. Peramban lain: pakai <strong>Unduh ZIP</strong>, ekstrak isinya ke dalam <span class="k">docs/manual/</span> (akan membuat folder <span class="k">gambar/</span>). Setelah file ada di folder, HTML akan <strong>otomatis memuat</strong> gambar dari sana saat dibuka — jadi hasil commit tampil utuh bagi siapa pun.</p>
   </div>
   <div class="tbl-wrap">
   <table>
@@ -845,5 +882,409 @@ NEXT_PUBLIC_UMAMI_SHARE_URL="…"</pre>
 </section>
 
 </div>
+
+<!-- Panel kontrol gambar (tidak ikut tercetak) -->
+<div id="img-bar" class="no-print" aria-hidden="true">
+  <h5>🖼 Gambar Manual</h5>
+  <div class="status" id="img-status">Memuat…</div>
+  <div class="row">
+    <button id="btn-folder" type="button" class="primary" title="Tulis semua gambar ke folder gambar/ (siap di-commit ke git)" hidden>💾 Simpan ke folder gambar/</button>
+  </div>
+  <div class="row">
+    <button id="btn-zip" type="button" title="Unduh semua gambar sebagai gambar.zip (ekstrak di samping file HTML)">Unduh ZIP</button>
+    <button id="btn-export" type="button" title="Cadangan semua gambar sebagai satu file .json">Ekspor</button>
+    <button id="btn-import" type="button" title="Muat gambar dari file cadangan .json">Impor</button>
+    <button id="btn-clear" type="button" title="Hapus semua gambar">Bersihkan</button>
+  </div>
+  <div class="status" id="img-hint" style="margin-top:.45em">Seret gambar ke kotaknya, lalu simpan ke folder <span class="k">gambar/</span> dan commit ke git.</div>
+</div>
+<input id="img-file" type="file" accept="image/*" hidden />
+<input id="img-import-file" type="file" accept="application/json,.json" hidden />
+
+<script>
+(function () {
+  "use strict";
+  // ---- Pengaturan kompresi -------------------------------------------------
+  var MAX_DIM = 1600;      // sisi terpanjang gambar (px) setelah resize
+  var QUALITY = 0.85;      // kualitas JPEG (0..1)
+  var DB_NAME = "duta-firza-manual-shots";
+  var STORE = "imgs";
+
+  // ---- Util ----------------------------------------------------------------
+  function fmtBytes(n) {
+    if (n < 1024) return n + " B";
+    if (n < 1048576) return (n / 1024).toFixed(0) + " KB";
+    return (n / 1048576).toFixed(1) + " MB";
+  }
+  function blobToDataURL(blob) {
+    return new Promise(function (res, rej) {
+      var fr = new FileReader();
+      fr.onload = function () { res(fr.result); };
+      fr.onerror = function () { rej(fr.error); };
+      fr.readAsDataURL(blob);
+    });
+  }
+  function dataURLToBlob(d) {
+    var parts = d.split(","), mime = (parts[0].match(/:(.*?);/) || [])[1] || "image/jpeg";
+    var bin = atob(parts[1]), u = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    return new Blob([u], { type: mime });
+  }
+
+  // ---- IndexedDB (penyimpanan otomatis) ------------------------------------
+  var dbAvailable = true, dbp = null;
+  function openDB() {
+    return new Promise(function (res, rej) {
+      var r = indexedDB.open(DB_NAME, 1);
+      r.onupgradeneeded = function () { r.result.createObjectStore(STORE); };
+      r.onsuccess = function () { res(r.result); };
+      r.onerror = function () { rej(r.error); };
+    });
+  }
+  function withStore(mode, fn) {
+    if (!dbp) return Promise.reject(new Error("no-db"));
+    return dbp.then(function (db) {
+      return new Promise(function (res, rej) {
+        var tx = db.transaction(STORE, mode), st = tx.objectStore(STORE), out = fn(st);
+        tx.oncomplete = function () { res(out && out.result !== undefined ? out.result : out); };
+        tx.onerror = function () { rej(tx.error); };
+      });
+    });
+  }
+  function dbGet(key) { return withStore("readonly", function (s) { return s.get(key); }); }
+  function dbSet(key, blob) { return withStore("readwrite", function (s) { return s.put(blob, key); }); }
+  function dbDel(key) { return withStore("readwrite", function (s) { return s.delete(key); }); }
+
+  // ---- Kompresi gambar via canvas ------------------------------------------
+  function compress(file) {
+    return loadBitmap(file).then(function (img) {
+      var w = img.width, h = img.height;
+      var scale = Math.min(1, MAX_DIM / Math.max(w, h));
+      var cw = Math.round(w * scale), ch = Math.round(h * scale);
+      var c = document.createElement("canvas");
+      c.width = cw; c.height = ch;
+      var ctx = c.getContext("2d");
+      ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, cw, ch); // ratakan transparansi
+      ctx.drawImage(img, 0, 0, cw, ch);
+      if (img.close) img.close();
+      return new Promise(function (res) {
+        c.toBlob(function (b) { res(b || dataURLToBlob(c.toDataURL("image/jpeg", QUALITY))); }, "image/jpeg", QUALITY);
+      });
+    });
+  }
+  function loadBitmap(file) {
+    if (window.createImageBitmap) {
+      return createImageBitmap(file).catch(function () { return loadViaImg(file); });
+    }
+    return loadViaImg(file);
+  }
+  function loadViaImg(file) {
+    return new Promise(function (res, rej) {
+      var url = URL.createObjectURL(file), im = new Image();
+      im.onload = function () { URL.revokeObjectURL(url); res(im); };
+      im.onerror = function () { URL.revokeObjectURL(url); rej(new Error("img-load")); };
+      im.src = url;
+    });
+  }
+
+  // ---- Registri slot -------------------------------------------------------
+  var slots = {};        // key -> {figure, ph, wrap, img, meta}
+  var objectUrls = {};   // key -> objectURL aktif (untuk direvoke)
+  var pendingKey = null; // slot yang menunggu file dari <input>
+  var fileInput = document.getElementById("img-file");
+  var importInput = document.getElementById("img-import-file");
+
+  function setImage(key, blob, origSize) {
+    var s = slots[key]; if (!s) return;
+    if (objectUrls[key]) URL.revokeObjectURL(objectUrls[key]);
+    var url = URL.createObjectURL(blob);
+    objectUrls[key] = url;
+    s.img.src = url;
+    s.folder = false;
+    s.ph.style.display = "none";
+    s.wrap.hidden = false;
+    if (origSize) s.meta.textContent = "Dikompres: " + fmtBytes(origSize) + " → " + fmtBytes(blob.size) + " · maks " + MAX_DIM + "px";
+    else s.meta.textContent = "Ukuran: " + fmtBytes(blob.size);
+    updateStatus();
+  }
+  function clearImage(key) {
+    var s = slots[key]; if (!s) return;
+    if (objectUrls[key]) { URL.revokeObjectURL(objectUrls[key]); delete objectUrls[key]; }
+    s.folder = false;
+    s.img.removeAttribute("src");
+    s.wrap.hidden = true;
+    s.ph.style.display = "";
+    s.meta.textContent = "";
+    updateStatus();
+  }
+  function handleFile(key, file) {
+    if (!file || !/^image\//.test(file.type)) { alert("File bukan gambar."); return; }
+    var orig = file.size;
+    compress(file).then(function (blob) {
+      setImage(key, blob, orig);
+      if (dbAvailable) dbSet(key, blob).catch(function () {});
+    }).catch(function () { alert("Gagal memproses gambar ini."); });
+  }
+
+  // ---- Muat gambar yang sudah tersimpan sebagai file di folder gambar/ ------
+  function folderPath(key) { return "gambar/" + key + ".jpg"; }
+  function showFolderImage(key) {
+    var s = slots[key]; if (!s) return;
+    if (objectUrls[key]) { URL.revokeObjectURL(objectUrls[key]); delete objectUrls[key]; }
+    s.folder = true;
+    s.img.src = folderPath(key);
+    s.ph.style.display = "none";
+    s.wrap.hidden = false;
+    s.meta.textContent = "Dari file: " + folderPath(key);
+    updateStatus();
+  }
+  function tryLoadFromFolder(key) {
+    return new Promise(function (res) {
+      var probe = new Image();
+      probe.onload = function () { showFolderImage(key); res(true); };
+      probe.onerror = function () { res(false); };
+      probe.src = folderPath(key);
+    });
+  }
+
+  // ---- Ambil blob gambar saat ini (untuk simpan folder / ZIP) --------------
+  function blobFromImg(img) {
+    try {
+      var c = document.createElement("canvas");
+      c.width = img.naturalWidth; c.height = img.naturalHeight;
+      c.getContext("2d").drawImage(img, 0, 0);
+      return new Promise(function (res) { c.toBlob(function (b) { res(b); }, "image/jpeg", QUALITY); });
+    } catch (e) { return Promise.resolve(null); } // gambar file:// bisa "taint" canvas → lewati
+  }
+  function getBlob(key) {
+    var s = slots[key];
+    if (!s || s.wrap.hidden) return Promise.resolve(null);
+    // Gambar hasil seret/DB punya blob di memori (objectURL) — paling akurat.
+    if (objectUrls[key]) return fetch(objectUrls[key]).then(function (r) { return r.blob(); }).catch(function () { return null; });
+    return blobFromImg(s.img); // gambar dari folder → sudah ada di disk (umumnya di-skip)
+  }
+
+  // ---- Penulis ZIP minimal (metode "store", tanpa pustaka luar) ------------
+  var CRC_TABLE = (function () {
+    var t = new Uint32Array(256);
+    for (var n = 0; n < 256; n++) { var c = n; for (var k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[n] = c >>> 0; }
+    return t;
+  })();
+  function crc32(u8) { var crc = 0xFFFFFFFF; for (var i = 0; i < u8.length; i++) crc = (crc >>> 8) ^ CRC_TABLE[(crc ^ u8[i]) & 0xFF]; return (crc ^ 0xFFFFFFFF) >>> 0; }
+  function concatBytes(arrs) {
+    var len = 0, i; for (i = 0; i < arrs.length; i++) len += arrs[i].length;
+    var out = new Uint8Array(len), pos = 0;
+    for (i = 0; i < arrs.length; i++) { out.set(arrs[i], pos); pos += arrs[i].length; }
+    return out;
+  }
+  function buildZip(entries) {
+    var enc = new TextEncoder(), parts = [], central = [], offset = 0, count = entries.length;
+    function u16(n) { return new Uint8Array([n & 255, (n >> 8) & 255]); }
+    function u32(n) { return new Uint8Array([n & 255, (n >> 8) & 255, (n >> 16) & 255, (n >>> 24) & 255]); }
+    for (var i = 0; i < entries.length; i++) {
+      var name = enc.encode(entries[i].name), data = entries[i].data, crc = crc32(data);
+      var lh = concatBytes([u32(0x04034b50), u16(20), u16(0), u16(0), u16(0), u16(33), u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0)]);
+      parts.push(lh, name, data);
+      central.push(concatBytes([u32(0x02014b50), u16(20), u16(20), u16(0), u16(0), u16(0), u16(33), u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(offset)]), name);
+      offset += lh.length + name.length + data.length;
+    }
+    var centralSize = 0; for (var j = 0; j < central.length; j++) centralSize += central[j].length;
+    var end = concatBytes([u32(0x06054b50), u16(0), u16(0), u16(count), u16(count), u32(centralSize), u32(offset), u16(0)]);
+    return new Blob(parts.concat(central, [end]), { type: "application/zip" });
+  }
+
+  // ---- Simpan semua gambar ke folder gambar/ (File System Access API) ------
+  function saveToFolder() {
+    if (!window.showDirectoryPicker) { alert("Peramban ini tidak mendukung tulis folder. Gunakan Unduh ZIP."); return; }
+    window.showDirectoryPicker({ id: "duta-firza-manual", mode: "readwrite" }).then(function (parent) {
+      return parent.getDirectoryHandle("gambar", { create: true }).then(function (dir) {
+        var keys = Object.keys(slots), n = 0;
+        return keys.reduce(function (p, key) {
+          return p.then(function () {
+            return getBlob(key).then(function (blob) {
+              if (!blob) return;
+              return dir.getFileHandle(key + ".jpg", { create: true })
+                .then(function (fh) { return fh.createWritable(); })
+                .then(function (w) { return w.write(blob).then(function () { return w.close(); }); })
+                .then(function () { n++; });
+            });
+          });
+        }, Promise.resolve()).then(function () {
+          alert("Tersimpan " + n + " gambar ke folder gambar/.\nJalankan: git add docs/manual/gambar && git commit");
+        });
+      });
+    }).catch(function (e) { if (e && e.name === "AbortError") return; alert("Gagal menyimpan: " + (e && e.message || e)); });
+  }
+
+  // ---- Unduh semua gambar sebagai gambar.zip (fallback universal) ----------
+  function downloadZip() {
+    var keys = Object.keys(slots), entries = [];
+    keys.reduce(function (p, key) {
+      return p.then(function () {
+        return getBlob(key).then(function (b) {
+          if (!b) return;
+          return b.arrayBuffer().then(function (ab) { entries.push({ name: "gambar/" + key + ".jpg", data: new Uint8Array(ab) }); });
+        });
+      });
+    }, Promise.resolve()).then(function () {
+      if (!entries.length) { alert("Belum ada gambar untuk diunduh."); return; }
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(buildZip(entries));
+      a.download = "gambar.zip"; a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+      alert("gambar.zip (" + entries.length + " gambar) diunduh.\nEkstrak isinya ke dalam docs/manual/ (membuat folder gambar/), lalu commit ke git.");
+    });
+  }
+
+  // ---- Bangun slot dari tiap figure ----------------------------------------
+  function buildSlots() {
+    var figures = document.querySelectorAll("figure.shot");
+    Array.prototype.forEach.call(figures, function (fig) {
+      var ph = fig.querySelector(".shot-ph");
+      var noEl = fig.querySelector(".shot-no");
+      if (!ph || !noEl) return;
+      var key = noEl.textContent.trim();
+
+      // Tambah petunjuk drag & drop di placeholder
+      var desc = ph.textContent.trim();
+      ph.innerHTML = '<div class="ph-desc">' + desc + '</div><div class="ph-hint">⤓ Seret &amp; lepas gambar di sini · atau klik untuk memilih</div>';
+
+      // Bungkus gambar + kontrol
+      var wrap = document.createElement("div");
+      wrap.className = "shot-img-wrap"; wrap.hidden = true;
+      var img = document.createElement("img"); img.className = "shot-img"; img.alt = key;
+      var tools = document.createElement("div"); tools.className = "shot-tools no-print";
+      var bRep = document.createElement("button"); bRep.type = "button"; bRep.textContent = "Ganti"; bRep.className = "btn-replace";
+      var bDel = document.createElement("button"); bDel.type = "button"; bDel.textContent = "Hapus"; bDel.className = "btn-remove";
+      tools.appendChild(bRep); tools.appendChild(bDel);
+      var meta = document.createElement("div"); meta.className = "shot-meta no-print";
+      wrap.appendChild(img); wrap.appendChild(tools); wrap.appendChild(meta);
+      ph.parentNode.insertBefore(wrap, ph.nextSibling);
+
+      slots[key] = { figure: fig, ph: ph, wrap: wrap, img: img, meta: meta };
+
+      // Klik placeholder / tombol Ganti → buka pemilih file
+      ph.addEventListener("click", function () { pendingKey = key; fileInput.value = ""; fileInput.click(); });
+      bRep.addEventListener("click", function () { pendingKey = key; fileInput.value = ""; fileInput.click(); });
+      bDel.addEventListener("click", function () {
+        clearImage(key);
+        if (dbAvailable) dbDel(key).catch(function () {});
+      });
+
+      // Drag & drop pada seluruh area figure
+      fig.addEventListener("dragenter", function (e) { e.preventDefault(); fig.classList.add("dragover"); });
+      fig.addEventListener("dragover", function (e) { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; fig.classList.add("dragover"); });
+      fig.addEventListener("dragleave", function (e) { if (!fig.contains(e.relatedTarget)) fig.classList.remove("dragover"); });
+      fig.addEventListener("drop", function (e) {
+        e.preventDefault(); fig.classList.remove("dragover");
+        var f = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (f) handleFile(key, f);
+      });
+    });
+  }
+
+  // <input> tunggal dipakai bergiliran oleh slot yang aktif
+  fileInput.addEventListener("change", function () {
+    if (pendingKey && fileInput.files[0]) handleFile(pendingKey, fileInput.files[0]);
+    pendingKey = null;
+  });
+
+  // Cegah peramban membuka gambar saat dilepas di luar kotak
+  window.addEventListener("dragover", function (e) { e.preventDefault(); });
+  window.addEventListener("drop", function (e) { e.preventDefault(); });
+
+  // ---- Status panel --------------------------------------------------------
+  function updateStatus() {
+    var total = Object.keys(slots).length, filled = 0;
+    for (var k in slots) if (!slots[k].wrap.hidden) filled++;
+    var el = document.getElementById("img-status");
+    el.innerHTML = '<span class="fill">' + filled + "/" + total + "</span> gambar terpasang" +
+      (dbAvailable ? " · tersimpan otomatis" : ' · <span class="warn">simpan via ZIP/folder</span>');
+  }
+
+  // ---- Ekspor / Impor / Bersihkan ------------------------------------------
+  document.getElementById("btn-export").addEventListener("click", function () {
+    var keys = Object.keys(objectUrls);
+    if (!keys.length) { alert("Belum ada gambar untuk diekspor."); return; }
+    var out = {};
+    Promise.all(keys.map(function (k) {
+      var src = dbAvailable ? dbGet(k) : Promise.resolve(null);
+      return src.then(function (blob) {
+        if (!blob) { // ambil dari <img> saat DB tak tersedia
+          return fetch(objectUrls[k]).then(function (r) { return r.blob(); });
+        }
+        return blob;
+      }).then(blobToDataURL).then(function (d) { out[k] = d; });
+    })).then(function () {
+      var blob = new Blob([JSON.stringify(out)], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "manual-gambar-cadangan.json";
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    });
+  });
+  document.getElementById("btn-import").addEventListener("click", function () { importInput.value = ""; importInput.click(); });
+  importInput.addEventListener("change", function () {
+    var f = importInput.files[0]; if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      try {
+        var data = JSON.parse(fr.result), n = 0;
+        Object.keys(data).forEach(function (k) {
+          if (!slots[k]) return;
+          var blob = dataURLToBlob(data[k]);
+          setImage(k, blob);
+          if (dbAvailable) dbSet(k, blob).catch(function () {});
+          n++;
+        });
+        alert("Berhasil memuat " + n + " gambar.");
+      } catch (err) { alert("File cadangan tidak valid."); }
+    };
+    fr.readAsText(f);
+  });
+  document.getElementById("btn-clear").addEventListener("click", function () {
+    if (!confirm("Hapus SEMUA gambar yang sudah dipasang?")) return;
+    Object.keys(slots).forEach(function (k) {
+      clearImage(k);
+      if (dbAvailable) dbDel(k).catch(function () {});
+    });
+  });
+
+  // ---- Simpan ke folder / ZIP ----------------------------------------------
+  var btnFolder = document.getElementById("btn-folder");
+  if (window.showDirectoryPicker) {
+    btnFolder.hidden = false;
+    btnFolder.addEventListener("click", function () {
+      if (!confirm("Pilih folder tempat 'manual-admin-id.html' berada (mis. docs/manual). Folder 'gambar/' akan dibuat/diisi di dalamnya, siap di-commit ke git.")) return;
+      saveToFolder();
+    });
+  } else {
+    document.getElementById("img-hint").innerHTML = 'Peramban ini tak bisa menulis folder — pakai <strong>Unduh ZIP</strong>, ekstrak di dalam docs/manual/, lalu commit.';
+  }
+  document.getElementById("btn-zip").addEventListener("click", downloadZip);
+
+  // ---- Inisialisasi --------------------------------------------------------
+  buildSlots();
+  // Prioritas muat: (1) IndexedDB (draf lokal) → (2) file di folder gambar/ (hasil commit)
+  function hydrateFromFolderOnly() {
+    Object.keys(slots).forEach(function (k) { tryLoadFromFolder(k); });
+    updateStatus();
+  }
+  try {
+    dbp = openDB();
+    dbp.then(function () {
+      Object.keys(slots).forEach(function (k) {
+        dbGet(k)
+          .then(function (blob) { if (blob) setImage(k, blob); else tryLoadFromFolder(k); })
+          .catch(function () { tryLoadFromFolder(k); })
+          .then(function () { updateStatus(); });
+      });
+    }).catch(function () { dbAvailable = false; hydrateFromFolderOnly(); });
+  } catch (e) { dbAvailable = false; hydrateFromFolderOnly(); }
+  updateStatus();
+})();
+</script>
+
 </body>
 </html>
