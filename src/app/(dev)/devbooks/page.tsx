@@ -1,6 +1,8 @@
 import { ArrowRight, BookText, FileCode2 } from "lucide-react";
 import Link from "next/link";
+import { ManualPublish } from "@/components/devbooks/manual-publish";
 import { BOOKS } from "@/content/devbooks/registry";
+import { getManualBookUrls } from "@/lib/cms/site-settings";
 import { assertDevSession } from "@/lib/devtools/dev-session";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +11,7 @@ const ICONS: Record<string, typeof BookText> = { manual: BookText, api: FileCode
 
 export default async function DevBooksPage() {
   await assertDevSession("/devbooks");
+  const published = await getManualBookUrls().catch(() => ({ id: "", en: "" }));
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
@@ -67,6 +70,8 @@ export default async function DevBooksPage() {
           );
         })}
       </div>
+
+      <ManualPublish initialId={published.id} initialEn={published.en} />
     </main>
   );
 }

@@ -526,6 +526,10 @@
       "users": {
         "title": "Pengguna",
         "description": "Akun admin, perannya, dan section mana yang boleh dikelola."
+      },
+      "manualBook": {
+        "title": "Manual Book",
+        "description": "Buku manual admin (PDF) — Bahasa Indonesia & English."
       }
     },
     "tabs": {
@@ -1060,7 +1064,14 @@
         "FORBIDDEN": "Anda tidak punya izin untuk itu."
       }
     },
-    "loginRevoked": "Akses Anda berubah. Silakan masuk lagi."
+    "loginRevoked": "Akses Anda berubah. Silakan masuk lagi.",
+    "manualBook": {
+      "download": "Unduh",
+      "openNewTab": "Buka di tab baru",
+      "notUploaded": "Manual book belum diunggah.",
+      "langId": "Bahasa Indonesia",
+      "langEn": "English"
+    }
   },
   "AdminDashboard": {
     "description": "Ringkasan seluruh bagian konten dan inbox.",
@@ -1121,7 +1132,10 @@
     "reportDownloads": "Download Laporan",
     "comingSoon": "Segera",
     "expand": "Perluas sidebar",
-    "collapse": "Ringkas sidebar"
+    "collapse": "Ringkas sidebar",
+    "sectionHelp": "Bantuan",
+    "groupHelp": "Dokumentasi",
+    "manualBook": "Manual Book"
   },
   "IR": {
     "contactHeading": "Kontak Hubungan Investor",

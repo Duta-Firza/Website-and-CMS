@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   ArrowRightLeft,
   Award,
+  BookOpen,
   Briefcase,
   Building2,
   Clock,
@@ -17,6 +18,7 @@ import {
   Info,
   Layers,
   LayoutDashboard,
+  LifeBuoy,
   LineChart,
   Mail,
   MailQuestion,
@@ -60,6 +62,7 @@ export interface AdminNavGroup {
  */
 const ITEM_SCOPE_OVERRIDES: Record<string, NavScope | null> = {
   dashboard: null,
+  manualBook: null,
   users: "system",
 };
 
@@ -262,6 +265,20 @@ function buildFullNav(base: string): AdminNavData {
             titleKey: "groupSystem",
             icon: Settings,
             items: [{ labelKey: "users", href: `${base}/users`, icon: UserCog }],
+          },
+        ],
+      },
+      {
+        key: "help",
+        titleKey: "sectionHelp",
+        groups: [
+          {
+            key: "help",
+            titleKey: "groupHelp",
+            icon: LifeBuoy,
+            // Ungated (manualBook -> null in ITEM_SCOPE_OVERRIDES): visible to
+            // every admin, including viewers.
+            items: [{ labelKey: "manualBook", href: `${base}/manual-book`, icon: BookOpen }],
           },
         ],
       },

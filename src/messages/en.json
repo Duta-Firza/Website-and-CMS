@@ -526,6 +526,10 @@
       "users": {
         "title": "Users",
         "description": "Admin accounts, their role, and which sections they can manage."
+      },
+      "manualBook": {
+        "title": "Manual Book",
+        "description": "Admin manual book (PDF) — Indonesian & English."
       }
     },
     "tabs": {
@@ -1060,7 +1064,14 @@
         "FORBIDDEN": "You don't have permission to do that."
       }
     },
-    "loginRevoked": "Your access has changed. Please sign in again."
+    "loginRevoked": "Your access has changed. Please sign in again.",
+    "manualBook": {
+      "download": "Download",
+      "openNewTab": "Open in new tab",
+      "notUploaded": "The manual book hasn't been uploaded yet.",
+      "langId": "Bahasa Indonesia",
+      "langEn": "English"
+    }
   },
   "AdminDashboard": {
     "description": "Overview of every content section and inbox.",
@@ -1121,7 +1132,10 @@
     "reportDownloads": "Download Reports",
     "comingSoon": "Soon",
     "expand": "Expand sidebar",
-    "collapse": "Collapse sidebar"
+    "collapse": "Collapse sidebar",
+    "sectionHelp": "Help",
+    "groupHelp": "Documentation",
+    "manualBook": "Manual Book"
   },
   "IR": {
     "contactHeading": "Investor Relations Contact",
