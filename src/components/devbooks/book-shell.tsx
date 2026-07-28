@@ -1,9 +1,8 @@
 import { ArrowLeft, Printer } from "lucide-react";
 import Link from "next/link";
+import { bookLabels } from "@/content/devbooks/labels";
 import type { Book } from "@/content/devbooks/types";
 import { BlockList } from "./book-content";
-
-const CREDIT = "Dibuat oleh zullstack.dev";
 
 /** Sub-sections (h3 blocks) inside a chapter, for the table of contents. */
 function chapterSubsections(book: Book) {
@@ -15,6 +14,7 @@ function chapterSubsections(book: Book) {
 
 export function BookShell({ book }: { book: Book }) {
   const chapters = chapterSubsections(book);
+  const L = bookLabels(book.lang);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
@@ -38,17 +38,15 @@ export function BookShell({ book }: { book: Book }) {
           href="/devbooks"
           className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="h-3.5 w-3.5" /> Kembali
+          <ArrowLeft className="h-3.5 w-3.5" /> {L.back}
         </Link>
         <div className="flex items-center gap-3">
-          <span className="hidden text-xs text-muted-foreground sm:inline">
-            Unggah screenshot di kotak masing-masing, lalu buat PDF.
-          </span>
+          <span className="hidden text-xs text-muted-foreground sm:inline">{L.uploadHint}</span>
           <Link
             href={`/devbooks/${book.slug}/${book.lang}/print`}
             className="inline-flex items-center gap-1.5 rounded-md bg-brand-primary px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-brand-deep"
           >
-            <Printer className="h-3.5 w-3.5" /> Buat PDF (dengan nomor halaman)
+            <Printer className="h-3.5 w-3.5" /> {L.makePdf}
           </Link>
         </div>
       </div>
@@ -66,17 +64,17 @@ export function BookShell({ book }: { book: Book }) {
         <div className="mt-10 space-y-1 text-sm text-muted-foreground">
           <p>
             <span className="font-medium text-foreground">
-              {book.langLabel} · Versi {book.version}
+              {book.langLabel} · {L.versionWord} {book.version}
             </span>
           </p>
-          <p>{CREDIT}</p>
+          <p>{L.credit}</p>
           <p>{book.year}</p>
         </div>
       </section>
 
       {/* Table of contents (clickable — preserved as links in the PDF) */}
       <section className="book-toc py-8">
-        <h2 className="mb-4 text-xl font-bold text-brand-deep dark:text-foreground">Daftar Isi</h2>
+        <h2 className="mb-4 text-xl font-bold text-brand-deep dark:text-foreground">{L.toc}</h2>
         <ol className="space-y-2 text-sm">
           {chapters.map((ch) => (
             <li key={ch.id}>
@@ -104,7 +102,7 @@ export function BookShell({ book }: { book: Book }) {
           ))}
           <li>
             <a href="#lampiran" className="font-medium text-foreground hover:text-brand-primary">
-              Lampiran · Daftar Screenshot
+              {L.appendix}
             </a>
           </li>
         </ol>
@@ -115,7 +113,7 @@ export function BookShell({ book }: { book: Book }) {
         <section key={ch.id} id={ch.id} className="book-chapter scroll-mt-20">
           <h2 className="mt-2 flex items-center gap-2 text-xl font-bold text-brand-deep dark:text-foreground">
             <span className="rounded-md bg-brand-deep px-2 py-0.5 text-xs font-bold text-white dark:bg-brand-primary">
-              Bab {ch.no}
+              {L.chapter} {ch.no}
             </span>
             {ch.title}
           </h2>
@@ -126,13 +124,13 @@ export function BookShell({ book }: { book: Book }) {
       {/* Appendix: screenshot checklist */}
       <section id="lampiran" className="book-chapter scroll-mt-20">
         <h2 className="mt-2 text-xl font-bold text-brand-deep dark:text-foreground">
-          Lampiran · Daftar Screenshot
+          {L.appendix}
         </h2>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr>
-                {["Kode", "Halaman / URL", "Yang di-frame", "Bab"].map((h) => (
+                {[L.cols.code, L.cols.page, L.cols.frame, L.cols.chapter].map((h) => (
                   <th
                     key={h}
                     className="border border-border bg-muted px-3 py-2 text-left font-semibold text-brand-deep dark:text-foreground"

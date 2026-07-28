@@ -3,6 +3,7 @@
 import { ArrowLeft, Loader2, Printer } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { type BookLabels, bookLabels } from "@/content/devbooks/labels";
 import type { Block, Book } from "@/content/devbooks/types";
 
 interface PagedPreviewer {
@@ -98,7 +99,7 @@ const PRINT_CSS = `
   .chapter { break-before: page; }
   .chapter > h2 .chip { display: inline-block; background: #1d1a57; color: #fff; border-radius: 5px; font-size: .68rem; font-weight: 700; padding: .15em .5em; margin-right: .4em; vertical-align: middle; }
   @page { size: A4; margin: 18mm 16mm 15mm;
-    @top-right { content: "Manual Admin · PT Duta Firza"; font-size: 8pt; color: #9ca3af; }
+    @top-right { content: "%RUNNING_HEADER%"; font-size: 8pt; color: #9ca3af; }
     @bottom-center { content: counter(page); font-size: 9pt; color: #6b7280; }
     @bottom-right { content: "zullstack.dev"; font-size: 7.5pt; color: #cbd5e1; }
   }
@@ -152,14 +153,14 @@ function blockHtml(b: Block, exists: Record<string, boolean>): string {
   }
 }
 
-function bookHtml(book: Book, exists: Record<string, boolean>): string {
+function bookHtml(book: Book, exists: Record<string, boolean>, L: BookLabels): string {
   const cover = `<section class="cover"><div class="cover-top"><div class="kicker">${esc(
     book.coverKicker,
   )}</div><h1>${esc(book.coverTitle)}</h1><div class="bar"></div><p class="sub">${esc(
     book.subtitle,
-  )}</p></div><div class="cover-bottom"><p><b>${esc(book.langLabel)} · Versi ${esc(
+  )}</p></div><div class="cover-bottom"><p><b>${esc(book.langLabel)} · ${esc(L.versionWord)} ${esc(
     book.version,
-  )}</b></p><p>Dibuat oleh zullstack.dev</p><p>${esc(book.year)}</p></div></section>`;
+  )}</b></p><p>${esc(L.credit)}</p><p>${esc(book.year)}</p></div></section>`;
 
   const tocItems = book.chapters
     .map((ch) => {
@@ -170,12 +171,14 @@ function bookHtml(book: Book, exists: Record<string, boolean>): string {
       return `<li><a href="#${ch.id}">${ch.no}. ${esc(ch.title)}</a>${subList}</li>`;
     })
     .join("");
-  const toc = `<section class="toc"><h2>Daftar Isi</h2><ol>${tocItems}<li><a href="#lampiran">Lampiran · Daftar Screenshot</a></li></ol></section>`;
+  const toc = `<section class="toc"><h2>${esc(L.toc)}</h2><ol>${tocItems}<li><a href="#lampiran">${esc(
+    L.appendix,
+  )}</a></li></ol></section>`;
 
   const chapters = book.chapters
     .map(
       (ch) =>
-        `<section class="chapter" id="${ch.id}"><h2><span class="chip">Bab ${ch.no}</span>${esc(
+        `<section class="chapter" id="${ch.id}"><h2><span class="chip">${esc(L.chapter)} ${ch.no}</span>${esc(
           ch.title,
         )}</h2>${ch.blocks.map((b) => blockHtml(b, exists)).join("")}</section>`,
     )
@@ -189,7 +192,11 @@ function bookHtml(book: Book, exists: Record<string, boolean>): string {
         )}</td></tr>`,
     )
     .join("");
-  const appendix = `<section class="chapter" id="lampiran"><h2>Lampiran · Daftar Screenshot</h2><table><thead><tr><th>Kode</th><th>Halaman / URL</th><th>Yang di-frame</th><th>Bab</th></tr></thead><tbody>${rows}</tbody></table></section>`;
+  const appendix = `<section class="chapter" id="lampiran"><h2>${esc(L.appendix)}</h2><table><thead><tr><th>${esc(
+    L.cols.code,
+  )}</th><th>${esc(L.cols.page)}</th><th>${esc(L.cols.frame)}</th><th>${esc(
+    L.cols.chapter,
+  )}</th></tr></thead><tbody>${rows}</tbody></table></section>`;
 
   return `${cover}${toc}${chapters}${appendix}`;
 }
@@ -198,6 +205,7 @@ export function PrintBook({ book }: { book: Book }) {
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const targetRef = useRef<HTMLDivElement>(null);
   const ranRef = useRef(false);
+  const L = bookLabels(book.lang);
 
   useEffect(() => {
     if (ranRef.current) return;
@@ -226,10 +234,11 @@ export function PrintBook({ book }: { book: Book }) {
           }),
         );
 
-        const html = bookHtml(book, exists);
+        const html = bookHtml(book, exists, L);
         await loadPagedPolyfill();
         if (!window.Paged?.Previewer) throw new Error("Paged.js unavailable");
-        const cssUrl = URL.createObjectURL(new Blob([PRINT_CSS], { type: "text/css" }));
+        const css = PRINT_CSS.replace("%RUNNING_HEADER%", L.runningHeader);
+        const cssUrl = URL.createObjectURL(new Blob([css], { type: "text/css" }));
         const previewer = new window.Paged.Previewer();
         if (targetRef.current) await previewer.preview(html, [cssUrl], targetRef.current);
         URL.revokeObjectURL(cssUrl);
@@ -239,7 +248,7 @@ export function PrintBook({ book }: { book: Book }) {
         setStatus("error");
       }
     })();
-  }, [book]);
+  }, [book, L]);
 
   return (
     <div className="min-h-screen bg-neutral-200 dark:bg-neutral-800">
@@ -258,10 +267,10 @@ export function PrintBook({ book }: { book: Book }) {
           href={`/devbooks/${book.slug}/${book.lang}`}
           className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke editor gambar
+          <ArrowLeft className="h-3.5 w-3.5" /> {L.print.back}
         </Link>
         <span className="hidden text-xs text-muted-foreground md:inline">
-          Saat menyimpan PDF: <b>Margins: Default</b>, <b>matikan “Headers and footers”</b>.
+          {L.print.instruction}
         </span>
         <button
           type="button"
@@ -269,20 +278,17 @@ export function PrintBook({ book }: { book: Book }) {
           disabled={status !== "ready"}
           className="inline-flex items-center gap-1.5 rounded-md bg-brand-primary px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-brand-deep disabled:opacity-50"
         >
-          <Printer className="h-3.5 w-3.5" /> Simpan sebagai PDF
+          <Printer className="h-3.5 w-3.5" /> {L.print.save}
         </button>
       </div>
 
       {status === "loading" && (
         <div className="no-print flex items-center justify-center gap-2 py-24 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Menyiapkan tampilan cetak &amp; nomor
-          halaman…
+          <Loader2 className="h-4 w-4 animate-spin" /> {L.print.preparing}
         </div>
       )}
       {status === "error" && (
-        <div className="no-print py-24 text-center text-sm text-red-500">
-          Gagal menyiapkan tampilan cetak. Muat ulang halaman untuk mencoba lagi.
-        </div>
+        <div className="no-print py-24 text-center text-sm text-red-500">{L.print.failed}</div>
       )}
 
       <div ref={targetRef} className="pagedjs-render" />

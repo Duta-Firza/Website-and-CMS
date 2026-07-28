@@ -1,3 +1,4 @@
+import { manualEn } from "./manual-en";
 import { manualId } from "./manual-id";
 import type { Book } from "./types";
 
@@ -19,10 +20,10 @@ export const BOOKS: BookEntry[] = [
     description: "Panduan lengkap pemakaian CMS / dashboard admin untuk mengelola konten & data.",
     langs: [
       { lang: "id", label: "Bahasa Indonesia", available: true },
-      { lang: "en", label: "English", available: false },
+      { lang: "en", label: "English", available: true },
     ],
     status: "available",
-    book: { id: manualId },
+    book: { id: manualId, en: manualEn },
   },
   {
     slug: "api",
