@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { requirePageScope } from "@/lib/cms/access";
 import { connectDB } from "@/lib/db";
 import { JobOpening } from "@/models";
 import type { JobApplyMode, JobEmploymentType } from "@/models/constants";
@@ -32,6 +33,8 @@ async function loadJobOpening(id: string) {
 }
 
 export default async function EditJobOpeningPage({ params }: { params: Promise<PageParams> }) {
+  await requirePageScope("careers");
+
   const { id } = await params;
   const [job, t] = await Promise.all([loadJobOpening(id), getTranslations("Admin")]);
 

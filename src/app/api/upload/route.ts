@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireWriteAccess } from "@/lib/cms/access";
 import { compress } from "@/lib/storage/compress";
 import { uploadBuffer } from "@/lib/storage/gcs";
 
@@ -31,9 +31,11 @@ function categoryFor(mime: string): "image" | "video" | "pdf" | null {
 }
 
 export async function POST(req: Request) {
-  const session = await auth();
-  const role = (session?.user as { role?: string } | undefined)?.role;
-  if (!session?.user || (role !== "super-admin" && role !== "editor")) {
+  // Media upload isn't tied to one section — any active, non-viewer admin may
+  // upload; the scope check happens on the action that saves the resulting URL.
+  try {
+    await requireWriteAccess();
+  } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

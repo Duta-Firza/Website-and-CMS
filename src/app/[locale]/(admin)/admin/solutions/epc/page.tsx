@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { ProjectsManager } from "@/app/[locale]/(admin)/admin/projects/projects-manager";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
+import { requirePageScope } from "@/lib/cms/access";
 import { loadAdminProjects } from "@/lib/cms/admin-projects";
 import { parseAdminListParams } from "@/lib/cms/list-params";
 import { loadSolutionPageForAdmin } from "../_components/load-solution-page";
@@ -12,6 +13,8 @@ export default async function EpcAdminPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageScope("epc");
+
   const [page, sp, locale, t] = await Promise.all([
     loadSolutionPageForAdmin("epc"),
     searchParams,

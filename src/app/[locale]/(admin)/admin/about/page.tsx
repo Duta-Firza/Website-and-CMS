@@ -3,6 +3,7 @@ import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
 import { UrlTabs } from "@/components/admin/url-tabs";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { requirePageScope } from "@/lib/cms/access";
 import { connectDB } from "@/lib/db";
 import { ABOUT_PAGE_ID, AboutPage } from "@/models";
 import { AboutSubPageForm } from "./_components/about-sub-page-form";
@@ -62,6 +63,8 @@ async function loadAbout(): Promise<AboutFormValues> {
 }
 
 export default async function AboutAdminPage() {
+  await requirePageScope("about");
+
   const [initial, meta, locale, t] = await Promise.all([
     loadAbout(),
     loadAboutSubPageForAdmin("who-we-are"),

@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { requirePageScope } from "@/lib/cms/access";
 import { connectDB } from "@/lib/db";
 import { Partner } from "@/models";
 import { PartnersManager } from "./partners-manager";
@@ -31,6 +32,8 @@ async function loadPartners(): Promise<PartnerRow[]> {
 }
 
 export default async function PartnersAdminPage() {
+  await requirePageScope("tradingPartners");
+
   const partners = await loadPartners();
   const t = await getTranslations("Admin.pages.partners");
   return (

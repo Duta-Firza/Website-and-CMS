@@ -1,5 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { requirePageScope } from "@/lib/cms/access";
 import { getUnreadApplicationCount } from "@/lib/cms/applications";
 import { escapeRegex, parsePage, parsePageSize } from "@/lib/cms/list-query";
 import { connectDB } from "@/lib/db";
@@ -55,6 +56,8 @@ export default async function ApplicationsAdminPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await requirePageScope("applications");
+
   const [sp, locale, t] = await Promise.all([
     searchParams,
     getLocale(),

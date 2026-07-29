@@ -26,37 +26,47 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => ({
         if (!parsed.success) return null;
 
         await connectDB();
+        // passwordHash is `select: false` on the schema, so it must be asked
+        // for explicitly — without this every login fails.
         const user = await User.findOne({
           email: parsed.data.email.toLowerCase(),
           isActive: true,
-        }).lean();
+          isDeleted: { $ne: true },
+        })
+          .select("+passwordHash")
+          .lean();
         if (!user) return null;
 
         const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
         if (!valid) return null;
 
+        // Best-effort: a failed bookkeeping write shouldn't block a valid login.
+        try {
+          await User.updateOne({ _id: user._id }, { $set: { lastLoginAt: new Date() } });
+        } catch (e) {
+          console.error("[auth] lastLoginAt update failed", e);
+        }
+
         return {
           id: String(user._id),
           email: user.email,
           name: user.name,
-          role: user.role,
         };
       },
     }),
   ],
   callbacks: {
+    // The token carries identity only — never `role` or `scopes`. Authorization
+    // reads those from MongoDB on each request (src/lib/cms/access.ts) so a
+    // deactivation or role change applies immediately rather than at token
+    // expiry, and so there's only one source of truth for them.
     jwt: async ({ token, user }) => {
-      if (user) {
-        token.role = (user as { role?: string }).role;
-        token.uid = user.id;
-      }
+      if (user) token.uid = user.id;
       return token;
     },
     session: async ({ session, token }) => {
       if (session.user) {
-        const u = session.user as { id?: string; role?: string };
-        u.id = token.uid as string | undefined;
-        u.role = token.role as string | undefined;
+        (session.user as { id?: string }).id = token.uid as string | undefined;
       }
       return session;
     },

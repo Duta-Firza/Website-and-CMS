@@ -522,6 +522,14 @@
         "title": "Lamaran Kerja",
         "description": "Lamaran yang masuk dari form lamaran di halaman karier, beserta CV.",
         "searchPlaceholder": "Cari nama, email, posisi…"
+      },
+      "users": {
+        "title": "Pengguna",
+        "description": "Akun admin, perannya, dan section mana yang boleh dikelola."
+      },
+      "manualBook": {
+        "title": "Manual Book",
+        "description": "Buku manual admin (PDF) — Bahasa Indonesia & English."
       }
     },
     "tabs": {
@@ -580,7 +588,8 @@
       "division": "Divisi",
       "leadershipMember": "Anggota Pimpinan",
       "product": "Produk",
-      "inquiry": "Inquiry"
+      "inquiry": "Inquiry",
+      "user": "Pengguna"
     },
     "empty": {
       "stats": "Belum ada statistik.",
@@ -996,6 +1005,72 @@
         "center": "Tengah",
         "right": "Kanan"
       }
+    },
+    "users": {
+      "changeMyPassword": "Ganti kata sandi",
+      "resetPassword": "Reset kata sandi",
+      "resetPasswordFor": "Tetapkan kata sandi baru untuk {name}. Dia tidak diberi notifikasi — sampaikan langsung.",
+      "searchPlaceholder": "Cari nama, email…",
+      "passwordHint": "Minimal 12 karakter.",
+      "you": "(Anda)",
+      "empty": "Belum ada pengguna.",
+      "neverLoggedIn": "Belum pernah",
+      "scopesAllForSuperAdmin": "Semua section",
+      "scopesNone": "Tidak ada section",
+      "scopesHint": "Section yang boleh dibuka dan diubah pengguna ini. Dasbor selalu tersedia.",
+      "deleteHint": "Akun dinonaktifkan dan disembunyikan, dan emailnya bebas dipakai lagi.",
+      "fields": {
+        "role": "Peran",
+        "scopes": "Akses section",
+        "lastLoginAt": "Login terakhir",
+        "newPassword": "Kata sandi baru",
+        "confirmPassword": "Konfirmasi kata sandi",
+        "currentPassword": "Kata sandi saat ini"
+      },
+      "roles": {
+        "super-admin": "Super Admin",
+        "editor": "Editor",
+        "viewer": "Viewer"
+      },
+      "roleHints": {
+        "super-admin": "Akses penuh ke semua section, plus kelola pengguna.",
+        "editor": "Hanya bisa mengubah section yang dicentang di bawah.",
+        "viewer": "Hanya baca."
+      },
+      "filters": {
+        "allRoles": "Semua peran"
+      },
+      "sort": {
+        "newest": "Terbaru",
+        "lastLogin": "Login terakhir"
+      },
+      "toasts": {
+        "created": "Pengguna dibuat",
+        "updated": "Pengguna diperbarui",
+        "deleted": "Pengguna dihapus",
+        "passwordReset": "Kata sandi direset",
+        "passwordChanged": "Kata sandi diganti"
+      },
+      "errors": {
+        "EMAIL_TAKEN": "Email itu sudah dipakai.",
+        "LAST_SUPER_ADMIN": "Ini super admin aktif terakhir — angkat orang lain dulu.",
+        "CANNOT_DELETE_SELF": "Anda tidak bisa menghapus akun sendiri.",
+        "CANNOT_DEACTIVATE_SELF": "Anda tidak bisa menonaktifkan akun sendiri.",
+        "CANNOT_DEMOTE_SELF": "Anda tidak bisa mengubah peran sendiri.",
+        "CURRENT_PASSWORD_WRONG": "Kata sandi saat ini salah.",
+        "PASSWORD_MISMATCH": "Kata sandi tidak cocok.",
+        "NOT_FOUND": "Pengguna tidak ditemukan.",
+        "UNAUTHORIZED": "Sesi Anda berakhir. Silakan masuk lagi.",
+        "FORBIDDEN": "Anda tidak punya izin untuk itu."
+      }
+    },
+    "loginRevoked": "Akses Anda berubah. Silakan masuk lagi.",
+    "manualBook": {
+      "download": "Unduh",
+      "openNewTab": "Buka di tab baru",
+      "notUploaded": "Manual book belum diunggah.",
+      "langId": "Bahasa Indonesia",
+      "langEn": "English"
     }
   },
   "AdminDashboard": {
@@ -1057,7 +1132,10 @@
     "reportDownloads": "Download Laporan",
     "comingSoon": "Segera",
     "expand": "Perluas sidebar",
-    "collapse": "Ringkas sidebar"
+    "collapse": "Ringkas sidebar",
+    "sectionHelp": "Bantuan",
+    "groupHelp": "Dokumentasi",
+    "manualBook": "Manual Book"
   },
   "IR": {
     "contactHeading": "Kontak Hubungan Investor",

@@ -1,8 +1,9 @@
 "use client";
 
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Check, Monitor, Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,9 +15,20 @@ import { cn } from "@/lib/utils";
 import { useHeaderOverlay } from "./header-context";
 
 export function ThemeToggle() {
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const t = useTranslations("Common");
   const overlay = useHeaderOverlay();
+
+  // `theme` is only known on the client; guard against hydration mismatch so
+  // the active highlight doesn't flash on first paint.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const options = [
+    { value: "light", label: t("themeLight"), Icon: Sun },
+    { value: "dark", label: t("themeDark"), Icon: Moon },
+    { value: "system", label: t("themeSystem"), Icon: Monitor },
+  ] as const;
 
   return (
     <DropdownMenu modal={false}>
@@ -35,18 +47,20 @@ export function ThemeToggle() {
         <span className="sr-only">{t("theme")}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          <Sun className="mr-2 h-4 w-4" />
-          {t("themeLight")}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          <Moon className="mr-2 h-4 w-4" />
-          {t("themeDark")}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          <Monitor className="mr-2 h-4 w-4" />
-          {t("themeSystem")}
-        </DropdownMenuItem>
+        {options.map(({ value, label, Icon }) => {
+          const active = mounted && theme === value;
+          return (
+            <DropdownMenuItem
+              key={value}
+              onClick={() => setTheme(value)}
+              className={cn(active && "bg-primary/10 text-primary focus:text-primary")}
+            >
+              <Icon className={cn("mr-2 h-4 w-4", active && "text-primary")} />
+              {label}
+              {active && <Check className="ml-auto h-4 w-4" />}
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

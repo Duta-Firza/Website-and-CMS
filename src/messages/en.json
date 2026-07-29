@@ -522,6 +522,14 @@
         "title": "Job Applications",
         "description": "Applications submitted via the careers page form, including CVs.",
         "searchPlaceholder": "Search name, email, position…"
+      },
+      "users": {
+        "title": "Users",
+        "description": "Admin accounts, their role, and which sections they can manage."
+      },
+      "manualBook": {
+        "title": "Manual Book",
+        "description": "Admin manual book (PDF) — Indonesian & English."
       }
     },
     "tabs": {
@@ -580,7 +588,8 @@
       "division": "Division",
       "leadershipMember": "Leadership Member",
       "product": "Product",
-      "inquiry": "Inquiry"
+      "inquiry": "Inquiry",
+      "user": "User"
     },
     "empty": {
       "stats": "No stats yet.",
@@ -996,6 +1005,72 @@
         "center": "Center",
         "right": "Right"
       }
+    },
+    "users": {
+      "changeMyPassword": "Change password",
+      "resetPassword": "Reset password",
+      "resetPasswordFor": "Set a new password for {name}. They are not notified — share it with them directly.",
+      "searchPlaceholder": "Search name, email…",
+      "passwordHint": "At least 12 characters.",
+      "you": "(you)",
+      "empty": "No users yet.",
+      "neverLoggedIn": "Never",
+      "scopesAllForSuperAdmin": "All sections",
+      "scopesNone": "No sections",
+      "scopesHint": "Sections this user may open and edit. The dashboard is always available.",
+      "deleteHint": "The account is disabled and hidden, and its email becomes free to reuse.",
+      "fields": {
+        "role": "Role",
+        "scopes": "Section access",
+        "lastLoginAt": "Last login",
+        "newPassword": "New password",
+        "confirmPassword": "Confirm password",
+        "currentPassword": "Current password"
+      },
+      "roles": {
+        "super-admin": "Super Admin",
+        "editor": "Editor",
+        "viewer": "Viewer"
+      },
+      "roleHints": {
+        "super-admin": "Full access to every section, plus user management.",
+        "editor": "Can edit only the sections selected below.",
+        "viewer": "Read-only."
+      },
+      "filters": {
+        "allRoles": "All roles"
+      },
+      "sort": {
+        "newest": "Newest",
+        "lastLogin": "Last login"
+      },
+      "toasts": {
+        "created": "User created",
+        "updated": "User updated",
+        "deleted": "User deleted",
+        "passwordReset": "Password reset",
+        "passwordChanged": "Password changed"
+      },
+      "errors": {
+        "EMAIL_TAKEN": "That email is already in use.",
+        "LAST_SUPER_ADMIN": "This is the last active super admin — promote someone else first.",
+        "CANNOT_DELETE_SELF": "You can't delete your own account.",
+        "CANNOT_DEACTIVATE_SELF": "You can't deactivate your own account.",
+        "CANNOT_DEMOTE_SELF": "You can't change your own role.",
+        "CURRENT_PASSWORD_WRONG": "Current password is incorrect.",
+        "PASSWORD_MISMATCH": "Passwords don't match.",
+        "NOT_FOUND": "User not found.",
+        "UNAUTHORIZED": "Your session has expired. Please sign in again.",
+        "FORBIDDEN": "You don't have permission to do that."
+      }
+    },
+    "loginRevoked": "Your access has changed. Please sign in again.",
+    "manualBook": {
+      "download": "Download",
+      "openNewTab": "Open in new tab",
+      "notUploaded": "The manual book hasn't been uploaded yet.",
+      "langId": "Bahasa Indonesia",
+      "langEn": "English"
     }
   },
   "AdminDashboard": {
@@ -1057,7 +1132,10 @@
     "reportDownloads": "Download Reports",
     "comingSoon": "Soon",
     "expand": "Expand sidebar",
-    "collapse": "Collapse sidebar"
+    "collapse": "Collapse sidebar",
+    "sectionHelp": "Help",
+    "groupHelp": "Documentation",
+    "manualBook": "Manual Book"
   },
   "IR": {
     "contactHeading": "Investor Relations Contact",

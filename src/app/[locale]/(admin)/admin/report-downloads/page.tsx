@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { buttonVariants } from "@/components/ui/button";
+import { requirePageScope } from "@/lib/cms/access";
 import { escapeRegex, parsePage, parsePageSize } from "@/lib/cms/list-query";
 import {
   getUnreadReportDownloadCount,
@@ -59,6 +60,8 @@ export default async function ReportDownloadsAdminPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await requirePageScope("reportDownloads");
+
   const [locale, t, sp] = await Promise.all([getLocale(), getTranslations("Admin"), searchParams]);
 
   const q = (sp.q ?? "").trim();

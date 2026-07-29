@@ -16,6 +16,8 @@ interface Props {
   onToggle: (next: boolean) => Promise<void>;
   ariaLabel: string;
   className?: string;
+  /** Locks the toggle regardless of state (e.g. you can't deactivate yourself). */
+  disabled?: boolean;
 }
 
 /**
@@ -23,7 +25,7 @@ interface Props {
  * server action, and reverts on error. Disabled during the in-flight request
  * so rapid clicks don't race.
  */
-export function StatusToggle({ checked, onToggle, ariaLabel, className }: Props) {
+export function StatusToggle({ checked, onToggle, ariaLabel, className, disabled }: Props) {
   const t = useTranslations("Admin.status");
   const [internal, setInternal] = useState(checked);
   const [loading, setLoading] = useState(false);
@@ -53,7 +55,7 @@ export function StatusToggle({ checked, onToggle, ariaLabel, className }: Props)
       <Switch
         checked={internal}
         onCheckedChange={handle}
-        disabled={loading}
+        disabled={loading || disabled}
         aria-label={ariaLabel}
       />
       {loading && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}

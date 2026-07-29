@@ -1,6 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
+import { requirePageScope } from "@/lib/cms/access";
 import {
   loadAdminProducts,
   type PartnerOption,
@@ -50,6 +51,8 @@ export default async function TradingProductsAdminPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageScope("tradingProducts");
+
   const [page, partners, whatsapp, locale, t, sp] = await Promise.all([
     loadSolutionPageForAdmin("trading-products"),
     loadPartnerOptions(),

@@ -4,9 +4,12 @@ import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { requirePageScope } from "@/lib/cms/access";
 import { getUmamiConfig } from "@/lib/umami";
 
 export default async function VisitorAnalyticsPage() {
+  await requirePageScope("visitorAnalytics");
+
   const t = await getTranslations("Admin.pages.visitorAnalytics");
   const { shareUrl } = getUmamiConfig();
 

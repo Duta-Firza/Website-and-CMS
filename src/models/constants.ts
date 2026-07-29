@@ -13,6 +13,55 @@ export type SolutionKey = (typeof SOLUTION_KEYS)[number];
 export const USER_ROLES = ["super-admin", "editor", "viewer"] as const;
 export type UserRole = (typeof USER_ROLES)[number];
 
+/**
+ * Individual CMS pages an editor can be granted access to — the "where" half of
+ * RBAC, with `role` being the "what". Granularity is per submenu (nav item), so
+ * e.g. an editor can hold `inquiries` without `applications`. Each value equals
+ * the matching `AdminNav` message key, so labels come for free. The form groups
+ * these under section headers (see ADMIN_SCOPE_GROUPS in src/lib/rbac.ts).
+ *
+ * Two scopes are deliberately absent:
+ * - The dashboard is ungated. Scoping it would leave a user with no landing
+ *   page: /admin denies -> proxy redirects to login -> login returns to /admin.
+ * - `users` (user management) is derived from role, not granted as a scope —
+ *   there's no point restricting someone who can edit their own restrictions;
+ *   the nav uses the token "system" for it.
+ */
+export const ADMIN_SCOPES = [
+  // Analytics
+  "visitorAnalytics",
+  // Home
+  "landing",
+  // About
+  "about",
+  "leadership",
+  "history",
+  "business",
+  "credentials",
+  // Solutions
+  "trading",
+  "tradingPartners",
+  "tradingProducts",
+  "manufacturing",
+  "epc",
+  "technology",
+  // Investor Relations
+  "stocks",
+  "reports",
+  "publications",
+  "pressRelease",
+  "newsroom",
+  "companyProfile",
+  // Connect
+  "contactInfo",
+  "careers",
+  // Inbox
+  "inquiries",
+  "applications",
+  "reportDownloads",
+] as const;
+export type AdminScope = (typeof ADMIN_SCOPES)[number];
+
 export const LEADERSHIP_TYPES = ["director", "commissioner"] as const;
 export type LeadershipType = (typeof LEADERSHIP_TYPES)[number];
 

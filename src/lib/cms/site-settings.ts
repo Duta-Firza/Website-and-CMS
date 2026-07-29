@@ -47,3 +47,27 @@ export async function getSiteSettings(locale: Locale): Promise<SiteSettingsData>
     locale,
   );
 }
+
+/** Manual-book PDF URLs (GCS) shown at /admin/manual-book. Empty = not uploaded. */
+export async function getManualBookUrls(): Promise<{ id: string; en: string }> {
+  await connectDB();
+  const doc = await SiteSettings.findById(SITE_SETTINGS_ID)
+    .select("manualBookUrlId manualBookUrlEn")
+    .lean<{ manualBookUrlId?: string; manualBookUrlEn?: string } | null>();
+  return { id: doc?.manualBookUrlId ?? "", en: doc?.manualBookUrlEn ?? "" };
+}
+
+/** Store an uploaded manual-book PDF URL. Called from the dev upload route. */
+export async function setManualBookUrl(lang: "id" | "en", url: string): Promise<void> {
+  await connectDB();
+  const field = lang === "en" ? "manualBookUrlEn" : "manualBookUrlId";
+  // Update the existing singleton only (it is seeded with required fields; an
+  // upsert-insert could create a doc missing those required fields).
+  // `strict: false` guards against a stale/cached Mongoose model (e.g. dev HMR
+  // compiled before these fields were added) silently stripping the update.
+  await SiteSettings.updateOne(
+    { _id: SITE_SETTINGS_ID },
+    { $set: { [field]: url } },
+    { strict: false },
+  );
+}

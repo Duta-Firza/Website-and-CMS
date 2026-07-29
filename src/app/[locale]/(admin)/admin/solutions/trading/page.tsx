@@ -1,10 +1,13 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { PreviewLink } from "@/components/admin/preview-link";
+import { requirePageScope } from "@/lib/cms/access";
 import { loadSolutionPageForAdmin } from "../_components/load-solution-page";
 import { SolutionPageForm } from "../_components/solution-page-form";
 
 export default async function TradingAdminPage() {
+  await requirePageScope("trading");
+
   const [page, locale, t] = await Promise.all([
     loadSolutionPageForAdmin("trading"),
     getLocale(),

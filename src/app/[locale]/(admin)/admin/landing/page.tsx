@@ -8,6 +8,7 @@ import { UrlTabs } from "@/components/admin/url-tabs";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { requirePageScope } from "@/lib/cms/access";
 import { connectDB } from "@/lib/db";
 import { Customer, HOME_HERO_ID, HomeHero, ReachPoint, Solution, Stat } from "@/models";
 import { STAT_ICONS, type StatIcon } from "@/models/constants";
@@ -76,9 +77,7 @@ async function loadAll() {
       },
       secondaryCtaHref: hero.secondaryCtaHref ?? "",
       backgroundImage:
-        hero.backgroundImage && hero.backgroundImage.startsWith("http")
-          ? hero.backgroundImage
-          : "",
+        hero.backgroundImage && hero.backgroundImage.startsWith("http") ? hero.backgroundImage : "",
       heroDecorations: heroDoc?.heroDecorations ?? true,
       partnersTitle: pickLocalized(heroDoc?.partnersTitle),
       partnersSubtitle: pickLocalized(heroDoc?.partnersSubtitle),
@@ -131,6 +130,8 @@ async function loadAll() {
 const LANDING_SECTIONS = ["hero", "stats", "partners", "solutions", "reach", "customers"] as const;
 
 export default async function LandingAdminPage() {
+  await requirePageScope("landing");
+
   const [data, locale, t] = await Promise.all([loadAll(), getLocale(), getTranslations("Admin")]);
   return (
     <div className="space-y-6">
