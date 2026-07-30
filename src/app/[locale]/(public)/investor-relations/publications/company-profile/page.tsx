@@ -1,8 +1,8 @@
 import { Download } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
-import { ScrollReveal } from "@/components/public/scroll-reveal";
+import { getTranslations } from "next-intl/server";
 import { ComingSoonPage } from "@/components/public/coming-soon-page";
+import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { getCompanyProfileUrl, getIrSubPage } from "@/lib/cms/investor-relations";
@@ -12,7 +12,9 @@ function toLocale(l: string): "id" | "en" {
   return l === "en" ? "en" : "id";
 }
 
-interface PageParams { locale: string }
+interface PageParams {
+  locale: string;
+}
 
 export default async function CompanyProfilePage({ params }: { params: Promise<PageParams> }) {
   const { locale } = await params;
@@ -59,9 +61,7 @@ export default async function CompanyProfilePage({ params }: { params: Promise<P
 
   return (
     <>
-      {hero && (
-        <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />
-      )}
+      {hero && <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />}
       {body && (body.heading || body.content) && (
         <ScrollReveal className="mb-10 max-w-3xl space-y-3">
           {body.heading && (

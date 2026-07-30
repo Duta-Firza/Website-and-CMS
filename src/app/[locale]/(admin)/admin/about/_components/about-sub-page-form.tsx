@@ -25,7 +25,10 @@ import { StatusGroup } from "../../solutions/_components/status-group";
 type LocalizedStr = { id: string; en: string };
 const empty: LocalizedStr = { id: "", en: "" };
 
-const HERO_DEFAULTS: Record<AboutSubPageSlug, { eyebrow: LocalizedStr; title: LocalizedStr; subtitle: LocalizedStr }> = {
+const HERO_DEFAULTS: Record<
+  AboutSubPageSlug,
+  { eyebrow: LocalizedStr; title: LocalizedStr; subtitle: LocalizedStr }
+> = {
   "who-we-are": {
     eyebrow: { id: "Tentang Kami", en: "About Us" },
     title: { id: "Tentang PT Duta Firza", en: "About PT Duta Firza" },

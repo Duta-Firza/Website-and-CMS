@@ -1,10 +1,5 @@
 import { connectDB } from "@/lib/db";
-import {
-  IrSubPage,
-  type IrSubPageSlug,
-  type IrSubPageStatus,
-  type SectionMode,
-} from "@/models";
+import { IrSubPage, type IrSubPageSlug, type IrSubPageStatus, type SectionMode } from "@/models";
 import type { IrSubPageFormValues } from "./ir-sub-page-form";
 
 const EMPTY_LOCALIZED = { id: "", en: "" };

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
-import { buttonVariants } from "@/components/ui/button";
 import { connectDB } from "@/lib/db";
 import { SITE_SETTINGS_ID, SiteSettings } from "@/models";
 
@@ -49,10 +48,7 @@ export default async function InvestorRelationsPage() {
 
   return (
     <>
-      <PageHeader
-        eyebrow={t("investorRelationsEyebrow")}
-        title={t("investorRelationsTitle")}
-      />
+      <PageHeader eyebrow={t("investorRelationsEyebrow")} title={t("investorRelationsTitle")} />
 
       <ScrollReveal className="mb-12">
         <div className="grid gap-6 sm:grid-cols-3">
@@ -81,10 +77,7 @@ export default async function InvestorRelationsPage() {
           </h2>
           <p className="text-sm text-muted-foreground">
             {tIR("irContact")}:{" "}
-            <a
-              href={`mailto:${contact.contactEmail}`}
-              className="text-primary hover:underline"
-            >
+            <a href={`mailto:${contact.contactEmail}`} className="text-primary hover:underline">
               {contact.contactEmail}
             </a>
           </p>

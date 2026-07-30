@@ -69,7 +69,7 @@ function LoginCard() {
     >
       {/* Dot-grid overlay */}
       <svg
-        aria-hidden
+        aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 h-full w-full text-white/5.5"
       >
         <defs>
@@ -82,7 +82,7 @@ function LoginCard() {
 
       {/* Diagonal hatching — top-right */}
       <svg
-        aria-hidden
+        aria-hidden="true"
         viewBox="0 0 200 200"
         className="pointer-events-none absolute -top-8 right-0 -z-10 h-72 w-72 text-white/[0.07]"
       >
@@ -99,7 +99,7 @@ function LoginCard() {
 
       {/* Diagonal hatching — bottom-left */}
       <svg
-        aria-hidden
+        aria-hidden="true"
         viewBox="0 0 200 200"
         className="pointer-events-none absolute -bottom-8 -left-8 -z-10 h-64 w-64 rotate-180 text-white/5"
       >
@@ -119,7 +119,6 @@ function LoginCard() {
 
       {/* ── Content ── */}
       <div className="relative z-10 flex w-full max-w-sm flex-col items-center gap-8">
-
         {/* Logo + eyebrow */}
         <div className="flex flex-col items-center gap-4 text-center">
           <Logo variant="on-dark" className="h-11" />
@@ -136,9 +135,7 @@ function LoginCard() {
         <div className="w-full rounded-xl border border-white/10 bg-white/7 p-7 shadow-2xl backdrop-blur-sm sm:p-8">
           {/* Card heading */}
           <div className="mb-6 space-y-1">
-            <h1 className="text-xl font-semibold tracking-tight text-white">
-              {t("signInTitle")}
-            </h1>
+            <h1 className="text-xl font-semibold tracking-tight text-white">{t("signInTitle")}</h1>
             <p className="text-sm text-white/50">{t("signInSubtitle")}</p>
           </div>
 
@@ -158,9 +155,7 @@ function LoginCard() {
                   {...register("email")}
                 />
               </div>
-              {errors.email && (
-                <p className="text-xs text-red-400">{errors.email.message}</p>
-              )}
+              {errors.email && <p className="text-xs text-red-400">{errors.email.message}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -177,9 +172,7 @@ function LoginCard() {
                   {...register("password")}
                 />
               </div>
-              {errors.password && (
-                <p className="text-xs text-red-400">{errors.password.message}</p>
-              )}
+              {errors.password && <p className="text-xs text-red-400">{errors.password.message}</p>}
             </div>
 
             <Button
