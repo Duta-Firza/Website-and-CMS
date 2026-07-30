@@ -15,8 +15,11 @@ export default function Loading() {
           </div>
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton
-              <div key={i} className="flex items-center justify-between rounded-lg border px-5 py-4">
+              <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: static fixed-length skeleton
+                key={i}
+                className="flex items-center justify-between rounded-lg border px-5 py-4"
+              >
                 <div className="space-y-2">
                   <Skeleton className="h-5 w-48" />
                   <Skeleton className="h-4 w-24" />

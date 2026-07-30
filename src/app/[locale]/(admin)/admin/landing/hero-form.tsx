@@ -103,15 +103,10 @@ export function HeroForm({ initial }: { initial: FormValues }) {
             }
           >
             <div className="space-y-0.5">
-              <Label
-                htmlFor="hero-decorations"
-                className="cursor-pointer text-sm font-medium"
-              >
+              <Label htmlFor="hero-decorations" className="cursor-pointer text-sm font-medium">
                 {t("fields.heroDecorations")}
               </Label>
-              <p className="text-xs text-muted-foreground">
-                {t("hints.heroDecorations")}
-              </p>
+              <p className="text-xs text-muted-foreground">{t("hints.heroDecorations")}</p>
             </div>
             <Switch
               id="hero-decorations"

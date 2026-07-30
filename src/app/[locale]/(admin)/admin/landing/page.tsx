@@ -76,8 +76,7 @@ async function loadAll() {
         en: hero.secondaryCtaLabel?.en ?? "",
       },
       secondaryCtaHref: hero.secondaryCtaHref ?? "",
-      backgroundImage:
-        hero.backgroundImage && hero.backgroundImage.startsWith("http") ? hero.backgroundImage : "",
+      backgroundImage: hero.backgroundImage?.startsWith("http") ? hero.backgroundImage : "",
       heroDecorations: heroDoc?.heroDecorations ?? true,
       partnersTitle: pickLocalized(heroDoc?.partnersTitle),
       partnersSubtitle: pickLocalized(heroDoc?.partnersSubtitle),

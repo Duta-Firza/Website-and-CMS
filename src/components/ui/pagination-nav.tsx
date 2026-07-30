@@ -10,11 +10,7 @@ interface Props {
   extraParams?: Record<string, string>;
 }
 
-function buildHref(
-  baseUrl: string,
-  page: number,
-  extra?: Record<string, string>,
-): string {
+function buildHref(baseUrl: string, page: number, extra?: Record<string, string>): string {
   const params = new URLSearchParams({ ...(extra ?? {}), page: String(page) });
   return `${baseUrl}?${params.toString()}`;
 }

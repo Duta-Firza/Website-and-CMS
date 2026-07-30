@@ -114,9 +114,7 @@ export function SolutionForm({ initial, isNew = false, onDeleted, onSaved }: Pro
               <Switch
                 id={`active-${initial.key || initial.order}`}
                 checked={isActive}
-                onCheckedChange={(checked) =>
-                  setValue("isActive", checked, { shouldDirty: true })
-                }
+                onCheckedChange={(checked) => setValue("isActive", checked, { shouldDirty: true })}
               />
               <Button
                 type="button"
@@ -139,9 +137,7 @@ export function SolutionForm({ initial, isNew = false, onDeleted, onSaved }: Pro
                   {...register("key")}
                   placeholder="e.g. technology"
                 />
-                {errors.key && (
-                  <p className="text-xs text-destructive">{errors.key.message}</p>
-                )}
+                {errors.key && <p className="text-xs text-destructive">{errors.key.message}</p>}
               </div>
             )}
             <LocalizedField label="Title" name="title" form={form} />
