@@ -434,17 +434,17 @@ SEED_ADMIN_EMAIL=<SEED_ADMIN_EMAIL>
 SEED_ADMIN_PASSWORD=<SEED_ADMIN_PASSWORD>
 ```
 ```bash
-npm ci                            # sekali, agar tsx & deps tersedia
-npm run seed                      # seed semua konten + super-admin (idempotent)
-npm run seed customers partners   # (opsional) subset target tertentu
+pnpm install --frozen-lockfile    # sekali, agar tsx & deps tersedia (repo pakai pnpm)
+pnpm seed                         # seed semua konten + super-admin (idempotent)
+pnpm seed customers partners      # (opsional) subset target tertentu
 ```
 Super-admin di-upsert by email; `passwordHash` hanya di-set saat insert → aman diulang tanpa menimpa password.
 Daftar lengkap target ada di header `scripts/seed.ts`.
 
 **🖥️ DEV** — migrasi one-off (**hanya** bila memigrasi data lama; idempotent; DB fresh tidak perlu):
 ```bash
-npx tsx scripts/migrate-admin-scopes.ts   # scope RBAC lama → leaf scopes
-npx tsx scripts/migrate-inquiries.ts      # pisah read-state dari status inquiry
+pnpm tsx scripts/migrate-admin-scopes.ts   # scope RBAC lama → leaf scopes
+pnpm tsx scripts/migrate-inquiries.ts      # pisah read-state dari status inquiry
 ```
 
 **4. JANGAN** jalankan `scripts/seed-devtools.ts` di produksi — DEV ONLY (mengisi metrik palsu & menghapus metrik asli host).

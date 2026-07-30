@@ -18,14 +18,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm test
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint
+      - run: pnpm run typecheck
+      - run: pnpm test
 
   # Build + ship in one job: rsync -a from the linux runner preserves the
   # executable bit on native binaries (sharp / ffmpeg-static). Splitting build
@@ -37,15 +40,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Build (standalone)
-        run: npm run build
+        run: pnpm build
         env:
           # Only NEXT_PUBLIC_* is needed at build time (inlined). Everything else
           # is validated lazily at runtime and lives in the VM's env file.
