@@ -52,6 +52,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <div className="absolute -bottom-28 -left-20 size-144 rounded-full bg-brand-primary/9 blur-3xl dark:bg-brand-primary/12" />
           {/* Continuous dot-grid spanning all sections (echoes the hero). */}
           <svg
+            aria-hidden="true"
             className="absolute inset-0 h-full w-full text-brand-deep/10 dark:text-foreground/5"
             xmlns="http://www.w3.org/2000/svg"
           >

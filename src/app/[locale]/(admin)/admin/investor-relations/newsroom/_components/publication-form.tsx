@@ -7,8 +7,8 @@ import { useTranslations } from "next-intl";
 import { useController, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { LocalizedRichField } from "@/components/admin/localized-rich-field";
 import { MediaUpload } from "@/components/admin/media-upload";
-import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,43 +35,6 @@ export const publicationFormSchema = z.object({
 });
 
 export type PublicationFormValues = z.infer<typeof publicationFormSchema>;
-
-function LocalizedRichField({
-  label,
-  nameId,
-  nameEn,
-  form,
-}: {
-  label: string;
-  nameId: string;
-  nameEn: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: any;
-}) {
-  const t = useTranslations("Admin");
-  const controllerId = useController({ control: form.control, name: nameId });
-  const controllerEn = useController({ control: form.control, name: nameEn });
-
-  return (
-    <div className="space-y-3">
-      <p className="text-sm font-medium">{label}</p>
-      <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">{t("common.title")} — ID</Label>
-        <RichTextEditor
-          value={controllerId.field.value ?? ""}
-          onChange={controllerId.field.onChange}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">{t("common.title")} — EN</Label>
-        <RichTextEditor
-          value={controllerEn.field.value ?? ""}
-          onChange={controllerEn.field.onChange}
-        />
-      </div>
-    </div>
-  );
-}
 
 interface Props {
   category: PublicationCategory;
@@ -184,12 +147,7 @@ export function PublicationForm({ category, initial, backHref }: Props) {
             <CardTitle className="text-base">{t("fields.bodyRich")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <LocalizedRichField
-              label={t("fields.bodyRich")}
-              nameId="body.id"
-              nameEn="body.en"
-              form={form}
-            />
+            <LocalizedRichField label={t("fields.bodyRich")} name="body" form={form} />
             <p className="mt-2 text-xs text-muted-foreground">{t("hints.bodyRichHint")}</p>
           </CardContent>
         </Card>

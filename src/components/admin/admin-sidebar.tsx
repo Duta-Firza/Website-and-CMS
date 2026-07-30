@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
-import { auth } from "@/lib/auth";
+import { getCurrentAdmin } from "@/lib/cms/access";
 import { getUnreadApplicationCount } from "@/lib/cms/applications";
 import { getUnreadInquiryCount } from "@/lib/cms/inquiries";
+import { canAccess } from "@/lib/rbac";
 import { SIDEBAR_COLLAPSED_COOKIE, SIDEBAR_OPEN_GROUPS_COOKIE } from "./admin-sidebar-cookies";
 import { AdminSidebarShell } from "./admin-sidebar-shell";
 
@@ -11,19 +12,16 @@ export async function AdminSidebar() {
   const openGroupCookie = cookieStore.get(SIDEBAR_OPEN_GROUPS_COOKIE)?.value;
   const initialOpenGroup = openGroupCookie?.split(",").filter(Boolean)[0] ?? null;
 
-  const [session, initialUnreadCount, initialUnreadApplications] = await Promise.all([
-    auth(),
-    getUnreadInquiryCount().catch(() => 0),
-    getUnreadApplicationCount().catch(() => 0),
+  // Role/scopes come from the DB, not the token — getCurrentAdmin is memoized
+  // per request, so this shares one query with the layout and page.
+  const admin = await getCurrentAdmin();
+  if (!admin) return null;
+
+  // Each badge is seeded only when its own submenu is in scope.
+  const [initialUnreadCount, initialUnreadApplications] = await Promise.all([
+    canAccess(admin, "inquiries") ? getUnreadInquiryCount().catch(() => 0) : 0,
+    canAccess(admin, "applications") ? getUnreadApplicationCount().catch(() => 0) : 0,
   ]);
-  const u = session?.user;
-  const user = u
-    ? {
-        name: u.name ?? u.email ?? "—",
-        email: u.email ?? "",
-        role: u.role,
-      }
-    : null;
 
   return (
     <AdminSidebarShell
@@ -31,7 +29,8 @@ export async function AdminSidebar() {
       initialOpenGroup={initialOpenGroup}
       initialUnreadCount={initialUnreadCount}
       initialUnreadApplications={initialUnreadApplications}
-      user={user}
+      user={{ name: admin.name || admin.email || "—", email: admin.email, role: admin.role }}
+      access={{ role: admin.role, scopes: admin.scopes }}
     />
   );
 }

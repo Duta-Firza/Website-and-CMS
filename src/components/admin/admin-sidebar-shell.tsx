@@ -9,6 +9,7 @@ import { AdminUserMenu } from "@/components/admin/admin-user-menu";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { Logo } from "@/components/layout/logo";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { type AdminAccess, canAccess } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
 import {
   type AdminNavGroup,
@@ -24,6 +25,7 @@ interface Props {
   initialUnreadCount: number;
   initialUnreadApplications: number;
   user: { name: string; email: string; role?: string } | null;
+  access: AdminAccess;
 }
 
 type BadgeCounts = { unreadInquiries: number; unreadApplications: number };
@@ -46,12 +48,15 @@ export function AdminSidebarShell({
   initialUnreadCount,
   initialUnreadApplications,
   user,
+  access,
 }: Props) {
   const locale = useLocale();
   const t = useTranslations("AdminNav");
   const pathname = usePathname() ?? "";
   const searchParams = useSearchParams();
-  const nav = useMemo(() => buildAdminNav(locale), [locale]);
+  const nav = useMemo(() => buildAdminNav(locale, access), [locale, access]);
+  const showInquiries = canAccess(access, "inquiries");
+  const showApplications = canAccess(access, "applications");
 
   const isActive = useMemo(() => {
     return (href: string): boolean => {
@@ -81,9 +86,12 @@ export function AdminSidebarShell({
 
   // Live unread-inquiries count via SSE. Seeded from the server-rendered value
   // so the badge is correct on first paint; EventSource auto-reconnects on drop.
+  // Only opened with the `inbox` scope — otherwise the stream would 401, and
+  // every other admin would hold two connections that poll the DB for nothing.
   const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
   const [unreadApplications, setUnreadApplications] = useState(initialUnreadApplications);
   useEffect(() => {
+    if (!showInquiries) return;
     const es = new EventSource("/api/admin/inquiries/unread-stream");
     es.onmessage = (e) => {
       try {
@@ -94,8 +102,9 @@ export function AdminSidebarShell({
       }
     };
     return () => es.close();
-  }, []);
+  }, [showInquiries]);
   useEffect(() => {
+    if (!showApplications) return;
     const es = new EventSource("/api/admin/applications/unread-stream");
     es.onmessage = (e) => {
       try {
@@ -106,7 +115,7 @@ export function AdminSidebarShell({
       }
     };
     return () => es.close();
-  }, []);
+  }, [showApplications]);
 
   const counts: BadgeCounts = { unreadInquiries: unreadCount, unreadApplications };
 

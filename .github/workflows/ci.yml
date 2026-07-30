@@ -1,0 +1,42 @@
+name: CI
+
+# Quality gate only — no deploy. Vercel handles deploying the `development`
+# branch via its own Git integration; this just runs checks on PRs and on
+# pushes to `development`.
+on:
+  pull_request:
+    branches: [main, development]
+  push:
+    branches: [development]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # pnpm must be set up BEFORE setup-node so its `cache: pnpm` can locate the store.
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (biome)
+        run: pnpm run lint
+
+      - name: Typecheck (tsc)
+        run: pnpm run typecheck
+
+      - name: Unit + integration tests (vitest)
+        run: pnpm test

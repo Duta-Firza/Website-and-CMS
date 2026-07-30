@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { requirePageScope } from "@/lib/cms/access";
 import { getUnreadInquiryCount } from "@/lib/cms/inquiries";
 import { escapeRegex, parsePage, parsePageSize } from "@/lib/cms/list-query";
 import { connectDB } from "@/lib/db";
@@ -67,6 +68,8 @@ export default async function InquiriesAdminPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await requirePageScope("inquiries");
+
   const [sp, t] = await Promise.all([searchParams, getTranslations("Admin.pages.inquiries")]);
 
   const q = (sp.q ?? "").trim();

@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe } from "lucide-react";
+import { Check, Globe } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTransition } from "react";
@@ -57,19 +57,25 @@ export function LanguageSwitcher() {
         {locale}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {routing.locales.map((loc) => (
-          <DropdownMenuItem
-            key={loc}
-            onClick={() => switchTo(loc)}
-            data-active={loc === locale}
-            className="gap-2 data-[active=true]:font-semibold"
-          >
-            <span className="text-base leading-none" aria-hidden>
-              {LOCALES[loc].flag}
-            </span>
-            {LOCALES[loc].name}
-          </DropdownMenuItem>
-        ))}
+        {routing.locales.map((loc) => {
+          const active = loc === locale;
+          return (
+            <DropdownMenuItem
+              key={loc}
+              onClick={() => switchTo(loc)}
+              className={cn(
+                "gap-2",
+                active && "bg-primary/10 font-semibold text-primary focus:text-primary",
+              )}
+            >
+              <span className="text-base leading-none" aria-hidden>
+                {LOCALES[loc].flag}
+              </span>
+              {LOCALES[loc].name}
+              {active && <Check className="ml-auto h-4 w-4" />}
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

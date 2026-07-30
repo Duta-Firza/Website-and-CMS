@@ -92,9 +92,7 @@ export function SolutionsManager({
               <SelectItem value="4">4 kolom</SelectItem>
             </SelectContent>
           </Select>
-          {savingColumns && (
-            <span className="text-xs text-muted-foreground">{t("saving")}</span>
-          )}
+          {savingColumns && <span className="text-xs text-muted-foreground">{t("saving")}</span>}
         </CardContent>
       </Card>
 
@@ -114,6 +112,7 @@ export function SolutionsManager({
         ))}
         {pendingNew.map((s, i) => (
           <SolutionForm
+            // biome-ignore lint/suspicious/noArrayIndexKey: transient client-only new-solution forms keyed by position
             key={`new-${i}`}
             initial={s}
             isNew

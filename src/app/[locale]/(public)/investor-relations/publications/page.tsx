@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
 
-interface PageParams { locale: string }
+interface PageParams {
+  locale: string;
+}
 
 export default async function PublicationsPage({ params }: { params: Promise<PageParams> }) {
   const { locale } = await params;

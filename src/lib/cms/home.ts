@@ -38,7 +38,7 @@ const EMPTY_LOCALIZED = { id: "", en: "" };
 // Treat local placeholder paths (not GCS URLs) as "no image" so the hero renders
 // cleanly with the gradient fallback instead of a broken <img> element.
 function normalizeHeroImage(url: string | undefined | null): string {
-  if (!url || !url.startsWith("http")) return "";
+  if (!url?.startsWith("http")) return "";
   return url;
 }
 
@@ -162,7 +162,9 @@ export interface SolutionData {
 
 export async function getSolutions(locale: Locale): Promise<SolutionData[]> {
   await connectDB();
-  const docs = await Solution.find({ isActive: { $ne: false } }).sort({ order: 1 }).lean();
+  const docs = await Solution.find({ isActive: { $ne: false } })
+    .sort({ order: 1 })
+    .lean();
   return docs.map((d) =>
     localize(
       {

@@ -28,6 +28,10 @@ const reportDownloadSchema = new Schema(
   { timestamps: true, ...stripVersion },
 );
 
+// Every read of this collection is newest-first; `timestamps: true` alone does
+// not index createdAt, so without this the inbox and dashboard both collscan.
+reportDownloadSchema.index({ createdAt: -1 });
+
 export type ReportDownloadDoc = InferSchemaType<typeof reportDownloadSchema>;
 
 if (process.env.NODE_ENV !== "production" && models.ReportDownload) {

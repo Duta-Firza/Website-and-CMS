@@ -3,8 +3,32 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
+// Vercel builds the `development` deploy and sets VERCEL=1. Two VM-only settings
+// below must be OFF on Vercel because both surface pnpm's symlinked node_modules
+// store in Vercel's serverless package and fail with "invalid deployment package
+// for a Serverless Function ... files in symlinked directories":
+//   - output: "standalone"        → emits a bundle with symlinked node_modules.
+//   - outputFileTracingIncludes   → forces node_modules/sharp & ffmpeg-static
+//                                    (symlinks into .pnpm) into every trace.
+// Both exist purely for the self-hosted VM build (see deploy/README.md); Vercel
+// packages the app its own way and provides sharp natively, so we skip them.
+const isVercel = !!process.env.VERCEL;
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  ...(isVercel
+    ? {}
+    : {
+        // Self-hosted VM: minimal `.next/standalone` bundle so the VM runs
+        // `node server.js` without an on-box `next build` (avoids OOM). CI
+        // builds this and rsyncs it over.
+        output: "standalone" as const,
+        // Force-trace native binaries loaded via dynamic import in
+        // src/lib/storage/compress.ts, else image/video uploads fail at runtime.
+        outputFileTracingIncludes: {
+          "/*": ["node_modules/sharp/**/*", "node_modules/ffmpeg-static/**/*"],
+        },
+      }),
   images: {
     remotePatterns: [
       {

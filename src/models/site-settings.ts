@@ -23,6 +23,10 @@ const siteSettingsSchema = new Schema(
     officeHours: localizedStringRequired,
     social: { type: socialSchema, default: () => ({}) },
     companyProfileUrl: { type: String, default: "" },
+    // Final manual-book PDFs (uploaded from /devbooks to GCS), shown at
+    // /admin/manual-book. A snapshot — independent of the live /devbooks content.
+    manualBookUrlId: { type: String, default: "" },
+    manualBookUrlEn: { type: String, default: "" },
   },
   { timestamps: true, ...stripVersion },
 );

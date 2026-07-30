@@ -10,6 +10,7 @@ import {
   type SectionMode,
   SITE_SETTINGS_ID,
   SiteSettings,
+  type TableColumnAlign,
 } from "@/models";
 import type { FormField, FormSettings } from "./form-fields";
 import { type Locale, localize } from "./localize";
@@ -63,6 +64,89 @@ export async function getIrSubPage(slug: IrSubPageSlug, locale: Locale): Promise
     bodyMode: doc.bodyMode ?? "disabled",
     hero: { eyebrow: localized.eyebrow, title: localized.title, subtitle: localized.subtitle },
     body: { heading: localized.heading, content: localized.content },
+  };
+}
+
+// ─── Stocks shareholder table ────────────────────────────────────────────────
+
+export interface ShareholdersColumn {
+  key: string;
+  label: string;
+  align: TableColumnAlign;
+}
+
+export interface ShareholdersRow {
+  /** Cell values keyed by `ShareholdersColumn.key`. */
+  cells: Record<string, string>;
+  emphasis: boolean;
+}
+
+export interface ShareholdersTableData {
+  enabled: boolean;
+  heading: string;
+  note: string;
+  columns: ShareholdersColumn[];
+  rows: ShareholdersRow[];
+}
+
+const EMPTY_SHAREHOLDERS: ShareholdersTableData = {
+  enabled: false,
+  heading: "",
+  note: "",
+  columns: [],
+  rows: [],
+};
+
+interface ShareholdersDoc {
+  enabled?: boolean;
+  heading?: { id?: string; en?: string };
+  note?: { id?: string; en?: string };
+  columns?: { key: string; label?: { id?: string; en?: string }; align?: TableColumnAlign }[];
+  rows?: {
+    cells?: { columnKey: string; value?: { id?: string; en?: string } }[];
+    emphasis?: boolean;
+    order?: number;
+  }[];
+}
+
+/**
+ * Localized shareholder-composition table for the public stocks page. Cells are
+ * flattened from `{ columnKey, value }` pairs into a `columnKey → string` map so
+ * the renderer can look a cell up by its column. Blank values in the requested
+ * locale fall back to the other locale via `pickLoc`, which is why an editor
+ * only fills in EN for the cells whose text actually differs.
+ */
+export async function getStocksShareholders(locale: Locale): Promise<ShareholdersTableData> {
+  await connectDB();
+  const doc = await IrSubPage.findById("stocks")
+    .select("shareholders")
+    .lean<{ shareholders?: ShareholdersDoc } | null>();
+
+  const raw = doc?.shareholders;
+  if (!raw) return EMPTY_SHAREHOLDERS;
+
+  const columns: ShareholdersColumn[] = (raw.columns ?? []).map((c) => ({
+    key: c.key,
+    label: pickLoc(c.label, locale),
+    align: c.align ?? "left",
+  }));
+
+  const rows: ShareholdersRow[] = [...(raw.rows ?? [])]
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .map((r) => {
+      const cells: Record<string, string> = {};
+      for (const cell of r.cells ?? []) {
+        cells[cell.columnKey] = pickLoc(cell.value, locale);
+      }
+      return { cells, emphasis: Boolean(r.emphasis) };
+    });
+
+  return {
+    enabled: raw.enabled ?? false,
+    heading: pickLoc(raw.heading, locale),
+    note: pickLoc(raw.note, locale),
+    columns,
+    rows,
   };
 }
 

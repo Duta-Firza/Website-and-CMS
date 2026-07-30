@@ -11,5 +11,8 @@ export default {
   pages: {
     signIn: "/admin/login",
   },
-  session: { strategy: "jwt" },
+  // 8h rather than NextAuth's 30-day default. Authorization is re-read from the
+  // DB per request, so this is only a backstop bounding how long a stolen or
+  // forgotten cookie stays usable.
+  session: { strategy: "jwt", maxAge: 60 * 60 * 8 },
 } satisfies NextAuthConfig;

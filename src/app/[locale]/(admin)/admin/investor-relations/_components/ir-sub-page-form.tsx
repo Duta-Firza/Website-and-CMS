@@ -25,7 +25,10 @@ import { StatusGroup } from "../../solutions/_components/status-group";
 type LocalizedStr = { id: string; en: string };
 const empty: LocalizedStr = { id: "", en: "" };
 
-const HERO_DEFAULTS: Record<IrSubPageSlug, { eyebrow: LocalizedStr; title: LocalizedStr; subtitle: LocalizedStr }> = {
+const HERO_DEFAULTS: Record<
+  IrSubPageSlug,
+  { eyebrow: LocalizedStr; title: LocalizedStr; subtitle: LocalizedStr }
+> = {
   stocks: {
     eyebrow: { id: "Hubungan Investor", en: "Investor Relations" },
     title: { id: "Saham", en: "Stocks" },
@@ -82,9 +85,14 @@ export type IrSubPageFormValues = z.infer<typeof schema>;
 interface Props {
   slug: IrSubPageSlug;
   initial: IrSubPageFormValues;
+  /**
+   * Render (and save) the Page Body section. Pass `false` on a sub-page that
+   * edits the body in a tab of its own — `stocks` does, via <StocksBodyForm>.
+   */
+  includeBody?: boolean;
 }
 
-export function IrSubPageForm({ slug, initial }: Props) {
+export function IrSubPageForm({ slug, initial, includeBody = true }: Props) {
   const t = useTranslations("Admin");
   const router = useRouter();
 
@@ -100,7 +108,11 @@ export function IrSubPageForm({ slug, initial }: Props) {
   } = form;
 
   const onSubmit = async (values: IrSubPageFormValues) => {
-    const result = await updateIrSubPage(slug, values);
+    // Omit the body when another tab owns it, rather than posting back the copy
+    // this form loaded on mount — that copy goes stale the moment the other tab
+    // saves, and sending it would undo that save.
+    const { status, heroMode, hero } = values;
+    const result = await updateIrSubPage(slug, includeBody ? values : { status, heroMode, hero });
     if (result.ok) {
       toast.success(t("saved"));
       router.refresh();
@@ -178,45 +190,47 @@ export function IrSubPageForm({ slug, initial }: Props) {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{t("groups.pageBody")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <SectionModeToggle
-              value={bodyMode}
-              onChange={(next) => setValue("bodyMode", next, { shouldDirty: true })}
-            />
-            {bodyMode === "default" && (
-              <div className="space-y-4 border-t pt-4">
-                <LocalizedFieldStatic
-                  label={`${t("fields.bodyHeading")} (${optional})`}
-                  value={BODY_DEFAULTS.heading}
-                />
-                <LocalizedFieldStatic
-                  label={`${t("fields.bodyContent")} (${optional})`}
-                  value={BODY_DEFAULTS.content}
-                  multiline
-                />
-              </div>
-            )}
-            {bodyMode === "custom" && (
-              <div className="space-y-4 border-t pt-4">
-                <LocalizedField
-                  label={`${t("fields.bodyHeading")} (${optional})`}
-                  name="body.heading"
-                  form={form}
-                />
-                <LocalizedField
-                  label={`${t("fields.bodyContent")} (${optional})`}
-                  name="body.content"
-                  form={form}
-                  multiline
-                />
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {includeBody && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{t("groups.pageBody")}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <SectionModeToggle
+                value={bodyMode}
+                onChange={(next) => setValue("bodyMode", next, { shouldDirty: true })}
+              />
+              {bodyMode === "default" && (
+                <div className="space-y-4 border-t pt-4">
+                  <LocalizedFieldStatic
+                    label={`${t("fields.bodyHeading")} (${optional})`}
+                    value={BODY_DEFAULTS.heading}
+                  />
+                  <LocalizedFieldStatic
+                    label={`${t("fields.bodyContent")} (${optional})`}
+                    value={BODY_DEFAULTS.content}
+                    multiline
+                  />
+                </div>
+              )}
+              {bodyMode === "custom" && (
+                <div className="space-y-4 border-t pt-4">
+                  <LocalizedField
+                    label={`${t("fields.bodyHeading")} (${optional})`}
+                    name="body.heading"
+                    form={form}
+                  />
+                  <LocalizedField
+                    label={`${t("fields.bodyContent")} (${optional})`}
+                    name="body.content"
+                    form={form}
+                    multiline
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <StickyFormBar>

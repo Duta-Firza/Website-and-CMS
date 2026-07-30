@@ -471,6 +471,17 @@
         "title": "Download Laporan",
         "description": "Lead yang tertangkap saat pengunjung melihat atau mengunduh PDF laporan hubungan investor."
       },
+      "visitorAnalytics": {
+        "title": "Analitik Pengunjung",
+        "description": "Trafik situs publik, diukur dengan Umami.",
+        "openInUmami": "Buka di Umami",
+        "notConfigured": "Umami belum terhubung",
+        "notConfiguredDesc": "Tambahkan pengaturan Umami ke .env.local untuk mengaktifkan pelacakan dan menampilkan dasbornya di sini.",
+        "setupStep1": "Di Umami, buka Settings → Websites → Edit lalu salin Website ID.",
+        "setupStep2": "Di layar yang sama, aktifkan \"Share URL\" lalu salin tautan yang muncul.",
+        "setupStep3": "Isikan keduanya ke .env.local, lalu jalankan ulang dev server.",
+        "setupHint": "Umami self-host memblokir embed secara bawaan — tambahkan URL situs ini ke variabel ALLOWED_FRAME_URLS miliknya."
+      },
       "irStocks": {
         "title": "Saham",
         "description": "Konten halaman /investor-relations/stocks."
@@ -511,6 +522,14 @@
         "title": "Lamaran Kerja",
         "description": "Lamaran yang masuk dari form lamaran di halaman karier, beserta CV.",
         "searchPlaceholder": "Cari nama, email, posisi…"
+      },
+      "users": {
+        "title": "Pengguna",
+        "description": "Akun admin, perannya, dan section mana yang boleh dikelola."
+      },
+      "manualBook": {
+        "title": "Manual Book",
+        "description": "Buku manual admin (PDF) — Bahasa Indonesia & English."
       }
     },
     "tabs": {
@@ -549,7 +568,9 @@
       "display": "Tampilan",
       "form": "Form",
       "boards": "Papan Lowongan",
-      "culture": "Budaya & Benefit"
+      "culture": "Budaya & Benefit",
+      "paragraph": "Paragraf",
+      "shareholders": "Pemegang Saham"
     },
     "nouns": {
       "stat": "Statistik",
@@ -567,7 +588,8 @@
       "division": "Divisi",
       "leadershipMember": "Anggota Pimpinan",
       "product": "Produk",
-      "inquiry": "Inquiry"
+      "inquiry": "Inquiry",
+      "user": "Pengguna"
     },
     "empty": {
       "stats": "Belum ada statistik.",
@@ -671,7 +693,8 @@
       "companyProfileUrlHint": "Upload dokumen PDF Profil Perusahaan.",
       "originalUrlHint": "Tautan ke artikel atau sumber asli (opsional).",
       "whatsappNumber": "Format internasional, hanya angka (mis. 628123456789). Kosongkan untuk menonaktifkan tombol WhatsApp di halaman publik.",
-      "whatsappTemplate": "Gunakan '{product}' sebagai placeholder nama produk."
+      "whatsappTemplate": "Gunakan '{product}' sebagai placeholder nama produk.",
+      "paragraphRichHint": "Gunakan editor untuk memformat paragraf halaman."
     },
     "status": {
       "toggleSaved": "Status diperbarui",
@@ -864,7 +887,10 @@
       "companyProfileUrl": "URL PDF Profil Perusahaan",
       "bodyRich": "Isi Artikel",
       "slug": "Slug",
-      "summary": "Ringkasan"
+      "summary": "Ringkasan",
+      "shareholdersEnabled": "Tampilkan tabel di halaman publik",
+      "shareholdersHeading": "Judul tabel",
+      "shareholdersNote": "Catatan kaki"
     },
     "groups": {
       "contact": "Kontak",
@@ -892,7 +918,8 @@
       "inquiryMeta": "Info submission",
       "updateStatus": "Ubah status",
       "reportItem": "Laporan",
-      "publicationItem": "Artikel"
+      "publicationItem": "Artikel",
+      "shareholdersTable": "Komposisi pemegang saham"
     },
     "credentials": {
       "valueIndex": "Nilai #{index}",
@@ -955,7 +982,103 @@
       "cv": "CV / Resume",
       "downloadCv": "Unduh CV"
     },
-    "alertDelete": "Aksi ini tidak bisa dibatalkan."
+    "alertDelete": "Aksi ini tidak bisa dibatalkan.",
+    "shareholders": {
+      "columns": "Kolom",
+      "rows": "Baris",
+      "addColumn": "Tambah kolom",
+      "addRow": "Tambah baris",
+      "removeColumn": "Hapus kolom",
+      "removeRow": "Hapus baris",
+      "moveUp": "Naikkan",
+      "columnLabel": "Label kolom",
+      "columnAlign": "Perataan",
+      "untitledColumn": "Tanpa judul",
+      "emptyColumns": "Belum ada kolom. Tambahkan satu untuk mulai menyusun tabel.",
+      "emptyRows": "Belum ada baris.",
+      "columnsFirst": "Tambahkan minimal satu kolom sebelum menambah baris.",
+      "cellLocale": "Mengisi sel dalam:",
+      "enFallbackHint": "Kosongkan sel untuk memakai nilai bahasa Indonesia.",
+      "emphasis": "Tebalkan baris ini (mis. baris total)",
+      "align": {
+        "left": "Kiri",
+        "center": "Tengah",
+        "right": "Kanan"
+      }
+    },
+    "users": {
+      "changeMyPassword": "Ganti kata sandi",
+      "resetPassword": "Reset kata sandi",
+      "resetPasswordFor": "Tetapkan kata sandi baru untuk {name}. Dia tidak diberi notifikasi — sampaikan langsung.",
+      "searchPlaceholder": "Cari nama, email…",
+      "passwordHint": "Minimal 12 karakter.",
+      "you": "(Anda)",
+      "empty": "Belum ada pengguna.",
+      "neverLoggedIn": "Belum pernah",
+      "scopesAllForSuperAdmin": "Semua section",
+      "scopesNone": "Tidak ada section",
+      "scopesHint": "Section yang boleh dibuka dan diubah pengguna ini. Dasbor selalu tersedia.",
+      "deleteHint": "Akun dinonaktifkan dan disembunyikan, dan emailnya bebas dipakai lagi.",
+      "fields": {
+        "role": "Peran",
+        "scopes": "Akses section",
+        "lastLoginAt": "Login terakhir",
+        "newPassword": "Kata sandi baru",
+        "confirmPassword": "Konfirmasi kata sandi",
+        "currentPassword": "Kata sandi saat ini"
+      },
+      "roles": {
+        "super-admin": "Super Admin",
+        "editor": "Editor",
+        "viewer": "Viewer"
+      },
+      "roleHints": {
+        "super-admin": "Akses penuh ke semua section, plus kelola pengguna.",
+        "editor": "Hanya bisa mengubah section yang dicentang di bawah.",
+        "viewer": "Hanya baca."
+      },
+      "filters": {
+        "allRoles": "Semua peran"
+      },
+      "sort": {
+        "newest": "Terbaru",
+        "lastLogin": "Login terakhir"
+      },
+      "toasts": {
+        "created": "Pengguna dibuat",
+        "updated": "Pengguna diperbarui",
+        "deleted": "Pengguna dihapus",
+        "passwordReset": "Kata sandi direset",
+        "passwordChanged": "Kata sandi diganti"
+      },
+      "errors": {
+        "EMAIL_TAKEN": "Email itu sudah dipakai.",
+        "LAST_SUPER_ADMIN": "Ini super admin aktif terakhir — angkat orang lain dulu.",
+        "CANNOT_DELETE_SELF": "Anda tidak bisa menghapus akun sendiri.",
+        "CANNOT_DEACTIVATE_SELF": "Anda tidak bisa menonaktifkan akun sendiri.",
+        "CANNOT_DEMOTE_SELF": "Anda tidak bisa mengubah peran sendiri.",
+        "CURRENT_PASSWORD_WRONG": "Kata sandi saat ini salah.",
+        "PASSWORD_MISMATCH": "Kata sandi tidak cocok.",
+        "NOT_FOUND": "Pengguna tidak ditemukan.",
+        "UNAUTHORIZED": "Sesi Anda berakhir. Silakan masuk lagi.",
+        "FORBIDDEN": "Anda tidak punya izin untuk itu."
+      }
+    },
+    "loginRevoked": "Akses Anda berubah. Silakan masuk lagi.",
+    "manualBook": {
+      "download": "Unduh",
+      "openNewTab": "Buka di tab baru",
+      "notUploaded": "Manual book belum diunggah.",
+      "langId": "Bahasa Indonesia",
+      "langEn": "English"
+    }
+  },
+  "AdminDashboard": {
+    "description": "Ringkasan seluruh bagian konten dan inbox.",
+    "seeAll": "Lihat semua",
+    "unread": "{count} belum dibaca",
+    "allRead": "Semua sudah dibaca",
+    "emptyInbox": "Belum ada kiriman."
   },
   "AdminNav": {
     "dashboard": "Dasbor",
@@ -1009,7 +1132,10 @@
     "reportDownloads": "Download Laporan",
     "comingSoon": "Segera",
     "expand": "Perluas sidebar",
-    "collapse": "Ringkas sidebar"
+    "collapse": "Ringkas sidebar",
+    "sectionHelp": "Bantuan",
+    "groupHelp": "Dokumentasi",
+    "manualBook": "Manual Book"
   },
   "IR": {
     "contactHeading": "Kontak Hubungan Investor",
@@ -1037,7 +1163,8 @@
     "sortTitle": "Judul A–Z",
     "filterYear": "Tahun",
     "allYears": "Semua tahun",
-    "noResults": "Tidak ada hasil yang cocok dengan filter."
+    "noResults": "Tidak ada hasil yang cocok dengan filter.",
+    "shareholdersHeading": "Komposisi Pemegang Saham"
   },
   "Pagination": {
     "previous": "Sebelumnya",

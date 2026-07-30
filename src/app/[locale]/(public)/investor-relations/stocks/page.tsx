@@ -1,23 +1,28 @@
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
-import { ScrollReveal } from "@/components/public/scroll-reveal";
+import { getTranslations } from "next-intl/server";
 import { ComingSoonPage } from "@/components/public/coming-soon-page";
+import { ShareholdersTable } from "@/components/public/ir/shareholders-table";
+import { ScrollReveal } from "@/components/public/scroll-reveal";
 import { PageHeader } from "@/components/public/section/page-header";
-import { getIrSubPage } from "@/lib/cms/investor-relations";
+import { getIrSubPage, getStocksShareholders } from "@/lib/cms/investor-relations";
 import { resolveBody, resolveHero } from "@/lib/cms/section-mode";
 
 function toLocale(l: string): "id" | "en" {
   return l === "en" ? "en" : "id";
 }
 
-interface PageParams { locale: string }
+interface PageParams {
+  locale: string;
+}
 
 export default async function StocksPage({ params }: { params: Promise<PageParams> }) {
   const { locale } = await params;
   const safeLocale = toLocale(locale);
-  const [t, meta] = await Promise.all([
+  const [t, tIR, meta, shareholders] = await Promise.all([
     getTranslations("SectionTitles"),
+    getTranslations("IR"),
     getIrSubPage("stocks", safeLocale),
+    getStocksShareholders(safeLocale),
   ]);
 
   if (meta.status === "hidden") notFound();
@@ -43,20 +48,19 @@ export default async function StocksPage({ params }: { params: Promise<PageParam
         {hero && (
           <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />
         )}
-        <ComingSoonPage
-          eyebrow={hero?.eyebrow}
-          title={body?.heading || undefined}
-          message={body?.content || undefined}
-        />
+        {/* No `message`: the body is now rich-text HTML, and ComingSoonPage
+            renders that prop as plain text — tags and all. */}
+        <ComingSoonPage eyebrow={hero?.eyebrow} title={body?.heading || undefined} />
       </>
     );
   }
 
+  const hasTable =
+    shareholders.enabled && shareholders.columns.length > 0 && shareholders.rows.length > 0;
+
   return (
     <>
-      {hero && (
-        <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />
-      )}
+      {hero && <PageHeader eyebrow={hero.eyebrow} title={hero.title} description={hero.subtitle} />}
       {body && (body.heading || body.content) && (
         <ScrollReveal className="mb-10 max-w-3xl space-y-3">
           {body.heading && (
@@ -65,27 +69,20 @@ export default async function StocksPage({ params }: { params: Promise<PageParam
             </h2>
           )}
           {body.content && (
-            <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground">
-              {body.content}
-            </p>
+            <div
+              className="prose prose-sm dark:prose-invert max-w-none"
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: CMS rich-text body is admin-authored
+              dangerouslySetInnerHTML={{ __html: body.content }}
+            />
           )}
         </ScrollReveal>
       )}
 
-      <ScrollReveal className="mb-12">
-        <div className="rounded-xl border bg-muted/30 p-6 text-sm">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <p className="font-semibold text-brand-deep dark:text-foreground">IDX Code</p>
-              <p className="text-muted-foreground">DFIR (Placeholder)</p>
-            </div>
-            <div>
-              <p className="font-semibold text-brand-deep dark:text-foreground">Market</p>
-              <p className="text-muted-foreground">Indonesia Stock Exchange (IDX)</p>
-            </div>
-          </div>
-        </div>
-      </ScrollReveal>
+      {hasTable && (
+        <ScrollReveal className="mb-12">
+          <ShareholdersTable data={shareholders} fallbackHeading={tIR("shareholdersHeading")} />
+        </ScrollReveal>
+      )}
     </>
   );
 }

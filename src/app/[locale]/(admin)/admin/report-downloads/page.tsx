@@ -3,7 +3,12 @@ import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { buttonVariants } from "@/components/ui/button";
+import { requirePageScope } from "@/lib/cms/access";
 import { escapeRegex, parsePage, parsePageSize } from "@/lib/cms/list-query";
+import {
+  getUnreadReportDownloadCount,
+  UNREAD_REPORT_DOWNLOAD_QUERY,
+} from "@/lib/cms/report-downloads";
 import { connectDB } from "@/lib/db";
 import { REPORT_DOWNLOAD_ACTIONS, ReportDownload, type ReportDownloadAction } from "@/models";
 import { ReportDownloadInbox } from "./report-download-inbox";
@@ -34,7 +39,7 @@ interface SearchParams {
 
 function buildQuery(q: string, filter: string, type: string): Record<string, unknown> {
   const query: Record<string, unknown> = {};
-  if (filter === "unread") query.read = false;
+  if (filter === "unread") Object.assign(query, UNREAD_REPORT_DOWNLOAD_QUERY);
   else if (filter !== "all") query.action = filter;
   if (type !== "all") query.reportType = type;
   if (q) {
@@ -55,6 +60,8 @@ export default async function ReportDownloadsAdminPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await requirePageScope("reportDownloads");
+
   const [locale, t, sp] = await Promise.all([getLocale(), getTranslations("Admin"), searchParams]);
 
   const q = (sp.q ?? "").trim();
@@ -70,7 +77,7 @@ export default async function ReportDownloadsAdminPage({
   await connectDB();
   const [total, unreadCount] = await Promise.all([
     ReportDownload.countDocuments(query),
-    ReportDownload.countDocuments({ read: false }),
+    getUnreadReportDownloadCount(),
   ]);
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
   const page = Math.min(parsePage(sp.page), pageCount);
