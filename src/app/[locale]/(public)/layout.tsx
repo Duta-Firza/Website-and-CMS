@@ -3,6 +3,14 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { getSolutionPageVisibilityMap } from "@/lib/cms/solutions";
 
+// This layout (and every public page under it) reads CMS content from MongoDB
+// on each render. The production build runs in CI with no DB access and no
+// runtime secrets — those live only on the VM (/opt/dutafirza/shared/.env) — so
+// static prerendering here would fail validating env / connecting to Mongo.
+// Render on demand at runtime on the VM instead. Content is admin-editable, so
+// dynamic SSR (always fresh, no rebuild) is the right model anyway.
+export const dynamic = "force-dynamic";
+
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const visibility = await getSolutionPageVisibilityMap();
   return (
