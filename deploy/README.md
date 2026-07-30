@@ -261,7 +261,7 @@ mongodb://duta-app:<APP_PW>@127.0.0.1:27017/dutafirza?authSource=dutafirza
 
 ---
 
-## B4. Swap + Node.js 24 + ghostscript
+## B4. Swap + Node.js 24 + rsync + ghostscript
 
 **🔒 VM** · Prasyarat: sudah di dalam VM.
 
@@ -275,8 +275,10 @@ echo "/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab
 curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
 sudo apt install -y nodejs
 
-# Opsional: kompresi PDF (kalau absen, fallback pdf-lib tetap jalan).
-sudo apt install -y ghostscript
+# rsync WAJIB — workflow deploy mengirim bundle ke VM lewat rsync, dan rsync
+# harus ada di KEDUA ujung. Tanpa ini deploy gagal: "rsync: command not found".
+# ghostscript OPSIONAL — kompresi PDF (kalau absen, fallback pdf-lib tetap jalan).
+sudo apt install -y rsync ghostscript
 
 node --version                                 # konfirmasi v24.x
 ```
