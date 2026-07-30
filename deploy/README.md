@@ -355,6 +355,9 @@ sudo -u deploy tee /opt/dutafirza/shared/.env > /dev/null <<'EOF'
 MONGODB_URI=mongodb://duta-app:<APP_PW>@127.0.0.1:27017/dutafirza?authSource=dutafirza
 NEXTAUTH_SECRET=<NEXTAUTH_SECRET>
 NEXTAUTH_URL=https://dutafirza.com
+# WAJIB di belakang reverse proxy (nginx). NextAuth v5 menolak host request
+# tanpa ini → login gagal 500 di /api/auth/error ("UntrustedHost").
+AUTH_TRUST_HOST=true
 RESEND_API_KEY=<RESEND_API_KEY>
 RESEND_FROM_EMAIL=<RESEND_FROM_EMAIL>
 INQUIRY_TO_EMAIL=<INQUIRY_TO_EMAIL>
@@ -495,3 +498,26 @@ pnpm tsx scripts/migrate-inquiries.ts      # pisah read-state dari status inquir
 ln -sfn /opt/dutafirza/releases/<sha-lama> /opt/dutafirza/current
 sudo systemctl restart dutafirza
 ```
+
+---
+
+## Troubleshooting
+
+**🔒 VM** — app jalan sebagai systemd, jadi semua log (termasuk stack trace) ada di journald:
+```bash
+sudo journalctl -u dutafirza -f              # ikuti live, lalu reproduksi masalah di browser
+sudo journalctl -u dutafirza -n 200 --no-pager
+sudo journalctl -u dutafirza -p err -n 100 --no-pager
+sudo tail -n 50 /var/log/nginx/error.log     # masalah proxy/TLS
+sudo tail -n 50 /var/log/mongodb/mongod.log  # masalah koneksi/auth DB
+```
+
+Masalah umum:
+
+| Gejala | Penyebab & fix |
+|--------|----------------|
+| **Login 500 di `/api/auth/error`** (`UntrustedHost` di log) | NextAuth v5 di belakang nginx butuh `AUTH_TRUST_HOST=true` di `.env` (B6). Tambahkan lalu `sudo systemctl restart dutafirza`. |
+| Deploy gagal `rsync: command not found` | rsync belum terpasang di VM → `sudo apt install -y rsync` (B4). |
+| `cp: cannot stat 'deploy/...'` | file `deploy/` belum dikirim ke VM → lihat B1b. |
+| `MongoServerError: Authentication failed` / `ECONNREFUSED` | `MONGODB_URI` salah (user/pass/`authSource=dutafirza`) atau mongod mati. |
+| Login ditolak tanpa 500 | DB belum di-seed / user admin belum ada → jalankan seeding (B8). |
