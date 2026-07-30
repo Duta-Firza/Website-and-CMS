@@ -1,0 +1,117 @@
+name: Deploy Production
+
+# Push to `main` builds the standalone bundle in CI and ships it to the GCP VM
+# over SSH. The VM only runs `node server.js` — it never builds (avoids OOM on
+# small instances). See deploy/README.md for the one-time VM setup.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  # Same gate as ci.yml; deploy is blocked unless this passes.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+
+  # Build + ship in one job: rsync -a from the linux runner preserves the
+  # executable bit on native binaries (sharp / ffmpeg-static). Splitting build
+  # and deploy via upload-artifact would strip those bits and break uploads.
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build (standalone)
+        run: npm run build
+        env:
+          # Only NEXT_PUBLIC_* is needed at build time (inlined). Everything else
+          # is validated lazily at runtime and lives in the VM's env file.
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_UMAMI_WEBSITE_ID: ${{ vars.NEXT_PUBLIC_UMAMI_WEBSITE_ID }}
+          NEXT_PUBLIC_UMAMI_SHARE_URL: ${{ vars.NEXT_PUBLIC_UMAMI_SHARE_URL }}
+          NEXT_PUBLIC_UMAMI_SCRIPT_URL: ${{ vars.NEXT_PUBLIC_UMAMI_SCRIPT_URL }}
+
+      - name: Assemble standalone bundle
+        # standalone/ ships server.js + traced node_modules, but not public or
+        # .next/static — copy those in (see next output docs).
+        run: |
+          cp -r public .next/standalone/
+          cp -r .next/static .next/standalone/.next/
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Rsync bundle to VM
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          RELEASE: ${{ github.sha }}
+        run: |
+          RELEASE_DIR="/opt/dutafirza/releases/$RELEASE"
+          ssh -i ~/.ssh/id_deploy "$SSH_USER@$SSH_HOST" "mkdir -p '$RELEASE_DIR'"
+          rsync -az --delete -e "ssh -i ~/.ssh/id_deploy" \
+            .next/standalone/ "$SSH_USER@$SSH_HOST:$RELEASE_DIR/"
+
+      - name: Activate, health-check, rollback on failure
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          RELEASE: ${{ github.sha }}
+        run: |
+          ssh -i ~/.ssh/id_deploy "$SSH_USER@$SSH_HOST" "RELEASE='$RELEASE' bash -s" <<'REMOTE'
+          set -euo pipefail
+          BASE=/opt/dutafirza
+          NEW="$BASE/releases/$RELEASE"
+          PREV="$(readlink -f "$BASE/current" 2>/dev/null || true)"
+
+          ln -sfn "$NEW" "$BASE/current"
+          sudo systemctl restart dutafirza
+
+          # Health check: `/` is fine even if it 30x-redirects to a locale.
+          ok=0
+          for i in $(seq 1 10); do
+            if curl -fsS -o /dev/null "http://127.0.0.1:3000/"; then ok=1; break; fi
+            sleep 3
+          done
+
+          if [ "$ok" -ne 1 ]; then
+            echo "::error::Health check failed — rolling back to ${PREV:-<none>}"
+            if [ -n "$PREV" ] && [ -d "$PREV" ]; then
+              ln -sfn "$PREV" "$BASE/current"
+              sudo systemctl restart dutafirza
+            fi
+            exit 1
+          fi
+
+          # Keep the 5 most recent releases; prune the rest.
+          ls -1dt "$BASE"/releases/*/ 2>/dev/null | tail -n +6 | xargs -r rm -rf
+          echo "Deployed $RELEASE"
+          REMOTE

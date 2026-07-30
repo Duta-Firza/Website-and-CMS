@@ -1,0 +1,37 @@
+name: CI
+
+# Quality gate only — no deploy. Vercel handles deploying the `development`
+# branch via its own Git integration; this just runs checks on PRs and on
+# pushes to `development`.
+on:
+  pull_request:
+    branches: [main, development]
+  push:
+    branches: [development]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (biome)
+        run: npm run lint
+
+      - name: Typecheck (tsc)
+        run: npm run typecheck
+
+      - name: Unit + integration tests (vitest)
+        run: npm test
