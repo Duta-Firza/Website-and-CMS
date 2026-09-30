@@ -4,6 +4,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
 import type { ReachPointData } from "@/lib/cms/home";
+import { CARTO_SUBDOMAINS, CARTO_TILE_URL } from "@/lib/map-tiles";
 
 // Indonesia bounds — roughly Aceh to Papua
 const INDONESIA_CENTER: [number, number] = [-2.5, 118];
@@ -39,8 +40,8 @@ export function LeafletMap({ reachPoints }: Props) {
       zoomControl={false}
     >
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        subdomains={["a", "b", "c", "d"]}
+        url={CARTO_TILE_URL}
+        subdomains={CARTO_SUBDOMAINS}
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
       />
       {reachPoints.map((pt) => (
