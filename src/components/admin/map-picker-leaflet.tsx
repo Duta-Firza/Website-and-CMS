@@ -4,6 +4,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect } from "react";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { CARTO_SUBDOMAINS, CARTO_TILE_URL } from "@/lib/map-tiles";
 
 const PICK_ICON = L.divIcon({
   className: "duta-pin",
@@ -51,8 +52,8 @@ export function MapPickerLeaflet({ latitude, longitude, onPick }: InnerProps) {
       attributionControl={false}
     >
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        subdomains={["a", "b", "c", "d"]}
+        url={CARTO_TILE_URL}
+        subdomains={CARTO_SUBDOMAINS}
         attribution="&copy; OpenStreetMap &copy; CARTO"
       />
       {hasPin && (

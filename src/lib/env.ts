@@ -22,6 +22,10 @@ const schema = z.object({
   NEXT_PUBLIC_UMAMI_WEBSITE_ID: z.string().optional(),
   NEXT_PUBLIC_UMAMI_SHARE_URL: z.union([z.string().url(), z.literal("")]).optional(),
   NEXT_PUBLIC_UMAMI_SCRIPT_URL: z.union([z.string().url(), z.literal("")]).optional(),
+  // CARTO basemap key. Read via direct `process.env` in src/lib/map-tiles.ts
+  // (client components), declared here for documentation only. Optional: without
+  // it the maps still render, just with CARTO's "API KEY REQUIRED" watermark.
+  NEXT_PUBLIC_CARTO_API_KEY: z.string().optional(),
   // Dev area (/devbooks + /devtools). Read via direct `process.env` in
   // src/lib/devtools/dev-auth.ts (must stay edge-safe for proxy.ts), so these
   // are declared here for documentation/validation only. All optional so an

@@ -60,6 +60,7 @@ jobs:
           NEXT_PUBLIC_UMAMI_WEBSITE_ID: ${{ vars.NEXT_PUBLIC_UMAMI_WEBSITE_ID }}
           NEXT_PUBLIC_UMAMI_SHARE_URL: ${{ vars.NEXT_PUBLIC_UMAMI_SHARE_URL }}
           NEXT_PUBLIC_UMAMI_SCRIPT_URL: ${{ vars.NEXT_PUBLIC_UMAMI_SCRIPT_URL }}
+          NEXT_PUBLIC_CARTO_API_KEY: ${{ vars.NEXT_PUBLIC_CARTO_API_KEY }}
 
       - name: Assemble standalone bundle
         # standalone/ ships server.js + traced node_modules, but not public or

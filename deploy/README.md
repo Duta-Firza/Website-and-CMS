@@ -477,6 +477,7 @@ pnpm tsx scripts/migrate-inquiries.ts      # pisah read-state dari status inquir
 | `NEXT_PUBLIC_UMAMI_WEBSITE_ID` | (opsional) dari dashboard Umami |
 | `NEXT_PUBLIC_UMAMI_SHARE_URL` | (opsional) |
 | `NEXT_PUBLIC_UMAMI_SCRIPT_URL` | (opsional) |
+| `NEXT_PUBLIC_CARTO_API_KEY` | API key basemap dari [carto.com/basemaps/apikey](https://carto.com/basemaps/apikey). Tanpa ini peta landing & CMS ber-watermark "API KEY REQUIRED" |
 
 > Secret runtime lain (Mongo, NextAuth, Resend, GCS, DevTools) **tidak** di GitHub — hanya di
 > `/opt/dutafirza/shared/.env` pada VM (B6).
