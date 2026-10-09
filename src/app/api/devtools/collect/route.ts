@@ -1,16 +1,15 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
-import { collect } from "@/lib/devtools/collect";
 import { verifyCollectToken } from "@/lib/devtools/dev-auth";
-import { rollup } from "@/lib/devtools/rollup";
-import { ServerMetric } from "@/models";
+import { recordSnapshot } from "@/lib/devtools/self-collect";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Called by the VM's cron/systemd timer every ~1–5 min:
- *   curl -H "x-collect-token: <DEVTOOLS_COLLECT_TOKEN>" https://…/api/devtools/collect
+ * Optional external trigger. The server already records a snapshot every minute
+ * on its own (src/instrumentation.ts → self-collect.ts); this endpoint does the
+ * same on demand for an external cron/timer or a manual check:
+ *   curl -X POST -H "x-collect-token: <DEVTOOLS_COLLECT_TOKEN>" http://127.0.0.1:3000/api/devtools/collect
  * Stores a raw snapshot and refreshes the current hour + day rollups.
  */
 export async function POST(req: Request) {
@@ -22,10 +21,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    await connectDB();
-    const snap = await collect();
-    await ServerMetric.create(snap);
-    await rollup(snap.host, snap.ts);
+    const snap = await recordSnapshot();
     return NextResponse.json({
       ok: true,
       ts: snap.ts,

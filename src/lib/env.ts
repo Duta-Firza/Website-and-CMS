@@ -34,6 +34,11 @@ const schema = z.object({
   DEVTOOLS_PASSWORD: z.string().optional(),
   DEVTOOLS_COLLECT_TOKEN: z.string().optional(),
   DEVTOOLS_SESSION_HOURS: z.string().optional(),
+  // Built-in metrics collector (src/lib/devtools/self-collect.ts, read via direct
+  // `process.env` from instrumentation). Unset = on only for a self-hosted
+  // production server; "true"/"false" forces it.
+  DEVTOOLS_SELF_COLLECT: z.string().optional(),
+  DEVTOOLS_COLLECT_INTERVAL_S: z.string().optional(),
 });
 
 type Env = z.infer<typeof schema>;

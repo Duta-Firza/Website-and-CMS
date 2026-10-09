@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { fmtBytes, fmtPct, fmtUptime, healthBand } from "@/lib/devtools/format";
+import { fmtAgo, fmtBytes, fmtPct, fmtUptime, healthBand } from "@/lib/devtools/format";
 import type {
   Metric,
   OverviewResponse,
@@ -45,6 +45,9 @@ const REFRESH_OPTIONS = [
 // Healthy = neutral/brand (not green); only warn/crit draw attention.
 const BAND_TEXT = { ok: "text-foreground", warn: "text-amber-500", crit: "text-red-500" } as const;
 const BAND_BAR = { ok: "bg-brand-primary", warn: "bg-amber-500", crit: "bg-red-500" } as const;
+
+// The collector samples every ~1 min; no new sample for this long = it stopped.
+const STALE_MS = 5 * 60_000;
 
 export function DevToolsDashboard() {
   const [ov, setOv] = useState<OverviewResponse | null>(null);
@@ -113,6 +116,10 @@ export function DevToolsDashboard() {
     return () => clearInterval(id);
   }, [refreshMs, fetchOverview, fetchSeries]);
 
+  // Measured on the server clock (updatedAt) so browser clock skew can't trip it.
+  const collectAge = ov?.lastCollectedAt != null ? ov.updatedAt - ov.lastCollectedAt : null;
+  const collectorStale = ov != null && (collectAge == null || collectAge > STALE_MS);
+
   const chartSeries: ChartSeries[] = (["cpu", "ram", "storage"] as Metric[])
     .filter((m) => enabled[m])
     .map((m) => ({
@@ -156,6 +163,11 @@ export function DevToolsDashboard() {
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          {ov && (
+            <span className={cn(collectorStale && "text-amber-500")}>
+              Data terakhir: {collectAge == null ? "belum ada" : fmtAgo(collectAge)}
+            </span>
+          )}
           {updatedAt && <span>Diperbarui {new Date(updatedAt).toLocaleTimeString("id-ID")}</span>}
           <select
             value={refreshMs}
@@ -185,6 +197,14 @@ export function DevToolsDashboard() {
       {err && (
         <div className="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-500">
           {err}
+        </div>
+      )}
+
+      {collectorStale && (
+        <div className="mb-4 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-500">
+          Collector tidak berjalan, jadi riwayat tidak tercatat (data terakhir:{" "}
+          {collectAge == null ? "belum ada" : fmtAgo(collectAge)}). Cek log server:{" "}
+          <code className="font-mono text-xs">journalctl -u dutafirza | grep devtools</code>
         </div>
       )}
 

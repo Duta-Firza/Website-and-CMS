@@ -122,45 +122,55 @@ async function memory(): Promise<{
   return { usedB: total - os.freemem(), totalB: total, swapUsedB: 0, swapTotalB: 0 };
 }
 
+const SKIP_FSTYPES = new Set([
+  "proc",
+  "sysfs",
+  "tmpfs",
+  "devtmpfs",
+  "devpts",
+  "cgroup",
+  "cgroup2",
+  "overlay",
+  "squashfs",
+  "mqueue",
+  "debugfs",
+  "tracefs",
+  "securityfs",
+  "pstore",
+  "bpf",
+  "autofs",
+  "hugetlbfs",
+  "configfs",
+  "fusectl",
+  "ramfs",
+  "nsfs",
+  "binfmt_misc",
+  "efivarfs",
+]);
+
+/**
+ * One mount point per block device from `/proc/mounts` text. systemd hardening
+ * (ProtectSystem/ProtectHome/PrivateTmp) bind-mounts the root device again at
+ * /usr, /etc, /tmp, … inside the service's namespace, so keying by mount point
+ * would count the same filesystem several times. Keep the shortest path per
+ * device (`/` wins over its bind mounts), in first-seen device order.
+ */
+export function parseMounts(txt: string): string[] {
+  const byDev = new Map<string, string>();
+  for (const line of txt.split("\n")) {
+    const [dev, mount, fstype] = line.split(" ");
+    if (!dev || !mount || !fstype) continue;
+    if (SKIP_FSTYPES.has(fstype)) continue;
+    if (!dev.startsWith("/dev/")) continue;
+    const prev = byDev.get(dev);
+    if (prev === undefined || mount.length < prev.length) byDev.set(dev, mount);
+  }
+  return [...byDev.values()];
+}
+
 async function listMounts(): Promise<string[]> {
   try {
-    const txt = await readFile("/proc/mounts", "utf8");
-    const skip = new Set([
-      "proc",
-      "sysfs",
-      "tmpfs",
-      "devtmpfs",
-      "devpts",
-      "cgroup",
-      "cgroup2",
-      "overlay",
-      "squashfs",
-      "mqueue",
-      "debugfs",
-      "tracefs",
-      "securityfs",
-      "pstore",
-      "bpf",
-      "autofs",
-      "hugetlbfs",
-      "configfs",
-      "fusectl",
-      "ramfs",
-      "nsfs",
-      "binfmt_misc",
-      "efivarfs",
-    ]);
-    const seen = new Set<string>();
-    const out: string[] = [];
-    for (const line of txt.split("\n")) {
-      const [dev, mount, fstype] = line.split(" ");
-      if (!dev || !mount || !fstype) continue;
-      if (skip.has(fstype)) continue;
-      if (!dev.startsWith("/dev/")) continue;
-      if (seen.has(mount)) continue;
-      seen.add(mount);
-      out.push(mount);
-    }
+    const out = parseMounts(await readFile("/proc/mounts", "utf8"));
     if (out.length) return out;
   } catch {
     // not linux

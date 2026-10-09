@@ -5,6 +5,7 @@ import { collect } from "@/lib/devtools/collect";
 import { requireDevSession } from "@/lib/devtools/dev-session";
 import { pctOf } from "@/lib/devtools/metrics-util";
 import type { OverviewResponse } from "@/lib/devtools/types";
+import { ServerMetric } from "@/models";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ export async function GET() {
 
   await connectDB();
   const snap = await collect();
-  const [insights, recs, heatmap] = await Promise.all([
+  const [insights, recs, heatmap, last] = await Promise.all([
     getInsights(snap.host),
     getRecommendations(snap.host, {
       cores: snap.cores,
@@ -25,6 +26,10 @@ export async function GET() {
       storageTotalB: snap.storageTotalB,
     }),
     getHeatmap(snap.host),
+    ServerMetric.findOne({ host: snap.host })
+      .sort({ ts: -1 })
+      .select("ts")
+      .lean<{ ts: Date } | null>(),
   ]);
 
   const body: OverviewResponse = {
@@ -35,6 +40,7 @@ export async function GET() {
     cpuModel: snap.cpuModel,
     cores: snap.cores,
     updatedAt: +snap.ts,
+    lastCollectedAt: last ? +new Date(last.ts) : null,
     uptimeS: snap.uptimeS,
     cpu: { pct: snap.cpuPct },
     ram: {
