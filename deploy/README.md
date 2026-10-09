@@ -103,7 +103,7 @@ generate acak, jangan pakai contoh apa adanya.
 | `<RESEND_API_KEY>` | API key kirim email | 🌐 Dashboard Resend → **API Keys** → Create |
 | `<RESEND_FROM_EMAIL>` | Alamat pengirim terverifikasi | 🌐 Resend → domain terverifikasi, mis. `no-reply@dutafirza.com` |
 | `<INQUIRY_TO_EMAIL>` / `<CONTACT_TO_EMAIL>` | Tujuan email form | Tentukan sendiri, mis. `info@dutafirza.com` |
-| `<DEVTOOLS_PASSWORD>` / `<DEVTOOLS_COLLECT_TOKEN>` | Gate area `/devtools` | Buat sendiri: 🖥️ `openssl rand -hex 16` |
+| `<DEVTOOLS_PASSWORD>` / `<DEVTOOLS_COLLECT_TOKEN>` | Gate area `/devtools` / token pemicu collector manual (opsional) | Buat sendiri: 🖥️ `openssl rand -hex 16` |
 | `<SEED_ADMIN_EMAIL>` / `<SEED_ADMIN_PASSWORD>` | Kredensial super-admin awal | Tentukan sendiri (dipakai login `/admin` pertama kali) |
 | `<sha-lama>` | Nama folder release sebelumnya (rollback) | 🔒 `ls -1dt /opt/dutafirza/releases/*/` |
 
@@ -371,6 +371,8 @@ GCS_BUCKET=duta-firza-media
 GCS_CREDENTIALS_JSON=<base64 dari B5>
 # GCS_PUBLIC_URL_BASE=<opsional CDN base>
 DEVTOOLS_PASSWORD=<DEVTOOLS_PASSWORD>
+# Opsional: hanya untuk tes manual POST /api/devtools/collect. Metrik /devtools
+# dikumpulkan otomatis oleh app tiap menit (collector bawaan), tanpa cron/timer.
 DEVTOOLS_COLLECT_TOKEN=<DEVTOOLS_COLLECT_TOKEN>
 DEVTOOLS_SESSION_HOURS=12
 EOF
@@ -393,6 +395,10 @@ echo 'deploy ALL=(root) NOPASSWD: /bin/systemctl restart dutafirza' | \
   sudo tee /etc/sudoers.d/dutafirza-deploy
 sudo chmod 440 /etc/sudoers.d/dutafirza-deploy
 ```
+
+> Unit ini menjalankan app dengan `TZ=Asia/Jakarta` (image GCP default UTC), supaya ringkasan harian
+> dan jam puncak di `/devtools` sesuai WIB. Bila `deploy/dutafirza.service` berubah, ulangi B1b untuk
+> file itu, lalu `sudo cp` di atas + `sudo systemctl daemon-reload && sudo systemctl restart dutafirza`.
 
 ---
 
@@ -492,7 +498,9 @@ pnpm tsx scripts/migrate-inquiries.ts      # pisah read-state dari status inquir
    (menunjuk release terbaru), dan health check di workflow lolos.
 4. **🖥️ DEV** — seed DB (B8) bila belum, lalu **🌐 WEB** buka `https://dutafirza.com` → homepage,
    login `/admin` (pakai `<SEED_ADMIN_EMAIL>`/`<SEED_ADMIN_PASSWORD>`), uji upload media (tampil dari GCS).
-5. Selanjutnya cukup **push ke `main`** → pipeline `test → build → deploy` jalan otomatis.
+5. **🌐 WEB** — buka `https://dutafirza.com/devtools` (login `<DEVTOOLS_PASSWORD>`). Setelah ±1 menit,
+   header menampilkan **"Data terakhir: baru saja"** dan tidak ada banner kuning "Collector tidak berjalan".
+6. Selanjutnya cukup **push ke `main`** → pipeline `test → build → deploy` jalan otomatis.
 
 **Rollback manual** — **🔒 VM** (`<sha-lama>` dari `ls -1dt /opt/dutafirza/releases/*/`):
 ```bash
@@ -522,3 +530,4 @@ Masalah umum:
 | `cp: cannot stat 'deploy/...'` | file `deploy/` belum dikirim ke VM → lihat B1b. |
 | `MongoServerError: Authentication failed` / `ECONNREFUSED` | `MONGODB_URI` salah (user/pass/`authSource=dutafirza`) atau mongod mati. |
 | Login ditolak tanpa 500 | DB belum di-seed / user admin belum ada → jalankan seeding (B8). |
+| `/devtools` riwayat kosong / banner "Collector tidak berjalan" | Cek `sudo journalctl -u dutafirza \| grep devtools`. Harus ada `self-collector on` setelah start. `collect failed: …` = masalah DB/env (lihat pesannya). Tidak ada baris sama sekali = collector dimatikan (`DEVTOOLS_SELF_COLLECT=false` di `.env`?). Detail: `docs/devtools-setup.md`. |

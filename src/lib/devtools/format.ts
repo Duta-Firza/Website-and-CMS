@@ -17,6 +17,16 @@ export function fmtUptime(seconds: number): string {
   return `${m}m`;
 }
 
+/** Elapsed duration as Indonesian relative text: "baru saja", "5 menit lalu", … */
+export function fmtAgo(ms: number): string {
+  const m = Math.floor(Math.max(0, ms) / 60_000);
+  if (m < 1) return "baru saja";
+  if (m < 60) return `${m} menit lalu`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} jam lalu`;
+  return `${Math.floor(h / 24)} hari lalu`;
+}
+
 export function fmtPct(n: number): string {
   return `${Math.round(n * 10) / 10}%`;
 }

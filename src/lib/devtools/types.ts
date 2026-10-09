@@ -58,6 +58,8 @@ export interface OverviewResponse {
   cpuModel: string;
   cores: number;
   updatedAt: number;
+  /** ts of the newest stored raw sample (null = collector never ran). */
+  lastCollectedAt: number | null;
   uptimeS: number;
   cpu: { pct: number };
   ram: { usedB: number; totalB: number; pct: number };

@@ -18,6 +18,9 @@ EnvironmentFile=/opt/dutafirza/shared/.env
 Environment=NODE_ENV=production
 Environment=PORT=3000
 Environment=HOSTNAME=127.0.0.1
+# GCP images default to UTC. /devtools buckets days/hours in server-local time
+# and labels them WIB, so run the app in Jakarta time.
+Environment=TZ=Asia/Jakarta
 # Adjust if node is not at /usr/bin/node (e.g. nvm): run `which node`.
 ExecStart=/usr/bin/node /opt/dutafirza/current/server.js
 Restart=on-failure
